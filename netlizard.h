@@ -374,6 +374,7 @@ NLboolean nlSaveCompressImage_V3Memory(const NETLizard_Texture *tex, const char 
 NLuchar * nlMakeOpenGLTextureDataRGBACompress(const NETLizard_Texture *tex, NLsizei *rlen);
 NLuchar * nlMakeOpenGLTextureDataRGB(const NETLizard_Texture *tex, NLsizei *rlen);
 NLuchar * nlMakeOpenGLTextureDataRGBA(const NETLizard_Texture *tex, NLsizei *rlen);
+NLuchar * nlMakeOpenGLTextureData(const NETLizard_Texture *tex, NLsizei *rlen);
 
 #ifdef __cplusplus
 }

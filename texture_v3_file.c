@@ -35,9 +35,48 @@ NLboolean nlReadTextureV3_File(const char *name, int i1, NETLizard_Texture *tex)
     return res;
 }
 
+NLboolean nlReadTextureV3_Memory(const char *data, NLsizei length, int i1, NETLizard_Texture *tex)
+{
+    if(!nlIsNL3DV3Texture(data))
+    {
+        nlprintf("Not NETLizard 3D texture v3\n");
+        return NL_FALSE;
+    }
+
+    ZERO(tex, NETLizard_Texture);
+    array arr = class_s__function_a_1byte_array__color_map(data, &tex->format);
+    tex->color_map.data = (NLint *)arr.array;
+    tex->color_map.length = arr.length;
+
+    array data_arr;
+    make_array(&data_arr, 1, length, data);
+    arr = class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(&data_arr, 0, 0, 0, 0, 0, &tex->width, &tex->height);
+    tex->color_index.data = arr.array;
+    tex->color_index.length = arr.length;
+
+    if (i1 > 6) {
+        class_s__function_a_1byte_array_2int__swap((byte *)(tex->color_index.data), 7);
+    }
+    else if(i1 < 0)
+    {
+    }
+    else
+    {
+        class_s__function_a_1byte_array_2int__swap((byte *)(tex->color_index.data), 8);
+    }
+    tex->depth = 1;
+    return NL_TRUE;
+}
+
 // fp*.png 主视角武器
 NLboolean nlReadCompressTextureV3_Memory(const char *data, NLsizei length, NETLizard_Texture *tex)
 {
+    if(!nlIsNL3DV3Texture(data))
+    {
+        nlprintf("Not NETLizard 3D texture v3 compress\n");
+        return NL_FALSE;
+    }
+
     ZERO(tex, NETLizard_Texture);
 
     array arr = class_s__function_a_1byte_array__color_map(data, &tex->format);
@@ -68,33 +107,6 @@ NLboolean nlReadCompressTextureV3_File(const char *name, NETLizard_Texture *tex)
     NLboolean res = nlReadCompressTextureV3_Memory(arr.array, arr.length, tex);
     delete_array(&arr);
     return res;
-}
-
-NLboolean nlReadTextureV3_Memory(const char *data, NLsizei length, int i1, NETLizard_Texture *tex)
-{
-    ZERO(tex, NETLizard_Texture);
-    array arr = class_s__function_a_1byte_array__color_map(data, &tex->format);
-    tex->color_map.data = (NLint *)arr.array;
-    tex->color_map.length = arr.length;
-
-    array data_arr;
-    make_array(&data_arr, 1, length, data);
-    arr = class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(&data_arr, 0, 0, 0, 0, 0, &tex->width, &tex->height);
-    tex->color_index.data = arr.array;
-    tex->color_index.length = arr.length;
-
-	if (i1 > 6) {
-        class_s__function_a_1byte_array_2int__swap((byte *)(tex->color_index.data), 7);
-	}
-	else if(i1 < 0)
-	{
-	}
-	else
-	{
-        class_s__function_a_1byte_array_2int__swap((byte *)(tex->color_index.data), 8);
-	}
-	tex->depth = 1;
-    return NL_TRUE;
 }
 
 NLboolean nlSaveImage_V3File(const char *from, int i, const char *to, int img_type)

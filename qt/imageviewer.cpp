@@ -18,7 +18,8 @@ ImageViewer::ImageViewer(QWidget *parent) :
     m_imageWidget(0),
     m_typeComboBox(0),
     m_fileChooser(0),
-    m_indexSpinBox(0)
+    m_indexSpinBox(0),
+    m_titleLabel(0)
 {
     Init();
 }
@@ -30,25 +31,33 @@ ImageViewer::~ImageViewer()
 
 void ImageViewer::Init()
 {
-    QLayout *layout = new QVBoxLayout(this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
     QPushButton *button = new QPushButton(this);
     m_typeComboBox = new QComboBox(this);
     m_imageWidget = new ImageWidget(this);
-    QLayout *toolLayout = new QHBoxLayout(this);
+    QHBoxLayout *toolLayout = new QHBoxLayout(this);
     m_indexSpinBox = new QSpinBox(this);
+    m_titleLabel = new QLabel(this);
 
     for(int i = 0; i < 4; i++)
     {
         const QPair<QString, QString> &p = Types[i];
         m_typeComboBox->addItem(p.second, QVariant(p.first));
     }
-    m_indexSpinBox->setMinimum(0);
+    m_indexSpinBox->setMinimum(-1);
     m_indexSpinBox->setEnabled(false);
-    button->setText("file");
+    m_indexSpinBox->setValue(-1);
+    button->setText("Open file");
     toolLayout->addWidget(button);
+    toolLayout->addStretch();
+    toolLayout->addWidget(new QLabel("Type: ", this));
     toolLayout->addWidget(m_typeComboBox);
+    toolLayout->addWidget(new QLabel("Index: ", this));
     toolLayout->addWidget(m_indexSpinBox);
 
+    m_titleLabel->setFixedHeight(18);
+    m_titleLabel->setAlignment(Qt::AlignCenter);
+    layout->addWidget(m_titleLabel);
     layout->addWidget(m_imageWidget);
     layout->addItem(toolLayout);
 
@@ -56,7 +65,7 @@ void ImageViewer::Init()
     connect(m_typeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));
 
     setLayout(layout);
-    setWindowTitle("NETLizard图片资源浏览");
+    setWindowTitle("NETLizard image/texture resource viewer");
     resize(480, 360);
 }
 
@@ -78,25 +87,28 @@ void ImageViewer::OnTypeCurrentIndexChanged(int index)
 
 void ImageViewer::OpenFile(const QString &file)
 {
+    m_titleLabel->setText("");
     int selectedIndex = m_typeComboBox->currentIndex();
     QString type = Types[selectedIndex].first;
+
     if(type == "png")
     {
         NLint len;
         char *data = nlHandlePNG_File2Memory(file.toStdString().c_str(), &len);
         if(!data)
         {
-            QMessageBox::warning(this, "错误", "加载NETLizard加密png文件失败!");
+            QMessageBox::warning(this, "Error", "Load NETLizard png image fail!");
             return;
         }
 
         bool res = m_imageWidget->LoadImage((uchar *)data, len);
         if(!res)
         {
-            QMessageBox::warning(this, "错误", "加载图像数据失败!");
+            QMessageBox::warning(this, "Error", "Load image data fail!");
             return;
         }
         free(data);
+        m_titleLabel->setText(QString("PNG image: %1").arg(len));
     }
     else if(type == "texture_v2")
     {
@@ -104,19 +116,19 @@ void ImageViewer::OpenFile(const QString &file)
         NLboolean ok = nlReadTextureV2_File(file.toStdString().c_str(), &tex);
         if(!ok)
         {
-            QMessageBox::warning(this, "错误", "加载NETLizard v2纹理文件失败!");
+            QMessageBox::warning(this, "Error", "Load NETLizard v2 texture fail!");
             return;
         }
 
-        NLuchar *data = nlMakeOpenGLTextureDataRGB(&tex, NULL);
-        bool res = m_imageWidget->LoadImage((uchar *)data, tex.width, tex.height, QImage::Format_RGB888);
+        m_titleLabel->setText(QString("Texture v2: %1x%2(%3)").arg(tex.width).arg(tex.height).arg(tex.format == NL_RGB ? "RGB" : "RGBA"));
+        NLuchar *data = nlMakeOpenGLTextureData(&tex, NULL);
+        bool res = tex.format == NL_RGB ? m_imageWidget->LoadImage((uchar *)data, tex.width, tex.height, QImage::Format_RGB888) : m_imageWidget->LoadImage((uchar *)data, tex.width, tex.height);
+        delete_NETLizard_Texture(&tex);
         if(!res)
         {
-            QMessageBox::warning(this, "错误", "加载图像数据失败!");
+            QMessageBox::warning(this, "Error", "Load image data fail!");
             return;
         }
-        delete_NETLizard_Texture(&tex);
-        free(data);
     }
     else if(type == "texture_v3")
     {
@@ -125,42 +137,44 @@ void ImageViewer::OpenFile(const QString &file)
         NLboolean ok = nlReadTextureV3_File(file.toStdString().c_str(), index, &tex);
         if(!ok)
         {
-            QMessageBox::warning(this, "错误", "加载NETLizard v3纹理文件失败!");
+            QMessageBox::warning(this, "Error", "Load NETLizard v3 texture image fail!");
             return;
         }
 
-        NLuchar *data = nlMakeOpenGLTextureDataRGB(&tex, NULL);
+        m_titleLabel->setText(QString("Texture v3: %1x%2(%3)").arg(tex.width).arg(tex.height).arg(tex.format == NL_RGB ? "RGB" : "RGBA"));
+        NLuchar *data = nlMakeOpenGLTextureData(&tex, NULL);
+        bool res = tex.format == NL_RGB ? m_imageWidget->LoadImage((uchar *)data, tex.width, tex.height, QImage::Format_RGB888) : m_imageWidget->LoadImage((uchar *)data, tex.width, tex.height);
         delete_NETLizard_Texture(&tex);
-        bool res = m_imageWidget->LoadImage(data, tex.width, tex.height, QImage::Format_RGB888);
         if(!res)
         {
             free(data);
-            QMessageBox::warning(this, "错误", "加载图像数据失败!");
+            QMessageBox::warning(this, "Error", "Load image data fail!");
             return;
         }
     }
-    else if(type == "texture_v3_compress")
+    else if(type == "texture_v3_compress") // RGBA
     {
         NETLizard_Texture tex;
         NLboolean ok = nlReadCompressTextureV3_File(file.toStdString().c_str(), &tex);
         if(!ok)
         {
-            QMessageBox::warning(this, "错误", "加载NETLizard v3 compress纹理文件失败!");
+            QMessageBox::warning(this, "Error", "Load NETLizard v3 compress texture fail!");
             return;
         }
 
-        NLuchar *data = nlMakeOpenGLTextureDataRGB(&tex, NULL);
+        m_titleLabel->setText(QString("Texture v3 compress: %1x%2(RGBA)").arg(tex.width).arg(tex.height));
+        NLuchar *data = nlMakeOpenGLTextureDataRGBA(&tex, NULL);
         delete_NETLizard_Texture(&tex);
-        bool res = m_imageWidget->LoadImage(data, tex.width, tex.height, QImage::Format_RGB888);
+        bool res = m_imageWidget->LoadImage(data, tex.width, tex.height);
         if(!res)
         {
             free(data);
-            QMessageBox::warning(this, "错误", "加载图像数据失败!");
+            QMessageBox::warning(this, "Error", "Load image data fail!");
             return;
         }
     }
     else
     {
-        QMessageBox::warning(this, "错误", "不支持的资源类型!");
+        QMessageBox::warning(this, "Error", "Unsupport resource type!");
     }
 }

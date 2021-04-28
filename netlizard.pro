@@ -59,7 +59,8 @@ SOURCES += \
     texture_v3_file.c \
     qt/imageviewer.cpp \
     qt/imagewidget.cpp \
-    main.cpp
+    main.cpp \
+    png_file.c
 
 #libnetlizard.files = $$DESTDIR/libnetlizard*
 #libnetlizard.path = /usr/lib

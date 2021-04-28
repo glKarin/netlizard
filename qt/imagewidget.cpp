@@ -1,6 +1,7 @@
 #include "imagewidget.h"
 
 #include <QtGui/QtGui>
+#include <QtCore/QtCore>
 
 ImageWidget::ImageWidget(QWidget *parent)
     : QWidget(parent),
@@ -43,6 +44,34 @@ bool ImageWidget::LoadImage(uchar *data, int width, int height, QImage::Format f
     if(res)
         SetData(data);
     return res;
+}
+
+bool ImageWidget::LoadImage(uchar *data, int width, int height)
+{
+    if(m_image)
+    {
+        delete m_image;
+        m_image = 0;
+    }
+    SetData(0);
+    ConvertRGBA32toARGB32(data, width, height);
+    m_image = new QImage(data, width, height, QImage::Format_ARGB32);
+    bool res = !m_image->isNull();
+    if(res)
+        SetData(data);
+    return res;
+}
+
+void ImageWidget::ConvertRGBA32toARGB32(uchar *data, int width, int height)
+{
+    int size = width * height;
+    uint32_t *ptr = (uint32_t *)data;
+    for(int i = 0; i < size; i++)
+    {
+        uint32_t c = ptr[i];
+        uint32_t alpha = c & 0xff;
+        ptr[i] = (c >> 8) | (alpha << 24);
+    }
 }
 
 void ImageWidget::SetData(uchar *data)

@@ -27,6 +27,12 @@ NLboolean nlReadTextureV2_File(const char *name, NETLizard_Texture *tex)
 
 NLboolean nlReadTextureV2_Memory(const char *data, NLsizei length, NETLizard_Texture *tex)
 {
+    if(!nlIsNL3DV2Texture(data))
+    {
+        nlprintf("Not NETLizard 3D texture v2\n");
+        return NL_FALSE;
+    }
+
     ZERO(tex, NETLizard_Texture);
 
     array arr = class_h__function_b_1byte_array__color_map((const byte *)data, &tex->format);

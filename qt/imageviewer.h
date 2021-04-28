@@ -7,6 +7,7 @@ class ImageWidget;
 class QComboBox;
 class QFileDialog;
 class QSpinBox;
+class QLabel;
 
 class ImageViewer : public QWidget
 {
@@ -32,6 +33,7 @@ private:
     QComboBox *m_typeComboBox;
     QFileDialog *m_fileChooser;
     QSpinBox *m_indexSpinBox;
+    QLabel *m_titleLabel;
 };
 
 #endif // IMAGEVIEWER_H

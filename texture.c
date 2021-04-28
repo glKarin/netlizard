@@ -166,6 +166,11 @@ NLuchar * nlMakeOpenGLTextureDataRGBA(const NETLizard_Texture *tex, NLsizei *rle
 #endif
 }
 
+NLuchar * nlMakeOpenGLTextureData(const NETLizard_Texture *tex, NLsizei *rlen)
+{
+    return tex->format == NL_RGB ? nlMakeOpenGLTextureDataRGB(tex, rlen) : nlMakeOpenGLTextureDataRGBA(tex, rlen);
+}
+
 void delete_NETLizard_Texture(NETLizard_Texture *tex)
 {
     if(tex->color_index.data)
