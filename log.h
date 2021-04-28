@@ -1,0 +1,38 @@
+#ifndef _KARIN_LOG_H
+#define _KARIN_LOG_H
+
+#include <stddef.h>
+
+#define ENDL printf("\n");
+
+#define printfi(x) printf(#x"->%d\n", x)
+#define printfu(x) printf(#x"->%u\n", x)
+#define printfl(x) printf(#x"->%ld\n", x)
+#define printful(x) printf(#x"->%lu\n", x)
+#define printff(x) printf(#x"->%f\n", x)
+#define printfx(x) printf(#x"->%x\n", x)
+#define printfs(x) printf(#x"->%s\n", x)
+#define printfc(x) printf(#x"->%c\n", x)
+#define printfp(x) printf(#x"->%p\n", x)
+#define printf2f(x) printf(#x"->%.2f\n", x)
+#define printf1f(x) printf(#x"->%.1f\n", x)
+#define printfln(fmt, args...) printf(fmt"\n", ##args)
+
+//if(nl_debug_mode) \;
+
+#define nlprintf(fmt, args...) \
+{ \
+    { \
+        printf(fmt, ##args); \
+    } \
+}
+
+int log_begin(int append);
+int log_write(const char *str, ...);
+int log_wwrite(const wchar_t *str, ...);
+void log_flush();
+void log_end();
+int log_append(const char *str, ...);
+int log_wappend(const wchar_t *str, ...);
+
+#endif // _KARIN_LOG_H
