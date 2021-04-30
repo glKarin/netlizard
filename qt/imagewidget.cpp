@@ -13,6 +13,7 @@ ImageWidget::~ImageWidget()
 {
     if(m_image)
         delete m_image;
+    SetData(0);
 }
 
 bool ImageWidget::LoadImage(const QString &file)

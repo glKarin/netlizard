@@ -99,7 +99,7 @@ char * nlParseStringC(const char *arr, size_t length)
     return nlParseStringCi((const NLint *)arr, length / 4);
 }
 
-array * nlEncodeStringC(const char *str)
+NLint * nlEncodeStringC(const char *str, NLsizei *rlen)
 {
     const char *ptr = str;
     int len = 0;
@@ -138,6 +138,6 @@ array * nlEncodeStringC(const char *str)
         }
         len++;
     }
-    //return new_array(nl_int, len, data, 0);
-    return NULL;
+    *rlen = len;
+    return data;
 }

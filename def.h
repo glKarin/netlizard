@@ -13,4 +13,6 @@
 #define MIN(num1, num2) (((num1) < (num2)) ? (num1) : (num2))
 #define ABS(num) (((num) >= 0) ? (num) : (-(num)))
 
+#define ESIZE(type, size) (size)
+
 #endif // _KARIN_DEF_H

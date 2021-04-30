@@ -34,7 +34,9 @@ HEADERS += \
     soil/stbi_dds_aug.h \
     media_util.h \
     qt/imageviewer.h \
-    qt/imagewidget.h
+    qt/imagewidget.h \
+    qt/textviewer.h \
+    qt/stringviewer.h
 
 SOURCES += \
     jport.c \
@@ -60,7 +62,10 @@ SOURCES += \
     qt/imageviewer.cpp \
     qt/imagewidget.cpp \
     main.cpp \
-    png_file.c
+    png_file.c \
+    ct3dep2.c \
+    qt/textviewer.cpp \
+    qt/stringviewer.cpp
 
 #libnetlizard.files = $$DESTDIR/libnetlizard*
 #libnetlizard.path = /usr/lib

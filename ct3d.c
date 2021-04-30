@@ -369,6 +369,7 @@ NLboolean nlReadCT3DModelFile(const char* name, int level, NETLizard_3D_Model *m
 		mesh->angle[0] = obj->int__p__rotation;
 		mesh->angle[1] = obj->int__q__rotation;
 		mesh->obj_index = obj->byte__s__obj;
+
         // vertex
         mesh->item_mesh.vertex.length = obj->int_array_6__a__vertex.length / 2;
         mesh->item_mesh.vertex.data = NEW_II(NLint, mesh->item_mesh.vertex.length);
@@ -383,6 +384,7 @@ NLboolean nlReadCT3DModelFile(const char* name, int level, NETLizard_3D_Model *m
 			im_a[k + 2] = i_a[j + 2] >> 16;
 			k += 3;
 		}
+
         // index
         mesh->item_mesh.primitive.length = obj->int_array_16__b__primitive.length / 16;
         mesh->item_mesh.primitive.data = NEW_II(NETLizard_3D_Primitive, mesh->item_mesh.primitive.length);
@@ -554,6 +556,7 @@ NLboolean nlReadCT3DItemModelFile(const char* name, int index, NETLizard_3D_Mode
     delete_array(&obj.int_array_16__b__primitive);
     delete_array(&arr);
     model->data.data = NULL;
+    model->data.length = 0;
     model->item_data.data = item_meshes.array;
     model->item_data.length = item_meshes.length;
 	model->has_sky = 0;
@@ -582,10 +585,11 @@ void read_CT3D_map_items(array *class_g_array__h__item)
 			}
 			else
 				name = strdup(subfix);
+
             array arr;
             int res = file_get_contents(name, &arr);
 			free(name);
-            if(res <= 0)
+            if(res > 0)
 			{
                 class_h__function_S_void__item(h, arr.array);
                 delete_array(&arr);

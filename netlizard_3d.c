@@ -175,40 +175,37 @@ void delete_NETLizard_3D_Model(NETLizard_3D_Model *model)
     free(model->bsp_data.data);
 }
 
-NETLizard_Texture_Type nlCheckPNGType(const char *data)
+NETLizard_Texture_Type nlCheckPNGType(const char *data, NLsizei length)
 {
-	if(nlIsPNG(data))
+    if(length >= 3 && nlIsPNG(data))
 		return Texture_NormalPNG_Type;
-	else if(nlIsNLPNG(data))
+    else if(length >= 3 && nlIsNLPNG(data))
 		return Texture_EncodePNG_Type;
-	else if(nlIsNL3DV2Texture(data))
+    else if(length >= 3 && nlIsNL3DV2Texture(data))
 		return Texture_3DEngineV2_Type;
-	else if(nlIsNL3DV3Texture(data))
-	{
-#ifdef TODO
-		NETLizard_Texture *t = nlReadTextureV3_Memory(data, -1);
-		if(t)
-		{
-			array *arr = t->color_index;
-			NETLizard_Texture_Type type = Texture_3DEngineV3_Type;
+    else if(length >= 3 && nlIsNL3DV3Texture(data))
+    {
+        NETLizard_Texture tex;
+        NLboolean res = nlReadTextureV3_Memory(data, length, -1, &tex);
+        if(res)
+        {
+            NETLizard_Texture_Type type = Texture_3DEngineV3_Type;
 			int i;
-			for(i = 0; i < arr->length; i++)
+            for(i = 0; i < tex.color_index.length; i++)
 			{
-				if(((signed char*)(arr->array))[i] < 0)
+                if(((signed char*)(tex.color_index.data))[i] < 0)
 				{
 					type = Texture_3DEngineV3Compress_Type;
 					break;
 				}
 			}
-			delete_NETLizard_Texture(t);
-			free(t);
+            delete_NETLizard_Texture(&tex);
 			return type;
 		}
 		else
 		{
-			return Texture_Unknow_Type;
-		}
-#endif
+            return Texture_Unknow_Type;
+        }
 	}
 	else
 		return Texture_Unknow_Type;
@@ -222,7 +219,7 @@ NETLizard_Texture_Type nlCheckPNGFileType(const char *name)
     res = file_get_contents(name, &arr);
     if(res <= 0)
 		return Texture_Unknow_Type;
-    NETLizard_Texture_Type type = nlCheckPNGType(arr.array);
+    NETLizard_Texture_Type type = nlCheckPNGType((char *)arr.array, arr.length);
     delete_array(&arr);
 	return type;
 }

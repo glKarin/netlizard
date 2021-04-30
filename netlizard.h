@@ -309,7 +309,7 @@ char * nlParseStringi(const NLint *arr, size_t length);
 char * nlParseStringCi(const NLint *arr, size_t length);
 char * nlParseString(const char *arr, size_t length);
 char * nlParseStringC(const char *arr, size_t length);
-//array * nlEncodeStringC(const char *str);
+NLint * nlEncodeStringC(const char *str, NLsizei *rlen);
 // text
 char * nlHandleText_File2Memory(const char *name, NLint *len);
 char * nlHandleText_Memory2Memory(const char *data, NLint len, NLint *rlen);
@@ -339,13 +339,25 @@ int nlGetAnimationBeginAndEnd(game_name game, int index, int animation[]);
 NLboolean nlReadCT3DModelFile(const char* name, int level, NETLizard_3D_Model *model);
 NLboolean nlReadCT3DItemModelFile(const char* name, int index, NETLizard_3D_Model *model);
 // Army Ranger 3D: Operation Artcle
+NLboolean nlReadSpecnaz3DModelFile(const char* name, int level, NETLizard_3D_Model *model);
+NLboolean nlReadSpecnaz3DItemModelFile(const char* name, int index, NETLizard_3D_Model *model);
 // Contr Terrisiem 3D: Episode-2
+NLboolean nlReadCT3DEp2ModelFile(const char* name, int level, NETLizard_3D_Model *model);
+NLboolean nlReadCT3DEp2ItemModelFile(const char* name, int index, NETLizard_3D_Model *model);
 // 3D Shadows of Egypt
+NLboolean nlReadEgypt3DItemModelFile(const char* name, int index, NETLizard_3D_Model *model);
+NLboolean nlReadEgypt3DModelFile(const char* name, NETLizard_3D_Model *model);
+NLboolean nlReadEgypt3DRoleModelFile(const char* name, int index, NETLizard_3D_Model *model);
 // Clone 3D
+NLboolean nlReadClone3DItemModelFile(const char* name, int index, NETLizard_3D_Model *model);
+NLboolean nlReadClone3DModelFile(const char* name, NETLizard_3D_Model *model);
+NLboolean nlReadClone3DRoleModelFile(const char* name, int index, NETLizard_3D_Model *model);
 // Contr Terrisiem 3D: Episode-3
+NLboolean nlReadCT3DEp3ModelFile(const char* name, int level, NETLizard_3D_Model *model);
+NLboolean nlReadCT3DEp3ItemModelFile(const char* name, int index, NETLizard_3D_Model *model);
 
 // texture
-NETLizard_Texture_Type nlCheckPNGType(const char *data);
+NETLizard_Texture_Type nlCheckPNGType(const char *data, NLsizei length);
 NETLizard_Texture_Type nlCheckPNGFileType(const char *file);
 void delete_NETLizard_Texture(NETLizard_Texture *tex);
 // png

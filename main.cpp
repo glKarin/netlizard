@@ -1,10 +1,12 @@
 #include "netlizard.h"
 
 #include <QtCore/QtCore>
-#include <QtGui>/QtGui>
+#include <QtGui/QtGui>
 
 #include "io.h"
 #include "qt/imageviewer.h"
+#include "qt/textviewer.h"
+#include "qt/stringviewer.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,8 +19,11 @@ int main(int argc, char *argv[])
     QLocale::setDefault(QLocale::system());
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
-    ImageViewer viewer;
-    viewer.show();
+    //ImageViewer viewer;
+    //TextViewer viewer;
+    StringViewer viewer;
+    QWidget *win = &viewer;
+    win->show();
 
     return app.exec();
 }
