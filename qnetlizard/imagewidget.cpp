@@ -2,15 +2,18 @@
 
 #include <QtGui/QtGui>
 #include <QtCore/QtCore>
+#include "qdef.h"
 
 ImageWidget::ImageWidget(QWidget *parent)
     : QWidget(parent),
       m_image(0)
 {
+    setObjectName("ImageWidget");
 }
 
 ImageWidget::~ImageWidget()
 {
+    DEBUG_DESTROY_Q;
     if(m_image)
         delete m_image;
     SetData(0);

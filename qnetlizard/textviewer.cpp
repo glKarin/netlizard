@@ -3,6 +3,7 @@
 #include <QtGui/QtGui>
 
 #include "netlizard.h"
+#include "qdef.h"
 
 TextViewer::TextViewer(QWidget *parent) :
     QWidget(parent),
@@ -10,12 +11,13 @@ TextViewer::TextViewer(QWidget *parent) :
     m_textBrowser(0),
     m_titleLabel(0)
 {
+    setObjectName("TextViewer");
     Init();
 }
 
 TextViewer::~TextViewer()
 {
-
+    DEBUG_DESTROY_Q;
 }
 
 void TextViewer::Init()

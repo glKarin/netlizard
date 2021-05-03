@@ -3,6 +3,7 @@
 #include <QtGui/QtGui>
 
 #include "netlizard.h"
+#include "qdef.h"
 
 StringViewer::StringViewer(QWidget *parent) :
     QWidget(parent),
@@ -11,12 +12,13 @@ StringViewer::StringViewer(QWidget *parent) :
     m_encodeInput(0),
     m_decodeInput(0)
 {
+    setObjectName("StringViewer");
     Init();
 }
 
 StringViewer::~StringViewer()
 {
-
+    DEBUG_DESTROY_Q;
 }
 
 void StringViewer::Init()

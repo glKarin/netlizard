@@ -4,9 +4,10 @@
 #include <QtGui/QtGui>
 
 #include "io.h"
-#include "qt/imageviewer.h"
-#include "qt/textviewer.h"
-#include "qt/stringviewer.h"
+#include "imageviewer.h"
+#include "textviewer.h"
+#include "stringviewer.h"
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,7 +22,8 @@ int main(int argc, char *argv[])
 
     //ImageViewer viewer;
     //TextViewer viewer;
-    StringViewer viewer;
+    //StringViewer viewer;
+    MainWindow viewer;
     QWidget *win = &viewer;
     win->show();
 

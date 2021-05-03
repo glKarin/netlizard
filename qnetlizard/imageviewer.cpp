@@ -5,6 +5,7 @@
 
 #include "imagewidget.h"
 #include "netlizard.h"
+#include "qdef.h"
 
 static const QPair<QString, QString> Types[] = {
     QPair<QString, QString>("png", "PNG"),
@@ -21,12 +22,13 @@ ImageViewer::ImageViewer(QWidget *parent) :
     m_indexSpinBox(0),
     m_titleLabel(0)
 {
+    setObjectName("ImageViewer");
     Init();
 }
 
 ImageViewer::~ImageViewer()
 {
-
+    DEBUG_DESTROY_Q;
 }
 
 void ImageViewer::Init()
