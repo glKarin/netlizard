@@ -3,8 +3,8 @@
 #include "priv_local.h"
 #include "netlizard_3d.h"
 
-const int Game_Count = NL_TOTAL_GAME;
-const char *Game_Names[] = {
+static const int Game_Count = NL_TOTAL_GAME;
+static const char *Game_Names[] = {
 	"Racing Evolution 3D",
 	"Contr Terrorism 3D",
 	"Army Rangers 3D : Operation Arctic",
@@ -13,11 +13,8 @@ const char *Game_Names[] = {
 	"Clone 3D",
 	"Contr Terrorism 3D Episode 3"
 };
-const int Game_Level[] = {
-	RE3D_LEVEL, CT3D_LEVEL, SPECNAZ3D_LEVEL, CT3DEP2_LEVEL, EGYPT3D_LEVEL, CLONE3D_LEVEL, CT3DEP3_LEVEL
-};
 
-const char *CT3D_Level[] = {
+static const char *CT3D_Level[] = {
 	"Complex",
 	"Underground",
 	"Yard",
@@ -30,7 +27,7 @@ const char *CT3D_Level[] = {
 	"Escape"
 };
 
-const char *Specnaz3D_Level[] = {
+static const char *Specnaz3D_Level[] = {
 	"Landing",
 	"Gorge",
 	"CheckPoint",
@@ -42,7 +39,7 @@ const char *Specnaz3D_Level[] = {
 	"Mine",
 	"Limit"
 };
-const char *CT3DEp2_Level[] = {
+static const char *CT3DEp2_Level[] = {
 	"Mine",
 	"Yard",
 	"Cellar",
@@ -53,7 +50,7 @@ const char *CT3DEp2_Level[] = {
 	"Prison",
 	"Controls"
 };
-const char *Egypt3D_Level[] = {
+static const char *Egypt3D_Level[] = {
 	"Shadows of Egypt",
 	"Landslide",
 	"Spider Lair",
@@ -74,7 +71,7 @@ const char *Egypt3D_Level[] = {
 	"Home",
 	"Servive"
 };
-const char *Clone3D_Level[] = {
+static const char *Clone3D_Level[] = {
 	"Escape",
 	"GreenHouse",
 	"Plantation",
@@ -88,7 +85,7 @@ const char *Clone3D_Level[] = {
 	"Exit",
 	"Exit"
 };
-const char *RE3D_Level[] = {
+static const char *RE3D_Level[] = {
 	"Track 1",
 	"Track 2",
 	"Track 3",
@@ -97,7 +94,7 @@ const char *RE3D_Level[] = {
 	"Track 6",
 	"Track 7"
 };
-const char *CT3DEp3_Level[] = {
+static const char *CT3DEp3_Level[] = {
 	"1-Catacombs",
 	"2-Collector",
 	"3-Cellar",
@@ -132,7 +129,7 @@ const char *CT3DEp3_Level[] = {
 			 */
 };
 
-const char **Game_Level_Name[] = {
+static const char **Game_Level_Name[] = {
 	RE3D_Level,
 	CT3D_Level,
 	Specnaz3D_Level,
@@ -142,9 +139,101 @@ const char **Game_Level_Name[] = {
 	CT3DEp3_Level
 };
 
-char *game_resource_path[NL_TOTAL_GAME] =
-{
-	NULL, NULL, NULL, NULL, NULL, NULL, NULL
+static const int Game_Level[] = {
+    RE3D_LEVEL,
+    CT3D_LEVEL,
+    SPECNAZ3D_LEVEL,
+    CT3DEP2_LEVEL,
+    EGYPT3D_LEVEL,
+    CLONE3D_LEVEL,
+    CT3DEP3_LEVEL
+};
+
+static NETLizard_3D_Model_Config Game_Config[] = {
+    {
+        NL_RACING_EVOLUTION_3D,
+        0,
+        NL_TEXTURE_3D_ENGINE_V2,
+        1,
+        1,
+        NL_FALSE,
+        NL_FALSE,
+        RE3D_SKY_FILE,
+        "",
+        ""
+    },
+    {
+        NL_CONTR_TERRORISM_3D,
+        CT3D_TEX_COUNT,
+        NL_TEXTURE_3D_ENGINE_V2,
+        1,
+        1,
+        NL_TRUE,
+        NL_TRUE,
+        CT3D_SKY_FILE,
+        CT3D_TEX_SUBFIX,
+        CT3D_OBJ_SUBFIX
+    },
+    {
+        NL_ARMY_RANGER_3D,
+        SPECNAZ3D_TEX_COUNT,
+        NL_TEXTURE_3D_ENGINE_V2,
+        1,
+        1,
+        NL_TRUE,
+        NL_TRUE,
+        SPECNAZ3D_SKY_FILE,
+        SPECNAZ3D_TEX_SUBFIX,
+        SPECNAZ3D_OBJ_SUBFIX
+    },
+    {
+        NL_CONTR_TERRORISM_3D_EPISODE_2,
+        SPECNAZ3D_TEX_COUNT,
+        NL_TEXTURE_3D_ENGINE_V2,
+        3,
+        1,
+        NL_TRUE,
+        NL_TRUE,
+        CT3DEP2_SKY_FILE,
+        CT3DEP2_TEX_SUBFIX,
+        CT3DEP2_OBJ_SUBFIX
+    },
+    {
+        NL_SHADOW_OF_EGYPT_3D,
+        EGYPT3D_TEX_COUNT,
+        NL_TEXTURE_3D_ENGINE_V3,
+        3,
+        3,
+        NL_TRUE,
+        NL_TRUE,
+        "",
+        EGYPT3D_TEX_SUBFIX,
+        EGYPT3D_OBJ_SUBFIX
+    },
+    {
+        NL_CLONE_3D,
+        CLONE3D_TEX_COUNT,
+        NL_TEXTURE_3D_ENGINE_V3,
+        3,
+        3,
+        NL_FALSE,
+        NL_FALSE,
+        "",
+        CLONE3D_TEX_SUBFIX,
+        CT3DEP3_OBJ_SUBFIX
+    },
+    {
+        NL_CONTR_TERRORISM_3D_EPISODE_3,
+        CT3DEP3_TEX_COUNT,
+        NL_TEXTURE_3D_ENGINE_V3,
+        3,
+        1,
+        NL_FALSE,
+        NL_FALSE,
+        CT3DEP3_SKY_FILE,
+        CT3DEP3_TEX_SUBFIX,
+        CT3DEP3_OBJ_SUBFIX
+    },
 };
 
 void delete_NETLizard_3D_Mesh(NETLizard_3D_Mesh *mesh)
@@ -164,38 +253,38 @@ void delete_NETLizard_3D_Model(NETLizard_3D_Model *model)
 {
     int i;
 
-    for(i = 0; i < model->data.length; i++)
+    for(i = 0; i < model->data.count; i++)
         delete_NETLizard_3D_Mesh(((NETLizard_3D_Mesh *)(model->data.data)) + i);
     free(model->data.data);
 
-    for(i = 0; i < model->item_data.length; i++)
+    for(i = 0; i < model->item_data.count; i++)
         delete_NETLizard_3D_Item_Mesh(((NETLizard_3D_Item_Mesh *)(model->item_data.data)) + i);
     free(model->item_data.data);
 
     free(model->bsp_data.data);
 }
 
-NETLizard_Texture_Type nlCheckPNGType(const char *data, NLsizei length)
+NETLizard_Texture_Type nlGetPNGType(const char *data, NLsizei length)
 {
-    if(length >= 3 && nlIsPNG(data))
-		return Texture_NormalPNG_Type;
-    else if(length >= 3 && nlIsNLPNG(data))
-		return Texture_EncodePNG_Type;
-    else if(length >= 3 && nlIsNL3DV2Texture(data))
-		return Texture_3DEngineV2_Type;
-    else if(length >= 3 && nlIsNL3DV3Texture(data))
+    if(length >= 3 && nlIsPNG(data, length))
+		return NL_TEXTURE_NORMAL_PNG;
+    else if(length >= 3 && nlIsNLPNG(data, length))
+		return NL_TEXTURE_ENCODE_PNG;
+    else if(length >= 3 && nlIsNL3DTextureV2(data, length))
+		return NL_TEXTURE_3D_ENGINE_V2;
+    else if(length >= 3 && nlIsNL3DTextureV3(data, length))
     {
         NETLizard_Texture tex;
-        NLboolean res = nlReadTextureV3_Memory(data, length, -1, &tex);
+        NLboolean res = nlLoadTextureV3Data(data, length, -1, &tex);
         if(res)
         {
-            NETLizard_Texture_Type type = Texture_3DEngineV3_Type;
+            NETLizard_Texture_Type type = NL_TEXTURE_3D_ENGINE_V3;
 			int i;
-            for(i = 0; i < tex.color_index.length; i++)
+            for(i = 0; i < tex.color_index.count; i++)
 			{
                 if(((signed char*)(tex.color_index.data))[i] < 0)
 				{
-					type = Texture_3DEngineV3Compress_Type;
+					type = NL_TEXTURE_3D_ENGINE_V3_COMPRESS;
 					break;
 				}
 			}
@@ -204,27 +293,27 @@ NETLizard_Texture_Type nlCheckPNGType(const char *data, NLsizei length)
 		}
 		else
 		{
-            return Texture_Unknow_Type;
+            return NL_TEXTURE_UNKNOWN;
         }
 	}
 	else
-		return Texture_Unknow_Type;
+		return NL_TEXTURE_UNKNOWN;
 }
 
-NETLizard_Texture_Type nlCheckPNGFileType(const char *name)
+NETLizard_Texture_Type nlGetPNGFileType(const char *name)
 {
     array arr;
     int res;
 
     res = file_get_contents(name, &arr);
     if(res <= 0)
-		return Texture_Unknow_Type;
-    NETLizard_Texture_Type type = nlCheckPNGType((char *)arr.array, arr.length);
+        return NL_TEXTURE_UNKNOWN;
+    NETLizard_Texture_Type type = nlGetPNGType((char *)arr.array, arr.length);
     delete_array(&arr);
-	return type;
+    return type;
 }
 
-const char *nlGetAnimationName(NETLizard_3D_Animation_Type anim)
+const char * nlGet3DModelAnimationName(NETLizard_3D_Animation_Type anim)
 {
 	if(anim >= Animation_Total_Type)
 		return NULL;
@@ -243,7 +332,7 @@ const char *nlGetAnimationName(NETLizard_3D_Animation_Type anim)
 }
 
 
-int nlGetAnimationBeginAndEnd(game_name game, int index, int animation[])
+int nlGet3DModelAnimationRange(NETLizard_Game game, int index, int animation[])
 {
 	const int anim[2][8][Animation_Total_Type * 2] = {
 		{
@@ -319,7 +408,7 @@ int nlGetAnimationBeginAndEnd(game_name game, int index, int animation[])
 	return -1;
 }
 
-int nlGetItemType(game_name game, int index)
+int nlGetItemType(NETLizard_Game game, int index)
 {
 	switch(game)
 	{
@@ -417,21 +506,7 @@ int nlGetItemType(game_name game, int index)
 	return Item_Other_Type;
 }
 
-void nlSetResourcePath(game_name name, const char *path)
-{
-    if(name >= NL_TOTAL_GAME)
-        return;
-	if(!path)
-	{
-		free(game_resource_path[name]);
-		return;
-    }
-	char *new_path = strdup(path);
-	free(game_resource_path[name]);
-	game_resource_path[name] = new_path;
-}
-
-int nlCheckLevelIsAvailable(game_name game, int level)
+NLboolean nlCheck3DGameLevelIsAvailable(NETLizard_Game game, int level)
 {
 	switch(game)
 	{
@@ -441,12 +516,80 @@ int nlCheckLevelIsAvailable(game_name game, int level)
         case NL_CONTR_TERRORISM_3D_EPISODE_2:
         case NL_CLONE_3D:
         case NL_CONTR_TERRORISM_3D_EPISODE_3:
-			return(level >= 1 && level <= Game_Level[game] ? 1 : 0);
+            return(level >= 1 && level <= Game_Level[game] ? NL_TRUE : NL_FALSE);
         case NL_SHADOW_OF_EGYPT_3D:
-			return(level >= 0 && level < EGYPT3D_LEVEL ? 1 : 0);
+            return(level >= 0 && level < EGYPT3D_LEVEL ? NL_TRUE : NL_FALSE);
 			break;
 		default:
 			break;
 	}
-	return 0;
+    return NL_FALSE;
+}
+
+const char * nlGet3DGameLevelName(NETLizard_Game game, NLuint level)
+{
+    if(game > NL_CONTR_TERRORISM_3D_EPISODE_3)
+        return NULL;
+    int max_level = Game_Level[game];
+    if(level > max_level)
+        return NULL;
+    if(game == NL_SHADOW_OF_EGYPT_3D) // Main menu 3D level only in `3D Egypt`
+    {
+        return Game_Level_Name[game][level];
+    }
+    else
+    {
+        if(level == 0)
+            return NULL;
+        else
+            return Game_Level_Name[game][level - 1];
+    }
+}
+
+NLboolean nlGet3DGameLevelRange(NETLizard_Game game, NLint *start, NLint *count)
+{
+    if(game > NL_CONTR_TERRORISM_3D_EPISODE_3)
+        return NL_FALSE;
+    int max_level = Game_Level[game];
+    if(count)
+        *count = max_level;
+    if(start)
+    {
+        *start = game == NL_SHADOW_OF_EGYPT_3D ? 0 : 1;
+    }
+    return NL_TRUE;
+}
+
+const char * nlGet3DGameName(NETLizard_Game game)
+{
+    if(game > NL_CONTR_TERRORISM_3D_EPISODE_3)
+        return NULL;
+    return Game_Names[game];
+}
+
+const NETLizard_3D_Model_Config * nlGet3DGameModelConfig(NETLizard_Game game)
+{
+    if(game > NL_CONTR_TERRORISM_3D_EPISODE_3)
+        return NULL;
+    return Game_Config + game;
+}
+
+char * make_resource_file_path(const char *format, int index, const char *resc_path)
+{
+    size_t fl = strlen(format);
+    char *suffix = NEW_II(char, fl + 1);
+    memset(suffix, '\0', sizeof(char) * (fl + 1));
+    sprintf(suffix, format, index);
+    char *name = NULL;
+    if(resc_path)
+    {
+        size_t len = fl + strlen(resc_path) + 1 + 1;
+        name = NEW_II(char, len);
+        memset(name, '\0', sizeof(char) * len);
+        sprintf(name, "%s/%s", resc_path, suffix);
+        free(suffix);
+    }
+    else
+        name = suffix;
+    return name;
 }

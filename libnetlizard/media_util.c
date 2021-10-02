@@ -4,9 +4,9 @@
 
 #include "priv_local.h"
 
-char * nlGetLevelMusicFileName(game_name game, int level, char *file)
+char * nlGet3DGameLevelMusicFileName(NETLizard_Game game, NLint level, char *file)
 {
-	if(!nlCheckLevelIsAvailable(game, level))
+	if(!nlCheck3DGameLevelIsAvailable(game, level))
 		return NULL;
 
 #define GET_MIDI_NAME_BY_LEVEL(str, level, count) \
@@ -56,7 +56,7 @@ char * nlGetLevelMusicFileName(game_name game, int level, char *file)
 	return file;
 }
 
-char * nlGetMenuMusicFileName(game_name game, char *file)
+char * nlGet3DGameMenuMusicFileName(NETLizard_Game game, char *file)
 {
 	switch(game)
 	{
@@ -76,41 +76,3 @@ char * nlGetMenuMusicFileName(game_name game, char *file)
 	}
 	return file;
 }
-
-/*
-char * nlGetMenuMusicFilePath(game_name game)
-{
-    char *file = nlGetMenuMusicFileName(game);
-    if(file)
-    {
-        char *path = game_resource_path[game];
-        if(!path)
-            return file;
-        size_t len = strlen(path) + 1 + strlen(file) + 1;
-        char *full = NEW_II(char, len);
-        memset(full, '\0', len * sizeof(char));
-        sprintf(full, "%s/%s", path, file);
-        free(file);
-        return full;
-    }
-    return NULL;
-}
-
-char * nlGetLevelMusicFilePath(game_name game, int level)
-{
-	char *file = nlGetLevelMusicFileName(game, level);
-	if(file)
-	{
-		char *path = game_resource_path[game];
-		if(!path)
-			return file;
-		size_t len = strlen(path) + 1 + strlen(file) + 1;
-		char *full = NEW_II(char, len);
-		memset(full, '\0', len * sizeof(char));
-		sprintf(full, "%s/%s", path, file);
-		free(file);
-		return full;
-	}
-	return NULL;
-}
-*/

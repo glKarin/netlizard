@@ -2,14 +2,16 @@
 
 #include "priv_local.h"
 
-NLboolean nlIsNL3DV3Texture(const char *data)
+NLboolean nlIsNL3DTextureV3(const char *data, NLsizei length)
 {
+    if(length < 3)
+        return NL_FALSE;
     const char F[] = NL_TEXTURE_V3_MAGIC_HEADER; // BIP
-    int res = memcmp(data, F, sizeof(F));
-    return res == 0;
+    int res = memcmp(data, F, 3);
+    return BOOL_VALUE(res == 0);
 }
 
-NLboolean nlIsNL3DV3TextureFile(const char *name)
+NLboolean nlIsNL3DTextureV3File(const char *name)
 {
     int len;
     array arr;
@@ -20,6 +22,6 @@ NLboolean nlIsNL3DV3TextureFile(const char *name)
     make_array(&arr, 1, 3, data);
     len = file_get_contents_s(name, &arr);
     if(len == 3)
-        ret = nlIsNL3DV3Texture((char *)arr.array);
+        ret = nlIsNL3DTextureV3((char *)arr.array, arr.length);
     return ret;
 }

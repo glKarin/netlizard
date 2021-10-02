@@ -60,8 +60,9 @@ array * new_array(array *arr, size_t size, size_t length)
 array * new_array_with_data(array *arr, size_t size, size_t length, const void *data, size_t data_size)
 {
     void *ptr;
+    size_t len = length * size;
 
-    ptr = calloc(length, size);
+    ptr = len ? calloc(length, size) : NULL;
     arr->array = ptr;
     arr->length = length;
     arr->size = size;

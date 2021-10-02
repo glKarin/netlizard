@@ -15,4 +15,6 @@
 
 #define ESIZE(type, size) (size)
 
+#define BOOL_VALUE(cond) ((cond) ? NL_TRUE : NL_FALSE)
+
 #endif // _KARIN_DEF_H

@@ -13,31 +13,31 @@ typedef struct _class__f__scene
 {
   array int_array_6__a__vertex;
   array int_array_10__b__primitive;
-  int c;
-  int d;
-  int int__e__end;// = 0; 最后一个物品索引
-  int int__f__aabb;
-  int int__g__aabb;
-  int int__h__aabb;
-  int int__i__aabb;
-  int int__j__aabb;
-  int int__k__aabb;
+  jint c;
+  jint d;
+  jint int__e__end;// = 0; 最后一个物品索引
+  jint int__f__aabb;
+  jint int__g__aabb;
+  jint int__h__aabb;
+  jint int__i__aabb;
+  jint int__j__aabb;
+  jint int__k__aabb;
   array int_array_6__l__plane;
-  int m;
-  int n;
-  int o;
-  int int_array_5__p__bsp[5];
-  int int__q__bsp;// = 0;
-  int int__r__begin;// = 0; 第一个物品索引
+  jint m;
+  jint n;
+  jint o;
+  jint int_array_5__p__bsp[5];
+  jint int__q__bsp;// = 0;
+  jint int__r__begin;// = 0; 第一个物品索引
 } class__f__scene;
 
 typedef struct _class__b__bsp
 {
   byte byte__a__direction;
-    int int_array_3__a__normal[3];
-  int int_array_4x3__b__plane[4][3]; //i[] b = new i[4];
-  int int__c__prev_scene;
-  int int__d__next_scene;
+    jint int_array_3__a__normal[3];
+  jint int_array_4x3__b__plane[4][3]; //i[] b = new i[4];
+  jint int__c__prev_scene;
+  jint int__d__next_scene;
   boolean e; // = false;
 } class__b__bsp;
 
@@ -45,224 +45,106 @@ typedef struct _class__g__item
 {
   array int_array_6__a__vertex;
   array int_array_16__b__primitive;
-  int** c;
-  short d;
-  int e;
-  int int__f__aabb;
-  int int__g__aabb;
-  int int__h__aabb;
-  int int__i__aabb;
-  int int__j__aabb;
-  int int__k__aabb;
+  jint** c;
+  jshort d;
+  jint e;
+  jint int__f__aabb;
+  jint int__g__aabb;
+  jint int__h__aabb;
+  jint int__i__aabb;
+  jint int__j__aabb;
+  jint int__k__aabb;
   byte l;// = -1;
-  int int__m__translation;// = 40960000;
-  int int__n__translation;// = 40960000;
-  int int__o__translation;// = 8192000;
-  int int__p__rotation;// = 0;
-  int int__q__rotation;// = 0;
-  short r;
+  jint int__m__translation;// = 40960000;
+  jint int__n__translation;// = 40960000;
+  jint int__o__translation;// = 8192000;
+  jint int__p__rotation;// = 0;
+  jint int__q__rotation;// = 0;
+  jshort r;
   byte byte__s__obj;
-  int t;//boolean t = true;
+  jint t;//boolean t = true;
 } class__g__item;
 
 typedef struct _class__h__lvl
 {
     array class_f_array__l__scene;
     array class_g_array__h__item;
-	int int_array__dg__translation[3];
-	int int__dd__rotation;
-	int int__df__rotation;
+    jint int_array__dg__translation[3];
+    jint int__dd__rotation;
+    jint int__df__rotation;
     array class_b_array__j__bsp;
 } class__h__lvl;
 
-static class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[]);
+static void delete_class__f__scene(class__f__scene *scene)
+{
+    delete_array(&scene->int_array_6__a__vertex);
+    delete_array(&scene->int_array_10__b__primitive);
+    delete_array(&scene->int_array_6__l__plane);
+}
+
+static void delete_class__g__item(class__g__item *item)
+{
+    delete_array(&item->int_array_6__a__vertex);
+    delete_array(&item->int_array_16__b__primitive);
+}
+
+static void delete_class__h__lvl(class__h__lvl *lv)
+{
+    int i;
+
+    array *l = &lv->class_f_array__l__scene;
+    for(i = 0; i < l->length; i++)
+    {
+        class__f__scene *obj = ((class__f__scene *)(l->array)) + i;
+        delete_class__f__scene(obj);
+    }
+    delete_array(l);
+
+    array *h = &lv->class_g_array__h__item;
+    for(i = 0; i < h->length; i++)
+    {
+        class__g__item *obj = ((class__g__item *)(h->array)) + i;
+        delete_class__g__item(obj);
+    }
+    delete_array(h);
+    delete_array(&lv->class_b_array__j__bsp);
+}
+
+static class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[], const char *resc_path);
 static void class_h__function_S_void__item(class__g__item *h, const byte arrayOfByte[]);
-static void read_CT3D_map_items(array *class_g_array__h__item);
+static void read_CT3D_map_items(array *class_g_array__h__item, const char *resc_path);
 
-#if 0
-void testtt4(class__f__scene *l, class__b__bsp *j, int scene, int max, int *scenes, byte dir)
-{
-	int ii;
-	for(ii = 0; ii < l[scene].int__q__bsp; ii++)
-	{
-		int bsp_i = l[scene].int_array_5__p__bsp[ii];
-		int p = j[bsp_i].int__c__prev_scene;
-		int n = j[bsp_i].int__d__next_scene;
-		byte a = j[bsp_i].byte__a__direction;
-		if(a == dir)
-		{
-			int k;
-			for(k = 0; k < max; k++)
-			{
-				if(scenes[k] == p)
-					break;
-				if(scenes[k] == -1)
-				{
-					scenes[k] = p;
-					testtt4(l, j, p, max, scenes, a);
-					break;
-				}
-			}
-			for(k = 0; k < max; k++)
-			{
-				if(scenes[k] == n)
-					break;
-				if(scenes[k] == -1)
-				{
-					scenes[k] = n;
-					testtt4(l, j, n, max, scenes, a);
-					break;
-				}
-			}
-		}
-	}
-}
-
-void testtt3(class__f__scene *l, class__b__bsp *j, int scene, int max, int *scenes)
-{
-	int ii;
-	for(ii = 0; ii < l[scene].int__q__bsp; ii++)
-	{
-		int bsp_i = l[scene].int_array_5__p__bsp[ii];
-		int p = j[bsp_i].int__c__prev_scene;
-		int n = j[bsp_i].int__d__next_scene;
-		byte a = j[bsp_i].byte__a__direction;
-		int k;
-		for(k = 0; k < max; k++)
-		{
-			if(scenes[k] == p)
-				break;
-			if(scenes[k] == -1)
-			{
-				scenes[k] = p;
-				testtt4(l, j, p, max, scenes, a);
-				break;
-			}
-		}
-		for(k = 0; k < max; k++)
-		{
-			if(scenes[k] == n)
-				break;
-			if(scenes[k] == -1)
-			{
-				scenes[k] = n;
-				testtt4(l, j, n, max, scenes, a);
-				break;
-			}
-		}
-	}
-}
-
-void testtt2(class__f__scene *l, class__b__bsp *j, int scene, int max, int *scenes)
-{
-	int ii;
-	for(ii = 0; ii < l[scene].int__q__bsp; ii++)
-	{
-		int bsp_i = l[scene].int_array_5__p__bsp[ii];
-		int p = j[bsp_i].int__c__prev_scene;
-		int n = j[bsp_i].int__d__next_scene;
-		byte a = j[bsp_i].byte__a__direction;
-		int k;
-		for(k = 0; k < max; k++)
-		{
-			if(scenes[k] == p)
-				break;
-			if(scenes[k] == -1)
-			{
-				scenes[k] = p;
-				testtt3(l, j, p, max, scenes);
-				break;
-			}
-		}
-		for(k = 0; k < max; k++)
-		{
-			if(scenes[k] == n)
-				break;
-			if(scenes[k] == -1)
-			{
-				scenes[k] = n;
-				testtt3(l, j, n, max, scenes);
-				break;
-			}
-		}
-	}
-}
-
-void testtt(class__f__scene *l, class__b__bsp *j, int scene, int max)
-{
-	int *scenes = NEW_II(int, max);
-	int i;
-	for(i = 0; i < max; i++)
-		scenes[i] = -1;
-	printf("[");
-	printf("  %d ----> \n", scene);
-	// get under the target bsp node
-	int ii;
-	for(ii = 0; ii < l[scene].int__q__bsp; ii++)
-	{
-		int bsp_i = l[scene].int_array_5__p__bsp[ii];
-		int p = j[bsp_i].int__c__prev_scene;
-		int n = j[bsp_i].int__d__next_scene;
-		int k;
-		for(k = 0; k < max; k++)
-		{
-			if(scenes[k] == p)
-				break;
-			if(scenes[k] == -1)
-			{
-				scenes[k] = p;
-				testtt2(l, j, p, max, scenes);
-				break;
-			}
-		}
-
-		for(k = 0; k < max; k++)
-		{
-			if(scenes[k] == n)
-				break;
-			if(scenes[k] == -1)
-			{
-				scenes[k] = n;
-				testtt2(l, j, n, max, scenes);
-				break;
-			}
-		}
-		byte a = j[bsp_i].byte__a__direction;
-	}
-	int k;
-	for(k = 0; k < max; k++)
-	{
-		if(scenes[k] != -1 && scenes[k] != scene)
-		{
-			printf(" %d", scenes[k]);
-		}
-	}
-	printf("\n]\n");
-}
-#endif
-
-NLboolean nlReadCT3DModelFile(const char* name, int level, NETLizard_3D_Model *model)
+NLboolean nlReadCT3DModelFile(const char *name, NLint level, const char *resc_path, NETLizard_3D_Model *model)
 {
     array arr;
     int res;
+    NLboolean b;
 
     res = file_get_contents(name, &arr);
     if(res <= 0)
         return NL_FALSE;
+
+    b = nlLoadCT3DModelData(arr.array, arr.length, level, resc_path, model);
+    delete_array(&arr);
+    return b;
+}
+
+NLboolean nlLoadCT3DModelData(const char* data, NLsizei res, NLint level, const char *resc_path, NETLizard_3D_Model *model)
+{
 	int paramInt = level;
-	int dr = 0;
+    int dr = 0; // has sky
 	if ((paramInt == 3) || (paramInt == 4) || (paramInt == 5) || (paramInt == 7)) {
 		dr = 1;
 	}
 
-    byte *arrayOfByte = (byte *)(arr.array);
-    class__h__lvl lvl = class_h__function_k_void__scene(arrayOfByte);
+    byte *arrayOfByte = (byte *)(data);
+    class__h__lvl lvl = class_h__function_k_void__scene(arrayOfByte, resc_path);
     class__h__lvl *lv = &lvl;
 
 	ZERO(model, NETLizard_3D_Model);
     array *l = &lv->class_f_array__l__scene;
     model->data.data = NEW_II(NETLizard_3D_Mesh, l->length);
-    model->data.length = l->length;
+    model->data.count = l->length;
 	model->has_sky = dr;
 	model->game = CT_3D_Map;
 
@@ -274,11 +156,11 @@ NLboolean nlReadCT3DModelFile(const char* name, int level, NETLizard_3D_Model *m
 		class__f__scene *obj = ((class__f__scene *)(l->array)) + i;
 
         // vertex
-        mesh->vertex.length = obj->int_array_6__a__vertex.length / 2;
-        mesh->vertex.data = NEW_II(NLint, mesh->vertex.length);
+        mesh->vertex.count = obj->int_array_6__a__vertex.length / 2;
+        mesh->vertex.data = NEW_II(NLint, mesh->vertex.count);
 		int j;
-        int *m_v = (int *)(mesh->vertex.data);
-        int *s_a = (int *)(obj->int_array_6__a__vertex.array);
+        NLint *m_v = (NLint *)(mesh->vertex.data);
+        jint *s_a = (jint *)(obj->int_array_6__a__vertex.array);
 		int k = 0;
         for(j = 0; j < obj->int_array_6__a__vertex.length; j += 6)
 		{
@@ -289,9 +171,9 @@ NLboolean nlReadCT3DModelFile(const char* name, int level, NETLizard_3D_Model *m
 		}
 
         // index
-        mesh->primitive.length = obj->int_array_10__b__primitive.length / 10;
-        mesh->primitive.data = NEW_II(NETLizard_3D_Primitive, mesh->primitive.length);
-        int *s_b = (int *)(obj->int_array_10__b__primitive.array);
+        mesh->primitive.count = obj->int_array_10__b__primitive.length / 10;
+        mesh->primitive.data = NEW_II(NETLizard_3D_Primitive, mesh->primitive.count);
+        jint *s_b = (jint *)(obj->int_array_10__b__primitive.array);
 		k = 0;
         for(j = 0; j < obj->int_array_10__b__primitive.length; j += 10)
 		{
@@ -310,9 +192,9 @@ NLboolean nlReadCT3DModelFile(const char* name, int level, NETLizard_3D_Model *m
 		}
 
         // plane
-        mesh->plane.length = obj->int_array_6__l__plane.length / 6;
-        mesh->plane.data = NEW_II(NETLizard_3D_Plane, mesh->plane.length);
-        int *s_l = (int *)(obj->int_array_6__l__plane.array);
+        mesh->plane.count = obj->int_array_6__l__plane.length / 6;
+        mesh->plane.data = NEW_II(NETLizard_3D_Plane, mesh->plane.count);
+        jint *s_l = (jint *)(obj->int_array_6__l__plane.array);
 		k = 0;
         for(j = 0; j < obj->int_array_6__l__plane.length; j += 6)
         {
@@ -337,9 +219,9 @@ NLboolean nlReadCT3DModelFile(const char* name, int level, NETLizard_3D_Model *m
         // bsp
 		if(obj->int__q__bsp)
 		{
-            mesh->bsp.length = obj->int__q__bsp;
-            mesh->bsp.data = NEW_II(NLint, mesh->bsp.length);
-            int *bsp_index = (int *)(mesh->bsp.data);
+            mesh->bsp.count = obj->int__q__bsp;
+            mesh->bsp.data = NEW_II(NLint, mesh->bsp.count);
+            NLint *bsp_index = (NLint *)(mesh->bsp.data);
 			for(j = 0; j < obj->int__q__bsp; j++)
 			{
 				bsp_index[j] = obj->int_array_5__p__bsp[j];
@@ -349,16 +231,18 @@ NLboolean nlReadCT3DModelFile(const char* name, int level, NETLizard_3D_Model *m
 
     // item model
     array *h = &lv->class_g_array__h__item;
-    model->item_data.length = h->length;
-    model->item_data.data = NEW_II(NETLizard_3D_Item_Mesh, model->item_data.length);
+    model->item_data.count = h->length;
+    model->item_data.data = NEW_II(NETLizard_3D_Item_Mesh, model->item_data.count);
 	for(i = 0; i < h->length; i++)
 	{
         NETLizard_3D_Item_Mesh *mesh = ((NETLizard_3D_Item_Mesh *)(model->item_data.data)) + i;
 		class__g__item *obj = ((class__g__item *)(h->array)) + i;
         if(!ARRAY_DATA(obj->int_array_6__a__vertex) || !ARRAY_DATA(obj->int_array_16__b__primitive))
 		{
-            mesh->item_mesh.vertex.length = 0;
-            mesh->item_mesh.primitive.length = 0;
+            mesh->item_mesh.vertex.data = NULL;
+            mesh->item_mesh.vertex.count = 0;
+            mesh->item_mesh.primitive.data = NULL;
+            mesh->item_mesh.primitive.count = 0;
 			continue;
 		}
 
@@ -371,11 +255,11 @@ NLboolean nlReadCT3DModelFile(const char* name, int level, NETLizard_3D_Model *m
 		mesh->obj_index = obj->byte__s__obj;
 
         // vertex
-        mesh->item_mesh.vertex.length = obj->int_array_6__a__vertex.length / 2;
-        mesh->item_mesh.vertex.data = NEW_II(NLint, mesh->item_mesh.vertex.length);
+        mesh->item_mesh.vertex.count = obj->int_array_6__a__vertex.length / 2;
+        mesh->item_mesh.vertex.data = NEW_II(NLint, mesh->item_mesh.vertex.count);
 		int j;
-        int *im_a = (int *)(mesh->item_mesh.vertex.data);
-        int *i_a = (int *)(obj->int_array_6__a__vertex.array);
+        NLint *im_a = (NLint *)(mesh->item_mesh.vertex.data);
+        jint *i_a = (jint *)(obj->int_array_6__a__vertex.array);
 		int k = 0;
         for(j = 0; j < obj->int_array_6__a__vertex.length; j += 6)
 		{
@@ -386,10 +270,10 @@ NLboolean nlReadCT3DModelFile(const char* name, int level, NETLizard_3D_Model *m
 		}
 
         // index
-        mesh->item_mesh.primitive.length = obj->int_array_16__b__primitive.length / 16;
-        mesh->item_mesh.primitive.data = NEW_II(NETLizard_3D_Primitive, mesh->item_mesh.primitive.length);
+        mesh->item_mesh.primitive.count = obj->int_array_16__b__primitive.length / 16;
+        mesh->item_mesh.primitive.data = NEW_II(NETLizard_3D_Primitive, mesh->item_mesh.primitive.count);
 		k = 0;
-        int *i_b = (int *)(obj->int_array_16__b__primitive.array);
+        jint *i_b = (jint *)(obj->int_array_16__b__primitive.array);
         for(j = 0; j < obj->int_array_16__b__primitive.length; j += 16)
 		{
             NETLizard_3D_Primitive *p = ((NETLizard_3D_Primitive *)(mesh->item_mesh.primitive.data)) + k;
@@ -422,12 +306,13 @@ NLboolean nlReadCT3DModelFile(const char* name, int level, NETLizard_3D_Model *m
 	}
 
     // bsp
-    model->bsp_data.length = 0;
+    model->bsp_data.data = NULL;
+    model->bsp_data.count = 0;
     if(ARRAY_DATA(lv->class_b_array__j__bsp))
 	{
         class__b__bsp *bsp = (class__b__bsp *)(lv->class_b_array__j__bsp.array);
-        model->bsp_data.length = lv->class_b_array__j__bsp.length;
-        model->bsp_data.data = NEW_II(NETLizard_BSP_Tree_Node, model->bsp_data.length);
+        model->bsp_data.count = lv->class_b_array__j__bsp.length;
+        model->bsp_data.data = NEW_II(NETLizard_BSP_Tree_Node, model->bsp_data.count);
         NETLizard_BSP_Tree_Node *bsp_data = (NETLizard_BSP_Tree_Node *)(model->bsp_data.data);
 		int j;
         for(j = 0; j < lv->class_b_array__j__bsp.length; j++)
@@ -456,45 +341,38 @@ NLboolean nlReadCT3DModelFile(const char* name, int level, NETLizard_3D_Model *m
 	model->start_pos[2] = lv->int_array__dg__translation[2] >> 16;
 
     // free
-	for(i = 0; i < l->length; i++)
-	{
-		class__f__scene *obj = ((class__f__scene *)(l->array)) + i;
-        delete_array(&obj->int_array_6__a__vertex);
-        delete_array(&obj->int_array_10__b__primitive);
-        delete_array(&obj->int_array_6__l__plane);
-	}
-    delete_array(l);
-
-	for(i = 0; i < h->length; i++)
-	{
-		class__g__item *obj = ((class__g__item *)(h->array)) + i;
-        delete_array(&obj->int_array_6__a__vertex);
-        delete_array(&obj->int_array_16__b__primitive);
-	}
-    delete_array(&lv->class_b_array__j__bsp);
-    delete_array(h);
+    delete_class__h__lvl(lv);
 
     return NL_TRUE;
 }
 
-NLboolean nlReadCT3DItemModelFile(const char* name, int index, NETLizard_3D_Model *model)
+NLboolean nlReadCT3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model)
 {
     array arr;
     int res;
+    NLboolean b;
 
     res = file_get_contents(name, &arr);
     if(res <= 0)
         return NL_FALSE;
 
+    b = nlLoadCT3DItemModelData(arr.array, arr.length, index, model);
+    delete_array(&arr);
+    return b;
+}
+
+NLboolean nlLoadCT3DItemModelData(const char* data, NLsizei res, NLint index, NETLizard_3D_Model *model)
+{
 	ZERO(model, NETLizard_3D_Model);
 
 	class__g__item obj;
-    class_h__function_S_void__item(&obj, arr.array);
-    array item_meshes;
-    new_array(&item_meshes, sizeof(NETLizard_3D_Item_Mesh), 1);
-    NETLizard_3D_Item_Mesh *mesh = ((NETLizard_3D_Item_Mesh *)(item_meshes.array));
+    class_h__function_S_void__item(&obj, (const byte *)data);
+    NETLizard_3D_Item_Mesh *mesh = NEW(NETLizard_3D_Item_Mesh);
+    ZERO(mesh, NETLizard_3D_Item_Mesh);
     mesh->item_mesh.vertex.data = NULL;
+    mesh->item_mesh.vertex.count = 0;
     mesh->item_mesh.primitive.data = NULL;
+    mesh->item_mesh.primitive.count = 0;
 	mesh->pos[0] = 0;
 	mesh->pos[1] = 0;
 	mesh->pos[2] = 0;
@@ -504,11 +382,11 @@ NLboolean nlReadCT3DItemModelFile(const char* name, int index, NETLizard_3D_Mode
     if(ARRAY_DATA(obj.int_array_6__a__vertex) && ARRAY_DATA(obj.int_array_16__b__primitive))
 	{
         // vertex
-        mesh->item_mesh.vertex.length = obj.int_array_6__a__vertex.length / 2;
-        mesh->item_mesh.vertex.data = NEW_II(NLint, mesh->item_mesh.vertex.length);
+        mesh->item_mesh.vertex.count = obj.int_array_6__a__vertex.length / 2;
+        mesh->item_mesh.vertex.data = NEW_II(NLint, mesh->item_mesh.vertex.count);
 		int j;
-        int *im_v = (int *)(mesh->item_mesh.vertex.data);
-        int *i_a = (int *)(obj.int_array_6__a__vertex.array);
+        NLint *im_v = (NLint *)(mesh->item_mesh.vertex.data);
+        jint *i_a = (jint *)(obj.int_array_6__a__vertex.array);
 		int k = 0;
         for(j = 0; j < obj.int_array_6__a__vertex.length; j += 6)
 		{
@@ -519,9 +397,9 @@ NLboolean nlReadCT3DItemModelFile(const char* name, int index, NETLizard_3D_Mode
 		}
 
         // index
-        mesh->item_mesh.primitive.length = obj.int_array_16__b__primitive.length / 16;
-        mesh->item_mesh.primitive.data = NEW_II(sizeof(NETLizard_3D_Primitive), mesh->item_mesh.primitive.length);
-        int *i_b = (int *)(obj.int_array_16__b__primitive.array);
+        mesh->item_mesh.primitive.count = obj.int_array_16__b__primitive.length / 16;
+        mesh->item_mesh.primitive.data = NEW_II(NETLizard_3D_Primitive, mesh->item_mesh.primitive.count);
+        jint *i_b = (jint *)(obj.int_array_16__b__primitive.array);
 		k = 0;
         for(j = 0; j < obj.int_array_16__b__primitive.length; j += 16)
 		{
@@ -544,6 +422,8 @@ NLboolean nlReadCT3DItemModelFile(const char* name, int index, NETLizard_3D_Mode
 			p->plane.normal[2] = i_b[j + 12];
 			k++;
 		}
+
+        // box
 		mesh->item_mesh.ortho[0] = obj.int__f__aabb >> 16;
 		mesh->item_mesh.ortho[1] = obj.int__g__aabb >> 16;
 		mesh->item_mesh.ortho[2] = obj.int__h__aabb >> 16;
@@ -552,19 +432,19 @@ NLboolean nlReadCT3DItemModelFile(const char* name, int index, NETLizard_3D_Mode
 		mesh->item_mesh.ortho[5] = obj.int__k__aabb >> 16;
 	}
 
-    delete_array(&obj.int_array_6__a__vertex);
-    delete_array(&obj.int_array_16__b__primitive);
-    delete_array(&arr);
+    // free
+    delete_class__g__item(&obj);
+
     model->data.data = NULL;
-    model->data.length = 0;
-    model->item_data.data = item_meshes.array;
-    model->item_data.length = item_meshes.length;
+    model->data.count = 0;
+    model->item_data.data = mesh;
+    model->item_data.count = 1;
 	model->has_sky = 0;
 	model->game = CT_3D_Item;
     return NL_TRUE;
 }
 
-void read_CT3D_map_items(array *class_g_array__h__item)
+void read_CT3D_map_items(array *class_g_array__h__item, const char *resc_path)
 {
 	int i;
 	for(i = 0; i < class_g_array__h__item->length; i++)
@@ -572,22 +452,10 @@ void read_CT3D_map_items(array *class_g_array__h__item)
 		class__g__item *h = ((class__g__item *)(class_g_array__h__item->array)) + i;
 		int i11 = h->byte__s__obj;
 		if ((i11 != 0) || (i11 == 55))
-		{
-			char subfix[strlen(CT3D_OBJ_SUBFIX) + 1];
-			memset(subfix, '\0', sizeof(char) * (strlen(subfix) + 1));
-			sprintf(subfix, CT3D_OBJ_SUBFIX, i11);
-			char *name = NULL;
-            if(game_resource_path[NL_CONTR_TERRORISM_3D])
-			{
-                name = NEW_II(char, strlen(subfix) + strlen(game_resource_path[NL_CONTR_TERRORISM_3D]) + 1 + 1);
-                memset(name, '\0', sizeof(char) * ((strlen(subfix) + strlen(game_resource_path[NL_CONTR_TERRORISM_3D]) + 1 + 1)));
-                sprintf(name, "%s/%s", game_resource_path[NL_CONTR_TERRORISM_3D], subfix);
-			}
-			else
-				name = strdup(subfix);
-
-            array arr;
-            int res = file_get_contents(name, &arr);
+        {
+            char *name = make_resource_file_path(CT3D_OBJ_SUBFIX, i11, resc_path);
+			array arr;
+			int res = file_get_contents(name, &arr);
 			free(name);
             if(res > 0)
 			{
@@ -610,16 +478,16 @@ void read_CT3D_map_items(array *class_g_array__h__item)
 
 /* ****** static ****** */
 
-class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
+class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[], const char *resc_path)
 {
 	byte cO;
-	int cZ;
-	int cA;
-	int dg[3];
-	int dd;
-	int df;
+    jint cZ;
+    jint cA;
+    jint dg[3];
+    jint dd;
+    jint df;
 
-	int i1 = -2;
+	jint i1 = -2;
 	i1 += 2;
 	cO = ((byte)(marge_digit(arrayOfByte[0], arrayOfByte[1]) - 1));
 	i1 += 2;
@@ -662,13 +530,13 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
     array class_f_array__l__scene;
     new_array(&class_f_array__l__scene, sizeof(class__f__scene), cZ);
     class__f__scene *l = (class__f__scene *)(class_f_array__l__scene.array);
-	int i20;
-	int i25;
-	int i15;
+    jint i20;
+    jint i25;
+    jint i15;
 	for (i15 = 0; i15 < cZ; i15++)
 	{
 		dprintfsi("Get map scene data", i15);
-		int i13 = 0;
+        jint i13 = 0;
 		i1 += 2;
 		l[i15].int__f__aabb = (marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) << 16);
 		i1 += 2;
@@ -683,25 +551,25 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 		l[i15].int__k__aabb = (marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) << 16);
 		dprintfss("Get scene AABB");
 		i1 += 2;
-		int i9 = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
+        jint i9 = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
 		dprintfsi("Scene vertex coord count", i9);
 		i1 += 2;
-		int i8 = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
+        jint i8 = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
 		dprintfsi("Scene primitive count", i8);
 		i1 += 2;
-        int i10 = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
-        new_array(&l[i15].int_array_6__a__vertex, 4, i9 * 6);
-        int *a = (int *)(l[i15].int_array_6__a__vertex.array);
+        jint i10 = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
+        new_array(&l[i15].int_array_6__a__vertex, ESIZE(jint, 4), i9 * 6);
+        jint *a = (jint *)(l[i15].int_array_6__a__vertex.array);
 		l[i15].n = i9;
-        new_array(&l[i15].int_array_10__b__primitive, 4, i8 * 10);
-        int *b = (int *)(l[i15].int_array_10__b__primitive.array);
+        new_array(&l[i15].int_array_10__b__primitive, ESIZE(jint, 4), i8 * 10);
+        jint *b = (jint *)(l[i15].int_array_10__b__primitive.array);
 		l[i15].o = i8;
 		i10 *= 2;
-		int *arrayOfInt2 = NEW_II(int, i8 * 3);
-		int *arrayOfInt1 = NEW_II(int, i10);
+        jint *arrayOfInt2 = NEW_II(jint, i8 * 3);
+        jint *arrayOfInt1 = NEW_II(jint, i10);
 		dprintfsi("Map normal count", i8);
 		dprintfsi("Texcoord count", i10);
-		int i16;
+        jint i16;
 		for (i16 = 0; i16 < i9; i16++)
 		{
 			i1 += 2;
@@ -712,7 +580,7 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 			a[(i16 * 6 + 2)] = (marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) << 16);
 		}
 		dprintfss("Get scene vertex coord");
-		int i17;
+        jint i17;
 		for (i17 = 0; i17 < i8; i17++)
 		{
 			i1 += 2;
@@ -723,22 +591,22 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 			b[(i17 * 10 + 2)] = (marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 6);
 		}
 		dprintfss("Get scene primitive vertex coord index");
-		int i18;
+        jint i18;
 		for (i18 = 0; i18 < i8; i18++)
 		{
 			i1 += 2;
-			arrayOfInt2[(i18 * 3)] = ((int)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L));
+            arrayOfInt2[(i18 * 3)] = ((jint)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L));
 			i1 += 2;
-			arrayOfInt2[(i18 * 3 + 1)] = ((int)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L));
+            arrayOfInt2[(i18 * 3 + 1)] = ((jint)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L));
 			i1 += 2;
-			arrayOfInt2[(i18 * 3 + 2)] = ((int)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L));
+            arrayOfInt2[(i18 * 3 + 2)] = ((jint)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L));
 		}
 		dprintfss("Get map normal");
-		int i12 = 0;
-		int i19;
+        jint i12 = 0;
+        jint i19;
 		for (i19 = 0; i19 < i8; i19++)
 		{
-			int i14 = 1;
+            jint i14 = 1;
 			for (i20 = i19 + 1; i20 < i8; i20++) {
 				if ((arrayOfInt2[(i19 * 3)] == arrayOfInt2[(i20 * 3)]) && (arrayOfInt2[(i19 * 3 + 1)] == arrayOfInt2[(i20 * 3 + 1)]) && (arrayOfInt2[(i19 * 3 + 2)] == arrayOfInt2[(i20 * 3 + 2)]))
 				{
@@ -754,10 +622,10 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 			}
 		}
         dprintfsi("Scene plane count", i12);
-        new_array(&l[i15].int_array_6__l__plane, 4, i12 * 6);
-        int *sub_l = (int *)(l[i15].int_array_6__l__plane.array);
+        new_array(&l[i15].int_array_6__l__plane, ESIZE(jint, 4), i12 * 6);
+        jint *sub_l = (jint *)(l[i15].int_array_6__l__plane.array);
 		l[i15].m = (i12 * 6 - 6);
-		int i20;
+        jint i20;
 		for (i20 = 0; i20 < i8; i20++) {
 			if ((arrayOfInt2[(i20 * 3)] != 0) || (arrayOfInt2[(i20 * 3 + 1)] != 0) || (arrayOfInt2[(i20 * 3 + 2)] != 0))
 			{
@@ -774,44 +642,44 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 		// ??? + >>
 		l[i15].c = ((l[i15].int__f__aabb + l[i15].int__i__aabb) >> 1);
 		l[i15].d = ((l[i15].int__g__aabb + l[i15].int__j__aabb) >> 1);
-        int *arrayOfInt3 = (int *)(l[i15].int_array_6__l__plane.array);
-		int i25;
+        jint *arrayOfInt3 = (jint *)(l[i15].int_array_6__l__plane.array);
+        jint i25;
 		for (i25 = l[i15].m; i25 >= 0; i25 -= 6)
 		{
-			long l1;
+            jlong l1; //!! long !!
 			if ((l1 = (arrayOfInt3[(i25 + 3)] * (l[i15].c - arrayOfInt3[i25]) + arrayOfInt3[(i25 + 4)] * (l[i15].d - arrayOfInt3[(i25 + 1)])) >> 16) < 8192000L)
 			{
-				long l2 = 8192000L - l1;
+                jlong l2 = 8192000L - l1; //!! long !!
 				class__f__scene *tmp1584_1583 = l + i15;
-				tmp1584_1583->c = ((int)(tmp1584_1583->c + (arrayOfInt3[(i25 + 3)] * l2 >> 16)));
+                tmp1584_1583->c = ((jint)(tmp1584_1583->c + (arrayOfInt3[(i25 + 3)] * l2 >> 16)));
 				class__f__scene *tmp1614_1613 = l + i15;
-				tmp1614_1613->d = ((int)(tmp1614_1613->d + (arrayOfInt3[(i25 + 4)] * l2 >> 16)));
+                tmp1614_1613->d = ((jint)(tmp1614_1613->d + (arrayOfInt3[(i25 + 4)] * l2 >> 16)));
 			}
 		}
-		int i26;
+        jint i26;
 		for (i26 = 0; i26 < i10; i26 += 2)
 		{
 			i1 += 2;
-			arrayOfInt1[i26] = ((int)(64 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 100L));
+            arrayOfInt1[i26] = ((jint)(64 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 100L));
 			i1 += 2;
-			arrayOfInt1[(i26 + 1)] = ((int)(64 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 100L));
+            arrayOfInt1[(i26 + 1)] = ((jint)(64 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 100L));
 		}
 		dprintfss("Get map texcoord");
-		int i27;
+        jint i27;
 		for (i27 = 0; i27 < i8; i27++)
 		{
 			i1 += 2;
-			b[(i27 * 10 + 3)] = ((short)arrayOfInt1[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2)]);
-			b[(i27 * 10 + 4)] = ((short)arrayOfInt1[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2 + 1)]);
+            b[(i27 * 10 + 3)] = ((jshort)arrayOfInt1[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2)]);
+            b[(i27 * 10 + 4)] = ((jshort)arrayOfInt1[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2 + 1)]);
 			i1 += 2;
-			b[(i27 * 10 + 5)] = ((short)arrayOfInt1[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2)]);
-			b[(i27 * 10 + 6)] = ((short)arrayOfInt1[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2 + 1)]);
+            b[(i27 * 10 + 5)] = ((jshort)arrayOfInt1[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2)]);
+            b[(i27 * 10 + 6)] = ((jshort)arrayOfInt1[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2 + 1)]);
 			i1 += 2;
-			b[(i27 * 10 + 7)] = ((short)arrayOfInt1[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2)]);
-			b[(i27 * 10 + 8)] = ((short)arrayOfInt1[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2 + 1)]);
+            b[(i27 * 10 + 7)] = ((jshort)arrayOfInt1[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2)]);
+            b[(i27 * 10 + 8)] = ((jshort)arrayOfInt1[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2 + 1)]);
 		}
 		dprintfss("Get scene texcoord");
-		int i28;
+        jint i28;
 		for (i28 = 0; i28 < i8; i28++)
 		{
 			i1 += 2;
@@ -823,19 +691,19 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 		free(arrayOfInt1);
 	}
 	i1 += 2;
-	int i11;
+    jint i11;
 	i11 = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
     array class_b_array__j__bsp;
     new_array(&class_b_array__j__bsp, sizeof(class__b__bsp), i11);
     class__b__bsp *j = (class__b__bsp *)(class_b_array__j__bsp.array);
-	int i2;
-	int i3;
-	int i4;
-	int i17;
+    jint i2;
+    jint i3;
+    jint i4;
+    jint i17;
 	dprintfsi("Map BSP tree node count", i11);
 	for (i17 = 0; i17 < i11; i17++)
 	{
-		int i18;
+        jint i18;
 		for (i18 = 0; i18 < 4; i18++)
 		{
 			i1 += 2;
@@ -846,11 +714,11 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 			j[i17].int_array_4x3__b__plane[i18][2] = (marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) << 16);
 		}
 		i1 += 2;
-		i2 = (int)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L);
+        i2 = (jint)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L);
 		i1 += 2;
-		i3 = (int)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L);
+        i3 = (jint)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L);
 		i1 += 2;
-		i4 = (int)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L);
+        i4 = (jint)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L);
 		i1 += 2;
 		j[i17].int__c__prev_scene = (marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) - 1);
 		i1 += 2;
@@ -869,7 +737,7 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 			j[i17].byte__a__direction = 3;
 		}
 	}
-	int i18;
+    jint i18;
 	for (i18 = 0; i18 < i11; i18++)
 	{
 		if (j[i18].int__c__prev_scene < 999)
@@ -891,9 +759,9 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
     array class_g_array__h__item;
     new_array(&class_g_array__h__item, sizeof(class__g__item), cA + 1);
     class__g__item *h = (class__g__item *)(class_g_array__h__item.array);
-	int i21 = 0;
-	int i24;
-	int i22;
+    jint i21 = 0;
+    jint i24;
+    jint i22;
 	for (i22 = 0; i22 < cZ; i22++)
 	{
 		i1 += 2;
@@ -901,10 +769,10 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 		dprintfsii("Scene item count", i22, i20);
 		l[i22].int__r__begin = i21;
 		l[i22].int__e__end = (i21 + i20);
-		int i23;
+        jint i23;
 		for (i23 = 0; i23 < i20; i23++)
 		{
-			h[i21].r = ((short)i22);
+            h[i21].r = ((jshort)i22);
 			i1 += 2;
 			h[i21].int__m__translation = (marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) << 16);
 			i1 += 2;
@@ -939,12 +807,12 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 			h[i21].byte__s__obj = ((byte)marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]));
 			//bS[h[i21].s] = true;
 			i1 += 2;
-			h[i21].d = ((short)(byte)marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]));
+            h[i21].d = ((jshort)(byte)marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]));
 			if (h[i21].d != 0)
 			{
-				h[i21].c = NEW_II(int *, h[i21].d);
+                h[i21].c = NEW_II(jint *, h[i21].d);
 				for (i24 = 0; i24 < h[i21].d; i24++) {
-					h[i21].c[i24] = NEW_II(int, 4);
+                    h[i21].c[i24] = NEW_II(jint, 4);
 				}
 				for (i25 = 0; i25 < h[i21].d; i25++)
 				{
@@ -957,18 +825,18 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 					i1 += 2;
 					h[i21].c[i25][3] = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
 				}
-				int i26;
+                jint i26;
 				for (i26 = 0; i26 < h[i21].d - 1; i26++)
 				{
-					int i6;
+                    jint i6;
 					if ((i6 = h[i21].c[(i26 + 1)][3] - h[i21].c[i26][3]) > 1)
 					{
 						i2 = h[i21].c[i26][0];
 						i3 = h[i21].c[i26][1];
 						i4 = h[i21].c[i26][2];
-						int i5 = h[i21].c[i26][3];
+                        jint i5 = h[i21].c[i26][3];
 						free(h[i21].c[i26]);
-						h[i21].c[i26] = NEW_II(int, 7);
+                        h[i21].c[i26] = NEW_II(jint, 7);
 						h[i21].c[i26][0] = i2;
 						h[i21].c[i26][1] = i3;
 						h[i21].c[i26][2] = i4;
@@ -978,6 +846,7 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 						h[i21].c[i26][6] = ((h[i21].c[(i26 + 1)][2] - h[i21].c[i26][2]) / i6);
 					}
 				}
+                // free unused
 				for (i24 = 0; i24 < h[i21].d; i24++) {
 					free(h[i21].c[i24]);
 				}
@@ -986,14 +855,14 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 			i21++;
 		}
 	}
-    read_CT3D_map_items(&class_g_array__h__item);
+    read_CT3D_map_items(&class_g_array__h__item, resc_path);
 
 	i1 += 2;
 #if UNPARSED
 	dR = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) + 1;
 	al = new byte[dR];
 	n = new j[dR];
-	for (int i23 = 0; i23 < dR; i23++) {
+    for (jint i23 = 0; i23 < dR; i23++) {
 		n[i23] = new j(null);
 	}
 	i21 = 1;
@@ -1001,12 +870,12 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 	n[0].q = dg[1];
 	n[0].r = dg[2];
 #endif
-	int i26;
+    jint i26;
 	for (i26 = 0; i26 < cZ; i26++)
 	{
 		i1 += 2;
 		i24 = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
-		int i27;
+        jint i27;
 		for (i27 = 0; i27 < i24; i27++)
 		{
 			i1 += 2;
@@ -1031,13 +900,13 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 			{
 				dK = (byte)(dK + 1);
 			}
-			n[i21].t = ((short)i26);
+            n[i21].t = ((jshort)i26);
 			i21++;
 #endif
 		}
 	}
 #if UNPARSED
-	for (int i27 = dR - 1; i27 >= 0; i27--)
+    for (jint i27 = dR - 1; i27 >= 0; i27--)
 	{
 		f(n[i27]);
 		if (i27 == 0)
@@ -1050,7 +919,7 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 			c(n[i27], 10, 0, 0, 1);
 		}
 	}
-	n[0].t = ((short)cY);
+    n[0].t = ((jshort)cY);
 #endif
 
     class__h__lvl lv;
@@ -1068,7 +937,7 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[])
 
 void class_h__function_S_void__item(class__g__item *h, const byte arrayOfByte[])
 {
-	int i1 = -2;
+    jint i1 = -2;
 	i1 += 2;
 	h->int__f__aabb = (marge_digit(arrayOfByte[0], arrayOfByte[1]) << 16);
 	i1 += 2;
@@ -1081,12 +950,12 @@ void class_h__function_S_void__item(class__g__item *h, const byte arrayOfByte[])
 	h->int__j__aabb = (marge_digit(arrayOfByte[8], arrayOfByte[9]) << 16);
 	i1 += 2;
 	h->int__k__aabb = (marge_digit(arrayOfByte[10], arrayOfByte[11]) << 16);
-	int i2 = h->int__f__aabb >> 16;
-	int i3 = h->int__g__aabb >> 16;
-	int i4 = h->int__h__aabb >> 16;
-	int i5 = i2 * i2 + i3 * i3 + i4 * i4;
-	int i6 = 65536;
-	int i7 = 0;
+    jint i2 = h->int__f__aabb >> 16;
+    jint i3 = h->int__g__aabb >> 16;
+    jint i4 = h->int__h__aabb >> 16;
+    jint i5 = i2 * i2 + i3 * i3 + i4 * i4;
+    jint i6 = 65536;
+    jint i7 = 0;
 	while (i6 >>= 1 > 0) {
 		if ((i7 + i6) * (i7 + i6) <= i5) {
 			i7 += i6;
@@ -1099,19 +968,19 @@ void class_h__function_S_void__item(class__g__item *h, const byte arrayOfByte[])
 	i1 += 2;
 	i1 += 2;
 	i1 += 2;
-	int i9 = marge_digit(arrayOfByte[20], arrayOfByte[21]);
+    jint i9 = marge_digit(arrayOfByte[20], arrayOfByte[21]);
 	i1 += 2;
-	int i8 = marge_digit(arrayOfByte[22], arrayOfByte[23]);
+    jint i8 = marge_digit(arrayOfByte[22], arrayOfByte[23]);
 	i1 += 2;
-	int i10 = marge_digit(arrayOfByte[24], arrayOfByte[25]);
+    jint i10 = marge_digit(arrayOfByte[24], arrayOfByte[25]);
     //h->k = i9;
-    new_array(&h->int_array_6__a__vertex, 4, i9 * 6);
-    new_array(&h->int_array_16__b__primitive, 4, i8 * 16);
-    int *a = (int *)(h->int_array_6__a__vertex.array);
-    int *b = (int *)(h->int_array_16__b__primitive.array);
+    new_array(&h->int_array_6__a__vertex, ESIZE(jint, 4), i9 * 6);
+    new_array(&h->int_array_16__b__primitive, ESIZE(jint, 4), i8 * 16);
+    jint *a = (jint *)(h->int_array_6__a__vertex.array);
+    jint *b = (jint *)(h->int_array_16__b__primitive.array);
 	i10 *= 2;
-	int *arrayOfInt = NEW_II(int, i10);
-	int i12;
+    jint *arrayOfInt = NEW_II(jint, i10);
+    jint i12;
 	for (i12 = 0; i12 < i9; i12++)
 	{
 		i1 += 2;
@@ -1121,7 +990,7 @@ void class_h__function_S_void__item(class__g__item *h, const byte arrayOfByte[])
 		i1 += 2;
 		a[(i12 * 6 + 2)] = (marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) << 16);
 	}
-	int i13;
+    jint i13;
 	for (i13 = 0; i13 < i8; i13++)
 	{
 		i1 += 2;
@@ -1131,38 +1000,38 @@ void class_h__function_S_void__item(class__g__item *h, const byte arrayOfByte[])
 		i1 += 2;
 		b[(i13 * 16 + 2)] = (marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 6);
 	}
-	int i14;
+    jint i14;
 	for (i14 = 0; i14 < i8; i14++)
 	{
 		i1 += 2;
-		b[(i14 * 16 + 10)] = ((int)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L));
+        b[(i14 * 16 + 10)] = ((jint)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L));
 		i1 += 2;
-		b[(i14 * 16 + 11)] = ((int)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L));
+        b[(i14 * 16 + 11)] = ((jint)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L));
 		i1 += 2;
-		b[(i14 * 16 + 12)] = ((int)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L));
+        b[(i14 * 16 + 12)] = ((jint)(65536 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 10000L));
 	}
-	int i15;
+    jint i15;
 	for (i15 = 0; i15 < i10; i15 += 2)
 	{
 		i1 += 2;
-		arrayOfInt[i15] = ((int)(64 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 100L));
+        arrayOfInt[i15] = ((jint)(64 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 100L));
 		i1 += 2;
-		arrayOfInt[(i15 + 1)] = ((int)(64 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 100L));
+        arrayOfInt[(i15 + 1)] = ((jint)(64 * marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) / 100L));
 	}
-	int i16;
+    jint i16;
 	for (i16 = 0; i16 < i8; i16++)
 	{
 		i1 += 2;
-		b[(i16 * 16 + 3)] = ((short)arrayOfInt[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2)]);
-		b[(i16 * 16 + 4)] = ((short)arrayOfInt[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2 + 1)]);
+        b[(i16 * 16 + 3)] = ((jshort)arrayOfInt[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2)]);
+        b[(i16 * 16 + 4)] = ((jshort)arrayOfInt[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2 + 1)]);
 		i1 += 2;
-		b[(i16 * 16 + 5)] = ((short)arrayOfInt[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2)]);
-		b[(i16 * 16 + 6)] = ((short)arrayOfInt[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2 + 1)]);
+        b[(i16 * 16 + 5)] = ((jshort)arrayOfInt[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2)]);
+        b[(i16 * 16 + 6)] = ((jshort)arrayOfInt[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2 + 1)]);
 		i1 += 2;
-		b[(i16 * 16 + 7)] = ((short)arrayOfInt[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2)]);
-		b[(i16 * 16 + 8)] = ((short)arrayOfInt[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2 + 1)]);
+        b[(i16 * 16 + 7)] = ((jshort)arrayOfInt[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2)]);
+        b[(i16 * 16 + 8)] = ((jshort)arrayOfInt[(marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]) * 2 + 1)]);
 	}
-	int i17;
+    jint i17;
 	for (i17 = 0; i17 < i8; i17++)
 	{
 		i1 += 2;

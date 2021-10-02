@@ -1,7 +1,8 @@
 #include "netlizard.h"
 
 #include "priv_local.h"
-char * nlHandlePNG_File2Memory(const char *name, NLint *rlen)
+
+char * nlReadAndHandlePNGFile(const char *name, NLint *rlen)
 {
     array arr;
     jlong len;
@@ -13,19 +14,19 @@ char * nlHandlePNG_File2Memory(const char *name, NLint *rlen)
 
     if(rlen)
         *rlen = array_size(&arr);
-    data = nlHandlePNG_Memory2Memory(arr.array, array_size(&arr));
+    data = nlLoadAndHandlePNGData(arr.array, array_size(&arr));
     delete_array(&arr);
 
     return data;
 }
 
-char * nlHandlePNG_Memory2Memory(const char *arr, NLint len)
+char * nlLoadAndHandlePNGData(const char *arr, NLint len)
 {
-    if(nlIsPNG(arr))
+    if(nlIsPNG(arr, len))
     {
         nlprintf("Encode NETLizard 2D image PNG\n");
     }
-    else if(nlIsNLPNG(arr))
+    else if(nlIsNLPNG(arr, len))
     {
         nlprintf("Decode NETLizard 2D image PNG\n");
     }
@@ -39,13 +40,13 @@ char * nlHandlePNG_Memory2Memory(const char *arr, NLint len)
     return nlEncodeDecodeData(arr, res, len);
 }
 
-NLboolean nlHandlePNG_File2File(const char *from, const char *to)
+NLboolean nlConvertAndHandlePNGFile(const char *from, const char *to)
 {
     char *data;
     NLint rlen;
     NLboolean res;
 
-    data = nlHandlePNG_File2Memory(from, &rlen);
+    data = nlReadAndHandlePNGFile(from, &rlen);
     if(!data)
         return NL_FALSE;
 
@@ -58,12 +59,12 @@ NLboolean nlHandlePNG_File2File(const char *from, const char *to)
     return res;
 }
 
-NLboolean nlHandlePNG_Memory2File(const char *in_data, NLint len, const char *to)
+NLboolean nlSaveAndHandlePNGData(const char *in_data, NLint len, const char *to)
 {
     char *data;
     NLboolean res;
 
-    data = nlHandlePNG_Memory2Memory(in_data, len);
+    data = nlLoadAndHandlePNGData(in_data, len);
     if(!data)
         return NL_FALSE;
 

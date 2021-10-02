@@ -13,6 +13,15 @@ int nlReadSpiritMap(const char *file, NETLizard_Spirit **ret)
     if(len <= 0)
         return -1;
 
+    int res = nlLoadSpiritMapData(arr.array, arr.length, ret);
+    delete_array(&arr);
+    return res;
+}
+
+int nlLoadSpiritMapData(const char *data, NLsizei len, NETLizard_Spirit **ret)
+{
+    array arr;
+    make_array(&arr, 1, len, data);
     array qarr = clone3d_class_g__function_M_void__read_spirit_map(&arr);
     len = qarr.length;
     NETLizard_Spirit *spirit = NEW_II(NETLizard_Spirit, len);
@@ -29,7 +38,6 @@ int nlReadSpiritMap(const char *file, NETLizard_Spirit **ret)
         free(q[i]);
     }
     delete_array(&qarr);
-    delete_array(&arr);
 
     *ret = spirit;
     return len;
@@ -39,24 +47,24 @@ array clone3d_class_g__function_M_void__read_spirit_map(const array *arr)
 {
 	byte *arrayOfByte = (byte *)(arr->array);
 	int i1;
-	int i5 = (short)(i1 = (arr->length / 6));
+    int i5 = (jshort)(i1 = (arr->length / 6));
     array rarr;
-    new_array(&rarr, sizeof(short *), i5);
-    short **q = (short **)(rarr.array);
+    new_array(&rarr, sizeof(jshort *), i5);
+    jshort **q = (jshort **)(rarr.array);
 	int i2;
 	for (i2 = 0; i2 < i1; i2++)
 	{
-		q[i2] = NEW_II(short, 6);
+        q[i2] = NEW_II(jshort, 6);
 		int i4 = i2 * 6;
 		int i3;
 		for (i3 = 0; i3 < 6; i3++)
 		{
-			q[i2][i3] = ((short)arrayOfByte[(i4 + i3)]);
+            q[i2][i3] = ((jshort)arrayOfByte[(i4 + i3)]);
 			if (q[i2][i3] < 0)
 			{
 				int tmp76_75 = i3;
-				short *tmp76_74 = q[i2];
-				tmp76_74[tmp76_75] = ((short)(tmp76_74[tmp76_75] + 256));
+                jshort *tmp76_74 = q[i2];
+                tmp76_74[tmp76_75] = ((jshort)(tmp76_74[tmp76_75] + 256));
 			}
 		}
 	}

@@ -3,13 +3,14 @@
 #include "texture.h"
 #include "priv_local.h"
 
-NLuchar * nlMakeOpenGLTextureDataRGBACompress(const NETLizard_Texture *tex, NLsizei *rlen)
+NLuchar * nlMakePixelDataRGBACompress(const NETLizard_Texture *tex, NLint *rlen)
 {
-    int *tex_color = (int *)(tex->color_map.data);
-    signed char *tex_index = (signed char *)/*(byte *)*/(tex->color_index.data);
-    int length = tex->width * tex->height;
-	int *data_p = NEW_II(int, length);
-    int n = tex->color_map.length;
+    int32_t *tex_color = NEW_II(int32_t, tex->color_map.count);
+    memcpy(tex_color, tex->color_map.data, sizeof(int32_t) * tex->color_map.count);
+    const int8_t *tex_index = (const int8_t *)/*(byte *)*/(tex->color_index.data); // signed char
+    const int length = tex->width * tex->height;
+    int32_t *data_p = NEW_II(int32_t, length);
+    int n = tex->color_map.count;
 
 	int m = 255;
 	int i1;
@@ -70,20 +71,8 @@ NLuchar * nlMakeOpenGLTextureDataRGBACompress(const NETLizard_Texture *tex, NLsi
 			i3++;
 		}
     //i3 += 0;//i6;
-	}
-	/*
-	for (i1 = 0; i1 < tex->height; i1++)
-	{
-		printf("===%d===\n", i1);
-		for (n = 0; n < tex->width; n++)
-		{
-			printf("%d-%d  ", n, data_p[i1 * tex->width + n]);
-		}
-		printf("\n");
-	}
-		printf("===%d===\n", tex->height);
-		printf("===%d===\n", tex->width);
-		*/
+    }
+
     NLsizei len = tex->width * tex->height * 4;
     if(rlen)
         *rlen = len;
@@ -101,21 +90,22 @@ NLuchar * nlMakeOpenGLTextureDataRGBACompress(const NETLizard_Texture *tex, NLsi
 			data[ii * 4 + 3] = (byte)(0xff);
 	}
 	free(data_p);
+    free(tex_color);
 
 	return data;
 }
 
-NLuchar * nlMakeOpenGLTextureDataRGB(const NETLizard_Texture *tex, NLsizei *rlen)
+NLuchar * nlMakePixelDataRGB(const NETLizard_Texture *tex, NLint *rlen)
 {
     int len = tex->width * tex->height * 3;
     NLuchar *data = NEW_II(NLuchar, len);
-    int length = tex->width * tex->height;
+    const int length = tex->width * tex->height;
 
 	int i;
 	for(i = 0; i < length; i++)
 	{
         byte index = ((byte *)(tex->color_index.data))[i];
-        unsigned int color = ((unsigned int *)(tex->color_map.data))[(int)index];
+        uint32_t color = ((uint32_t *)(tex->color_map.data))[(int)index];
 		/*
 		data[i * 3] = (byte)(color << 8 >> 24);
 		data[i * 3 + 1] = (byte)(color << 16 >> 24);
@@ -133,19 +123,19 @@ NLuchar * nlMakeOpenGLTextureDataRGB(const NETLizard_Texture *tex, NLsizei *rlen
 	return data;
 }
 
-NLuchar * nlMakeOpenGLTextureDataRGBA(const NETLizard_Texture *tex, NLsizei *rlen)
+NLuchar * nlMakePixelDataRGBA(const NETLizard_Texture *tex, NLint *rlen)
 {
 #if 1
-    return nlMakeOpenGLTextureDataRGBACompress(tex, rlen);
+    return nlMakePixelDataRGBACompress(tex, rlen);
 #else
     int len = tex->width * tex->height * 4;
-    unsigned char *data = NEW_II(char, int);
+    uint8_t *data = NEW_II(uint8_t, int); // unsigned char
     int length = tex->width * tex->height;
 	int i;
 	for(i = 0; i < length; i++)
 	{
         byte index = ((byte *)(tex->color_index.data))[i];
-        unsigned int color = ((unsigned int *)(tex->color_map.data))[(int)index];
+        uint32_t color = ((uint32_t *)(tex->color_map.data))[(int)index];
 		data[i * 4] = (byte)((color & 0x00ff0000) >> 16);
 		data[i * 4 + 1] = (byte)((color & 0x0000ff00) >> 8);
 		data[i * 4 + 2] = (byte)(color & 0x000000ff);
@@ -166,9 +156,9 @@ NLuchar * nlMakeOpenGLTextureDataRGBA(const NETLizard_Texture *tex, NLsizei *rle
 #endif
 }
 
-NLuchar * nlMakeOpenGLTextureData(const NETLizard_Texture *tex, NLsizei *rlen)
+NLuchar * nlMakePixelData(const NETLizard_Texture *tex, NLint *rlen)
 {
-    return tex->format == NL_RGB ? nlMakeOpenGLTextureDataRGB(tex, rlen) : nlMakeOpenGLTextureDataRGBA(tex, rlen);
+    return tex->format == NL_RGB ? nlMakePixelDataRGB(tex, rlen) : nlMakePixelDataRGBA(tex, rlen);
 }
 
 void delete_NETLizard_Texture(NETLizard_Texture *tex)
@@ -177,12 +167,12 @@ void delete_NETLizard_Texture(NETLizard_Texture *tex)
     {
         free(tex->color_index.data);
 	}
-    tex->color_index.length = 0;
+    tex->color_index.count = 0;
     if(tex->color_map.data)
     {
         free(tex->color_map.data);
 	}
-    tex->color_map.length = 0;
+    tex->color_map.count = 0;
 }
 
 /*

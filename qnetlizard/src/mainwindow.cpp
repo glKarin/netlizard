@@ -1,0 +1,127 @@
+#include "mainwindow.h"
+
+#include <QDebug>
+#include <QCoreApplication>
+#include <QMessageBox>
+
+#include <QMenuBar>
+
+#include "imageviewer.h"
+#include "textviewer.h"
+#include "stringviewer.h"
+#include "mapviewer.h"
+#include "fontviewer.h"
+#include "itemviewer.h"
+#include "qdef.h"
+
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent)
+{
+    setObjectName("MainWindow");
+    Init();
+}
+
+MainWindow::~MainWindow()
+{
+    DEBUG_DESTROY_Q;
+}
+
+void MainWindow::Init()
+{
+    QMenuBar *menuBar;
+    QMenu *menu;
+    QAction *menuItem;
+
+    menuBar = new QMenuBar(this);
+
+    menu = menuBar->addMenu("&Viewer");
+    menuItem = menu->addAction("&Text viewer");
+    menuItem->setData("text_viewer");
+    menuItem = menu->addAction("&String viewer");
+    menuItem->setData("string_viewer");
+    menuItem = menu->addAction("&Image viewer");
+    menuItem->setData("image_viewer");
+    menuItem = menu->addAction("&Font viewer");
+    menuItem->setData("font_viewer");
+
+    menu = menuBar->addMenu("&3D");
+    menuItem = menu->addAction("&Map viewer");
+    menuItem->setData("map_viewer");
+    menuItem = menu->addAction("&Item viewer");
+    menuItem->setData("item_viewer");
+    menuItem = menu->addAction("&Character animation viewer");
+    menuItem->setData("character_animation_viewer");
+    menuItem = menu->addAction("&Sprite viewer");
+    menuItem->setData("sprite_viewer");
+
+    menu = menuBar->addMenu("&View");
+    menuItem = menu->addAction("&Close");
+    menuItem->setData("close_viewer");
+
+    menu = menuBar->addMenu("&Other");
+    menuItem = menu->addAction("&About");
+    menuItem->setData("about");
+    menuItem = menu->addAction("&Help");
+    menuItem->setData("help");
+
+    menuItem = menuBar->addAction("&Exit");
+    menuItem->setData("exit");
+
+    connect(menuBar, SIGNAL(triggered(QAction *)), this, SLOT(MenuActionSlot(QAction *)));
+
+    setMenuBar(menuBar);
+    resize(480, 360);
+    setWindowTitle(qApp->applicationName());
+    //resize(640, 480);
+}
+
+void MainWindow::MenuActionSlot(QAction *action)
+{
+    QString type = action->data().toString();
+
+    if(type == "exit")
+        qApp->quit();
+    else if(type == "help")
+        ;
+    else if(type == "about")
+        QMessageBox::information(this, "About QNETLizard", "QNETLizard is a tools for libnetlizard.\n"
+                                 "libnetlizard is a tools of NETLizard J2ME game resource.\n");
+    else
+    {
+        BaseViewer *viewer = GenViewer(type);
+        setCentralWidget(viewer);
+    }
+}
+
+BaseViewer * MainWindow::GenViewer(const QString &type)
+{
+    BaseViewer *viewer = 0;
+    if(type == "text_viewer")
+        viewer = new TextViewer;
+    else if(type == "string_viewer")
+        viewer = new StringViewer;
+    else if(type == "image_viewer")
+        viewer = new ImageViewer;
+    else if(type == "font_viewer")
+        viewer = new FontViewer;
+
+    else if(type == "map_viewer")
+        viewer = new MapViewer;
+    else if(type == "item_viewer")
+        viewer = new ItemViewer;
+    else if(type == "character_animation_viewer")
+        ;
+    else if(type == "sprite_viewer")
+        ;
+    if(viewer)
+    {
+        setCentralWidget(viewer);
+        connect(viewer, SIGNAL(titleChanged(const QString &)), this, SLOT(setWindowTitle(const QString &)));
+        setWindowTitle(viewer->Title());
+    }
+    else
+    {
+        setWindowTitle(qApp->applicationName());
+    }
+    return viewer;
+}

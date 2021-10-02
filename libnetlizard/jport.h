@@ -31,8 +31,10 @@ struct array_s
 };
 
 typedef struct array_s array;
+typedef struct array_s jarray;
 
 typedef struct array_s strings;
+typedef struct array_s jstring;
 
 void delete_array(array *arr);
 void zero_array(array *arr);

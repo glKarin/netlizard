@@ -7,7 +7,7 @@
 static array class_p__function_a_1string_2char__text_w(const array *arr, wchar_t paramChar); // wchar_t
 static array class_p__function_a_1string_2char__text(const array *arr, wchar_t paramChar); // char
 
-char * nlHandleText_File2Memory(const char *name, NLint *rlen)
+char * nlReadAndHandleTextFile(const char *name, NLint *rlen)
 {
     array arr;
     jlong len;
@@ -17,13 +17,13 @@ char * nlHandleText_File2Memory(const char *name, NLint *rlen)
     if(len <= 0)
 		return NULL;
 
-    data = nlHandleText_Memory2Memory(arr.array, array_size(&arr), rlen);
+    data = nlLoadAndHandleTextData(arr.array, array_size(&arr), rlen);
     delete_array(&arr);
 
 	return data;
 }
 
-char * nlHandleText_Memory2Memory(const char *data, NLint len, NLint *rlen)
+char * nlLoadAndHandleTextData(const char *data, NLsizei len, NLint *rlen)
 {
 	//return nlEncodeDecodeData(arr);
     array arr;
@@ -35,13 +35,13 @@ char * nlHandleText_Memory2Memory(const char *data, NLint len, NLint *rlen)
     return (char *)res.array;
 }
 
-NLboolean nlHandleText_File2File(const char *from, const char *to)
+NLboolean nlConvertAndHandleTextFile(const char *from, const char *to)
 {
     char *data;
     NLint rlen;
     NLboolean res;
 
-    data = nlHandleText_File2Memory(from, &rlen);
+    data = nlReadAndHandleTextFile(from, &rlen);
     if(!data)
         return NL_FALSE;
 
@@ -54,13 +54,13 @@ NLboolean nlHandleText_File2File(const char *from, const char *to)
     return res;
 }
 
-NLboolean nlHandleText_Memory2File(const char *in_data, NLint len, const char *to)
+NLboolean nlSaveAndHandleTextData(const char *in_data, NLsizei len, const char *to)
 {
     NLint rlen;
     char *data;
     NLboolean res;
 
-    data = nlHandleText_Memory2Memory(in_data, len, &rlen);
+    data = nlLoadAndHandleTextData(in_data, len, &rlen);
     if(!data)
         return NL_FALSE;
 
@@ -76,26 +76,26 @@ NLboolean nlHandleText_Memory2File(const char *in_data, NLint len, const char *t
 array class_p__function_a_1string_2char__text_w(const array *arr, wchar_t paramChar)
 {
     int length = array_size(arr);
-	signed char *o = (signed char *)(arr->array);
+    int8_t *o = (int8_t *)(arr->array); // signed char
     array data;
     memset(&data, 0, sizeof(array));
-	signed char *paramString = NULL;
+    int8_t *paramString = NULL;
 	if ((length > 1) && (o[0] == 59) && (o[1] == 67)) {
         new_array(&data, arr->size, arr->length);
         nlEncodeDecodeData(arr->array, data.array, length);
         length = array_size(&data);
-        paramString = (signed char *)(data.array);
+        paramString = (int8_t *)(data.array);
 	}
     else if ((length > 1) && (o[0] == -101) && (o[1] == -101)) {
         new_array(&data, arr->size, arr->length);
         nlEncodeDecodeData(arr->array, data.array, length);
         length = array_size(&data);
-        paramString = (signed char *)(data.array);
+        paramString = (int8_t *)(data.array);
 	}
 	else
 	{
         length = array_size(arr);
-        paramString = (signed char *)(arr->array);
+        paramString = (int8_t *)(arr->array);
 	}
 	wchar_t c1 = '\000';
 	if ((length > 0) && (paramString[0] == 95)) {

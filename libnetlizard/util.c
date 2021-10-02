@@ -2,12 +2,12 @@
 
 #include "priv_local.h"
 
-float int_bits_to_float(int i)
+jfloat int_bits_to_float(jint i)
 {
 	union bit
 	{
-		int i;
-		float f;
+        jint i;
+        jfloat f;
 	} u;
 	memset(&u, 0, sizeof(union bit));
 	u.i = i;
@@ -18,7 +18,7 @@ float int_bits_to_float(int i)
 // ct3d h.a(int, int)
 // clone3d h.b(int, int)
 // egypt3d f.a(int, int);
-int marge_digit(int paramInt1, int paramInt2)
+jint marge_digit(jint paramInt1, jint paramInt2)
 {
 	if (paramInt1 < 0) {
 		paramInt1 += 256;
@@ -29,11 +29,11 @@ int marge_digit(int paramInt1, int paramInt2)
 	return paramInt1 + (paramInt2 << 8); // * 256
 }
 
-int sqrt_box(int x, int y, int z)
+jint sqrt_box(jint x, jint y, jint z)
 {
-	int i2 = x * x + y * y + z * z;
-	int i3 = 65536;
-	int i5 = 0;
+    jint i2 = x * x + y * y + z * z;
+    jint i3 = 65536;
+    jint i5 = 0;
 	while (i3 >>= 1 > 0) {
 		if ((i5 + i3) * (i5 + i3) <= i2) {
 			i5 += i3;

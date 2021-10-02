@@ -12,7 +12,7 @@ static array class_h__function_b_1byte_array__color_map(const byte paramArrayOfB
 static array class_h__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(const array *data, int paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int *width, int *height);
 static void class_h__function_a_1byte_array__swap(byte paramArrayOfByte[]);
 
-NLboolean nlReadTextureV2_File(const char *name, NETLizard_Texture *tex)
+NLboolean nlReadTextureV2File(const char *name, NETLizard_Texture *tex)
 {
     array arr;
     int len;
@@ -20,14 +20,14 @@ NLboolean nlReadTextureV2_File(const char *name, NETLizard_Texture *tex)
     len = file_get_contents(name, &arr);
     if(len <= 0)
         return NL_FALSE;
-    NLboolean res = nlReadTextureV2_Memory(arr.array, arr.length, tex);
+    NLboolean res = nlLoadTextureV2Data(arr.array, arr.length, tex);
     delete_array(&arr);
     return res;
 }
 
-NLboolean nlReadTextureV2_Memory(const char *data, NLsizei length, NETLizard_Texture *tex)
+NLboolean nlLoadTextureV2Data(const char *data, NLsizei length, NETLizard_Texture *tex)
 {
-    if(!nlIsNL3DV2Texture(data))
+    if(!nlIsNL3DTextureV2(data, length))
     {
         nlprintf("Not NETLizard 3D texture v2\n");
         return NL_FALSE;
@@ -37,32 +37,35 @@ NLboolean nlReadTextureV2_Memory(const char *data, NLsizei length, NETLizard_Tex
 
     array arr = class_h__function_b_1byte_array__color_map((const byte *)data, &tex->format);
     tex->color_map.data = (NLint *)arr.array;
-    tex->color_map.length = arr.length;
+    tex->color_map.count = arr.length;
 
     array data_arr;
     make_array(&data_arr, 1, length, data);
     arr = class_h__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(&data_arr, 0, 0, 0, 0, 0, &tex->width, &tex->height);
     tex->color_index.data = (NLuchar *)arr.array;
-    tex->color_index.length = arr.length;
+    tex->color_index.count = arr.length;
+    tex->type = NL_TEXTURE_3D_ENGINE_V2;
     //class_h__function_a_1byte_array__swap((byte *)(tex->color_index));
 
     return NL_TRUE;
 }
 
-NLboolean nlSaveImage_V2File(const char *from, const char *to, int img_type)
+NLboolean nlConvertTextureV2FileToImageFile(const char *from, const char *to, int img_type)
 {
     NETLizard_Texture tex;
-    NLboolean res = nlReadTextureV2_File(from, &tex);
+    NLboolean res = nlReadTextureV2File(from, &tex);
     if(!res)
         return NL_FALSE;
-    res = nlSaveImage_V2Memory(&tex, to, img_type);
+    res = nlSaveTextureV2DataToImageFile(&tex, to, img_type);
     delete_NETLizard_Texture(&tex);
 	return res;
 }
 
-NLboolean nlSaveImage_V2Memory(const NETLizard_Texture *tex, const char *to, int img_type)
+NLboolean nlSaveTextureV2DataToImageFile(const NETLizard_Texture *tex, const char *to, int img_type)
 {
-    NLuchar *data = nlMakeOpenGLTextureDataRGBA(tex, NULL);
+    if(tex->type != NL_TEXTURE_3D_ENGINE_V2)
+        return NL_FALSE;
+    NLuchar *data = nlMakePixelDataRGBA(tex, NULL);
     if(!data)
         return NL_FALSE;
     int channel = tex->format != NL_RGB ? SOIL_LOAD_RGBA : SOIL_LOAD_RGBA;
@@ -71,7 +74,7 @@ NLboolean nlSaveImage_V2Memory(const NETLizard_Texture *tex, const char *to, int
     return res;
 }
 
-NLboolean nlSaveTextureV2_Memory(const NLuchar *data,  int width, int height, NETLizard_Texture_format format, const char *to)
+NLboolean nlSavePixelDataToTextureV2File(const NLuchar *data,  int width, int height, NETLizard_Texture_format format, const char *to)
 {
     FILE *file;
 
@@ -85,21 +88,21 @@ NLboolean nlSaveTextureV2_Memory(const NLuchar *data,  int width, int height, NE
 	if(index_len > max_index_count)
 		index_len = max_index_count;
 	byte *index = NEW_II(byte, index_len);
-	unsigned int *map = NULL;
+    uint32_t *map = NULL;
 	int len = 0;
 	int over = 0;
 	int i;
 	for(i = 0; i < index_len; i++)
 	{
-		unsigned color;
+        uint32_t color;
 		if(format != NL_RGB)
-			color = 0xff000000 + (((unsigned int)data[i * 4]) << 16) + (((unsigned int)data[i * 4 + 1]) << 8) + ((unsigned int)data[i * 4 + 2]);
-		//color = (((unsigned int)data[i * 4 + 3]) << 24) + (((unsigned int)data[i * 4]) << 16) + (((unsigned int)data[i * 4 + 1]) << 8) + ((unsigned int)data[i * 4 + 2]);
+            color = 0xff000000 + (((uint32_t)data[i * 4]) << 16) + (((uint32_t)data[i * 4 + 1]) << 8) + ((uint32_t)data[i * 4 + 2]);
+        //color = (((uint32_t)data[i * 4 + 3]) << 24) + (((uint32_t)data[i * 4]) << 16) + (((uint32_t)data[i * 4 + 1]) << 8) + ((uint32_t)data[i * 4 + 2]);
 		else
-			color = (((unsigned int)data[i * 3]) << 16) + (((unsigned int)data[i * 3 + 1]) << 8) + ((unsigned int)data[i * 3 + 2]);
+            color = (((uint32_t)data[i * 3]) << 16) + (((uint32_t)data[i * 3 + 1]) << 8) + ((uint32_t)data[i * 3 + 2]);
 		if(!map)
 		{
-			map = NEW_II(unsigned int, len + 1);
+            map = NEW_II(uint32_t, len + 1);
 			map[len] = color;
 			len++;
 		}
@@ -122,8 +125,8 @@ NLboolean nlSaveTextureV2_Memory(const NLuchar *data,  int width, int height, NE
 					over = 1;
 					break;
 				}
-				unsigned int *tmp = NEW_II(unsigned int, len + 1);
-				memcpy(tmp, map, sizeof(unsigned int) * len);
+                uint32_t *tmp = NEW_II(uint32_t, len + 1);
+                memcpy(tmp, map, sizeof(uint32_t) * len);
 				tmp[len] = color;
 				free(map);
 				map = tmp;
@@ -143,12 +146,12 @@ NLboolean nlSaveTextureV2_Memory(const NLuchar *data,  int width, int height, NE
 
 	for(i = 0; i < index_len; i++)
 	{
-		unsigned int color;
+        uint32_t color;
 		if(format != NL_RGB)
-			color = 0xff000000 + (((unsigned int)data[i * 4]) << 16) + (((unsigned int)data[i * 4 + 1]) << 8) + ((unsigned int)data[i * 4 + 2]);
-		//color = (((unsigned int)data[i * 4 + 3]) << 24) + (((unsigned int)data[i * 4]) << 16) + (((unsigned int)data[i * 4 + 1]) << 8) + ((unsigned int)data[i * 4 + 2]);
+            color = 0xff000000 + (((uint32_t)data[i * 4]) << 16) + (((uint32_t)data[i * 4 + 1]) << 8) + ((uint32_t)data[i * 4 + 2]);
+        //color = (((uint32_t)data[i * 4 + 3]) << 24) + (((uint32_t)data[i * 4]) << 16) + (((uint32_t)data[i * 4 + 1]) << 8) + ((uint32_t)data[i * 4 + 2]);
 		else
-			color = (((unsigned int)data[i * 3]) << 16) + (((unsigned int)data[i * 3 + 1]) << 8) + ((unsigned int)data[i * 3 + 2]);
+            color = (((uint32_t)data[i * 3]) << 16) + (((uint32_t)data[i * 3 + 1]) << 8) + ((uint32_t)data[i * 3 + 2]);
 
 		color = rgb888_to_rgb332(color);
 		if(len == max_map_count)
@@ -158,7 +161,7 @@ NLboolean nlSaveTextureV2_Memory(const NLuchar *data,  int width, int height, NE
 		}
 		if(!map)
 		{
-			map = NEW_II(unsigned int, len + 1);
+            map = NEW_II(uint32_t, len + 1);
 			map[len] = color;
 			index[i] = len;
 			len++;
@@ -195,8 +198,8 @@ NLboolean nlSaveTextureV2_Memory(const NLuchar *data,  int width, int height, NE
 			}
 			else
 			{
-				unsigned int *tmp = NEW_II(unsigned int, len + 1);
-				memcpy(tmp, map, sizeof(unsigned int) * len);
+                uint32_t *tmp = NEW_II(uint32_t, len + 1);
+                memcpy(tmp, map, sizeof(uint32_t) * len);
 				tmp[len] = color;
 				free(map);
 				map = tmp;
@@ -212,13 +215,12 @@ NLboolean nlSaveTextureV2_Memory(const NLuchar *data,  int width, int height, NE
 	int i2 = 3; // 3
 	int i3 = format != NL_RGB ? 1 : 0; // 4
 	char c;
-	char *magic = "&&&";
-	for(i = 0; i < i2; i++)
-		fwrite(magic + i, sizeof(char), 1, file);
+    const char magic[] = NL_TEXTURE_V2_MAGIC_HEADER;
+    fwrite(magic + i, ESIZE(char, 1), 3, file);
 	c = (char)i3;
-	fwrite(&c, sizeof(char), 1, file);
+    fwrite(&c, ESIZE(char, 1), 1, file);
 	c = (char)len;
-	fwrite(&c, sizeof(char), 1, file);
+    fwrite(&c, ESIZE(char, 1), 1, file);
 
 	// 1 color
 	int i1 = len;
@@ -228,12 +230,12 @@ NLboolean nlSaveTextureV2_Memory(const NLuchar *data,  int width, int height, NE
 		while (i4 < i1)
 		{
 			//arrayOfInt[i4] = ((paramArrayOfByte[(++i2)] << 16) + (paramArrayOfByte[(++i2)] << 8) + paramArrayOfByte[(++i2)]);
-			unsigned char r = (unsigned char)(map[i4] << 8 >> 24);
-			unsigned char g = (unsigned char)(map[i4] << 16 >> 24);
-			unsigned char b = (unsigned char)(map[i4] << 24 >> 24);
-			fwrite(&r, sizeof(unsigned char), 1, file);
-			fwrite(&g, sizeof(unsigned char), 1, file);
-			fwrite(&b, sizeof(unsigned char), 1, file);
+            uint8_t r = (uint8_t)(map[i4] << 8 >> 24);
+            uint8_t g = (uint8_t)(map[i4] << 16 >> 24);
+            uint8_t b = (uint8_t)(map[i4] << 24 >> 24);
+            fwrite(&r, ESIZE(unsigned char, 1), 1, file);
+            fwrite(&g, ESIZE(unsigned char, 1), 1, file);
+            fwrite(&b, ESIZE(unsigned char, 1), 1, file);
 			i4++;
 		}
 	}
@@ -241,25 +243,25 @@ NLboolean nlSaveTextureV2_Memory(const NLuchar *data,  int width, int height, NE
 	{
 		int i5;
 		for (i5 = 0; i5 < i1; i5++) {
-			unsigned char a = (unsigned char)(map[i5] >> 24);
+            uint8_t a = (uint8_t)(map[i5] >> 24);
 			if (a != 0)
 			{
 				//arrayOfInt[i5] = (-16777216 + (paramArrayOfByte[(++i2)] << 16) + (paramArrayOfByte[(++i2)] << 8) + paramArrayOfByte[(++i2)]);
-				unsigned char r = (unsigned char)(map[i5] << 8 >> 24);
-				unsigned char g = (unsigned char)(map[i5] << 16 >> 24);
-				unsigned char b = (unsigned char)(map[i5] << 24 >> 24);
-				fwrite(&a, sizeof(unsigned char), 1, file);
-				fwrite(&r, sizeof(unsigned char), 1, file);
-				fwrite(&g, sizeof(unsigned char), 1, file);
-				fwrite(&b, sizeof(unsigned char), 1, file);
+                uint8_t r = (uint8_t)(map[i5] << 8 >> 24);
+                uint8_t g = (uint8_t)(map[i5] << 16 >> 24);
+                uint8_t b = (uint8_t)(map[i5] << 24 >> 24);
+                fwrite(&a, ESIZE(unsigned char, 1), 1, file);
+                fwrite(&r, ESIZE(unsigned char, 1), 1, file);
+                fwrite(&g, ESIZE(unsigned char, 1), 1, file);
+                fwrite(&b, ESIZE(unsigned char, 1), 1, file);
 			}
 			else
 			{
 				c = 0;
-				fwrite(&c, sizeof(unsigned char), 1, file);
-				fwrite(&c, sizeof(unsigned char), 1, file);
-				fwrite(&c, sizeof(unsigned char), 1, file);
-				fwrite(&c, sizeof(unsigned char), 1, file);
+                fwrite(&c, ESIZE(unsigned char, 1), 1, file);
+                fwrite(&c, ESIZE(unsigned char, 1), 1, file);
+                fwrite(&c, ESIZE(unsigned char, 1), 1, file);
+                fwrite(&c, ESIZE(unsigned char, 1), 1, file);
 			}
 		}
 	}
@@ -268,17 +270,17 @@ NLboolean nlSaveTextureV2_Memory(const NLuchar *data,  int width, int height, NE
 	unsigned int i5 = width;
 	unsigned int i6 = height;
 	nlprintf("Make v2 PNG->width: %d, height: %d\n", i5, i6);
-	c = (unsigned char)(i5);
-	fwrite(&c, sizeof(unsigned char), 1, file);
-	c = (unsigned char)(i6);
-	fwrite(&c, sizeof(unsigned char), 1, file);
+    c = (uint8_t)(i5);
+    fwrite(&c, ESIZE(unsigned char, 1), 1, file);
+    c = (uint8_t)(i6);
+    fwrite(&c, ESIZE(unsigned char, 1), 1, file);
 	int i7;
 	c = 0;
-	fwrite(&c, sizeof(unsigned char), 1, file);
+    fwrite(&c, ESIZE(unsigned char, 1), 1, file);
 	i = i5 * i6;
 	for (i7 = 0; i7 < i; i7++) {
-		c = (unsigned char)index[i7];
-		fwrite(&c, sizeof(unsigned char), 1, file);
+        c = (uint8_t)index[i7];
+        fwrite(&c, ESIZE(unsigned char, 1), 1, file);
 	}
 	fflush(file);
 	fclose(file);
@@ -287,7 +289,7 @@ NLboolean nlSaveTextureV2_Memory(const NLuchar *data,  int width, int height, NE
     return NL_TRUE;
 }
 
-NLboolean nlSaveTextureV2_File(const char *from, const char *to)
+NLboolean nlConvertImageFileToTextureV2File(const char *from, const char *to)
 {
 	int channel;
 	int width;
@@ -306,7 +308,7 @@ NLboolean nlSaveTextureV2_File(const char *from, const char *to)
 		free(data);
         return NL_FALSE;
 	}
-    NLboolean res = nlSaveTextureV2_Memory(data, width, height, format, to);
+    NLboolean res = nlSavePixelDataToTextureV2File(data, width, height, format, to);
 	free(data);
 	return res;
 }
@@ -329,8 +331,8 @@ array class_h__function_b_1byte_array__color_map(const byte paramArrayOfByte[], 
 	}
 	nlprintf("NETLizard 3D engine v2 texture color map'size->%d\n", i1);
     array arr;
-    new_array(&arr, 4, i1);
-    int *arrayOfInt = (int *)(arr.array);
+    new_array(&arr, ESIZE(int32_t, 4), i1);
+    int32_t *arrayOfInt = (int32_t *)(arr.array);
 	if (i3 == 0)
 	{
 		int i4 = 0;

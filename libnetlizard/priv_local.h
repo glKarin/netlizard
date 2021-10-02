@@ -15,4 +15,8 @@
 #include "jport.h"
 #include "util.h"
 
+#define UNPARSED 0
+
+#define UNUSED(ptr) free(ptr); ptr = NULL;
+
 #endif // _KARIN_PRIV_LOCAL_H

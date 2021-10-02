@@ -2,7 +2,7 @@
 
 #include "priv_local.h"
 
-static char * append_char(char *str, size_t *len, char ch)
+static char * append_char(char *str, NLsizei *len, char ch)
 {
     char *tmp;
 
@@ -17,7 +17,7 @@ static char * append_char(char *str, size_t *len, char ch)
     return tmp;
 }
 
-char * nlParseStringi(const NLint *arr, size_t length)
+char * nlDecodeStringi(const NLint *arr, NLsizei length)
 {
     size_t len = 0;
     char *str;
@@ -27,7 +27,7 @@ char * nlParseStringi(const NLint *arr, size_t length)
     ZERO(str, char);
     for(i2 = 0; i2 < length; i2++)
     {
-        long l1;
+        jlong l1; // long
         char ch;
 
         if ((l1 = arr[i2]) < 0L) {
@@ -60,7 +60,7 @@ char * nlParseStringi(const NLint *arr, size_t length)
     return str;
 }
 
-char * nlParseStringCi(const NLint *arr, size_t length)
+char * nlDecodeStringCi(const NLint *arr, NLsizei length)
 {
     size_t len = 0;
     char *str = NEW(char);
@@ -89,17 +89,17 @@ char * nlParseStringCi(const NLint *arr, size_t length)
     return str;
 }
 
-char * nlParseString(const char *arr, size_t length)
+char * nlDecodeString(const char *arr, NLsizei length)
 {
-    return nlParseStringi((const NLint *)arr, length / 4);
+    return nlDecodeStringi((const NLint *)arr, length / 4);
 }
 
-char * nlParseStringC(const char *arr, size_t length)
+char * nlDecodeStringC(const char *arr, NLsizei length)
 {
-    return nlParseStringCi((const NLint *)arr, length / 4);
+    return nlDecodeStringCi((const NLint *)arr, length / 4);
 }
 
-NLint * nlEncodeStringC(const char *str, NLsizei *rlen)
+NLint * nlEncodeStringC(const char *str, NLint *rlen)
 {
     const char *ptr = str;
     int len = 0;
@@ -118,18 +118,18 @@ NLint * nlEncodeStringC(const char *str, NLsizei *rlen)
         }
         if(!data)
         {
-            data = NEW(int);
-            ZERO(data, int);
-            int *iptr = (int *)arr;
+            data = NEW(int32_t);
+            ZERO(data, int32_t);
+            int32_t *iptr = (int32_t *)arr;
             if(*iptr < 0)
                 *iptr += 4294967296LL;
             *data = *iptr;
         }
         else
         {
-            int *tmp = NEW_II(int, len + 1);
-            memcpy(tmp, data, sizeof(int) * len);
-            int *iptr = (int *)arr;
+            int *tmp = NEW_II(int32_t, len + 1);
+            memcpy(tmp, data, sizeof(int32_t) * len);
+            int32_t *iptr = (int32_t *)arr;
             if(*iptr < 0)
                 *iptr += 4294967296LL;
             tmp[len] = *iptr;

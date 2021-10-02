@@ -40,6 +40,7 @@
 
 #define SUBFIX_LENGTH 12
 #define SKYFILE_LENGTH 10
+#define OBJ_SUBFIX_LENGTH 14
 
 #define CLONE3D_OBJ_SUBFIX "o/o%d.png"
 #define CT3D_OBJ_SUBFIX "obj/obj%d.png"
@@ -47,5 +48,7 @@
 #define SPECNAZ3D_OBJ_SUBFIX "o/o%d.png"
 #define EGYPT3D_OBJ_SUBFIX "o/o%d.png"
 #define CT3DEP3_OBJ_SUBFIX "o/o%d.png"
+
+char * make_resource_file_path(const char *format, int index, const char *resc_path);
 
 #endif
