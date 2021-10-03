@@ -91,6 +91,7 @@ private:
     static const int M_Timer_Interval = 100;
     static const int M_Move_Unit = 10;
     
+    Q_DISABLE_COPY(GLWidget)
 };
 
 #endif // KARIN_GLWIDGET_H

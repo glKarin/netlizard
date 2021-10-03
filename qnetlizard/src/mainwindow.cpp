@@ -12,10 +12,14 @@
 #include "mapviewer.h"
 #include "fontviewer.h"
 #include "itemviewer.h"
+#include "helpdialog.h"
+#include "aboutdialog.h"
+#include "logdialog.h"
 #include "qdef.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent)
+    QMainWindow(parent),
+    m_logDialog(0)
 {
     setObjectName("MainWindow");
     Init();
@@ -55,7 +59,10 @@ void MainWindow::Init()
     menuItem->setData("sprite_viewer");
 
     menu = menuBar->addMenu("&View");
+    menuItem = menu->addAction("&Log");
+    menuItem->setData("log");
     menuItem = menu->addAction("&Close");
+    menuItem->setData("close");
     menuItem->setData("close_viewer");
 
     menu = menuBar->addMenu("&Other");
@@ -81,11 +88,18 @@ void MainWindow::MenuActionSlot(QAction *action)
 
     if(type == "exit")
         qApp->quit();
+    else if(type == "log")
+    {
+        ToggleLogDialog();
+    }
     else if(type == "help")
-        ;
+    {
+        HelpDialog::Show(this);
+    }
     else if(type == "about")
-        QMessageBox::information(this, "About QNETLizard", "QNETLizard is a tools for libnetlizard.\n"
-                                 "libnetlizard is a tools of NETLizard J2ME game resource.\n");
+    {
+        AboutDialog::Show(this);
+    }
     else
     {
         BaseViewer *viewer = GenViewer(type);
@@ -124,4 +138,38 @@ BaseViewer * MainWindow::GenViewer(const QString &type)
         setWindowTitle(qApp->applicationName());
     }
     return viewer;
+}
+
+void MainWindow::ToggleLogDialog()
+{
+    if(!m_logDialog)
+    {
+        m_logDialog = new LogDialog(this);
+    }
+    if(m_logDialog->isVisible())
+        m_logDialog->hide();
+    else
+    {
+        m_logDialog->ResetPosAndSize();
+        m_logDialog->show();
+        setFocus(Qt::MouseFocusReason);
+    }
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    QMainWindow::resizeEvent(event);
+    if(m_logDialog && m_logDialog->isVisible())
+    {
+        m_logDialog->ResetPosAndSize();
+    }
+}
+
+void MainWindow::moveEvent(QMoveEvent *event)
+{
+    QMainWindow::moveEvent(event);
+    if(m_logDialog && m_logDialog->isVisible())
+    {
+        m_logDialog->ResetPosAndSize();
+    }
 }

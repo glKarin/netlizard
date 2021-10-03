@@ -35,7 +35,11 @@ HEADERS += \
     src/gl/nl_font.h \
     src/widget/itemwidget.h \
     src/itemviewer.h \
-    src/widget/baseviewer.h
+    src/widget/baseviewer.h \
+    src/helpdialog.h \
+    src/aboutdialog.h \
+    src/component/logoutput.h \
+    src/logdialog.h
 
 SOURCES += \
     main.cpp \
@@ -61,7 +65,11 @@ SOURCES += \
     src/gl/nl_font.c \
     src/widget/itemwidget.cpp \
     src/itemviewer.cpp \
-    src/widget/baseviewer.cpp
+    src/widget/baseviewer.cpp \
+    src/helpdialog.cpp \
+    src/aboutdialog.cpp \
+    src/component/logoutput.cpp \
+    src/logdialog.cpp
 
 # GL
 HEADERS += \

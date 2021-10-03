@@ -1,0 +1,81 @@
+#include "logdialog.h"
+
+#include <QDebug>
+
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QTextBrowser>
+#include <QScrollBar>
+#include <QPushButton>
+
+#include "logoutput.h"
+#include "qdef.h"
+
+LogDialog::LogDialog(QWidget *parent) :
+    QDialog(parent),
+    m_log(0),
+    m_textViewer(0)
+{
+    setObjectName("LogDialog");
+    m_log = LogOutput::Instance();
+    Init();
+}
+
+LogDialog::~LogDialog()
+{
+    DEBUG_DESTROY_Q
+}
+
+void LogDialog::Init()
+{
+    QVBoxLayout *layout = new QVBoxLayout;
+    QHBoxLayout *toolLayout = new QHBoxLayout;
+    m_textViewer = new QTextBrowser;
+    QPushButton *button = new QPushButton;
+
+    m_textViewer->setAcceptRichText(true);
+    layout->addWidget(m_textViewer);
+    button->setText("Clear");
+    toolLayout->addStretch();
+    toolLayout->addWidget(button);
+    connect(button, SIGNAL(clicked()), this, SLOT(ClearLog()));
+    layout->addLayout(toolLayout);
+
+    connect(m_log, SIGNAL(outputLog(int, const QString &)), this, SLOT(PushLog(int, const QString &)));
+
+    setLayout(layout);
+
+    setWindowTitle("Log output");
+}
+
+void LogDialog::PushLog(int type, const QString &str)
+{
+    QString color("#000000");
+    if(type == 1)
+        color = "yellow";
+    else if(type != 0)
+        color = "#ff0000";
+
+    QString text = QString("<span color='%1'>%2</span>").arg(color).arg(str);
+    m_textViewer->append("<br/>" + text);
+    m_textViewer->verticalScrollBar()->setValue(m_textViewer->verticalScrollBar()->maximum());
+    m_textViewer->horizontalScrollBar()->setValue(0);
+}
+
+void LogDialog::ResetPosAndSize()
+{
+    QWidget *p = parentWidget();
+    if(!p)
+        return;
+    QRect rect = p->frameGeometry();
+    move(rect.x() + rect.width(), rect.y());
+    setFixedHeight(p->height());
+    m_textViewer->verticalScrollBar()->setValue(m_textViewer->verticalScrollBar()->maximum());
+    m_textViewer->horizontalScrollBar()->setValue(0);
+}
+
+void LogDialog::ClearLog()
+{
+    m_log->Clear();
+    m_textViewer->clear();
+}

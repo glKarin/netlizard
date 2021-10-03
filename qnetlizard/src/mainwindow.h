@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 class BaseViewer;
+class LogDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -16,14 +17,22 @@ signals:
     
 public slots:
 
+protected:
+    void resizeEvent(QResizeEvent *event);
+    void moveEvent(QMoveEvent *event);
+
 private:
     void Init();
 
 private slots:
     void MenuActionSlot(QAction *action);
+    void ToggleLogDialog();
 
 private:
     BaseViewer * GenViewer(const QString &type);
+
+private:
+    LogDialog *m_logDialog;
 
     Q_DISABLE_COPY(MainWindow)
     

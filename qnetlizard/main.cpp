@@ -4,6 +4,7 @@
 #include <QtGui/QtGui>
 
 #include "mainwindow.h"
+#include "logoutput.h"
 #include "qdef.h"
 
 int main(int argc, char *argv[])
@@ -14,6 +15,8 @@ int main(int argc, char *argv[])
 
     app.setApplicationName(APP_NAME);
     app.setApplicationVersion(APP_VER);
+
+    qInstallMsgHandler(log_output_msg_handler);
 
     MainWindow viewer;
     QWidget *win = &viewer;

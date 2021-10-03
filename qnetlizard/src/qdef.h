@@ -1,10 +1,15 @@
-#ifndef QDEF_H
-#define QDEF_H
+#ifndef _KARIN_QDEF_H
+#define _KARIN_QDEF_H
 
 #define DEBUG_DESTROY_Q qDebug() << "Q ~" << objectName();
 
+#define LIB_NAME "libnetlizard"
 #define APP_NAME "QNETLizard"
 #define APP_DEV "Karin"
-#define APP_VER "2009"
+#define APP_VER "2.0.0harmattan9"
+#define APP_CODE "ct3d"
+#define APP_RELEASE 1
 
-#endif // QDEF_H
+#define APP_GITHUB "https://github.com/glKarin/netlizard"
+
+#endif // _KARIN_QDEF_H
