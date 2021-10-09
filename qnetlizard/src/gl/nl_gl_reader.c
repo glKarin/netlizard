@@ -75,6 +75,43 @@ GLboolean NETLizard_ReadGLSpecnaz3DItemModelFile(const char *name, int i, const 
     return GL_TRUE;
 }
 
+GLboolean NETLizard_ReadGLEgypt3DRoleModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Animation_Model *model)
+{
+//    if(!name)
+//        return GL_FALSE;
+//    NETLizard_3D_Model m;
+//    if(!nlReadEgypt3DRoleModelFile(name, index, &m))
+//        return GL_FALSE;
+//    NETLizard_MakeGL3DAnimationModel(&m, resource_path, model);
+//    delete_NETLizard_3D_Model(&m);
+//    return GL_TRUE;
+}
+
+GLboolean NETLizard_ReadGLEgypt3DItemModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Model *model)
+{
+    if(!name)
+        return GL_FALSE;
+    NETLizard_3D_Model m;
+    if(!nlReadEgypt3DItemModelFile(name, index, &m))
+        return GL_FALSE;
+    NETLizard_MakeGL3DModel(&m, resource_path, model);
+    delete_NETLizard_3D_Model(&m);
+    return GL_TRUE;
+}
+
+GLboolean NETLizard_ReadGLEgypt3DMapModelFile(const char *name, const char *resource_path, GL_NETLizard_3D_Model *model)
+{
+    if(!name)
+        return GL_FALSE;
+    NETLizard_3D_Model m;
+    if(!nlReadEgypt3DModelFile(name, resource_path, &m))
+        return GL_FALSE;
+    NETLizard_MakeGL3DModel(&m, resource_path, model);
+    delete_NETLizard_3D_Model(&m);
+    return GL_TRUE;
+}
+
+
 #if 0
 GL_NETLizard_3D_Animation_Model * NETLizard_ReadGLClone3DRoleModelFile(const char *name, int index)
 {
@@ -107,45 +144,6 @@ GL_NETLizard_3D_Model * NETLizard_ReadGLClone3DMapModelFile(const char *name)
 	if(!name)
 		return NULL;
 	NETLizard_3D_Model *m = nlReadClone3DModelFile(name);
-	if(!m)
-		return NULL;
-	GL_NETLizard_3D_Model *model = NETLizard_MakeGL3DModel(m);
-	delete_NETLizard_3D_Model(m);
-	free(m);
-	return model;
-}
-
-GL_NETLizard_3D_Animation_Model * NETLizard_ReadGLEgypt3DRoleModelFile(const char *name, int index)
-{
-	if(!name)
-		return NULL;
-	NETLizard_3D_Model *m = nlReadEgypt3DRoleModelFile(name, index);
-	if(!m)
-		return NULL;
-	GL_NETLizard_3D_Animation_Model *model = NETLizard_MakeGL3DAnimationModel(m);
-	delete_NETLizard_3D_Model(m);
-	free(m);
-	return model;
-}
-
-GL_NETLizard_3D_Model * NETLizard_ReadGLEgypt3DItemModelFile(const char *name, int index)
-{
-	if(!name)
-		return NULL;
-	NETLizard_3D_Model *m = nlReadEgypt3DItemModelFile(name, index);
-	if(!m)
-		return NULL;
-	GL_NETLizard_3D_Model *model = NETLizard_MakeGL3DModel(m);
-	delete_NETLizard_3D_Model(m);
-	free(m);
-	return model;
-}
-
-GL_NETLizard_3D_Model * NETLizard_ReadGLEgpyt3DMapModelFile(const char *name)
-{
-	if(!name)
-		return NULL;
-	NETLizard_3D_Model *m = nlReadEgypt3DModelFile(name);
 	if(!m)
 		return NULL;
 	GL_NETLizard_3D_Model *model = NETLizard_MakeGL3DModel(m);

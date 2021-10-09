@@ -7,75 +7,105 @@ TARGET = ../qnetlizard
 
 QT += opengl
 
-DEPENDPATH += . .. ../libnetlizard ./src ./src/gl ./src/utils ./src/widget ./src/component
-INCLUDEPATH += . .. ../libnetlizard ./src ./src/gl ./src/utils ./src/widget ./src/component
+DEPENDPATH += . .. ../libnetlizard ./src ./src/gl ./src/utils ./src/widget ./src/component ./src/component/engine
+INCLUDEPATH += . .. ../libnetlizard ./src ./src/gl ./src/utils ./src/widget ./src/component ./src/component/engine
 
 PRE_TARGETDEPS += ../libnetlizard/debug/libnetlizard.a
 LIBS += ../libnetlizard/debug/libnetlizard.a
 
 # Input
 HEADERS += \
-    src/imageviewer.h \
-    src/widget/imagewidget.h \
+#    src/imageviewer.h \
+#    src/widget/imagewidget.h \
     src/textviewer.h \
     src/stringviewer.h \
     src/mainwindow.h \
     src/qdef.h \
-    src/component/glwidget.h \
-    lib/mesa_gl_math.h \
-    lib/camera.h \
-    lib/vector3.h \
     src/widget/mapwidget.h \
     src/mapviewer.h \
     src/utils/ioutility.h \
-    src/gl/gl_texture.h \
-    src/gl/nl_texture.h \
-    src/widget/fontwidget.h \
-    src/fontviewer.h \
-    src/gl/nl_font.h \
-    src/widget/itemwidget.h \
-    src/itemviewer.h \
+#    src/widget/fontwidget.h \
+#    src/fontviewer.h \
+#    src/widget/itemwidget.h \
+#    src/itemviewer.h \
     src/widget/baseviewer.h \
     src/helpdialog.h \
     src/aboutdialog.h \
     src/component/logoutput.h \
-    src/logdialog.h
+    src/logdialog.h \
+    src/component/engine/nlscene.h \
+    src/component/engine/nlobject.h \
+    src/component/engine/nlactor.h \
+    src/component/engine/nlrenderable.h \
+    src/component/engine/nlobjectcontainer.h \
+    src/component/engine/nlactorcontainer.h \
+    src/component/engine/nlcomponent.h \
+    src/component/engine/nlcomponentcontainer.h \
+    src/component/engine/nlobjectpool.h \
+    src/component/simplecontrolcomponent.h \
+    src/component/simplecameracomponent.h \
+    src/component/simplecameraactor.h \
+    src/component/netlizardmapmodelrenderer.h \
+    src/component/engine/scenecamera.h \
+    src/component/engine/sceneorthocamera.h \
+    src/component/engine/sceneperspectivecamera.h
 
 SOURCES += \
     main.cpp \
-    src/imageviewer.cpp \
-    src/widget/imagewidget.cpp \
+#    src/imageviewer.cpp \
+#    src/widget/imagewidget.cpp \
     src/textviewer.cpp \
     src/stringviewer.cpp \
     src/mainwindow.cpp \
-    src/component/glwidget.cpp \
-    lib/mesa_gl_math.c \
-    lib/camera.c \
-    lib/vector3.c \
-    src/gl/nl_gl_reader.c \
-    src/gl/nl_gl_render.c \
     src/widget/mapwidget.cpp \
     src/mapviewer.cpp \
     src/utils/ioutility.cpp \
-    src/gl/gl_texture.c \
-    src/gl/nl_texture.c \
-    src/widget/fontwidget.cpp \
-    src/gl/nl_gl_font.c \
-    src/fontviewer.cpp \
-    src/gl/nl_font.c \
-    src/widget/itemwidget.cpp \
-    src/itemviewer.cpp \
+ #   src/widget/fontwidget.cpp \
+#    src/fontviewer.cpp \
+#    src/widget/itemwidget.cpp \
+#    src/itemviewer.cpp \
     src/widget/baseviewer.cpp \
     src/helpdialog.cpp \
     src/aboutdialog.cpp \
     src/component/logoutput.cpp \
-    src/logdialog.cpp
+    src/logdialog.cpp \
+    src/component/engine/nlscene.cpp \
+    src/component/engine/nlobject.cpp \
+    src/component/engine/nlactor.cpp \
+    src/component/engine/nlrenderable.cpp \
+    src/component/engine/nlobjectcontainer.cpp \
+    src/component/engine/nlactorcontainer.cpp \
+    src/component/engine/nlcomponent.cpp \
+    src/component/engine/nlcomponentcontainer.cpp \
+    src/component/engine/nlobjectpool.cpp \
+    src/component/simplecontrolcomponent.cpp \
+    src/component/simplecameracomponent.cpp \
+    src/component/simplecameraactor.cpp \
+    src/component/netlizardmapmodelrenderer.cpp \
+    src/component/engine/scenecamera.cpp \
+    src/component/engine/sceneorthocamera.cpp \
+    src/component/engine/sceneperspectivecamera.cpp
 
-# GL
+# NL-GL
 HEADERS += \
+    lib/mesa_gl_math.h \
+    lib/camera.h \
+    lib/vector3.h \
+    src/gl/nl_font.h \
+    src/gl/gl_texture.h \
+    src/gl/nl_texture.h \
     src/gl/nl_gl.h
 
 SOURCES += \
+    lib/mesa_gl_math.c \
+    lib/camera.c \
+    lib/vector3.c \
+    src/gl/gl_texture.c \
+    src/gl/nl_texture.c \
+    src/gl/nl_gl_font.c \
+    src/gl/nl_font.c \
+    src/gl/nl_gl_reader.c \
+    src/gl/nl_gl_render.c \
     src/gl/nl_gl.c
 
 # Mesa GL math

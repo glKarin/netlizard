@@ -167,45 +167,13 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 
 	new_netlizard_texture_from_file new_OpenGL_texture_2d;
 	GLint tex_count; // 最大纹理数
-	NETLizard_Game game;
+    NETLizard_Game game = model->game;
 	int invert_texcoord_y; // 纹理坐标y反转
 	int item_invert_texcoord_y; // 纹理坐标y反转
 	int index_factory; // 场景顶点索引因子
 	int item_index_factory; // 物品顶点索引因子
     const char *subfix_str;
     const char *sky_file;
-
-	switch(model->game)
-	{
-		case CT_3D_Map:
-        case CT_3D_Item:
-            game = NL_CONTR_TERRORISM_3D;
-			break;
-		case CT_3D_Ep2_Map:
-        case CT_3D_Ep2_Item:
-            game = NL_CONTR_TERRORISM_3D_EPISODE_2;
-			break;
-		case Army_Ranger_3D_Map:
-        case Army_Ranger_3D_Item:
-            game = NL_ARMY_RANGER_3D;
-			break;
-		case Egypt_3D_Map:
-		case Egypt_3D_Role:
-        case Egypt_3D_Item:
-            game = NL_SHADOW_OF_EGYPT_3D;
-			break;
-		case Clone_3D_Map:
-		case Clone_3D_Item:
-        case Clone_3D_Role:
-            game = NL_CLONE_3D;
-			break;
-		case CT_3D_Ep3_Map:
-        case CT_3D_Ep3_Item:
-            game = NL_CONTR_TERRORISM_3D_EPISODE_3;
-			break;
-		default:
-            return GL_FALSE;
-    }
 
     const NETLizard_3D_Model_Config *config = nlGet3DGameModelConfig(game);
     tex_count = config->tex_count;
@@ -754,6 +722,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
         glmodel->bg_tex = malloc(sizeof(texture_s));
         memcpy(glmodel->bg_tex, &sky, sizeof(sky));
     }
+    glmodel->game = game;
 
     return GL_TRUE;
 }
@@ -774,14 +743,14 @@ GL_NETLizard_3D_Animation_Model * NETLizard_MakeGL3DAnimationModel(const NETLiza
 
 	switch(model->game)
 	{
-		case Egypt_3D_Role:
+		case NL_EGYPT_3D_ROLE_MODEL:
 			tex_count = EGYPT3D_TEX_COUNT;
 			game = nl_shadow_of_egypt_3d;
 			strcpy(subfix_str, EGYPT3D_TEX_SUBFIX);
 			item_invert_texcoord_y = 1;
 			item_index_factory = 3;
 			break;
-		case Clone_3D_Role:
+		case NL_CLONE_3D_ROLE_MODEL:
 			tex_count = CLONE3D_TEX_COUNT;
 			game = nl_clone_3d;
 			strcpy(subfix_str, CLONE3D_TEX_SUBFIX);

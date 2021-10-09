@@ -2,7 +2,7 @@
 
 #include "priv_local.h"
 
-static array clone3d_class_g__function_M_void__read_spirit_map(const array *arr);
+static T_array(jshort[6]) clone3d_class_g__function_M_void__read_spirit_map(const array *arr);
 
 // clone 3d is cu.png.
 // spirit texture file is u0.png, other 3D game like this, u\d.png file.
@@ -22,7 +22,7 @@ int nlLoadSpiritMapData(const char *data, NLsizei len, NETLizard_Spirit **ret)
 {
     array arr;
     make_array(&arr, 1, len, data);
-    array qarr = clone3d_class_g__function_M_void__read_spirit_map(&arr);
+    T_array(jshort[6]) qarr = clone3d_class_g__function_M_void__read_spirit_map(&arr);
     len = qarr.length;
     NETLizard_Spirit *spirit = NEW_II(NETLizard_Spirit, len);
     short **q = (short **)(qarr.array);
@@ -43,12 +43,12 @@ int nlLoadSpiritMapData(const char *data, NLsizei len, NETLizard_Spirit **ret)
     return len;
 }
 
-array clone3d_class_g__function_M_void__read_spirit_map(const array *arr)
+T_array(jshort[6]) clone3d_class_g__function_M_void__read_spirit_map(const array *arr)
 {
 	byte *arrayOfByte = (byte *)(arr->array);
 	int i1;
     int i5 = (jshort)(i1 = (arr->length / 6));
-    array rarr;
+    T_array(jshort[6]) rarr;
     new_array(&rarr, sizeof(jshort *), i5);
     jshort **q = (jshort **)(rarr.array);
 	int i2;

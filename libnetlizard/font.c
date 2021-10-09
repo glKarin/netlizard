@@ -10,8 +10,8 @@ typedef struct _class__o__font
     jint a;
     jint d;
     boolean bool__e;
-    array short_2_array_6x__f__map;
-    array byte_array__h__offset;
+    T_array(jshort[]) short_2_array_6x__f__map;
+    byte_array byte_array__h__offset;
     jint int__i__char_count;
     boolean bool__l;
     boolean bool__m;
@@ -19,7 +19,7 @@ typedef struct _class__o__font
 
 static class__o__font * class__o__font___construct(class__o__font *fnt);
 static class__o__font clone3d_class_o__function_a_void_return_class_o(const array *arr);
-static int clone3d_class_o__function_a_1int_return_int__get_char_map_index(const class__o__font *o, int paramInt);
+static jint clone3d_class_o__function_a_1int_return_int__get_char_map_index(const class__o__font *o, jint paramInt);
 
 NLboolean nlLoadNETLizardFontData(const char *data, NLsizei size, NETLizard_Font *fnt)
 {
@@ -103,20 +103,20 @@ class__o__font clone3d_class_o__function_a_void_return_class_o(const array *arr)
     class__o__font *o = &res;
 
 	byte *arrayOfByte = (byte *)(arr->array);
-	int i4 = arr->length / 6;
+    jint i4 = arr->length / 6;
 	if (o->int__i__char_count < i4) {
 		o->int__i__char_count = i4;
     }
     new_array(&o->short_2_array_6x__f__map, sizeof(jshort *), o->int__i__char_count + 2);
-    jshort **f = (short **)(o->short_2_array_6x__f__map.array);
+    jshort **f = (jshort **)(o->short_2_array_6x__f__map.array);
     f[o->int__i__char_count] = NEW_II(jshort, 6);
     f[o->int__i__char_count + 1] = NEW_II(jshort, 6);
-	int i2 = 0;
-	int i1;
+    jint i2 = 0;
+    jint i1;
 	for (i1 = 0; i1 < o->int__i__char_count; i1++)
 	{
         f[i1] = NEW_II(jshort, 6);
-		int n;
+        jint n;
 		for (n = 0; n < 6; n++)
 		{
             f[i1][n] = ((jshort)(signed char)arrayOfByte[i2]);
@@ -124,14 +124,14 @@ class__o__font clone3d_class_o__function_a_void_return_class_o(const array *arr)
 		}
 		if (f[i1][0] < 0)
 		{
-			int tmp141_140 = 0;
-			short *tmp141_139 = f[i1];
+            jint tmp141_140 = 0;
+            jshort *tmp141_139 = f[i1];
             tmp141_139[tmp141_140] = ((jshort)(tmp141_139[tmp141_140] + 256));
 		}
 		if (f[i1][1] < 0)
 		{
-			int tmp167_166 = 1;
-			short *tmp167_165 = f[i1];
+            jint tmp167_166 = 1;
+            jshort *tmp167_165 = f[i1];
             tmp167_165[tmp167_166] = ((jshort)(tmp167_165[tmp167_166] + 256));
 		}
 		if (i2 >= arr->length) {
@@ -158,7 +158,7 @@ class__o__font clone3d_class_o__function_a_void_return_class_o(const array *arr)
         o->bool__e = jtrue;
 	}
 	o->d = f[clone3d_class_o__function_a_1int_return_int__get_char_map_index(o, 1062)][3];
-	int n = 0;
+    jint n = 0;
     jlong l1 = 0L;
 	for (i1 = 65; i1 <= 90; i1++)
 	{
@@ -167,7 +167,7 @@ class__o__font clone3d_class_o__function_a_void_return_class_o(const array *arr)
 			n = f[clone3d_class_o__function_a_1int_return_int__get_char_map_index(o, i1)][3];
 		}
 	}
-	o->d = ((int)(l1 / 26L));
+    o->d = ((jint)(l1 / 26L));
 	o->d = n;
 	n = 100;
 	i1 = -100;
@@ -189,7 +189,7 @@ class__o__font clone3d_class_o__function_a_void_return_class_o(const array *arr)
 	if ((n = (i4 = i3 - o->d >> 1) - i1) != 0) {
         for (i1 = 0; i1 < o->short_2_array_6x__f__map.length; i1++)
 		{
-			int tmp529_528 = 5;
+            jint tmp529_528 = 5;
             jshort *tmp529_527 = f[i1];
             tmp529_527[tmp529_528] = ((jshort)(tmp529_527[tmp529_528] - n));
 		}
@@ -212,7 +212,7 @@ class__o__font clone3d_class_o__function_a_void_return_class_o(const array *arr)
 	if ((n = (i4 = o->d - i3 >> 1) - i1) != 0) {
         for (i3 = 0; i3 < o->short_2_array_6x__f__map.length; i3++)
 		{
-			int tmp668_667 = 5;
+            jint tmp668_667 = 5;
             jshort *tmp668_666 = f[i3];
             tmp668_666[tmp668_667] = ((jshort)(tmp668_666[tmp668_667] - n));
 		}
@@ -222,9 +222,9 @@ class__o__font clone3d_class_o__function_a_void_return_class_o(const array *arr)
     return res;
 }
 
-int clone3d_class_o__function_a_1int_return_int__get_char_map_index(const class__o__font *o, int paramInt)
+jint clone3d_class_o__function_a_1int_return_int__get_char_map_index(const class__o__font *o, jint paramInt)
 {
-	int n = paramInt;
+    jint n = paramInt;
 	if (paramInt == 946) {
 		n = 223;
 	}

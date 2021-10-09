@@ -6,12 +6,12 @@
 
 #include <QMenuBar>
 
-#include "imageviewer.h"
+//#include "imageviewer.h"
 #include "textviewer.h"
 #include "stringviewer.h"
 #include "mapviewer.h"
 #include "fontviewer.h"
-#include "itemviewer.h"
+//#include "itemviewer.h"
 #include "helpdialog.h"
 #include "aboutdialog.h"
 #include "logdialog.h"
@@ -115,14 +115,14 @@ BaseViewer * MainWindow::GenViewer(const QString &type)
     else if(type == "string_viewer")
         viewer = new StringViewer;
     else if(type == "image_viewer")
-        viewer = new ImageViewer;
+        ;//viewer = new ImageViewer;
     else if(type == "font_viewer")
-        viewer = new FontViewer;
+        ;//viewer = new FontViewer;
 
     else if(type == "map_viewer")
         viewer = new MapViewer;
     else if(type == "item_viewer")
-        viewer = new ItemViewer;
+        ;//viewer = new ItemViewer;
     else if(type == "character_animation_viewer")
         ;
     else if(type == "sprite_viewer")

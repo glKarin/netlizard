@@ -33,9 +33,20 @@ struct array_s
 typedef struct array_s array;
 typedef struct array_s jarray;
 
+typedef struct array_s boolean_array;
+typedef struct array_s byte_array;
+typedef struct array_s char_array;
+typedef struct array_s short_array;
+typedef struct array_s int_array;
+typedef struct array_s long_array;
+typedef struct array_s float_array;
+typedef struct array_s double_array;
+#define T_array(T) array
+
 typedef struct array_s strings;
 typedef struct array_s jstring;
 
+void reset_array(array *arr);
 void delete_array(array *arr);
 void zero_array(array *arr);
 void init_array(array *arr, void *data, size_t data_size);

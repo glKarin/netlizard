@@ -208,3 +208,8 @@ void vector3_directionv(vector3_s *r,const vector3_s *a, const vector3_s *b)
     vector3_subtractv(r, b, a);
     vector3_normalizev(r);
 }
+
+int vector3_iszero(const vector3_s *a)
+{
+    return VECTOR3V_X(a) == 0 && VECTOR3V_Y(a) == 0 && VECTOR3V_Z(a) == 0;
+}

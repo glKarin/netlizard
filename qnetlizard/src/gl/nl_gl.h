@@ -113,6 +113,7 @@ typedef struct _GL_NETLizard_3D_Item_Mesh
 
 typedef struct _GL_NETLizard_3D_Model
 {
+    NETLizard_Game game;
 	GL_NETLizard_3D_Mesh *meshes;
 	GLuint count;
 	GL_NETLizard_3D_Item_Mesh *item_meshes;
@@ -172,16 +173,16 @@ GLboolean NETLizard_ReadGLCT3DEp2ItemModelFile(const char *name, int i, const ch
 GLboolean NETLizard_ReadGLSpecnaz3DMapModelFile(const char *name, int i, const char *resource_path, GL_NETLizard_3D_Model *model);
 GLboolean NETLizard_ReadGLSpecnaz3DItemModelFile(const char *name, int i, const char *resource_path, GL_NETLizard_3D_Model *model);
 
+GLboolean NETLizard_ReadGLEgypt3DItemModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Model *model);
+GLboolean NETLizard_ReadGLEgypt3DMapModelFile(const char *name, const char *resource_path, GL_NETLizard_3D_Model *model);
+GLboolean NETLizard_ReadGLEgypt3DRoleModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Animation_Model *model);
+
 #if 0
 GL_NETLizard_3D_Model * NETLizard_ReadGLCT3DEp3MapModelFile(const char *name, int i);
 GL_NETLizard_3D_Model * NETLizard_ReadGLCT3DEp3ItemModelFile(const char *name, int index);
 
 GL_NETLizard_3D_Model * NETLizard_ReadGLSpecnaz3DMapModelFile(const char *name, int level);
 GL_NETLizard_3D_Model * NETLizard_ReadGLSpecnaz3DItemModelFile(const char *name, int index);
-
-GL_NETLizard_3D_Model * NETLizard_ReadGLEgypt3DItemModelFile(const char *name, int index);
-GL_NETLizard_3D_Model * NETLizard_ReadGLEgpyt3DMapModelFile(const char *name);
-GL_NETLizard_3D_Animation_Model * NETLizard_ReadGLEgypt3DRoleModelFile(const char *name, int index);
 
 GL_NETLizard_3D_Model * NETLizard_ReadGLClone3DMapModelFile(const char *name);
 GL_NETLizard_3D_Model * NETLizard_ReadGLClone3DItemModelFile(const char *name, int index);

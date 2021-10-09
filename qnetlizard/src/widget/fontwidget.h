@@ -1,12 +1,12 @@
 #ifndef _KARIN_FONTWIDGET_H
 #define _KARIN_FONTWIDGET_H
 
-#include "glwidget.h"
+#include "nlscene.h"
 #include "gl/nl_font.h"
 
 class QColor;
 
-class FontWidget : public GLWidget
+class FontWidget : public NLScene
 {
     Q_OBJECT
 public:

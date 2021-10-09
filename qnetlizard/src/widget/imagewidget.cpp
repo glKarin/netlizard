@@ -10,16 +10,13 @@
 #include "qdef.h"
 
 ImageWidget::ImageWidget(QWidget *parent)
-    : GLWidget(parent),
+    : NLScene(parent),
       m_tex(0),
       m_align(Qt::AlignCenter)
 {
     memset(&m_data.data, 0, sizeof(m_data.data));
     m_data.type = NL_TEXTURE_UNKNOWN;
     setObjectName("ImageWidget");
-    SetEnableDefaultKeyHandler(true);
-    SetEnableDefaultMouseHandler(false);
-    SetEnableDefaultWheelHandler(true);
 }
 
 ImageWidget::~ImageWidget()
@@ -29,14 +26,14 @@ ImageWidget::~ImageWidget()
 
 void ImageWidget::Init()
 {
-    GLWidget::Init();
+    NLScene::Init();
     glDisable(GL_DEPTH_TEST);
 }
 
 void ImageWidget::Update(float delta)
 {
     //qDebug() << delta;
-    GLWidget::Update(delta);
+    NLScene::Update(delta);
 }
 
 void ImageWidget::paintGL()
@@ -151,7 +148,7 @@ Qt::Alignment ImageWidget::Alignment() const
 
 void ImageWidget::Deinit()
 {
-    GLWidget::Deinit();
+    NLScene::Deinit();
     Reset();
 }
 

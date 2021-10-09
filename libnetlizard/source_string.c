@@ -33,23 +33,23 @@ char * nlDecodeStringi(const NLint *arr, NLsizei length)
         if ((l1 = arr[i2]) < 0L) {
             l1 += 4294967296LL;
         }
-        ch = (char)(int)((l1 & 0xFF000000) >> 24);
+        ch = (char)(jint)((l1 & 0xFF000000) >> 24);
         str = append_char(str, &len, ch);
 
         int i1;
-        if ((i1 = (char)(int)((l1 & 0xFF0000) >> 16)) == 0) {
+        if ((i1 = (char)(jint)((l1 & 0xFF0000) >> 16)) == 0) {
             break;
         }
         ch = (char)i1;
         str = append_char(str, &len, ch);
 
-        if ((i1 = (char)(int)((l1 & 0xFF00) >> 8)) == 0) {
+        if ((i1 = (char)(jint)((l1 & 0xFF00) >> 8)) == 0) {
             break;
         }
         ch = (char)i1;
         str = append_char(str, &len, ch);
 
-        if ((i1 = (char)(int)(l1 & 0xFF)) == 0) {
+        if ((i1 = (char)(jint)(l1 & 0xFF)) == 0) {
             break;
         }
         ch = (char)i1;

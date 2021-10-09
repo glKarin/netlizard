@@ -8,7 +8,7 @@
 #include "qdef.h"
 
 FontWidget::FontWidget(QWidget *parent) :
-    GLWidget(parent),
+    NLScene(parent),
     m_font(0),
     m_lineCount(0),
     m_paddingWidth(2),
@@ -27,19 +27,19 @@ FontWidget::~FontWidget()
 
 void FontWidget::Init()
 {
-    GLWidget::Init();
+    NLScene::Init();
     glDisable(GL_DEPTH_TEST);
 }
 
 void FontWidget::Update(float delta)
 {
     //qDebug() << delta;
-    GLWidget::Update(delta);
+    NLScene::Update(delta);
 }
 
 void FontWidget::Deinit()
 {
-    GLWidget::Deinit();
+    NLScene::Deinit();
     Reset();
 }
 
@@ -151,7 +151,7 @@ void FontWidget::RenderText()
         GLint count = 0;
         GLint i;
         int char_height = m_font->height;
-        int width = GLWidget::width();
+        int width = NLScene::width();
         for(i = 0; i < m_lineCount; i++)
         {
             h += char_height;

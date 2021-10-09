@@ -11,8 +11,8 @@
 
 typedef struct _class__f__scene
 {
-  array int_array_6__a__vertex;
-  array int_array_10__b__primitive;
+  int_array int_array_6__a__vertex;
+  int_array int_array_10__b__primitive;
   jint c;
   jint d;
   jint int__e__end;// = 0; 最后一个物品索引
@@ -22,7 +22,7 @@ typedef struct _class__f__scene
   jint int__i__aabb;
   jint int__j__aabb;
   jint int__k__aabb;
-  array int_array_6__l__plane;
+  int_array int_array_6__l__plane;
   jint m;
   jint n;
   jint o;
@@ -34,7 +34,7 @@ typedef struct _class__f__scene
 typedef struct _class__b__bsp
 {
   byte byte__a__direction;
-    jint int_array_3__a__normal[3];
+  jint int_array_3__a__normal[3];
   jint int_array_4x3__b__plane[4][3]; //i[] b = new i[4];
   jint int__c__prev_scene;
   jint int__d__next_scene;
@@ -43,8 +43,8 @@ typedef struct _class__b__bsp
 
 typedef struct _class__g__item
 {
-  array int_array_6__a__vertex;
-  array int_array_16__b__primitive;
+  int_array int_array_6__a__vertex;
+  int_array int_array_16__b__primitive;
   jint** c;
   jshort d;
   jint e;
@@ -67,12 +67,12 @@ typedef struct _class__g__item
 
 typedef struct _class__h__lvl
 {
-    array class_f_array__l__scene;
-    array class_g_array__h__item;
+    T_array(class__f__scene) class_f_array__l__scene;
+    T_array(class__g__item) class_g_array__h__item;
     jint int_array__dg__translation[3];
     jint int__dd__rotation;
     jint int__df__rotation;
-    array class_b_array__j__bsp;
+    T_array(class__b__bsp) class_b_array__j__bsp;
 } class__h__lvl;
 
 static void delete_class__f__scene(class__f__scene *scene)
@@ -92,7 +92,7 @@ static void delete_class__h__lvl(class__h__lvl *lv)
 {
     int i;
 
-    array *l = &lv->class_f_array__l__scene;
+    T_array(class__f__scene) *l = &lv->class_f_array__l__scene;
     for(i = 0; i < l->length; i++)
     {
         class__f__scene *obj = ((class__f__scene *)(l->array)) + i;
@@ -100,7 +100,7 @@ static void delete_class__h__lvl(class__h__lvl *lv)
     }
     delete_array(l);
 
-    array *h = &lv->class_g_array__h__item;
+    T_array(class__g__item) *h = &lv->class_g_array__h__item;
     for(i = 0; i < h->length; i++)
     {
         class__g__item *obj = ((class__g__item *)(h->array)) + i;
@@ -112,7 +112,7 @@ static void delete_class__h__lvl(class__h__lvl *lv)
 
 static class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[], const char *resc_path);
 static void class_h__function_S_void__item(class__g__item *h, const byte arrayOfByte[]);
-static void read_CT3D_map_items(array *class_g_array__h__item, const char *resc_path);
+static void read_CT3D_map_items(T_array(class__g__item) *class_g_array__h__item, const char *resc_path);
 
 NLboolean nlReadCT3DModelFile(const char *name, NLint level, const char *resc_path, NETLizard_3D_Model *model)
 {
@@ -146,7 +146,8 @@ NLboolean nlLoadCT3DModelData(const char* data, NLsizei res, NLint level, const 
     model->data.data = NEW_II(NETLizard_3D_Mesh, l->length);
     model->data.count = l->length;
 	model->has_sky = dr;
-	model->game = CT_3D_Map;
+    model->type = NL_CT_3D_MAP_MODEL;
+    model->game = NL_CONTR_TERRORISM_3D;
 
     // map model
 	int i;
@@ -230,7 +231,7 @@ NLboolean nlLoadCT3DModelData(const char* data, NLsizei res, NLint level, const 
 	}
 
     // item model
-    array *h = &lv->class_g_array__h__item;
+    T_array(class__g__item) *h = &lv->class_g_array__h__item;
     model->item_data.count = h->length;
     model->item_data.data = NEW_II(NETLizard_3D_Item_Mesh, model->item_data.count);
 	for(i = 0; i < h->length; i++)
@@ -440,11 +441,12 @@ NLboolean nlLoadCT3DItemModelData(const char* data, NLsizei res, NLint index, NE
     model->item_data.data = mesh;
     model->item_data.count = 1;
 	model->has_sky = 0;
-	model->game = CT_3D_Item;
+    model->type = NL_CT_3D_ITEM_MODEL;
+    model->game = NL_CONTR_TERRORISM_3D;
     return NL_TRUE;
 }
 
-void read_CT3D_map_items(array *class_g_array__h__item, const char *resc_path)
+void read_CT3D_map_items(T_array(class__g__item) *class_g_array__h__item, const char *resc_path)
 {
 	int i;
 	for(i = 0; i < class_g_array__h__item->length; i++)
@@ -527,7 +529,7 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[], const ch
 	cZ = marge_digit(arrayOfByte[12], arrayOfByte[13]);
 	dprintfsi("Map scene count", cZ);
 
-    array class_f_array__l__scene;
+    T_array(class__f__scene) class_f_array__l__scene;
     new_array(&class_f_array__l__scene, sizeof(class__f__scene), cZ);
     class__f__scene *l = (class__f__scene *)(class_f_array__l__scene.array);
     jint i20;
@@ -693,7 +695,7 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[], const ch
 	i1 += 2;
     jint i11;
 	i11 = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
-    array class_b_array__j__bsp;
+    T_array(class__b__bsp) class_b_array__j__bsp;
     new_array(&class_b_array__j__bsp, sizeof(class__b__bsp), i11);
     class__b__bsp *j = (class__b__bsp *)(class_b_array__j__bsp.array);
     jint i2;
@@ -756,7 +758,7 @@ class__h__lvl class_h__function_k_void__scene(const byte arrayOfByte[], const ch
 	i1 += 2;
 	cA = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
 	dprintfsi("Map item count", cA);
-    array class_g_array__h__item;
+    T_array(class__g__item) class_g_array__h__item;
     new_array(&class_g_array__h__item, sizeof(class__g__item), cA + 1);
     class__g__item *h = (class__g__item *)(class_g_array__h__item.array);
     jint i21 = 0;

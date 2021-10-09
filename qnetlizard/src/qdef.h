@@ -12,4 +12,9 @@
 
 #define APP_GITHUB "https://github.com/glKarin/netlizard"
 
+#ifndef instanceof
+#define instanceof(obj, T) ((dynamic_cast<T *>(&obj)) != 0)
+#define instanceofv(obj, T) ((dynamic_cast<T *>(obj)) != 0)
+#endif
+
 #endif // _KARIN_QDEF_H

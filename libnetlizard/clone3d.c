@@ -164,7 +164,7 @@ NETLizard_3D_Model * nlReadClone3DItemModelFile(const char* name, int index)
 	free(arr);
 	model->data = NULL;
 	model->item_data = item_meshes;
-	model->game = Clone_3D_Item;
+	model->game = NL_CLONE_3D_ITEM_MODEL;
 	model->has_sky = 0;
 	return model;
 }
@@ -389,7 +389,7 @@ NETLizard_3D_Model * nlReadClone3DModelFile(const char* name)
 		model->start_pos[0] = lv->int_array__ab__translation[0] >> 16;
 		model->start_pos[1] = lv->int_array__ab__translation[1] >> 16;
 		model->start_pos[2] = lv->int_array__ab__translation[2] >> 16;
-		model->game = Clone_3D_Map;
+		model->game = NL_CLONE_3D_MAP_MODEL;
 		model->has_sky = 0;
 
 		for(i = 0; i < lv->class_c_array__g__scene->length; i++)
@@ -501,7 +501,7 @@ NETLizard_3D_Model * nlReadClone3DRoleModelFile(const char* name, int index)
 	free(arr);
 	model->data = NULL;
 	model->item_data = item_meshes;
-	model->game = Clone_3D_Role;
+	model->game = NL_CLONE_3D_ROLE_MODEL;
 	model->has_sky = 0;
 	return model;
 }

@@ -1,16 +1,26 @@
-#include "MapWidget.h"
+#include "mapwidget.h"
 
 #include <QDebug>
 #include <QByteArray>
 
 #include "qdef.h"
+#include "nlactor.h"
+#include "simplecameraactor.h"
+#include "netlizardmapmodelrenderer.h"
 
 MapWidget::MapWidget(QWidget *parent)
-    : GLWidget(parent),
-      m_model(0)
+    : NLScene(parent),
+      m_model(0),
+      m_renderer(0)
 {
     setObjectName("MapWidget");
-    SetEnableDefaultWheelHandler(false);
+    SimpleCameraActor *camera = new SimpleCameraActor;
+    m_actors.Add(camera);
+    NLActor *actor = new NLActor;
+    m_actors.Add(actor);
+    m_renderer = new NETLizardMapModelRenderer;
+    actor->SetRenderable(m_renderer);
+    SetCurrentCamera(camera->Camera());
 }
 
 MapWidget::~MapWidget()
@@ -20,13 +30,13 @@ MapWidget::~MapWidget()
 
 void MapWidget::Init()
 {
-    GLWidget::Init();
+    NLScene::Init();
 }
 
 void MapWidget::Update(float delta)
 {
     //qDebug() << delta;
-    GLWidget::Update(delta);
+    NLScene::Update(delta);
 }
 
 void MapWidget::paintGL()
@@ -35,36 +45,9 @@ void MapWidget::paintGL()
         return;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    RenderSky();
-    //Render3D(45, width(), height(), 0.01, 999999);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45, width() / height(), 0.01, 999999);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
     glPushMatrix();
     {
-        glRotatef(VECTOR3_X(m_cam.rotation), 1, 0, 0);
-        glRotatef(VECTOR3_Y(m_cam.rotation), 0, 1, 0);
-        glTranslatef(
-                    -VECTOR3_X(m_cam.position),
-                    -VECTOR3_Y(m_cam.position),
-                    -VECTOR3_Z(m_cam.position)
-                    );
-        glRotatef(-90, 1, 0, 0);
-//        gluLookAt(
-//                    VECTOR3_X(m_cam.position),
-//                    VECTOR3_Y(m_cam.position),
-//                    VECTOR3_Z(m_cam.position),
-//                    VECTOR3_X(forward),
-//                    VECTOR3_Y(forward),
-//                    VECTOR3_Z(forward),
-//                    VECTOR3_X(m_cam.up),
-//                    VECTOR3_Y(m_cam.up),
-//                    VECTOR3_Z(m_cam.up)
-//                    );
-        NETLizard_RenderGL3DModel(m_model);
+        NLScene::paintGL();
     }
     glPopMatrix();
 
@@ -73,7 +56,7 @@ void MapWidget::paintGL()
 
 void MapWidget::Deinit()
 {
-    GLWidget::Deinit();
+    NLScene::Deinit();
     Reset();
 }
 
@@ -99,6 +82,9 @@ bool MapWidget::LoadFile(const QString &file, const QString &resourcePath, int g
     case NL_ARMY_RANGER_3D:
         b = NETLizard_ReadGLSpecnaz3DMapModelFile(path, level, resc_path, m_model);
         break;
+    case NL_SHADOW_OF_EGYPT_3D:
+        b = NETLizard_ReadGLEgypt3DMapModelFile(path, resc_path, m_model);
+        break;
     default:
         qDebug() << "Unsupport game";
         break;
@@ -111,9 +97,17 @@ bool MapWidget::LoadFile(const QString &file, const QString &resourcePath, int g
         return false;
     }
 
+    m_renderer->SetModel(m_model);
+
     vector3_s startPos = {{m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]}};
     vector3_s startRotate = {{m_model->start_angle[0] + 90.0, m_model->start_angle[1] - 180.0, 0}};
-    initcam(&m_cam, &startPos, &startRotate);
+
+    SimpleCameraActor *camera = static_cast<SimpleCameraActor *>(m_actors[0]);
+    camera->SetPosition(&startPos);
+    camera->SetRotation(&startRotate);
+
+    GrabMouseCursor(true);
+
     return true;
 }
 
@@ -125,46 +119,8 @@ void MapWidget::Reset()
         free(m_model);
         m_model = 0;
     }
-    SetHideMouse(false);
-}
-
-void MapWidget::RenderSky()
-{
-    if(!m_model)
-        return;
-    if(!m_model->bg_tex)
-        return;
-
-    GLfloat w = width();
-    GLfloat h = height();
-    const GLfloat _Vertex[] = {
-        0.0, 0.0,
-        w, 0.0,
-        0.0, h,
-        w, h
-    };
-    const GLfloat _Texcoord[] = {
-        0.0, 1.0,
-        1.0, 1.0,
-        0.0, 0.0,
-        1.0, 0.0
-    };
-    glDisable(GL_DEPTH_TEST);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0, w, 0, h);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, _Vertex);
-    glTexCoordPointer(2, GL_FLOAT, 0, _Texcoord);
-    glBindTexture(GL_TEXTURE_2D, m_model->bg_tex->texid);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnable(GL_DEPTH_TEST);
+    m_renderer->SetModel(0);
+    //SetHideMouse(false);
 }
 
 

@@ -11,8 +11,8 @@
 
 typedef struct _class__g__scene
 {
-  array int_array_6__a__vertex; // int 3顶点坐标 3UNUSED DYNAMIC
-  array int_array_7__b__primitive; // int 3索引 3纹理坐标索引(i, i + 1) 1纹理索引
+  int_array int_array_6__a__vertex; // int 3顶点坐标 3UNUSED DYNAMIC
+  int_array int_array_7__b__primitive; // int 3索引 3纹理坐标索引(i, i + 1) 1纹理索引
   jint c;
   jint d;
   jint int__e__end; // = 0; 最后一个物品索引
@@ -22,7 +22,7 @@ typedef struct _class__g__scene
   jint int__i__aabb; // AABB盒子
   jint int__j__aabb; // AABB盒子
   jint int__k__aabb; // AABB盒子
-  array int_array_6__l__plane; // int 碰撞面 1法线索引(i, i + 1, i + 2) 1顶点索引(i, i + 1, i + 2)
+  int_array int_array_6__l__plane; // int 碰撞面 1法线索引(i, i + 1, i + 2) 1顶点索引(i, i + 1, i + 2)
   jint m;
   jint n;
   jint int_array_5__o__bsp[5];
@@ -33,7 +33,7 @@ typedef struct _class__g__scene
 typedef struct _class__c__bsp
 {
   byte byte__a__direction;
-    jint int_array_3__a__normal[3];
+  jint int_array_3__a__normal[3];
   jint int_array_4x3__b__plane[4][3]; // l[] b = new l[4];
   jint int__c__prev_scene;
   jint int__d__next_scene;
@@ -42,8 +42,8 @@ typedef struct _class__c__bsp
 
 typedef struct _class__j__item
 {
-  array int_array_6__a__vertex; // int 3顶点坐标 3UNUSED DYNAMIC
-  array int_array_16__b__primitive; // int 3索引 6纹理坐标索引 1纹理索引 3法线 3UNKNOW
+  int_array int_array_6__a__vertex; // int 3顶点坐标 3UNUSED DYNAMIC
+  int_array int_array_16__b__primitive; // int 3索引 6纹理坐标索引 1纹理索引 3法线 3UNKNOW
   jboolean c;
   jboolean d;
   jshort e; // = 0;
@@ -67,14 +67,14 @@ typedef struct _class__j__item
 
 typedef struct _class__k__lvl
 {
-  array class_g_array__q__scene; // 场景
-    array int_array__j__normal; // 法线
-    array int_array__dm__texcoord; // 纹理坐标
+    T_array(class__g__scene) class_g_array__q__scene; // 场景
+  int_array int_array__j__normal; // 法线
+  int_array int_array__dm__texcoord; // 纹理坐标
   array class_j_array__l__item; // 物品
   jint int_array__cF__translation[3]; // 主角初始坐标
   jint int__cC__rotation; // 主角初始视角
   jint int__cE__rotation; // 主角初始视角;
-    array class_c_array__o__bsp;
+  T_array(class__c__bsp) class_c_array__o__bsp;
 } class__k__lvl;
 
 static void delete_class__g__scene(class__g__scene *scene)
@@ -94,7 +94,7 @@ static void delete_class__k__lvl(class__k__lvl *lv)
 {
     int i;
 
-    array *g_q = &lv->class_g_array__q__scene;
+    T_array(class__g__scene) *g_q = &lv->class_g_array__q__scene;
     for(i = 0; i < g_q->length; i++)
     {
         class__g__scene *obj = ((class__g__scene *)(g_q->array)) + i;
@@ -102,7 +102,7 @@ static void delete_class__k__lvl(class__k__lvl *lv)
     }
     delete_array(g_q);
 
-    array *j_l = &lv->class_j_array__l__item;
+    T_array(class__j__item) *j_l = &lv->class_j_array__l__item;
     for(i = 0; i < j_l->length; i++)
     {
         class__j__item *obj = ((class__j__item *)(j_l->array)) + i;
@@ -116,7 +116,7 @@ static void delete_class__k__lvl(class__k__lvl *lv)
 
 static class__k__lvl class_k__function_h_1int__scene(const byte arrayOfByte[], const char *resc_path); // 场景解析
 static void class_k__function_P_void__item(class__j__item *l, const byte arrayOfByte[]); // 场景物品解析
-static void read_Specnaz3D_map_items(array *j_l, const char *resc_path);
+static void read_Specnaz3D_map_items(T_array(class__j__item) *j_l, const char *resc_path);
 
 NLboolean nlReadSpecnaz3DModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model)
 {
@@ -150,7 +150,8 @@ NLboolean nlLoadSpecnaz3DModelData(const char* data, NLsizei res, NLint paramInt
     model->data.count = g_q->length;
     model->data.data = NEW_II(NETLizard_3D_Mesh, g_q->length);
 	model->has_sky = dr;
-	model->game = Army_Ranger_3D_Map;
+    model->type = NL_ARMY_RANGER_3D_MAP_MODEL;
+    model->game = NL_ARMY_RANGER_3D;
 
 	int i;
 	for(i = 0; i < g_q->length; i++)
@@ -222,6 +223,8 @@ NLboolean nlLoadSpecnaz3DModelData(const char* data, NLsizei res, NLint paramInt
 				k++;
 			}
 		}
+
+        // box
 		mesh->ortho[0] = obj->int__f__aabb >> 16;
 		mesh->ortho[1] = obj->int__g__aabb >> 16;
 		mesh->ortho[2] = obj->int__h__aabb >> 16;
@@ -247,11 +250,11 @@ NLboolean nlLoadSpecnaz3DModelData(const char* data, NLsizei res, NLint paramInt
 	}
 
     // item model
-    array *j_l = &lv->class_j_array__l__item;
     model->item_data.count = 0;
     model->item_data.data = NULL;
-	if(j_l)
+    if(ARRAY_DATA(lv->class_j_array__l__item))
 	{
+        T_array(class__j__item) *j_l = &lv->class_j_array__l__item;
         model->item_data.count = j_l->length;
         model->item_data.data = NEW_II(NETLizard_3D_Item_Mesh, model->item_data.count);
 		for(i = 0; i < j_l->length; i++)
@@ -460,11 +463,12 @@ NLboolean nlLoadSpecnaz3DItemModelData(const char* data, NLsizei res, NLint inde
     model->item_data.data = mesh;
     model->item_data.count = 1;
 	model->has_sky = 0;
-	model->game = Army_Ranger_3D_Item;
+    model->type = NL_ARMY_RANGER_3D_ITEM_MODEL;
+    model->game = NL_ARMY_RANGER_3D;
     return NL_TRUE;
 }
 
-void read_Specnaz3D_map_items(array *j_l, const char *resc_path)
+void read_Specnaz3D_map_items(T_array(class__j__item) *j_l, const char *resc_path)
 {
 	if(!j_l)
 		return;
@@ -498,12 +502,12 @@ class__k__lvl class_k__function_h_1int__scene(const byte arrayOfByte[], const ch
     jint cC;
     jint cE;
     jint cx;
-    array int_j;
-    array int_dm;
-    array g_q;
+    int_array int_j;
+    int_array int_dm;
+    T_array(class__g__scene) g_q;
 	//byte *bX = NULL;
     jint bU;
-    array j_l;
+    T_array(class__j__item) j_l;
 
     jint i1 = -2;
 	i1 += 2;
@@ -703,7 +707,7 @@ class__k__lvl class_k__function_h_1int__scene(const byte arrayOfByte[], const ch
     jint i12;
 	i12 = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
 	dprintfsi("Map BSP tree node count", i12);
-    array class_c_array__o__bsp;
+    T_array(class__c__bsp) class_c_array__o__bsp;
     new_array(&class_c_array__o__bsp, sizeof(class__c__bsp), i12);
     class__c__bsp *o = (class__c__bsp *)(class_c_array__o__bsp.array);
     jint i15;

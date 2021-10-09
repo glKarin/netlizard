@@ -1,12 +1,12 @@
 #ifndef _KARIN_IMAGEWIDGET_H
 #define _KARIN_IMAGEWIDGET_H
 
-#include "glwidget.h"
+#include "nlscene.h"
 #include "netlizard.h"
 
 typedef struct _texture_s texture_s;
 
-class ImageWidget : public GLWidget
+class ImageWidget : public NLScene
 {
     Q_OBJECT
 public:

@@ -45,6 +45,7 @@ float vector3_dot(const vector3_s *a, const vector3_s *b);
 float vector3_length(const vector3_s *a);
 int vector3_valid(const vector3_s *a);
 int vector3_equals(const vector3_s *a, const vector3_s *b);
+int vector3_iszero(const vector3_s *a);
 
 #ifdef __cplusplus
 }

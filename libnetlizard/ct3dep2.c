@@ -11,8 +11,8 @@
 
 typedef struct _class__h__scene // 地图模型场景
 {
-  array short_array_3__a__vertex; // short 3顶点坐标
-  array int_array_7__b__primitive; // int 3索引 3纹理坐标索引(i, i + 1) 1纹理索引
+  short_array short_array_3__a__vertex; // short 3顶点坐标
+  int_array int_array_7__b__primitive; // int 3索引 3纹理坐标索引(i, i + 1) 1纹理索引
   jint c;
   jint d;
   jint int__e__end; // = 0; 最后一个物品索引
@@ -22,7 +22,7 @@ typedef struct _class__h__scene // 地图模型场景
   jint int__i__aabb; // AABB盒子
   jint int__j__aabb; // AABB盒子
   jint int__k__aabb; // AABB盒子
-  array int_array_2__l__plane; // int 碰撞面 1法线索引(i, i + 1, i + 2) 1顶点索引(i, i + 1, i + 2)
+  int_array int_array_2__l__plane; // int 碰撞面 1法线索引(i, i + 1, i + 2) 1顶点索引(i, i + 1, i + 2)
   jint m;
   jint n;
   jint int_array_7__o__bsp[7]; // -1 -1 -1 -1 -1 -1 -1
@@ -33,7 +33,7 @@ typedef struct _class__h__scene // 地图模型场景
 typedef struct _class__c__bsp
 {
   byte byte__a__direction;
-    jint int_array_3__a__normal[3];
+  jint int_array_3__a__normal[3];
   jint int_array_4x3__b__plane[4][3]; // n[] b = new n[4];
   jint int__c__prev_scene;
   jint int__d__next_scene;
@@ -42,8 +42,8 @@ typedef struct _class__c__bsp
 
 typedef struct _class__k__item // 物品
 {
-  array int_array_6__a__vertex; // int 顶点坐标
-  array int_array_16__b__primitive; // int 纹理 纹理索引
+  int_array int_array_6__a__vertex; // int 顶点坐标
+  int_array int_array_16__b__primitive; // int 纹理 纹理索引
   jboolean c;
   jboolean d;
   jshort e; // = 0;
@@ -67,14 +67,14 @@ typedef struct _class__k__item // 物品
 
 typedef struct _class__l__lvl
 {
-  array class_h_array__ar__scene; // 场景
-    array int_array__ak__normal; // 法线
-    array int_array__dP__texcoord; // 纹理坐标
-  array class_k_array__an__item; // 物品
+  T_array(class__h__scene) class_h_array__ar__scene; // 场景
+    int_array int_array__ak__normal; // 法线
+    int_array int_array__dP__texcoord; // 纹理坐标
+  T_array(class__k__item) class_k_array__an__item; // 物品
   jint int_array__dw__translation[3]; // 主角初始坐标
   jint int__dt__rotation; // 主角初始视角
   jint int__dv__rotation; // 主角初始视角;
-    array class_c_array__ap__bsp;
+  T_array(class__c__bsp) class_c_array__ap__bsp;
 } class__l__lvl;
 
 static void delete_class__h__scene(class__h__scene *scene)
@@ -94,7 +94,7 @@ static void delete_class__l__lvl(class__l__lvl *lv)
 {
     int i;
 
-    array *h_ar = &lv->class_h_array__ar__scene;
+    T_array(class__h__scene) *h_ar = &lv->class_h_array__ar__scene;
     for(i = 0; i < h_ar->length; i++)
     {
         class__h__scene *obj = ((class__h__scene *)(h_ar->array)) + i;
@@ -102,7 +102,7 @@ static void delete_class__l__lvl(class__l__lvl *lv)
     }
     delete_array(h_ar);
 
-    array *k_an = &lv->class_k_array__an__item;
+    T_array(class__k__item) *k_an = &lv->class_k_array__an__item;
     for(i = 0; i < k_an->length; i++)
     {
         class__k__item *obj = ((class__k__item *)(k_an->array)) + i;
@@ -112,7 +112,7 @@ static void delete_class__l__lvl(class__l__lvl *lv)
     delete_array(&lv->class_c_array__ap__bsp);
 }
 
-static void read_CT3DEp2_map_items(array *k_an, const char *resc_path);
+static void read_CT3DEp2_map_items(T_array(class__k__item) *k_an, const char *resc_path);
 static class__l__lvl class_l__function_h_1int__scene(const byte paramInt[], const char *resc_path); // 场景解析
 static void class_l__function_I_void__item(class__k__item *an, const byte arrayOfByte1[]); // 物品解析
 
@@ -149,7 +149,8 @@ NLboolean nlLoadCT3DEp2ModelData(const char* data, NLsizei res, NLint level, con
     model->data.data = NEW_II(NETLizard_3D_Mesh, h_ar->length);
     model->data.count = h_ar->length;
 	model->has_sky = dr;
-	model->game = CT_3D_Ep2_Map;
+    model->type = NL_CT_3D_EP2_MAP_MODEL;
+    model->game = NL_CONTR_TERRORISM_3D_EPISODE_2;
 
 	int i;
 	for(i = 0; i < h_ar->length; i++)
@@ -232,7 +233,7 @@ NLboolean nlLoadCT3DEp2ModelData(const char* data, NLsizei res, NLint level, con
 	}
 
     // item model
-    array *k_an = &lv->class_k_array__an__item;
+    T_array(class__k__item) *k_an = &lv->class_k_array__an__item;
     model->item_data.count = k_an->length;
     model->item_data.data = NEW_II(NETLizard_3D_Item_Mesh, model->item_data.count);
 	for(i = 0; i < k_an->length; i++)
@@ -443,11 +444,12 @@ NLboolean nlLoadCT3DEp2ItemModelData(const char* data, NLsizei res, NLint index,
     model->item_data.data = mesh;
     model->item_data.count = 1;
 	model->has_sky = 0;
-	model->game = CT_3D_Ep2_Item;
+    model->type = NL_CT_3D_EP2_ITEM_MODEL;
+    model->game = NL_CONTR_TERRORISM_3D_EPISODE_2;
     return NL_TRUE;
 }
 
-void read_CT3DEp2_map_items(array *k_an, const char *resc_path)
+void read_CT3DEp2_map_items(T_array(class__k__item) *k_an, const char *resc_path)
 {
 	int i;
 	for(i = 0; i < k_an->length; /* 45 */i++)
@@ -487,12 +489,12 @@ class__l__lvl class_l__function_h_1int__scene(const byte paramInt[], const char 
   jint dt;
   jint dv;
   jint jdField_do;
-  array int_ak;
-  array int_dP;
-  array h_ar;
+  int_array int_ak;
+  int_array int_dP;
+  T_array(class__h__scene) h_ar;
   //byte *cL = NULL;
   jint cI;
-  array k_an;
+  T_array(class__k__item) k_an;
 
     jint i1 = -2;
 	i1 += 2;
@@ -684,7 +686,7 @@ class__l__lvl class_l__function_h_1int__scene(const byte paramInt[], const char 
 	i1 += 2;
 	i5 = marge_digit(paramInt[i1], paramInt[(i1 + 1)]);
 	dprintfsi("Map BSP tree node count", i5);
-    array class_c_array__ap__bsp;
+    T_array(class__c__bsp) class_c_array__ap__bsp;
     new_array(&class_c_array__ap__bsp, sizeof(class__c__bsp), i5);
     class__c__bsp *ap = (class__c__bsp *)(class_c_array__ap__bsp.array);
     jint i8;

@@ -17,10 +17,10 @@
 #define class_g__no_function_1byte_array_2int__swap(byte_array, int1) \
 	class_s__function_a_1byte_array_2int__swap(byte_array, int1)
 
-static array class_s__function_a_1byte_array__color_map(const byte paramArrayOfByte[], NETLizard_Texture_format *format);
-static array class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(const array *data, int paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int *width, int *height);
-static void class_s__function_a_1byte_array_2int__swap(byte paramArrayOfByte[], int paramInt);
-static int class_s__function_a_1byte_array_2byte__get_width_height_depth(byte paramArrayOfByte[], byte paramByte);
+static int_array class_s__function_a_1byte_array__color_map(const byte paramArrayOfByte[], NETLizard_Texture_format *format);
+static byte_array class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(const array *data, jint paramBoolean, jint paramInt1, jint paramInt2, jint paramInt3, jint paramInt4, int *width, int *height);
+static void class_s__function_a_1byte_array_2int__swap(byte paramArrayOfByte[], jint paramInt);
+static jint class_s__function_a_1byte_array_2byte__get_width_height_depth(byte paramArrayOfByte[], byte paramByte);
 
 NLboolean nlReadTextureV3File(const char *name, NLint i1, NETLizard_Texture *tex)
 {
@@ -425,26 +425,26 @@ NLboolean nlSaveTextureV3CompressDataToImageFile(const NETLizard_Texture *tex, c
 
 /* ******** static ******** */
 
-array class_s__function_a_1byte_array__color_map(const byte paramArrayOfByte[], NETLizard_Texture_format *format)
+int_array class_s__function_a_1byte_array__color_map(const byte paramArrayOfByte[], NETLizard_Texture_format *format)
 {
-	int j = 3;
-	int k = 0;
+    jint j = 3;
+    jint k = 0;
 	if (paramArrayOfByte[3] == 1) {
 		k = 1;
 	}
 	j++;
-	int i;
+    jint i;
 	j++;
 	if ((i = paramArrayOfByte[5]) < 0) {
 		i += 256;
 	}
 	nlprintf("NETLizard 3D engine v3 texture color map'size->%d\n", i);
-    array arr;
-    new_array(&arr, sizeof(jint), i);
+    int_array arr;
+    new_array(&arr, ESIZE(jint, 4), i);
     jint *arrayOfInt = (jint *)(arr.array);
 	if (k == 0)
 	{
-		int m = 0;
+        jint m = 0;
 		//tmpTernaryOp = paramArrayOfByte;
 		while (m < i)
 		{
@@ -454,7 +454,7 @@ array class_s__function_a_1byte_array__color_map(const byte paramArrayOfByte[], 
 	}
 	else
 	{
-		int n;
+        jint n;
 		for (n = 0; n < i; n++) {
 			if (paramArrayOfByte[(++j)] != 0)
 			{
@@ -477,19 +477,19 @@ array class_s__function_a_1byte_array__color_map(const byte paramArrayOfByte[], 
 	return arr;
 }
 
-array class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(const array *data, int paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int *width, int *height)
+byte_array class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(const array *data, jint paramBoolean, jint paramInt1, jint paramInt2, jint paramInt3, jint paramInt4, int *width, int *height)
 {
-	int j = 0;
-	int k = 0;
+    jint j = 0;
+    jint k = 0;
 	byte *paramArrayOfByte = (byte *)(data->array);
 	if (paramArrayOfByte[3] == 1) {
 		k = 1;
 	}
-	int m = 0;
+    jint m = 0;
 	if (paramArrayOfByte[4] == 1) {
 		m = 1;
 	}
-	int n;
+    jint n;
 	if ((n = paramArrayOfByte[5]) < 0) {
 		n += 256;
 	}
@@ -503,9 +503,9 @@ array class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(con
 	size_t length = 0;
 	int w;
 	int h;
-	int i1;
-	int i2;
-	int i3;
+    jint i1;
+    jint i2;
+    jint i3;
 	if (!paramBoolean)
 	{
 		i1 = paramArrayOfByte[(++j)] << 8 | paramArrayOfByte[(++j)];
@@ -517,7 +517,7 @@ array class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(con
 			i2 += 256;
 		}
 		j++;
-		int i;
+        jint i;
 		nlprintf("NETLizard 3D engine v3 texture->width: %d, height: %d\n", i1, i2);
 		if (m == 0)
 		{
@@ -553,11 +553,11 @@ array class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(con
 		j += paramInt2 * i3 + paramInt1;
 		j++;
 		j++;
-		int i4;
+        jint i4;
 		for (i4 = 0; i4 < paramInt4; i4++)
 		{
 			i2 = i4 * i3 + j;
-			int i5;
+            jint i5;
 			for (i5 = 0; i5 < paramInt3; i5++)
 			{
 				arrayOfByte[i1] = paramArrayOfByte[(i2 + i5)];
@@ -577,33 +577,33 @@ array class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(con
 	return arr;
 }
 
-void class_s__function_a_1byte_array_2int__swap(byte paramArrayOfByte[], int paramInt)
+void class_s__function_a_1byte_array_2int__swap(byte paramArrayOfByte[], jint paramInt)
 {
-	int j;
-	int k = (j = (1 << paramInt) - 1) >> 1;
-	int m;
-	int n;
+    jint j;
+    jint k = (j = (1 << paramInt) - 1) >> 1;
+    jint m;
+    jint n;
 	for (m = j; m >= 0; m--) {
 		for (n = k; n >= 0; n--)
 		{
-			int i = paramArrayOfByte[(n * (j + 1) + m)];
+            jint i = paramArrayOfByte[(n * (j + 1) + m)];
 			paramArrayOfByte[(n * (j + 1) + m)] = paramArrayOfByte[((j - n) * (j + 1) + m)];
 			paramArrayOfByte[((j - n) * (j + 1) + m)] = i;
 		}
 	}
 }
 
-int class_s__function_a_1byte_array_2byte__get_width_height_depth(byte paramArrayOfByte[], byte paramByte)
+jint class_s__function_a_1byte_array_2byte__get_width_height_depth(byte paramArrayOfByte[], byte paramByte)
 {
-	int j = 0;
-	int k = 0;
+    jint j = 0;
+    jint k = 0;
 	if (paramArrayOfByte[3] == 1) {
 		k = 1;
 	}
 	if (paramByte == 2) {
 		return paramArrayOfByte[4];
 	}
-	int i;
+    jint i;
 	if ((i = paramArrayOfByte[5]) < 0) {
 		i += 256;
 	}
@@ -612,8 +612,8 @@ int class_s__function_a_1byte_array_2byte__get_width_height_depth(byte paramArra
 	} else {
 		j = 5 + i * 3;
 	}
-	int m;
-	int n;
+    jint m;
+    jint n;
 	if (paramByte == 0)
 	{
         if ((m = (jshort)paramArrayOfByte[(++j)]) < 0) {

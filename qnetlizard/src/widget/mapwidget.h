@@ -1,10 +1,12 @@
 #ifndef _KARIN_MAPWIDGET_H
 #define _KARIN_MAPWIDGET_H
 
-#include "glwidget.h"
+#include "nlscene.h"
 #include "gl/nl_gl.h"
 
-class MapWidget : public GLWidget
+class NETLizardMapModelRenderer;
+
+class MapWidget : public NLScene
 {
     Q_OBJECT
 public:
@@ -24,10 +26,8 @@ protected:
     virtual void Deinit();
 
 private:
-    void RenderSky();
-
-private:
     GL_NETLizard_3D_Model *m_model;
+    NETLizardMapModelRenderer *m_renderer;
 
     Q_DISABLE_COPY(MapWidget)
 };

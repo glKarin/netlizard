@@ -8,7 +8,20 @@
 void delete_array(array *arr)
 {
     if(arr->alloc)
-        free(arr->array);
+    {
+        if(arr->array)
+            free(arr->array);
+    }
+    arr->array = NULL;
+    arr->length = 0;
+    arr->size = 0;
+}
+
+void reset_array(array *arr)
+{
+    memset(arr, 0, sizeof(array));
+    return;
+    arr->alloc = 0;
     arr->array = NULL;
     arr->length = 0;
     arr->size = 0;

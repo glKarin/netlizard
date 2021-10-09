@@ -6,7 +6,7 @@
 #include "qdef.h"
 
 ItemWidget::ItemWidget(QWidget *parent)
-    : GLWidget(parent),
+    : NLScene(parent),
       m_model(0)
 {
     setObjectName("ItemWidget");
@@ -20,13 +20,13 @@ ItemWidget::~ItemWidget()
 
 void ItemWidget::Init()
 {
-    GLWidget::Init();
+    NLScene::Init();
 }
 
 void ItemWidget::Update(float delta)
 {
     //qDebug() << delta;
-    GLWidget::Update(delta);
+    NLScene::Update(delta);
 }
 
 void ItemWidget::paintGL()
@@ -61,7 +61,7 @@ void ItemWidget::paintGL()
 
 void ItemWidget::Deinit()
 {
-    GLWidget::Deinit();
+    NLScene::Deinit();
     Reset();
 }
 
@@ -86,6 +86,9 @@ bool ItemWidget::LoadFile(const QString &file, const QString &resourcePath, int 
         break;
     case NL_ARMY_RANGER_3D:
         b = NETLizard_ReadGLSpecnaz3DItemModelFile(path, index, resc_path, m_model);
+        break;
+    case NL_SHADOW_OF_EGYPT_3D:
+        b = NETLizard_ReadGLEgypt3DItemModelFile(path, index, resc_path, m_model);
         break;
     default:
         qDebug() << "Unsupport game";

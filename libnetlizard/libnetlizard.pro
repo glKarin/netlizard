@@ -50,7 +50,8 @@ SOURCES += \
     texture_v3_file.c \
     png_file.c \
     ct3dep2.c \
-    specnaz3d.c
+    specnaz3d.c \
+    egypt3d.c
 
 #libnetlizard.files = $$DESTDIR/libnetlizard*
 #libnetlizard.path = /usr/lib

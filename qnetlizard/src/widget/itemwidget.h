@@ -1,10 +1,10 @@
 #ifndef _KARIN_ITEMWIDGET_H
 #define _KARIN_ITEMWIDGET_H
 
-#include "glwidget.h"
+#include "nlscene.h"
 #include "gl/nl_gl.h"
 
-class ItemWidget : public GLWidget
+class ItemWidget : public NLScene
 {
     Q_OBJECT
 public:

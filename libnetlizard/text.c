@@ -75,10 +75,10 @@ NLboolean nlSaveAndHandleTextData(const char *in_data, NLsizei len, const char *
 // clone 3d
 array class_p__function_a_1string_2char__text_w(const array *arr, wchar_t paramChar)
 {
-    int length = array_size(arr);
+    jint length = array_size(arr);
     int8_t *o = (int8_t *)(arr->array); // signed char
     array data;
-    memset(&data, 0, sizeof(array));
+    ARRAY_NULL(data);
     int8_t *paramString = NULL;
 	if ((length > 1) && (o[0] == 59) && (o[1] == 67)) {
         new_array(&data, arr->size, arr->length);
@@ -106,9 +106,9 @@ array class_p__function_a_1string_2char__text_w(const array *arr, wchar_t paramC
 		return a(paramString);
 	}*/
 	wchar_t c2 = c1;
-	int k;
+    jint k;
 	paramChar = length;
-	int j = (k = length - c1) + c1;
+    jint j = (k = length - c1) + c1;
     wchar_t c3;
     for (c3 = c1; c3 < (unsigned int)j; c3++) {
 		if (paramString[c3] == 0)
@@ -119,7 +119,7 @@ array class_p__function_a_1string_2char__text_w(const array *arr, wchar_t paramC
 		}
     }
     wchar_t *arrayOfChar = NEW_II(wchar_t, k + 1);
-	int m;
+    jint m;
 	for (m = 0; m < k; m++)
 	{
 		if ((j = paramString[(m + c1)]) < 0) {

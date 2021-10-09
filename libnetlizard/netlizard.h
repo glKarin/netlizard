@@ -152,20 +152,20 @@ typedef enum NETLizard_3D_Animation_Type_e
 /* NETLizard 3D model type */
 typedef enum NETLizard_3D_Model_Type_e
 {
-    CT_3D_Map = 0,
-    CT_3D_Item,
-    CT_3D_Ep2_Map,
-    CT_3D_Ep2_Item,
-    Army_Ranger_3D_Map,
-    Army_Ranger_3D_Item,
-    Egypt_3D_Map,
-    Egypt_3D_Item,
-    Egypt_3D_Role,
-    Clone_3D_Map,
-    Clone_3D_Item,
-    Clone_3D_Role,
-    CT_3D_Ep3_Map,
-    CT_3D_Ep3_Item
+    NL_CT_3D_MAP_MODEL = 0,
+    NL_CT_3D_ITEM_MODEL,
+    NL_CT_3D_EP2_MAP_MODEL,
+    NL_CT_3D_EP2_ITEM_MODEL,
+    NL_ARMY_RANGER_3D_MAP_MODEL,
+    NL_ARMY_RANGER_3D_ITEM_MODEL,
+    NL_EGYPT_3D_MAP_MODEL,
+    NL_EGYPT_3D_ITEM_MODEL,
+    NL_EGYPT_3D_ROLE_MODEL,
+    NL_CLONE_3D_MAP_MODEL,
+    NL_CLONE_3D_ITEM_MODEL,
+    NL_CLONE_3D_ROLE_MODEL,
+    NL_CT_3D_EP3_MAP_MODEL,
+    NL_CT_3D_EP3_ITEM_MODEL
 } NETLizard_3D_Model_Type;
 
 /* NETLizard 3D map BSP??? node */
@@ -229,7 +229,8 @@ typedef struct NETLizard_3D_Item_Mesh_s
 /* NETLizard 3D model mesh */
 typedef struct NETLizard_3D_Model_s
 {
-    NETLizard_3D_Model_Type game; // 3D model type
+    NETLizard_Game game;
+    NETLizard_3D_Model_Type type; // 3D model type
     NLint start_pos[3]; // player start position
     NLint start_angle[2]; // player start direction
     struct {
@@ -390,9 +391,11 @@ NLboolean nlLoadCT3DEp2ItemModelData(const char* data, NLsizei size, NLint index
 
 // 3D Shadows of Egypt
 NLboolean nlReadEgypt3DModelFile(const char* name, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlLoadEgypt3DModel(const char* data, NLsizei size, const char *resc_path, NETLizard_3D_Model *model);
+NLboolean nlLoadEgypt3DModelData(const char* data, NLsizei size, const char *resc_path, NETLizard_3D_Model *model);
 NLboolean nlReadEgypt3DItemModelFile(const char* name, int index, NETLizard_3D_Model *model);
+NLboolean nlLoadEgypt3DItemModelData(const char* data, NLsizei size, int index, NETLizard_3D_Model *model);
 NLboolean nlReadEgypt3DRoleModelFile(const char* name, int index, NETLizard_3D_Model *model);
+NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, int index, NETLizard_3D_Model *model);
 
 // Clone 3D
 NLboolean nlReadClone3DModelFile(const char* name, const char *resc_path, NETLizard_3D_Model *model);

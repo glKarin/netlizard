@@ -63,7 +63,7 @@ void MapViewer::Init()
     m_levelSpinBox->setValue(-1);
     m_openLvlButton = new QPushButton;
     connect(m_openLvlButton, SIGNAL(clicked()), this, SLOT(OpenFileChooser()));
-    m_openLvlButton->setText("lvl file");
+    m_openLvlButton->setText("lvl/dm file");
     toolLayout->addWidget(m_openLvlButton);
     toolLayout->addStretch();
 
@@ -165,6 +165,14 @@ bool MapViewer::OpenFile()
             level = regexp.cap(1).toInt();
             m_levelSpinBox->setValue(level);
         }
+        // Egypt 3D survive mode: dm1.png
+        regexp.setPattern("dm(\\d+)");
+        pos = regexp.indexIn(info.fileName());
+        if(pos != -1)
+        {
+            level = regexp.cap(1).toInt();
+            m_levelSpinBox->setValue(level);
+        }
     }
     bool res = false;
     switch(game)
@@ -172,6 +180,7 @@ bool MapViewer::OpenFile()
         case NL_CONTR_TERRORISM_3D:
     case NL_CONTR_TERRORISM_3D_EPISODE_2:
     case NL_ARMY_RANGER_3D:
+    case NL_SHADOW_OF_EGYPT_3D:
         res = m_mapWidget->LoadFile(m_lvlPath, m_resourceDirPath, game, level);
     break;
     default:
@@ -182,7 +191,7 @@ bool MapViewer::OpenFile()
     if(res)
     {
         m_mapWidget->setFocus();
-        m_mapWidget->SetHideMouse(true);
+        //m_mapWidget->SetHideMouse(true);
     }
     else
     {

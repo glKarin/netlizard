@@ -117,7 +117,7 @@ NETLizard_3D_Model * nlReadCT3DEp3ModelFile(const char *name, int paramInt)
 	int *o = (int *)(lv->int_array__o__normal->array);
 	model->data = new_array(nl_user, f_v->length, NULL, sizeof(NETLizard_3D_Mesh));
 	model->has_sky = dr;
-	model->game = CT_3D_Ep3_Map;
+	model->game = NL_CT_3D_EP3_MAP_MODEL;
 
 	int i;
 	for(i = 0; i < f_v->length; i++)
@@ -390,7 +390,7 @@ NETLizard_3D_Model * nlReadCT3DEp3ItemModelFile(const char* name, int index)
 	model->data = NULL;
 	model->item_data = item_meshes;
 	model->has_sky = 0;
-	model->game = CT_3D_Ep3_Item;
+	model->game = NL_CT_3D_EP3_ITEM_MODEL;
 	return model;
 }
 
