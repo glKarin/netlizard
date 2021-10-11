@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <QCoreApplication>
 #include <QMessageBox>
+#include <QResizeEvent>
+#include <QMoveEvent>
 
 #include <QMenuBar>
 
@@ -16,6 +18,7 @@
 #include "aboutdialog.h"
 #include "logdialog.h"
 #include "qdef.h"
+#include "settings.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -66,6 +69,8 @@ void MainWindow::Init()
     menuItem->setData("close_viewer");
 
     menu = menuBar->addMenu("&Other");
+    menuItem = menu->addAction("&Setting");
+    menuItem->setData("setting");
     menuItem = menu->addAction("&About");
     menuItem->setData("about");
     menuItem = menu->addAction("&Help");
@@ -77,7 +82,13 @@ void MainWindow::Init()
     connect(menuBar, SIGNAL(triggered(QAction *)), this, SLOT(MenuActionSlot(QAction *)));
 
     setMenuBar(menuBar);
-    resize(480, 360);
+    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+    int x = settings->GetSetting("WINDOW/x", 0);
+    int y = settings->GetSetting("WINDOW/y", 0);
+    move(x, y);
+    int w = settings->GetSetting("WINDOW/width", 480);
+    int h = settings->GetSetting("WINDOW/height", 360);
+    resize(w, h);
     setWindowTitle(qApp->applicationName());
     //resize(640, 480);
 }
@@ -97,6 +108,10 @@ void MainWindow::MenuActionSlot(QAction *action)
         HelpDialog::Show(this);
     }
     else if(type == "about")
+    {
+        AboutDialog::Show(this);
+    }
+    else if(type == "setting")
     {
         AboutDialog::Show(this);
     }
@@ -163,6 +178,13 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     {
         m_logDialog->ResetPosAndSize();
     }
+    if(isVisible())
+    {
+        Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+        QSize size = event->size();
+        settings->SetSetting("WINDOW/width", size.width());
+        settings->SetSetting("WINDOW/height", size.height());
+    }
 }
 
 void MainWindow::moveEvent(QMoveEvent *event)
@@ -171,5 +193,12 @@ void MainWindow::moveEvent(QMoveEvent *event)
     if(m_logDialog && m_logDialog->isVisible())
     {
         m_logDialog->ResetPosAndSize();
+    }
+    if(isVisible())
+    {
+        Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+        QPoint pos = event->pos();
+        settings->SetSetting("WINDOW/x", pos.x());
+        settings->SetSetting("WINDOW/y", pos.y());
     }
 }

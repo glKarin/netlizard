@@ -10,6 +10,7 @@ class NLActorContainer : public NLObjectContainer
     Q_OBJECT
 public:
     explicit NLActorContainer(QObject *parent = 0);
+    explicit NLActorContainer(NLScene *scene, QObject *parent = 0);
     virtual ~NLActorContainer();
     bool Exists(const NLActor &item) const;
     NLName Find(const NLActor *item);
@@ -32,6 +33,10 @@ signals:
 public slots:
 
 private:
+    void Construct();
+
+private:
+    friend class NLActor;
     Q_DISABLE_COPY(NLActorContainer)
 
 };

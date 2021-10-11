@@ -41,32 +41,10 @@ void SimpleCameraActor::Update(float delta)
 {
     if(!IsInited())
         return;
-    vector3_s v = m_control->CurrentMove();
-    if(!vector3_iszero(&v))
-        m_camera->Move(&v);
-    v = m_control->CurrentTurn();
-    if(!vector3_iszero(&v))
-        m_camera->Turn(&v);
-    v = m_control->CurrentRot();
-    vector3_scalev(&v, delta * 20);
-    if(!vector3_iszero(&v))
-        m_camera->Turn(&v);
     NLActor::Update(delta);
 }
 
-SceneCamera * SimpleCameraActor::Camera()
+NLSceneCamera * SimpleCameraActor::Camera()
 {
     return m_camera ? m_camera->Camera() : 0;
-}
-
-void SimpleCameraActor::SetPosition(const vector3_s *v)
-{
-    if(m_camera)
-        m_camera->SetPosition(v);
-}
-
-void SimpleCameraActor::SetRotation(const vector3_s *v)
-{
-    if(m_camera)
-        m_camera->SetRotation(v);
 }

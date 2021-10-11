@@ -25,10 +25,10 @@ void NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
 					if(!im->item_mesh.materials) // REDO
 						continue;
 					glPushMatrix();
-					{
-						glTranslatef(im->pos[0], im->pos[1], im->pos[2]);
-						glRotatef(im->angle[0], 1.0f, 0.0f, 0.0f);
-						glRotatef(im->angle[1], 0.0f, 0.0f, 1.0f);
+                    {
+                        glTranslatef(im->pos[0], im->pos[1], im->pos[2]);
+                        glRotatef(im->angle[0], 1.0f, 0.0f, 0.0f);
+                        glRotatef(im->angle[1], 0.0f, 0.0f, 1.0f);
 						NETLizard_RenderGL3DMesh(&(im->item_mesh), model->texes);
 					}
 					glPopMatrix();
@@ -48,10 +48,10 @@ void NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
 			if(m->item_type == Item_Box_Type)
 				continue;
 			glPushMatrix();
-			{
-				glTranslatef(m->pos[0], m->pos[1], m->pos[2]);
-				glRotatef(m->angle[0], 1.0f, 0.0f, 0.0f);
-				glRotatef(m->angle[1], 0.0f, 0.0f, 1.0f);
+            {
+                glTranslatef(m->pos[0], m->pos[1], m->pos[2]);
+                glRotatef(m->angle[0], 1.0f, 0.0f, 0.0f);
+                glRotatef(m->angle[1], 0.0f, 0.0f, 1.0f);
 				NETLizard_RenderGL3DMesh(&(m->item_mesh), model->texes);
 			}
 			glPopMatrix();

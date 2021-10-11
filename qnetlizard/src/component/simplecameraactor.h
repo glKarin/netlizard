@@ -7,7 +7,7 @@
 
 class SimpleCameraComponent;
 class SimpleControlComponent;
-class SceneCamera;
+class NLSceneCamera;
 
 class SimpleCameraActor : public NLActor
 {
@@ -18,9 +18,7 @@ public:
     virtual void Init();
     virtual void Destroy();
     virtual void Update(float delta);
-    NLINTERFACE void SetPosition(const vector3_s *v);
-    NLINTERFACE void SetRotation(const vector3_s *v);
-    SceneCamera * Camera();
+    NLSceneCamera * Camera();
     
 signals:
     

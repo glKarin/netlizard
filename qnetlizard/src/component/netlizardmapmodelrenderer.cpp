@@ -2,16 +2,17 @@
 
 #include <QDebug>
 
-NETLizardMapModelRenderer::NETLizardMapModelRenderer(QObject *parent) :
-    NLRenderable(parent),
+#include "qdef.h"
+
+NETLizardMapModelRenderer::NETLizardMapModelRenderer() :
     m_model(0)
 {
-    setObjectName("NETLizardMapModelRenderer");
 }
 
 NETLizardMapModelRenderer::~NETLizardMapModelRenderer()
 {
-
+    m_model = 0;
+    DEBUG_DESTROY("NETLizardMapModelRenderer")
 }
 
 void NETLizardMapModelRenderer::InitRender()
@@ -33,7 +34,7 @@ void NETLizardMapModelRenderer::Render()
 
 void NETLizardMapModelRenderer::DeinitRender()
 {
-
+    m_model = 0;
 }
 
 GL_NETLizard_3D_Model * NETLizardMapModelRenderer::Model()

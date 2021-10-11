@@ -6,9 +6,8 @@
 
 class NETLizardMapModelRenderer : public NLRenderable
 {
-    Q_OBJECT
 public:
-    explicit NETLizardMapModelRenderer(QObject *parent = 0);
+    explicit NETLizardMapModelRenderer();
     virtual ~NETLizardMapModelRenderer();
     GL_NETLizard_3D_Model * Model();
     void SetModel(GL_NETLizard_3D_Model *model);
@@ -17,10 +16,6 @@ protected:
     virtual void InitRender();
     virtual void Render();
     virtual void DeinitRender();
-    
-signals:
-    
-public slots:
 
 private:
     void RenderSky();

@@ -46,9 +46,12 @@ HEADERS += \
     src/component/simplecameracomponent.h \
     src/component/simplecameraactor.h \
     src/component/netlizardmapmodelrenderer.h \
-    src/component/engine/scenecamera.h \
-    src/component/engine/sceneorthocamera.h \
-    src/component/engine/sceneperspectivecamera.h
+    src/component/netlizardtexturerenderer.h \
+    src/component/engine/nlscenecamera.h \
+    src/component/engine/nlsceneorthocamera.h \
+    src/component/engine/nlsceneperspectivecamera.h \
+    src/component/settings.h \
+    src/settingdialog.h
 
 SOURCES += \
     main.cpp \
@@ -82,9 +85,12 @@ SOURCES += \
     src/component/simplecameracomponent.cpp \
     src/component/simplecameraactor.cpp \
     src/component/netlizardmapmodelrenderer.cpp \
-    src/component/engine/scenecamera.cpp \
-    src/component/engine/sceneorthocamera.cpp \
-    src/component/engine/sceneperspectivecamera.cpp
+    src/component/netlizardtexturerenderer.cpp \
+    src/component/engine/nlscenecamera.cpp \
+    src/component/engine/nlsceneorthocamera.cpp \
+    src/component/engine/nlsceneperspectivecamera.cpp \
+    src/component/settings.cpp \
+    src/settingdialog.cpp
 
 # NL-GL
 HEADERS += \

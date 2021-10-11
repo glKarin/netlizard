@@ -8,11 +8,22 @@
 NLActorContainer::NLActorContainer(QObject *parent) :
     NLObjectContainer(parent)
 {
-    setObjectName("NLActorContainer");
+    Construct();
+}
+
+NLActorContainer::NLActorContainer(NLScene *scene, QObject *parent) :
+    NLObjectContainer(scene, parent)
+{
+    Construct();
 }
 
 NLActorContainer::~NLActorContainer()
 {
+}
+
+void NLActorContainer::Construct()
+{
+    setObjectName("NLActorContainer");
 }
 
 bool NLActorContainer::KeyEventHandler(int key, bool pressed, int modify)

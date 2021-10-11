@@ -7,6 +7,9 @@ extern "C" {
 
 #include "mesa_math/m_matrix.h"
 
+#define GL_MATRIX_M(matrix) (matrix).m
+#define GL_MATRIXV_M(matrix) (matrix)->m
+
 void Mesa_glTranslate(GLmatrix *mat, float x, float y, float z);
 void Mesa_glRotate(GLmatrix *mat, float angle, float x, float y, float z);
 void Mesa_glScale(GLmatrix *mat, float x, float y, float z);

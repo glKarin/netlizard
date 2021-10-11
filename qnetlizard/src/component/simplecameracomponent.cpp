@@ -4,8 +4,8 @@
 
 #include "nlscene.h"
 
-#include "sceneperspectivecamera.h"
-#include "sceneorthocamera.h"
+#include "nlsceneperspectivecamera.h"
+#include "nlsceneorthocamera.h"
 
 SimpleCameraComponent::SimpleCameraComponent(const NLPropperties &prop, NLActor *parent) :
     NLComponent(prop, parent),
@@ -22,7 +22,13 @@ SimpleCameraComponent::~SimpleCameraComponent()
 
 void SimpleCameraComponent::Init()
 {
-    SetType(GetProperty<int>("type", static_cast<int>(SceneCamera::Type_Perspective)));
+    SetType(GetProperty<int>("type", static_cast<int>(NLSceneCamera::Type_Perspective)));
+    NLActor *actor = Actor();
+    if(actor)
+    {
+        connect(actor, SIGNAL(positionChanged(const NLVector3 &)), this, SLOT(OnPositionChanged(const NLVector3 &)));
+        connect(actor, SIGNAL(rotationChanged(const NLVector3 &)), this, SLOT(OnRotationChanged(const NLVector3 &)));
+    }
     NLComponent::Init();
 }
 
@@ -33,6 +39,9 @@ void SimpleCameraComponent::Update(float delta)
         NLScene *scene = Scene();
         if(scene)
             m_camera->Update(scene->width(), scene->height());
+        NLActor *actor = Actor();
+        if(actor)
+            m_camera->SetModelViewMatrix(actor->GlobalMatrix());
     }
     NLComponent::Update(delta);
 }
@@ -60,34 +69,24 @@ void SimpleCameraComponent::Render()
         m_camera->Render();
 }
 
-void SimpleCameraComponent::Move(const vector3_s *v)
+void SimpleCameraComponent::OnPositionChanged(const NLVector3 &pos)
 {
     if(m_camera)
-        m_camera->Move(v);
+    {
+        NLActor *actor = Actor();
+        if(actor)
+            m_camera->SetModelViewMatrix(actor->GlobalMatrix());
+    }
 }
 
-void SimpleCameraComponent::Turn(const vector3_s *v)
+void SimpleCameraComponent::OnRotationChanged(const NLVector3 &rot)
 {
     if(m_camera)
-        m_camera->Turn(v);
-}
-
-void SimpleCameraComponent::Zoom(const vector3_s *v)
-{
-    if(m_camera)
-        m_camera->Zoom(v);
-}
-
-void SimpleCameraComponent::SetPosition(const vector3_s *v)
-{
-    if(m_camera)
-        m_camera->SetPosition(v);
-}
-
-void SimpleCameraComponent::SetRotation(const vector3_s *v)
-{
-    if(m_camera)
-        m_camera->SetRotation(v);
+    {
+        NLActor *actor = Actor();
+        if(actor)
+            m_camera->SetModelViewMatrix(actor->GlobalMatrix());
+    }
 }
 
 void SimpleCameraComponent::SetType(int type)
@@ -100,12 +99,12 @@ void SimpleCameraComponent::SetType(int type)
             delete m_camera;
             m_camera = 0;
         }
-        m_camera = m_type == SceneCamera::Type_Ortho ? (SceneCamera *)new SceneOrthoCamera : (SceneCamera *)new ScenePerspectiveCamera;
+        m_camera = m_type == NLSceneCamera::Type_Ortho ? (NLSceneCamera *)new NLSceneOrthoCamera : (NLSceneCamera *)new NLScenePerspectiveCamera;
         m_camera->SetScene(Scene());
     }
 }
 
-SceneCamera * SimpleCameraComponent::Camera()
+NLSceneCamera * SimpleCameraComponent::Camera()
 {
     return m_camera;
 }

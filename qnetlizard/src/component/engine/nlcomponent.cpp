@@ -6,16 +6,46 @@
 #include "nlactor.h"
 #include "nlcomponentcontainer.h"
 
+NLComponent::NLComponent(NLActor *parent) :
+    NLObject(parent),
+    m_mounted(false)
+{
+    Construct();
+    if(parent)
+        SetScene(parent->Scene());
+}
+
 NLComponent::NLComponent(const NLPropperties &prop, NLActor *parent) :
     NLObject(prop, parent),
     m_mounted(false)
 {
-    setObjectName("NLComponent");
-    SetType(NLObject::Type_Component);
+    Construct();
+    if(parent)
+        SetScene(parent->Scene());
+}
+
+NLComponent::NLComponent(NLScene *scene, NLActor *parent) :
+    NLObject(scene, parent),
+    m_mounted(false)
+{
+    Construct();
+}
+
+NLComponent::NLComponent(NLScene *scene, const NLPropperties &prop, NLActor *parent) :
+    NLObject(scene, prop, parent),
+    m_mounted(false)
+{
+    Construct();
 }
 
 NLComponent::~NLComponent()
 {
+}
+
+void NLComponent::Construct()
+{
+    setObjectName("NLComponent");
+    SetType(NLObject::Type_Component);
 }
 
 void NLComponent::Update(float delta)

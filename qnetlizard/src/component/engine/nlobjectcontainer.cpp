@@ -9,13 +9,25 @@ NLObjectContainer::NLObjectContainer(QObject *parent) :
     QObject(parent),
     m_scene(0)
 {
-    setObjectName("NLObjectContainer");
+    Construct();
+}
+
+NLObjectContainer::NLObjectContainer(NLScene *scene, QObject *parent) :
+    QObject(parent),
+    m_scene(scene)
+{
+    Construct();
 }
 
 NLObjectContainer::~NLObjectContainer()
 {
     Destroy();
     DEBUG_DESTROY_Q;
+}
+
+void NLObjectContainer::Construct()
+{
+    setObjectName("NLObjectContainer");
 }
 
 void NLObjectContainer::Init()

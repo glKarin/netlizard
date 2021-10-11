@@ -45,11 +45,7 @@ void MapWidget::paintGL()
         return;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    glPushMatrix();
-    {
-        NLScene::paintGL();
-    }
-    glPopMatrix();
+    NLScene::paintGL();
 
     glFlush();
 }
@@ -99,12 +95,14 @@ bool MapWidget::LoadFile(const QString &file, const QString &resourcePath, int g
 
     m_renderer->SetModel(m_model);
 
-    vector3_s startPos = {{m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]}};
-    vector3_s startRotate = {{m_model->start_angle[0] + 90.0, m_model->start_angle[1] - 180.0, 0}};
+    //vector3_s startPos = {{m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]}};
+    //vector3_s startRotate = {{m_model->start_angle[0] + 90.0, m_model->start_angle[1] - 180.0, 0}};
+    vector3_s startPos = {{m_model->start_pos[0], m_model->start_pos[1], m_model->start_pos[2]}}; // z_is_up
+    vector3_s startRotate = {{m_model->start_angle[0] - 90.0, m_model->start_angle[1] - 180.0, 0}}; // z_is_up
 
     SimpleCameraActor *camera = static_cast<SimpleCameraActor *>(m_actors[0]);
-    camera->SetPosition(&startPos);
-    camera->SetRotation(&startRotate);
+    camera->SetPosition(startPos);
+    camera->SetRotation(startRotate);
 
     GrabMouseCursor(true);
 

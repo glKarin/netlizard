@@ -10,7 +10,10 @@ class NLComponent : public NLObject
 {
     Q_OBJECT
 public:
-    explicit NLComponent(const NLPropperties &prop = NLPropperties(), NLActor *parent = 0);
+    explicit NLComponent(NLActor *parent = 0);
+    explicit NLComponent(const NLPropperties &prop, NLActor *parent = 0);
+    explicit NLComponent(NLScene *scene, NLActor *parent = 0);
+    explicit NLComponent(NLScene *scene, const NLPropperties &prop, NLActor *parent = 0);
     virtual ~NLComponent();
     bool IsMounted() const;
     NLActor * Actor();
@@ -31,6 +34,9 @@ protected:
 signals:
     
 public slots:
+
+private:
+    void Construct();
 
 private:
     bool m_mounted;

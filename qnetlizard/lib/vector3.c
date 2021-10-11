@@ -105,9 +105,9 @@ int vector3_valid(const vector3_s *a)
 
 int vector3_equals(const vector3_s *a, const vector3_s *b)
 {
-	IF_NULL_RETURNV(a, -1)
+    IF_NULL_RETURNV2(a, b, 0)
 	
-	return (VECTOR3V_X(a) == VECTOR3V_X(b) && VECTOR3V_Y(a) == VECTOR3V_Y(b) && VECTOR3V_Z(a) == VECTOR3V_Z(b)) ? 0 : -1;
+    return (VECTOR3V_X(a) == VECTOR3V_X(b) && VECTOR3V_Y(a) == VECTOR3V_Y(b) && VECTOR3V_Z(a) == VECTOR3V_Z(b)) ? 1 : 0;
 }
 
 vector3_s vector3_invert(const vector3_s *a)
@@ -212,4 +212,43 @@ void vector3_directionv(vector3_s *r,const vector3_s *a, const vector3_s *b)
 int vector3_iszero(const vector3_s *a)
 {
     return VECTOR3V_X(a) == 0 && VECTOR3V_Y(a) == 0 && VECTOR3V_Z(a) == 0;
+}
+
+void vector3_addv_self(vector3_s *r, const vector3_s *a)
+{
+    IF_NULL_RETURN2(a, r)
+
+    VECTOR3V_X(r) += VECTOR3V_X(a);
+    VECTOR3V_Y(r) += VECTOR3V_Y(a);
+    VECTOR3V_Z(r) += VECTOR3V_Z(a);
+}
+
+void vector3_subtractv_self(vector3_s *r, const vector3_s *a)
+{
+    IF_NULL_RETURN2(a, r)
+
+    VECTOR3V_X(r) -= VECTOR3V_X(a);
+    VECTOR3V_Y(r) -= VECTOR3V_Y(a);
+    VECTOR3V_Z(r) -= VECTOR3V_Z(a);
+}
+
+void vector3_multiplyv_self(vector3_s *r, const vector3_s *a)
+{
+    IF_NULL_RETURN2(a, r)
+
+    VECTOR3V_X(r) *= VECTOR3V_X(a);
+    VECTOR3V_Y(r) *= VECTOR3V_Y(a);
+    VECTOR3V_Z(r) *= VECTOR3V_Z(a);
+}
+
+void vector3_dividev_self(vector3_s *r, const vector3_s *a)
+{
+    IF_NULL_RETURN2(a, r)
+
+    if(IS_ZERO(VECTOR3V_X(a)) || IS_ZERO(VECTOR3V_Y(a)) || IS_ZERO(VECTOR3V_Z(a)))
+        return;
+
+    VECTOR3V_X(r) /= VECTOR3V_X(a);
+    VECTOR3V_Y(r) /= VECTOR3V_Y(a);
+    VECTOR3V_Z(r) /= VECTOR3V_Z(a);
 }

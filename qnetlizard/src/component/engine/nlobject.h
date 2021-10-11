@@ -29,7 +29,10 @@ public:
     };
 
 public:
-    explicit NLObject(const NLPropperties &prop = NLPropperties(), QObject *parent = 0);
+    explicit NLObject(QObject *parent = 0);
+    explicit NLObject(const NLPropperties &prop, QObject *parent = 0);
+    explicit NLObject(NLScene *scene, QObject *parent = 0);
+    explicit NLObject(NLScene *scene, const NLPropperties &prop, QObject *parent = 0);
     virtual ~NLObject();
     NLObject_Type Type() const;
     QString Name() const;
@@ -57,6 +60,9 @@ protected:
 signals:
     
 public slots:
+
+private:
+    void Construct(const NLPropperties &prop = NLPropperties());
 
 private:
     NLObject_Type m_type;

@@ -13,10 +13,20 @@ typedef struct _vector3_s
 #define VECTOR3_X(vec) (vec).v[0]
 #define VECTOR3_Y(vec) (vec).v[1]
 #define VECTOR3_Z(vec) (vec).v[2]
+#define VECTOR3_V(vec) (vec).v
 
 #define VECTOR3V_X(vec) (vec)->v[0]
 #define VECTOR3V_Y(vec) (vec)->v[1]
 #define VECTOR3V_Z(vec) (vec)->v[2]
+#define VECTOR3V_V(vec) (vec)->v
+
+#define COLOR_R(vec) (vec).v[0]
+#define COLOR_G(vec) (vec).v[1]
+#define COLOR_B(vec) (vec).v[2]
+
+#define EULER_PITCH(vec) (vec).v[0]
+#define EULER_YAW(vec) (vec).v[1]
+#define EULER_ROLL(vec) (vec).v[2]
 
 #define VECTOR3V(arr) {{arr[0], arr[1], arr[2]}}
 #define VECTOR3(x, y, z) {{x, y, z}}
@@ -40,6 +50,11 @@ vector3_s vector3_divide(const vector3_s *a, const vector3_s *b);
 vector3_s vector3_scale(const vector3_s *a, float n);
 vector3_s vector3_invert(const vector3_s *a);
 vector3_s vector3_direction(const vector3_s *a, const vector3_s *b);
+
+void vector3_addv_self(vector3_s *r, const vector3_s *a);
+void vector3_subtractv_self(vector3_s *r, const vector3_s *a);
+void vector3_multiplyv_self(vector3_s *r, const vector3_s *a);
+void vector3_dividev_self(vector3_s *r, const vector3_s *a);
 
 float vector3_dot(const vector3_s *a, const vector3_s *b);
 float vector3_length(const vector3_s *a);

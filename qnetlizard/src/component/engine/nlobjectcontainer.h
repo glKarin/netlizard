@@ -12,6 +12,7 @@ class NLObjectContainer : public QObject
     Q_OBJECT
 public:
     explicit NLObjectContainer(QObject *parent = 0);
+    explicit NLObjectContainer(NLScene *scene, QObject *parent = 0);
     virtual ~NLObjectContainer();
     int Count() const;
     bool IsEmpty() const;
@@ -41,6 +42,9 @@ public slots:
 
 protected:
     NLObjectList & ObjectList();
+
+private:
+    void Construct();
 
 private:
     NLObjectList m_objectList;

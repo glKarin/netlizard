@@ -6,6 +6,22 @@
 #include "nlobjectpool.h"
 #include "nlobjectcontainer.h"
 
+NLObject::NLObject(QObject *parent) :
+    QObject(parent),
+    m_type(NLObject::Type_General),
+    m_inited(false),
+    m_container(0),
+    m_scene(0)
+{
+    Construct();
+    if(parent)
+    {
+        NLObject *obj = dynamic_cast<NLObject *>(parent);
+        if(obj)
+            SetScene(obj->Scene());
+    }
+}
+
 NLObject::NLObject(const NLPropperties &prop, QObject *parent) :
     QObject(parent),
     m_type(NLObject::Type_General),
@@ -13,9 +29,33 @@ NLObject::NLObject(const NLPropperties &prop, QObject *parent) :
     m_container(0),
     m_scene(0)
 {
-    setObjectName("NLObject");
-    InitProperty(prop);
-    SetName(NLObjectPool::Instance()->Attach(this));
+    Construct(prop);
+    if(parent)
+    {
+        NLObject *obj = dynamic_cast<NLObject *>(parent);
+        if(obj)
+            SetScene(obj->Scene());
+    }
+}
+
+NLObject::NLObject(NLScene *scene, QObject *parent) :
+    QObject(parent),
+    m_type(NLObject::Type_General),
+    m_inited(false),
+    m_container(0),
+    m_scene(scene)
+{
+    Construct();
+}
+
+NLObject::NLObject(NLScene *scene, const NLPropperties &prop, QObject *parent) :
+    QObject(parent),
+    m_type(NLObject::Type_General),
+    m_inited(false),
+    m_container(0),
+    m_scene(scene)
+{
+    Construct(prop);
 }
 
 NLObject::~NLObject()
@@ -23,6 +63,13 @@ NLObject::~NLObject()
     NLObjectPool::Instance()->Detach(this);
     Destroy();
     DEBUG_DESTROY_Q;
+}
+
+void NLObject::Construct(const NLPropperties &prop)
+{
+    setObjectName("NLObject");
+    InitProperty(prop);
+    SetName(NLObjectPool::Instance()->Attach(this));
 }
 
 void NLObject::InitProperty(const NLPropperties &prop)

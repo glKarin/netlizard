@@ -1,14 +1,18 @@
-#ifndef _KARIN_SCENEORTHOCAMERA_H
-#define _KARIN_SCENEORTHOCAMERA_H
+#ifndef NLSCENEORTHOCAMERA_H
+#define NLSCENEORTHOCAMERA_H
 
-#include "scenecamera.h"
+#include <Qt>
 
-class SceneOrthoCamera : public SceneCamera
+#include "nlscenecamera.h"
+
+class NLSceneOrthoCamera : public NLSceneCamera
 {
 public:
-    SceneOrthoCamera(NLScene *scene = 0);
-    virtual ~SceneOrthoCamera();
+    NLSceneOrthoCamera(NLScene *scene = 0);
+    virtual ~NLSceneOrthoCamera();
     virtual void Update(float width, float height);
+    void SetAlignment(Qt::Alignment align);
+    Qt::Alignment Alignment() const;
     void SetLeft(float left);
     void SetRight(float right);
     void SetBottom(float bottom);
@@ -20,8 +24,10 @@ public:
 
 protected:
     virtual void Projection();
+    virtual void UpdateProjectionMatrix(NLMatrix4 *mat);
 
 private:
+    Qt::Alignment m_align;
     float m_left;
     float m_right;
     float m_bottom;
@@ -30,4 +36,4 @@ private:
     float m_zFar;
 };
 
-#endif // _KARIN_SCENEORTHOCAMERA_H
+#endif // NLSCENEORTHOCAMERA_H

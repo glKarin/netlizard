@@ -9,11 +9,22 @@
 NLComponentContainer::NLComponentContainer(NLActor *parent) :
     NLObjectContainer(parent)
 {
-    setObjectName("NLComponentContainer");
+    Construct();
+}
+
+NLComponentContainer::NLComponentContainer(NLScene *scene, NLActor *parent) :
+    NLObjectContainer(scene, parent)
+{
+    Construct();
 }
 
 NLComponentContainer::~NLComponentContainer()
 {
+}
+
+void NLComponentContainer::Construct()
+{
+    setObjectName("NLComponentContainer");
 }
 
 bool NLComponentContainer::KeyEventHandler(int key, bool pressed, int modify)

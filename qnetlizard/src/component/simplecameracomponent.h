@@ -3,9 +3,9 @@
 
 #include "nlcomponent.h"
 
-#include "lib/vector3.h"
+#include "nlactor.h"
 
-class SceneCamera;
+class NLSceneCamera;
 
 class QWidget;
 
@@ -16,13 +16,8 @@ public:
     explicit SimpleCameraComponent(const NLPropperties &prop = NLPropperties(), NLActor *parent = 0);
     virtual ~SimpleCameraComponent();
     NLINTERFACE void Render();
-    NLINTERFACE void Move(const vector3_s *v);
-    NLINTERFACE void Turn(const vector3_s *v);
-    NLINTERFACE void Zoom(const vector3_s *v);
-    NLINTERFACE void SetPosition(const vector3_s *v);
-    NLINTERFACE void SetRotation(const vector3_s *v);
     NLSETTER(type) void SetType(int type);
-    SceneCamera * Camera();
+    NLSceneCamera * Camera();
     
 signals:
     
@@ -34,9 +29,13 @@ protected:
     virtual void Update(float delta);
     virtual void Reset();
 
+private Q_SLOTS:
+    void OnPositionChanged(const NLVector3 &pos);
+    void OnRotationChanged(const NLVector3 &rot);
+
 private:
     NLPROPERTY(type) int m_type;
-    SceneCamera *m_camera;
+    NLSceneCamera *m_camera;
 
     Q_DISABLE_COPY(SimpleCameraComponent)
 };

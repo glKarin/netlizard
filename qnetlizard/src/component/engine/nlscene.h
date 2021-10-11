@@ -6,7 +6,7 @@
 #include "nlactorcontainer.h"
 
 class QColor;
-class SceneCamera;
+class NLSceneCamera;
 
 class NLScene : public QGLWidget
 {
@@ -36,8 +36,8 @@ protected:
     virtual void resizeGL(int w, int h);
     virtual void Init();
     virtual void Deinit();
-    void SetCurrentCamera(SceneCamera *camera);
-    SceneCamera * CurrentCamera();
+    void SetCurrentCamera(NLSceneCamera *camera);
+    NLSceneCamera * CurrentCamera();
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
@@ -66,7 +66,7 @@ protected:
     QPoint m_lastPos;
     qint64 m_lastTime;
     NLActorContainer m_actors;
-    SceneCamera *m_currentCamera;
+    NLSceneCamera *m_currentCamera;
     bool m_cursorVisible;
     bool m_grabMouse;
 

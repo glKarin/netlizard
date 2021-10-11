@@ -99,7 +99,7 @@ void angtodir(vector3_s *r, const vector3_s *a)
 
 void camscale(camera_s *cam, const vector3_s *factory)
 {
-    vector3_multiply(&cam->scale, factory);
+    vector3_multiplyv_self(&cam->scale, factory);
 }
 
 float clampangle(float angle)

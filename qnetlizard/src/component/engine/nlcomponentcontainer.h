@@ -11,6 +11,7 @@ class NLComponentContainer : public NLObjectContainer
     Q_OBJECT
 public:
     explicit NLComponentContainer(NLActor *parent = 0);
+    explicit NLComponentContainer(NLScene *scene, NLActor *parent = 0);
     virtual ~NLComponentContainer();
     bool Exists(const NLComponent &item) const;
     NLName Find(const NLComponent *item);
@@ -32,6 +33,9 @@ public:
 signals:
 
 public slots:
+
+private:
+    void Construct();
 
 private:
     friend class NLActor;

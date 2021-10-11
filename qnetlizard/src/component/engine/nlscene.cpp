@@ -7,7 +7,7 @@
 #include <QMouseEvent>
 
 #include "lib/vector3.h"
-#include "scenecamera.h"
+#include "nlscenecamera.h"
 #include "qdef.h"
 
 inline void printfgl()
@@ -211,7 +211,7 @@ bool NLScene::IsGrabMouseCursor() const
 
 bool NLScene::IsCursorVisible() const
 {
-    m_cursorVisible;
+    return m_cursorVisible;
 }
 
 void NLScene::RunLoop(bool b)
@@ -280,14 +280,14 @@ void NLScene::Render()
     m_actors.Render();
 }
 
-void NLScene::SetCurrentCamera(SceneCamera *camera)
+void NLScene::SetCurrentCamera(NLSceneCamera *camera)
 {
     m_currentCamera = camera;
     if(m_currentCamera)
         m_currentCamera->SetScene(this);
 }
 
-SceneCamera * NLScene::CurrentCamera()
+NLSceneCamera * NLScene::CurrentCamera()
 {
     return m_currentCamera;
 }

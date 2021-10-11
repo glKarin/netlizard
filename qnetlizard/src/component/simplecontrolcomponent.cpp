@@ -2,12 +2,20 @@
 
 #include <QDebug>
 
+#include "settings.h"
+#include "qdef.h"
 #include "nlscene.h"
+#include "nlactor.h"
+
+const int SimpleControlComponent::M_Move_Sens = 1800;
+const int SimpleControlComponent::M_Turn_Sens = 18;
+const float SimpleControlComponent::M_Rot_Sens = 0.5;
 
 SimpleControlComponent::SimpleControlComponent(const QVariantHash &prop, NLActor *parent) :
     NLComponent(prop, parent),
-      m_movesens(1800),
-      m_turnsens(18)
+      m_movesens(M_Move_Sens),
+      m_turnsens(M_Turn_Sens),
+        m_rotsens(M_Rot_Sens)
 {
     setObjectName("SimpleControlComponent");
     Reset();
@@ -32,9 +40,12 @@ void SimpleControlComponent::Init()
 
 void SimpleControlComponent::Reset()
 {
-    ResetCurrent();
     memset(m_direction, 0, sizeof(bool) * Direction_Total);
     memset(m_rotation, 0, sizeof(bool) * Rotation_Total);
+    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+    m_movesens = settings->GetSetting<int>("CONTROL/move_sens", M_Move_Sens);
+    m_turnsens = settings->GetSetting<int>("CONTROL/turn_sens", M_Turn_Sens);
+    m_rotsens = settings->GetSetting<double>("CONTROL/rot_sens", M_Rot_Sens);
     NLComponent::Reset();
 }
 
@@ -128,7 +139,6 @@ __Exit:
 
 bool SimpleControlComponent::motionev(int button, bool pressed, int x, int y, int oldx, int oldy, int modify)
 {
-    //VECTOR3_X(m_rot) = VECTOR3_Y(m_rot) = VECTOR3_Z(m_rot) = 0;
     NLScene *scene = Scene();
     if(!scene)
         return false;
@@ -140,9 +150,12 @@ bool SimpleControlComponent::motionev(int button, bool pressed, int x, int y, in
             float dy = y - oldy;
             if(dx != 0 || dy != 0)
             {
-                VECTOR3_X(m_rot) += dy;
-                VECTOR3_Y(m_rot) += dx;
-                VECTOR3_Z(m_rot) = 0;
+                vector3_s m_rot = VECTOR3(dy * m_rotsens, dx * m_rotsens, 0);
+                NLActor *actor = Actor();
+                if(actor)
+                {
+                    actor->Turn(m_rot);
+                }
             }
             return true;
         }
@@ -152,12 +165,13 @@ bool SimpleControlComponent::motionev(int button, bool pressed, int x, int y, in
 
 void SimpleControlComponent::Transform(float delta)
 {
-    VECTOR3_X(m_move) = VECTOR3_Y(m_move) = VECTOR3_Z(m_move) = 0;
     if(m_direction[Direction_Forward] || m_direction[Direction_Backward]
             || m_direction[Direction_Left] || m_direction[Direction_Right]
             || m_direction[Direction_Down] || m_direction[Direction_Up]
             )
     {
+        vector3_s m_move;
+        VECTOR3_X(m_move) = VECTOR3_Y(m_move) = VECTOR3_Z(m_move) = 0;
         float movesens = m_movesens * delta;
 
         if(m_direction[Direction_Forward])
@@ -174,12 +188,20 @@ void SimpleControlComponent::Transform(float delta)
             VECTOR3_Y(m_move) = -movesens;
         else if(m_direction[Direction_Up])
             VECTOR3_Y(m_move) = movesens;
+
+        NLActor *actor = Actor();
+        if(actor)
+        {
+            actor->Move(m_move);
+        }
     }
 
     if(m_rotation[Rotation_Up] || m_rotation[Rotation_Down]
             || m_rotation[Rotation_Left] || m_rotation[Rotation_Right]
             )
     {
+        vector3_s m_turn;
+        VECTOR3_X(m_turn) = VECTOR3_Y(m_turn) = VECTOR3_Z(m_turn) = 0;
         float turnsens = 10 * m_turnsens * delta;
 
         if(m_rotation[Rotation_Up])
@@ -191,37 +213,11 @@ void SimpleControlComponent::Transform(float delta)
             VECTOR3_Y(m_turn) = -turnsens;
         else if(m_rotation[Rotation_Right])
             VECTOR3_Y(m_turn) = turnsens;
+
+        NLActor *actor = Actor();
+        if(actor)
+        {
+            actor->Turn(m_turn);
+        }
     }
-}
-
-vector3_s SimpleControlComponent::CurrentMove(bool reset)
-{
-    vector3_s res = m_move;
-    if(reset)
-        VECTOR3_X(m_move) = VECTOR3_Y(m_move) = VECTOR3_Z(m_move) = 0;
-    return res;
-}
-
-vector3_s SimpleControlComponent::CurrentTurn(bool reset)
-{
-    vector3_s res = m_turn;
-    if(reset)
-        VECTOR3_X(m_turn) = VECTOR3_Y(m_turn) = VECTOR3_Z(m_turn) = 0;
-    return res;
-}
-
-vector3_s SimpleControlComponent::CurrentRot(bool reset)
-{
-    vector3_s res = m_rot;
-    if(reset)
-        VECTOR3_X(m_rot) = VECTOR3_Y(m_rot) = VECTOR3_Z(m_rot) = 0;
-    return res;
-}
-
-void SimpleControlComponent::ResetCurrent()
-{
-
-    VECTOR3_X(m_move) = VECTOR3_Y(m_move) = VECTOR3_Z(m_move) = 0;
-    VECTOR3_X(m_turn) = VECTOR3_Y(m_turn) = VECTOR3_Z(m_turn) = 0;
-    VECTOR3_X(m_rot) = VECTOR3_Y(m_rot) = VECTOR3_Z(m_rot) = 0;
 }

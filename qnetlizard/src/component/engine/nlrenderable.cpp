@@ -4,13 +4,11 @@
 
 #include "qdef.h"
 
-NLRenderable::NLRenderable(QObject *parent) :
-    QObject(parent)
+NLRenderable::NLRenderable()
 {
-    setObjectName("NLObject");
 }
 
 NLRenderable::~NLRenderable()
 {
-    DEBUG_DESTROY_Q
+    DEBUG_DESTROY("NLRenderable")
 }
