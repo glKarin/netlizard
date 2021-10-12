@@ -7,7 +7,7 @@
 class NETLizardTextureRenderer : public NLRenderable
 {
 public:
-    explicit NETLizardTextureRenderer();
+    explicit NETLizardTextureRenderer(NLActor *actor = 0);
     virtual ~NETLizardTextureRenderer();
     texture_s * Texture();
     void SetTexture(texture_s *tex);

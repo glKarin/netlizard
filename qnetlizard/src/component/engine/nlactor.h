@@ -58,6 +58,7 @@ protected:
     void SetContainer(NLActorContainer *container);
     bool AddComponent(NLComponent *item);
     bool RemoveComponent(NLComponent *item);
+    void SetZIsUp(bool b);
     
 signals:
     void positionChanged(const NLVector3 &pos);

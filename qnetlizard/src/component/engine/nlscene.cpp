@@ -29,12 +29,14 @@ NLScene::NLScene(QWidget *parent) :
     m_cursorVisible(true),
     m_grabMouse(false)
 {
+    setObjectName("NLScene");
     m_clearColor = QColor::fromRgbF(1.0, 1.0, 1.0);
     m_actors.SetScene(this);
 }
 
 NLScene::~NLScene()
 {
+    DEBUG_DESTROY_Q;
     Deinit();
 }
 
@@ -151,28 +153,10 @@ void NLScene::keyReleaseEvent(QKeyEvent *event)
 
 void NLScene::wheelEvent(QWheelEvent *event)
 {
-    bool res = m_actors.MouseEventHandler(event->orientation(), event->delta(), event->x(), event->y(), event->modifiers());
+    bool res = m_actors.WheelEventHandler(event->orientation(), event->delta(), event->x(), event->y(), event->modifiers());
     if(res)
         event->accept();
    QGLWidget::wheelEvent(event);
-#if 0
-#define MIN_SCALE 0.1
-    if(event->orientation() == Qt::Vertical)
-    {
-        int d = event->delta();
-        float delta = d * m_delta * 0.1;
-        if(d < 0 && (VECTOR3_X(m_cam.scale) * VECTOR3_Y(m_cam.scale) < 1.0))
-            delta /= 4;
-        qDebug() << delta;
-        VECTOR3_X(m_cam.scale) += delta;
-        if(VECTOR3_X(m_cam.scale) < MIN_SCALE)
-            VECTOR3_X(m_cam.scale) = MIN_SCALE;
-        VECTOR3_Y(m_cam.scale) += delta;
-        if(VECTOR3_Y(m_cam.scale) < MIN_SCALE)
-            VECTOR3_Y(m_cam.scale) = MIN_SCALE;
-    }
-#undef MIN_SCALE
-#endif
 }
 
 void NLScene::MoveCursorToCenter()

@@ -11,7 +11,8 @@ NLObject::NLObject(QObject *parent) :
     m_type(NLObject::Type_General),
     m_inited(false),
     m_container(0),
-    m_scene(0)
+    m_scene(0),
+    m_enabled(true)
 {
     Construct();
     if(parent)
@@ -110,7 +111,7 @@ void NLObject::Init()
 
 void NLObject::Update(float delta)
 {
-    if(!IsInited())
+    if(!IsActived())
         return;
     //qDebug() << objectName() + ": " + m_name + " -> update(" + QString::number(delta) + ")";
 }
@@ -179,4 +180,20 @@ NLScene * NLObject::Scene()
 void NLObject::SetScene(NLScene *scene)
 {
     m_scene = scene;
+}
+
+bool NLObject::IsEnabled() const
+{
+    return m_enabled;
+}
+
+void NLObject::SetEnabled(bool enabled)
+{
+    if(m_enabled != enabled)
+        m_enabled = enabled;
+}
+
+bool NLObject::IsActived() const
+{
+    return m_inited && m_enabled;
 }

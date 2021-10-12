@@ -207,7 +207,6 @@ bool ItemViewer::OpenFile()
     if(res)
     {
         m_itemWidget->setFocus();
-        m_itemWidget->SetHideMouse(true);
     }
     else
     {

@@ -50,9 +50,7 @@ void NLComponent::Construct()
 
 void NLComponent::Update(float delta)
 {
-    if(!IsInited())
-        return;
-    if(!IsMounted())
+    if(!IsActived())
         return;
     NLObject::Update(delta);
 }
@@ -68,6 +66,8 @@ void NLComponent::Destroy()
 
 bool NLComponent::keyev(int key, bool pressed, int modifier)
 {
+    if(!IsActived())
+        return false;
     Q_UNUSED(key);
     Q_UNUSED(pressed);
     Q_UNUSED(modifier);
@@ -76,6 +76,8 @@ bool NLComponent::keyev(int key, bool pressed, int modifier)
 
 bool NLComponent::mouseev(int mouse, bool pressed, int x, int y, int modifier)
 {
+    if(!IsActived())
+        return false;
     Q_UNUSED(mouse);
     Q_UNUSED(pressed);
     Q_UNUSED(x);
@@ -86,6 +88,8 @@ bool NLComponent::mouseev(int mouse, bool pressed, int x, int y, int modifier)
 
 bool NLComponent::motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modifier)
 {
+    if(!IsActived())
+        return false;
     Q_UNUSED(mouse);
     Q_UNUSED(pressed);
     Q_UNUSED(x);
@@ -98,6 +102,8 @@ bool NLComponent::motionev(int mouse, bool pressed, int x, int y, int oldx, int 
 
 bool NLComponent::wheelev(int orientation, int delta, int x, int y, int modifier)
 {
+    if(!IsActived())
+        return false;
     Q_UNUSED(orientation);
     Q_UNUSED(delta);
     Q_UNUSED(x);
@@ -154,4 +160,9 @@ NLComponentContainer * NLComponent::Container()
 void NLComponent::SetContainer(NLComponentContainer *container)
 {
     NLObject::SetContainer(container);
+}
+
+bool NLComponent::IsActived() const
+{
+    return NLObject::IsActived() && m_mounted;
 }

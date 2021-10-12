@@ -103,6 +103,7 @@ void SettingGroup::Clear()
     {
         item = m_layout->takeAt(0);
         delete item->widget();
+        //delete item->spacerItem();
         delete item;
     }
 }
@@ -149,6 +150,10 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
             SettingGroupItem *gi = SettingGroupItem::Make(item.title, widget);
             m_layout->addWidget(gi);
         }
+    }
+    //if(!m_layout->isEmpty())
+    {
+        m_layout->addStretch();
     }
 }
 

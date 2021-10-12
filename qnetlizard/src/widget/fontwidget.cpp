@@ -6,18 +6,32 @@
 #include <QColor>
 
 #include "qdef.h"
+#include "nlscenecamera.h"
+#include "simplecameraactor.h"
+#include "nlsceneorthocamera.h"
+#include "netlizardfontrenderer.h"
 
 FontWidget::FontWidget(QWidget *parent) :
     NLScene(parent),
+    m_renderer(0),
     m_font(0),
     m_lineCount(0),
     m_paddingWidth(2),
     m_lineSpacing(1)
 {
     setObjectName("FontWidget");
-    SetEnableDefaultKeyHandler(false);
-    SetEnableDefaultMouseHandler(false);
-    SetEnableDefaultWheelHandler(false);
+
+    NLPropperties prop;
+    prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
+    SimpleCameraActor *camera = new SimpleCameraActor(prop);
+    m_actors.Add(camera);
+    NLActor *actor = new NLActor;
+    m_actors.Add(actor);
+    m_renderer = new NETLizardFontRenderer;
+    actor->SetRenderable(m_renderer);
+    NLSceneOrthoCamera *orthoCam = static_cast<NLSceneOrthoCamera *>(camera->Camera());
+    orthoCam->SetAlignment(Qt::AlignLeft | Qt::AlignTop);
+    SetCurrentCamera(orthoCam);
 }
 
 FontWidget::~FontWidget()
@@ -28,12 +42,10 @@ FontWidget::~FontWidget()
 void FontWidget::Init()
 {
     NLScene::Init();
-    glDisable(GL_DEPTH_TEST);
 }
 
 void FontWidget::Update(float delta)
 {
-    //qDebug() << delta;
     NLScene::Update(delta);
 }
 
@@ -53,6 +65,7 @@ void FontWidget::Reset()
     }
     m_text.clear();
     m_lineCount = 0;
+    m_renderer->SetFont(0);
 }
 
 void FontWidget::paintGL()
@@ -61,18 +74,10 @@ void FontWidget::paintGL()
         return;
     if(m_text.isEmpty())
         return;
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0, width(), 0, height());
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glPushMatrix();
-    {
-        RenderText();
-    }
-    glPopMatrix();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    NLScene::paintGL();
 
     glFlush();
 }
@@ -96,93 +101,27 @@ bool FontWidget::LoadFile(const QString &file, const QString &texFile)
         return false;
     }
 
+    m_renderer->SetFont(m_font);
+    vector3_s startPos = VECTOR3(0, 0, 0);
+    vector3_s startRotate = VECTOR3(0, 0, 0);
+
+    SimpleCameraActor *camera = static_cast<SimpleCameraActor *>(m_actors[0]);
+    camera->SetPosition(startPos);
+    camera->SetRotation(startRotate);
+
     return true;
-}
-
-void FontWidget::SetText(const QString &str)
-{
-    if(!m_font)
-        return;
-    if(m_text != str)
-    {
-        m_text = str;
-        QByteArray ba = m_text.toLocal8Bit();
-
-        const char *p = ba.constData();
-        size_t len = strlen(p);
-        GLint count = 0;
-        GLint line_count = 0;
-        while(count < (GLint)len)
-        {
-            GLint c = Font_GetCharCountOfWidth(m_font, width() - 2 * m_paddingWidth, p);
-            if(c == -1)
-                break;
-            GLint i;
-            for(i = 0; i < c; i++)
-            {
-                if(p[i] == '\n')
-                {
-                    i++;
-                    break;
-                }
-            }
-            count += i;
-            line_count++;
-            p += i;
-        }
-        line_count++;
-
-        m_lineCount = line_count;
-    }
-}
-
-void FontWidget::RenderText()
-{
-    if(m_text.isEmpty())
-        return;
-
-    GLfloat h = 0.0;
-    GLfloat p = height();
-    glPushMatrix();
-    {
-        glTranslatef(m_paddingWidth, height() - m_paddingWidth, 0.01);
-        QByteArray ba = m_text.toLocal8Bit();
-        const char *ptr = ba.constData();
-        GLint count = 0;
-        GLint i;
-        int char_height = m_font->height;
-        int width = NLScene::width();
-        for(i = 0; i < m_lineCount; i++)
-        {
-            h += char_height;
-            GLint c = Font_GetCharCountOfWidth(m_font, width - m_paddingWidth * 2, ptr);
-            if(c == -1)
-                break;
-            GLint j;
-            for(j = 0; j < c; j++)
-            {
-                if(ptr[j] == '\n')
-                {
-                    j++;
-                    break;
-                }
-            }
-            count += j;
-            glTranslatef(0.0, -char_height, 0.0);
-            char *str = (char *)calloc(j + 1, sizeof(char));
-            strncpy(str, ptr, j);
-            str[j] = '\0';
-            Font_RenderString(m_font, 0, 0, 1, 1, 1, 1, str);
-            free(str);
-            ptr += j;
-            h += m_lineSpacing;
-            glTranslatef(0.0, -m_lineSpacing, 0.0);
-        }
-    }
-    glPopMatrix();
 }
 
 bool FontWidget::IsValid() const
 {
     return m_font != 0;
+}
+
+void FontWidget::SetText(const QString &str)
+{
+    if(m_text != str)
+    {
+        m_text = str;
+        m_renderer->SetText(str);
+    }
 }

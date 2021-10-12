@@ -38,9 +38,9 @@ qDebug()\
 #define rtoa(r) ((double)(r) / M_PI * 180.0)
 
 static const NLVector3 InitUp_z = VECTOR3(0, 0, 1);
-static const NLVector3 InitUp_y = VECTOR3(0, 0, -1);
+static const NLVector3 InitUp_y = VECTOR3(0, 1, 0);
 static const NLVector3 InitDirection_z = VECTOR3(0, 1, 0);
-static const NLVector3 InitDirection_y = VECTOR3(0, 1, 0);
+static const NLVector3 InitDirection_y = VECTOR3(0, 0, -1);
 static const NLVector3 InitLeft = VECTOR3(-1, 0, 0);
 static const NLVector3 InitPosition = VECTOR3(0, 0, 0);
 static const NLVector3 InitRotation = VECTOR3(-90, 0, 0);
@@ -99,7 +99,7 @@ NLActor::~NLActor()
 
 void NLActor::Construct()
 {
-    m_zIsUp = true;
+    //m_zIsUp = true;
     setObjectName("NLActor");
     SetType(NLObject::Type_Actor);
     Mesa_AllocGLMatrix(&m_matrix);
@@ -108,7 +108,7 @@ void NLActor::Construct()
     m_position = InitPosition;
     m_rotation = InitRotation;
     m_scale = InitScale;
-    m_up = InitUp_z;
+    m_up = m_zIsUp ? InitUp_z : InitUp_y;
     UpdateMatrix();
     UpdateDirection();
 }
@@ -124,7 +124,7 @@ void NLActor::Init()
 
 void NLActor::Update(float delta)
 {
-    if(!IsInited())
+    if(!IsActived())
         return;
     if(m_components)
         m_components->Update(delta);
@@ -133,7 +133,7 @@ void NLActor::Update(float delta)
 
 void NLActor::Render()
 {
-    if(!IsInited())
+    if(!IsActived())
         return;
     if(m_renderable)
         m_renderable->Render();
@@ -161,6 +161,8 @@ void NLActor::Destroy()
 
 bool NLActor::keyev(int key, bool pressed, int modifier)
 {
+    if(!IsActived())
+        return false;
     if(m_components)
         return m_components->KeyEventHandler(key, pressed, modifier);
     return false;
@@ -168,6 +170,8 @@ bool NLActor::keyev(int key, bool pressed, int modifier)
 
 bool NLActor::mouseev(int mouse, bool pressed, int x, int y, int modifier)
 {
+    if(!IsActived())
+        return false;
     if(m_components)
         return m_components->MouseEventHandler(mouse, pressed, x, y, modifier);
     return false;
@@ -175,6 +179,8 @@ bool NLActor::mouseev(int mouse, bool pressed, int x, int y, int modifier)
 
 bool NLActor::motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modifier)
 {
+    if(!IsActived())
+        return false;
     if(m_components)
         return m_components->MouseMotionHandler(mouse, pressed, x, y, oldx, oldy, modifier);
     return false;
@@ -182,8 +188,10 @@ bool NLActor::motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy
 
 bool NLActor::wheelev(int orientation, int delta, int x, int y, int modifier)
 {
+    if(!IsActived())
+        return false;
     if(m_components)
-        return m_components->WheelHandler(orientation, delta, x, y, modifier);
+        return m_components->WheelEventHandler(orientation, delta, x, y, modifier);
     return false;
 }
 
@@ -235,9 +243,14 @@ bool NLActor::RemoveComponent(NLComponent *item)
 
 void NLActor::SetRenderable(NLRenderable *renderable)
 {
-    m_renderable = renderable;
-//    if(m_renderable)
-//        m_renderable->setParent(this);
+    if(m_renderable != renderable)
+    {
+        if(m_renderable)
+            m_renderable->SetActor(0);
+        m_renderable = renderable;
+        if(m_renderable)
+            m_renderable->SetActor(this);
+    }
 }
 
 NLRenderable * NLActor::Renderable()
@@ -333,6 +346,7 @@ NLActor * NLActor::Move(const NLVector3 &unit)
     vector3_addv_self(&m_position, &v);
     UpdateMatrix();
     emit positionChanged(m_position);
+    //qDebug() << "position: " << m_position.v[0] << m_position.v[1] << m_position.v[2];
     return this;
 }
 
@@ -351,7 +365,8 @@ NLActor * NLActor::Turn(const NLVector3 &v)
 
 NLActor * NLActor::Zoom(const NLVector3 &v)
 {
-    vector3_multiplyv_self(&m_scale, &v);
+    //vector3_multiplyv_self(&m_scale, &v);
+    vector3_addv_self(&m_scale, &v);
     UpdateMatrix();
     emit scaleChanged(m_scale);
     return this;
@@ -384,8 +399,6 @@ void NLActor::UpdateLocalMatrix()
     if(m_zIsUp)
         Mesa_glRotate(&m_matrix, 90, 1, 0, 0); // z_is_up
 
-    Mesa_glScale(&m_matrix, VECTOR3_X(m_scale), VECTOR3_Y(m_scale), VECTOR3_Z(m_scale));
-
     Mesa_glRotate(&m_matrix, VECTOR3_X(m_rotation), 1, 0, 0);
     if(m_zIsUp)
     {
@@ -403,6 +416,8 @@ void NLActor::UpdateLocalMatrix()
                 -VECTOR3_Y(m_position),
                 -VECTOR3_Z(m_position)
                 );
+
+    Mesa_glScale(&m_matrix, VECTOR3_X(m_scale), VECTOR3_Y(m_scale), VECTOR3_Z(m_scale));
 
     UpdateNormalMatrix();
 }
@@ -486,6 +501,16 @@ float NLActor::ClampAngle(float angle)
         r = angle;
     if(r == 360.0)
         r = 0.0;
-    qDebug() <<angle <<r;
     return r;
+}
+
+void NLActor::SetZIsUp(bool b)
+{
+    if(m_zIsUp != b)
+    {
+        m_zIsUp = b;
+        m_up = m_zIsUp ? InitUp_z : InitUp_y;
+        UpdateMatrix();
+        UpdateDirection();
+    }
 }

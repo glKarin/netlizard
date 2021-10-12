@@ -15,8 +15,8 @@ LIBS += ../libnetlizard/debug/libnetlizard.a
 
 # Input
 HEADERS += \
-#    src/imageviewer.h \
-#    src/widget/imagewidget.h \
+    src/imageviewer.h \
+    src/widget/imagewidget.h \
     src/textviewer.h \
     src/stringviewer.h \
     src/mainwindow.h \
@@ -24,10 +24,10 @@ HEADERS += \
     src/widget/mapwidget.h \
     src/mapviewer.h \
     src/utils/ioutility.h \
-#    src/widget/fontwidget.h \
-#    src/fontviewer.h \
-#    src/widget/itemwidget.h \
-#    src/itemviewer.h \
+    src/widget/fontwidget.h \
+    src/fontviewer.h \
+    src/widget/itemwidget.h \
+    src/itemviewer.h \
     src/widget/baseviewer.h \
     src/helpdialog.h \
     src/aboutdialog.h \
@@ -35,22 +35,24 @@ HEADERS += \
     src/logdialog.h \
     src/settings.h \
     src/settingdialog.h \
-    src/widget/settingwidget.h
+    src/widget/settingwidget.h \
+    src/component/engine/nldef.h \
+    src/component/netlizardfontrenderer.h
 
 SOURCES += \
     main.cpp \
-#    src/imageviewer.cpp \
-#    src/widget/imagewidget.cpp \
+    src/imageviewer.cpp \
+    src/widget/imagewidget.cpp \
     src/textviewer.cpp \
     src/stringviewer.cpp \
     src/mainwindow.cpp \
     src/widget/mapwidget.cpp \
     src/mapviewer.cpp \
     src/utils/ioutility.cpp \
- #   src/widget/fontwidget.cpp \
-#    src/fontviewer.cpp \
-#    src/widget/itemwidget.cpp \
-#    src/itemviewer.cpp \
+   src/widget/fontwidget.cpp \
+    src/fontviewer.cpp \
+    src/widget/itemwidget.cpp \
+    src/itemviewer.cpp \
     src/widget/baseviewer.cpp \
     src/helpdialog.cpp \
     src/aboutdialog.cpp \
@@ -58,7 +60,8 @@ SOURCES += \
     src/logdialog.cpp \
     src/settings.cpp \
     src/settingdialog.cpp \
-    src/widget/settingwidget.cpp
+    src/widget/settingwidget.cpp \
+    src/component/netlizardfontrenderer.cpp
 
 # Engine
 HEADERS += \
@@ -72,6 +75,7 @@ HEADERS += \
     src/component/engine/nlcomponentcontainer.h \
     src/component/engine/nlobjectpool.h \
     src/component/simplecontrolcomponent.h \
+    src/component/simplecontrol2dcomponent.h \
     src/component/simplecameracomponent.h \
     src/component/simplecameraactor.h \
     src/component/netlizardmapmodelrenderer.h \
@@ -91,6 +95,7 @@ SOURCES += \
     src/component/engine/nlcomponentcontainer.cpp \
     src/component/engine/nlobjectpool.cpp \
     src/component/simplecontrolcomponent.cpp \
+    src/component/simplecontrol2dcomponent.cpp \
     src/component/simplecameracomponent.cpp \
     src/component/simplecameraactor.cpp \
     src/component/netlizardmapmodelrenderer.cpp \

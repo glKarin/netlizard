@@ -4,6 +4,8 @@
 #include "nlscene.h"
 #include "gl/nl_gl.h"
 
+class NETLizardMapModelRenderer;
+
 class ItemWidget : public NLScene
 {
     Q_OBJECT
@@ -25,6 +27,7 @@ protected:
 
 private:
     GL_NETLizard_3D_Model *m_model;
+    NETLizardMapModelRenderer *m_renderer;
 
     Q_DISABLE_COPY(ItemWidget)
 };

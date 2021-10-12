@@ -102,16 +102,12 @@ NLName NLObjectContainer::Find(const NLObject *item)
 
 bool NLObjectContainer::Add(NLObject *item)
 {
-    qDebug() << objectName() << m_scene;
     if(!item)
         return false;
-    qDebug() << objectName() << m_scene;
     if(item->Container())
         return false;
-    qDebug() << objectName() << m_scene;
     if(Exists(item))
         return false;
-    qDebug() << objectName() << m_scene;
     item->SetContainer(this);
     item->SetScene(m_scene);
     item->Init();

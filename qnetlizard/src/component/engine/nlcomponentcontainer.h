@@ -22,7 +22,7 @@ public:
     virtual bool KeyEventHandler(int key, bool pressed, int modifier);
     virtual bool MouseEventHandler(int button, bool pressed, int x, int y, int modifier);
     virtual bool MouseMotionHandler(int button, bool pressed, int x, int y, int oldx, int oldy, int modifier);
-    virtual bool WheelHandler(int orientation, int delta, int x, int y, int modifier);
+    virtual bool WheelEventHandler(int orientation, int delta, int x, int y, int modifier);
     NLActor * Actor();
     void SetActor(NLActor *actor);
 

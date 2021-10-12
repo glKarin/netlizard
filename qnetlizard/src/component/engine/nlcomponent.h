@@ -19,6 +19,7 @@ public:
     NLActor * Actor();
     void SetActor(NLActor *actor);
     NLComponentContainer * Container();
+    virtual bool IsActived() const;
 
 protected:
     virtual bool keyev(int key, bool pressed, int modifier);

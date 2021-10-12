@@ -1,11 +1,14 @@
 #include "nlsceneorthocamera.h"
 
+#include <QDebug>
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 
 NLSceneOrthoCamera::NLSceneOrthoCamera(NLScene *scene)
     : NLSceneCamera(scene),
-      m_align(Qt::AlignLeft | Qt::AlignBottom),
+      //m_align(Qt::AlignLeft | Qt::AlignBottom),
+      m_align(Qt::AlignCenter),
       m_left(-1),
       m_right(1),
       m_bottom(-1),
@@ -45,8 +48,8 @@ void NLSceneOrthoCamera::Update(float width, float height)
     }
     else
     {
-        ortho[2] = -width / 2;
-        ortho[3] = width / 2;
+        ortho[2] = -height / 2;
+        ortho[3] = height / 2;
     }
     Set(ortho[0], ortho[1], ortho[2], ortho[3]);
 }

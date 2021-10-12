@@ -4,7 +4,8 @@
 
 #include "qdef.h"
 
-NETLizardMapModelRenderer::NETLizardMapModelRenderer() :
+NETLizardMapModelRenderer::NETLizardMapModelRenderer(NLActor *actor) :
+    NLRenderable(actor),
     m_model(0)
 {
 }

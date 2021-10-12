@@ -4,13 +4,23 @@
 #include <QByteArray>
 
 #include "qdef.h"
+#include "simplecameraactor.h"
+#include "netlizardmapmodelrenderer.h"
 
 ItemWidget::ItemWidget(QWidget *parent)
     : NLScene(parent),
-      m_model(0)
+      m_model(0),
+      m_renderer(0)
 {
     setObjectName("ItemWidget");
-    SetEnableDefaultWheelHandler(false);
+
+    SimpleCameraActor *camera = new SimpleCameraActor;
+    m_actors.Add(camera);
+    NLActor *actor = new NLActor;
+    m_actors.Add(actor);
+    m_renderer = new NETLizardMapModelRenderer;
+    actor->SetRenderable(m_renderer);
+    SetCurrentCamera(camera->Camera());
 }
 
 ItemWidget::~ItemWidget()
@@ -35,26 +45,7 @@ void ItemWidget::paintGL()
         return;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    //Render3D(45, width(), height(), 0.01, 999999);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45, width() / height(), 0.01, 999999);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glPushMatrix();
-    {
-        glRotatef(VECTOR3_X(m_cam.rotation), 1, 0, 0);
-        glRotatef(VECTOR3_Y(m_cam.rotation), 0, 1, 0);
-        glTranslatef(
-                    -VECTOR3_X(m_cam.position),
-                    -VECTOR3_Y(m_cam.position),
-                    -VECTOR3_Z(m_cam.position)
-                    );
-        glRotatef(-90, 1, 0, 0);
-        NETLizard_RenderGL3DModel(m_model);
-    }
-    glPopMatrix();
+    NLScene::paintGL();
 
     glFlush();
 }
@@ -102,6 +93,10 @@ bool ItemWidget::LoadFile(const QString &file, const QString &resourcePath, int 
         return false;
     }
 
+    m_renderer->SetModel(m_model);
+
+    GrabMouseCursor(true);
+
     return true;
 }
 
@@ -113,10 +108,11 @@ void ItemWidget::Reset()
         free(m_model);
         m_model = 0;
     }
-    vector3_s startPos = {{0, 120, 1000}};
-    vector3_s startRotate = {{0.0, 0, 0}};
-    initcam(&m_cam, &startPos, &startRotate);
-    SetHideMouse(false);
+    vector3_s startPos = VECTOR3(0, -1000, 150);
+    vector3_s startRotate = VECTOR3(180.0, 0, 0);
+    SimpleCameraActor *camera = static_cast<SimpleCameraActor *>(m_actors[0]);
+    camera->SetPosition(startPos);
+    camera->SetRotation(startRotate);
 }
 
 bool ItemWidget::IsValid() const

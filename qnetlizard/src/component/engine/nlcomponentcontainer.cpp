@@ -63,7 +63,7 @@ bool NLComponentContainer::MouseMotionHandler(int button, bool pressed, int x, i
     return i > 0;
 }
 
-bool NLComponentContainer::WheelHandler(int orientation, int delta, int x, int y, int modifier)
+bool NLComponentContainer::WheelEventHandler(int orientation, int delta, int x, int y, int modifier)
 {
     int i = 0;
     NLObjectList &list = ObjectList();

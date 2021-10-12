@@ -4,6 +4,8 @@
 #include "nlscene.h"
 #include "netlizard.h"
 
+class NETLizardTextureRenderer;
+
 typedef struct _texture_s texture_s;
 
 class ImageWidget : public NLScene
@@ -35,6 +37,7 @@ private:
 
 private:
     texture_s *m_tex;
+    NETLizardTextureRenderer *m_renderer;
     Qt::Alignment m_align;
     struct TextureData_s {
         int type;

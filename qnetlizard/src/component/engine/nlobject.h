@@ -46,6 +46,9 @@ public:
     NLPropperty operator[](const QString &name) const;
     void SetScene(NLScene *scene);
     NLScene * Scene();
+    bool IsEnabled() const;
+    void SetEnabled(bool enabled);
+    virtual bool IsActived() const;
 
 protected:
     void SetName(const NLName &name);
@@ -71,6 +74,7 @@ private:
     NLObjectContainer *m_container;
     NLPropperties m_property;
     NLScene *m_scene;
+    bool m_enabled;
 
     friend class NLObjectContainer;
     

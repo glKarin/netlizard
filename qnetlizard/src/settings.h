@@ -39,6 +39,7 @@ public:
     template<class T> T GetSetting(const QString &name, const T &def = T());
     template<class T> void SetSetting(const QString &name, const T &val);
     QVariant operator[](const QString &name);
+    QVariant GetDefaultSetting(const QString &name);
     
 signals:
     void settingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);

@@ -8,6 +8,7 @@
 class SimpleCameraComponent;
 class SimpleControlComponent;
 class NLSceneCamera;
+class NLComponent;
 
 class SimpleCameraActor : public NLActor
 {
@@ -26,7 +27,7 @@ public slots:
 
 private:
     SimpleCameraComponent *m_camera;
-    SimpleControlComponent *m_control;
+    NLComponent *m_control;
 
     Q_DISABLE_COPY(SimpleCameraActor)
 };

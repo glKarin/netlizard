@@ -8,31 +8,45 @@
 #include "gl/nl_texture.h"
 #include "utils/ioutility.h"
 #include "qdef.h"
+#include "nlscenecamera.h"
+#include "simplecameraactor.h"
+#include "nlsceneorthocamera.h"
+#include "netlizardtexturerenderer.h"
 
 ImageWidget::ImageWidget(QWidget *parent)
     : NLScene(parent),
       m_tex(0),
+      m_renderer(0),
       m_align(Qt::AlignCenter)
 {
     memset(&m_data.data, 0, sizeof(m_data.data));
     m_data.type = NL_TEXTURE_UNKNOWN;
     setObjectName("ImageWidget");
+
+    NLPropperties prop;
+    prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
+    SimpleCameraActor *camera = new SimpleCameraActor(prop);
+    m_actors.Add(camera);
+    NLActor *actor = new NLActor;
+    m_actors.Add(actor);
+    m_renderer = new NETLizardTextureRenderer;
+    actor->SetRenderable(m_renderer);
+    NLSceneOrthoCamera *orthoCam = static_cast<NLSceneOrthoCamera *>(camera->Camera());
+    orthoCam->SetAlignment(m_align);
+    SetCurrentCamera(orthoCam);
 }
 
 ImageWidget::~ImageWidget()
 {
-    DEBUG_DESTROY_Q;
 }
 
 void ImageWidget::Init()
 {
     NLScene::Init();
-    glDisable(GL_DEPTH_TEST);
 }
 
 void ImageWidget::Update(float delta)
 {
-    //qDebug() << delta;
     NLScene::Update(delta);
 }
 
@@ -40,92 +54,10 @@ void ImageWidget::paintGL()
 {
     if(!m_tex)
         return;
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//    const GLfloat _Vertex[] = {
-//        0.0, 0.0,
-//        w, 0.0,
-//        0.0, h,
-//        w, h
-//    };
-//    const GLfloat _Vertex[] = {
-//        -w / 2, -h / 2,
-//        w / 2, -h / 2,
-//        -w / 2, h / 2,
-//        w / 2, h / 2
-//    };
-    GLfloat texcoord[] = {
-        0.0, 1.0,
-        1.0, 1.0,
-        0.0, 0.0,
-        1.0, 0.0
-    };
-    GLfloat w = m_tex->width;
-    GLfloat h = m_tex->height;
-    GLfloat start_x = 0;
-    GLfloat start_y = 0;
-    GLfloat end_x = w;
-    GLfloat end_y = h;
-    int ww = width();
-    int wh = height();
-    GLfloat ortho[4] = {0};
-    if(m_align & Qt::AlignLeft)
-    {
-        ortho[1] = ww;
-    }
-    else
-    {
-        start_x = -w / 2;
-        end_x = w / 2;
-        ortho[0] = -ww / 2;
-        ortho[1] = ww / 2;
-    }
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    if(m_align & Qt::AlignBottom)
-    {
-        ortho[3] = wh;
-    }
-    else if(m_align & Qt::AlignTop)
-    {
-        start_y = h;
-        end_y = 0;
-        ortho[2] = wh;
-        ortho[3] = 0;
-    }
-    else
-    {
-        start_y = -h / 2;
-        end_y = h / 2;
-        ortho[2] = -wh / 2;
-        ortho[3] = wh / 2;
-    }
-    GLfloat vertex[8] = {
-        start_x, start_y,
-        end_x, start_y,
-        start_x, end_y,
-        end_x, end_y,
-    };
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(ortho[0], ortho[1], ortho[2], ortho[3]);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glTranslatef(
-                VECTOR3_X(m_cam.position),
-                VECTOR3_Y(m_cam.position),
-                0
-                );
-    glScalef(VECTOR3_X(m_cam.scale), VECTOR3_Y(m_cam.scale), VECTOR3_Z(m_cam.scale));
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, vertex);
-    glTexCoordPointer(2, GL_FLOAT, 0, texcoord);
-    glBindTexture(GL_TEXTURE_2D, m_tex->texid);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    NLScene::paintGL();
 
     glFlush();
 }
@@ -137,7 +69,13 @@ void ImageWidget::SetAlignment(Qt::Alignment align)
     if(m_align != a)
     {
         m_align = (Qt::Alignment)a;
-        updateGL();
+        vector3_s startPos = VECTOR3(0, 0, 0);
+        vector3_s startRotate = VECTOR3(0, 0, 0);
+
+        SimpleCameraActor *camera = static_cast<SimpleCameraActor *>(m_actors[0]);
+        camera->SetPosition(startPos);
+        camera->SetRotation(startRotate);
+        static_cast<NLSceneOrthoCamera *>(camera->Camera())->SetAlignment(align);
     }
 }
 
@@ -188,7 +126,6 @@ bool ImageWidget::GenTexture(const char *data, int length)
 bool ImageWidget::LoadFile(const QString &file, int type, int index)
 {
     Reset();
-    newcam(&m_cam);
     QByteArray ba = file.toLocal8Bit();
     int t = type;
     if(t == NL_TEXTURE_UNKNOWN)
@@ -298,6 +235,13 @@ bool ImageWidget::LoadFile(const QString &file, int type, int index)
     }
         break;
     }
+    m_renderer->SetTexture(m_tex);
+    vector3_s startPos = VECTOR3(0, 0, 0);
+    vector3_s startRotate = VECTOR3(0, 0, 0);
+
+    SimpleCameraActor *camera = static_cast<SimpleCameraActor *>(m_actors[0]);
+    camera->SetPosition(startPos);
+    camera->SetRotation(startRotate);
     return true;
 }
 
@@ -323,6 +267,7 @@ void ImageWidget::Reset()
         m_tex = 0;
     }
     UnsetData();
+    m_renderer->SetTexture(0);
 }
 
 void ImageWidget::UnsetData()

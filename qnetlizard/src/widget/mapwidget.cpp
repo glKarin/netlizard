@@ -4,7 +4,6 @@
 #include <QByteArray>
 
 #include "qdef.h"
-#include "nlactor.h"
 #include "simplecameraactor.h"
 #include "netlizardmapmodelrenderer.h"
 
@@ -14,6 +13,7 @@ MapWidget::MapWidget(QWidget *parent)
       m_renderer(0)
 {
     setObjectName("MapWidget");
+
     SimpleCameraActor *camera = new SimpleCameraActor;
     m_actors.Add(camera);
     NLActor *actor = new NLActor;
@@ -25,7 +25,6 @@ MapWidget::MapWidget(QWidget *parent)
 
 MapWidget::~MapWidget()
 {
-    DEBUG_DESTROY_Q;
 }
 
 void MapWidget::Init()
@@ -35,7 +34,6 @@ void MapWidget::Init()
 
 void MapWidget::Update(float delta)
 {
-    //qDebug() << delta;
     NLScene::Update(delta);
 }
 
@@ -97,8 +95,8 @@ bool MapWidget::LoadFile(const QString &file, const QString &resourcePath, int g
 
     //vector3_s startPos = {{m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]}};
     //vector3_s startRotate = {{m_model->start_angle[0] + 90.0, m_model->start_angle[1] - 180.0, 0}};
-    vector3_s startPos = {{m_model->start_pos[0], m_model->start_pos[1], m_model->start_pos[2]}}; // z_is_up
-    vector3_s startRotate = {{m_model->start_angle[0] - 90.0, m_model->start_angle[1] - 180.0, 0}}; // z_is_up
+    NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[1], m_model->start_pos[2]); // z_is_up
+    NLVector3 startRotate = VECTOR3(m_model->start_angle[0] - 90.0, m_model->start_angle[1] - 180.0, 0); // z_is_up
 
     SimpleCameraActor *camera = static_cast<SimpleCameraActor *>(m_actors[0]);
     camera->SetPosition(startPos);

@@ -5,6 +5,7 @@
 #include "gl/nl_font.h"
 
 class QColor;
+class NETLizardFontRenderer;
 
 class FontWidget : public NLScene
 {
@@ -30,9 +31,7 @@ signals:
 public slots:
 
 private:
-    void RenderText();
-
-private:
+    NETLizardFontRenderer *m_renderer;
     font_s *m_font;
     QString m_text;
     int m_lineCount;

@@ -7,7 +7,7 @@
 class NETLizardMapModelRenderer : public NLRenderable
 {
 public:
-    explicit NETLizardMapModelRenderer();
+    explicit NETLizardMapModelRenderer(NLActor *actor = 0);
     virtual ~NETLizardMapModelRenderer();
     GL_NETLizard_3D_Model * Model();
     void SetModel(GL_NETLizard_3D_Model *model);
