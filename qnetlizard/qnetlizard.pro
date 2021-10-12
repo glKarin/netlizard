@@ -33,25 +33,9 @@ HEADERS += \
     src/aboutdialog.h \
     src/component/logoutput.h \
     src/logdialog.h \
-    src/component/engine/nlscene.h \
-    src/component/engine/nlobject.h \
-    src/component/engine/nlactor.h \
-    src/component/engine/nlrenderable.h \
-    src/component/engine/nlobjectcontainer.h \
-    src/component/engine/nlactorcontainer.h \
-    src/component/engine/nlcomponent.h \
-    src/component/engine/nlcomponentcontainer.h \
-    src/component/engine/nlobjectpool.h \
-    src/component/simplecontrolcomponent.h \
-    src/component/simplecameracomponent.h \
-    src/component/simplecameraactor.h \
-    src/component/netlizardmapmodelrenderer.h \
-    src/component/netlizardtexturerenderer.h \
-    src/component/engine/nlscenecamera.h \
-    src/component/engine/nlsceneorthocamera.h \
-    src/component/engine/nlsceneperspectivecamera.h \
-    src/component/settings.h \
-    src/settingdialog.h
+    src/settings.h \
+    src/settingdialog.h \
+    src/widget/settingwidget.h
 
 SOURCES += \
     main.cpp \
@@ -72,6 +56,31 @@ SOURCES += \
     src/aboutdialog.cpp \
     src/component/logoutput.cpp \
     src/logdialog.cpp \
+    src/settings.cpp \
+    src/settingdialog.cpp \
+    src/widget/settingwidget.cpp
+
+# Engine
+HEADERS += \
+    src/component/engine/nlscene.h \
+    src/component/engine/nlobject.h \
+    src/component/engine/nlactor.h \
+    src/component/engine/nlrenderable.h \
+    src/component/engine/nlobjectcontainer.h \
+    src/component/engine/nlactorcontainer.h \
+    src/component/engine/nlcomponent.h \
+    src/component/engine/nlcomponentcontainer.h \
+    src/component/engine/nlobjectpool.h \
+    src/component/simplecontrolcomponent.h \
+    src/component/simplecameracomponent.h \
+    src/component/simplecameraactor.h \
+    src/component/netlizardmapmodelrenderer.h \
+    src/component/netlizardtexturerenderer.h \
+    src/component/engine/nlscenecamera.h \
+    src/component/engine/nlsceneorthocamera.h \
+    src/component/engine/nlsceneperspectivecamera.h
+
+SOURCES += \
     src/component/engine/nlscene.cpp \
     src/component/engine/nlobject.cpp \
     src/component/engine/nlactor.cpp \
@@ -88,9 +97,7 @@ SOURCES += \
     src/component/netlizardtexturerenderer.cpp \
     src/component/engine/nlscenecamera.cpp \
     src/component/engine/nlsceneorthocamera.cpp \
-    src/component/engine/nlsceneperspectivecamera.cpp \
-    src/component/settings.cpp \
-    src/settingdialog.cpp
+    src/component/engine/nlsceneperspectivecamera.cpp
 
 # NL-GL
 HEADERS += \

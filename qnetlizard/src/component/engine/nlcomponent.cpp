@@ -66,25 +66,25 @@ void NLComponent::Destroy()
     NLObject::Destroy();
 }
 
-bool NLComponent::keyev(int key, bool pressed, int modify)
+bool NLComponent::keyev(int key, bool pressed, int modifier)
 {
     Q_UNUSED(key);
     Q_UNUSED(pressed);
-    Q_UNUSED(modify);
+    Q_UNUSED(modifier);
     return false;
 }
 
-bool NLComponent::mouseev(int mouse, bool pressed, int x, int y, int modify)
+bool NLComponent::mouseev(int mouse, bool pressed, int x, int y, int modifier)
 {
     Q_UNUSED(mouse);
     Q_UNUSED(pressed);
     Q_UNUSED(x);
     Q_UNUSED(y);
-    Q_UNUSED(modify);
+    Q_UNUSED(modifier);
     return false;
 }
 
-bool NLComponent::motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modify)
+bool NLComponent::motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modifier)
 {
     Q_UNUSED(mouse);
     Q_UNUSED(pressed);
@@ -92,17 +92,17 @@ bool NLComponent::motionev(int mouse, bool pressed, int x, int y, int oldx, int 
     Q_UNUSED(y);
     Q_UNUSED(oldx);
     Q_UNUSED(oldy);
-    Q_UNUSED(modify);
+    Q_UNUSED(modifier);
     return false;
 }
 
-bool NLComponent::wheelev(int orientation, int delta, int x, int y, int modify)
+bool NLComponent::wheelev(int orientation, int delta, int x, int y, int modifier)
 {
     Q_UNUSED(orientation);
     Q_UNUSED(delta);
     Q_UNUSED(x);
     Q_UNUSED(y);
-    Q_UNUSED(modify);
+    Q_UNUSED(modifier);
     return false;
 }
 

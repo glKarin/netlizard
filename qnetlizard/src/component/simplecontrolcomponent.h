@@ -22,9 +22,9 @@ protected:
     virtual void Init();
     virtual void Reset();
     virtual void Update(float delta);
-    virtual bool keyev(int key, bool pressed, int modify);
-    //virtual bool mouseev(int mouse, bool pressed, int x, int y, int modify);
-    virtual bool motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modify);
+    virtual bool keyev(int key, bool pressed, int modifier);
+    //virtual bool mouseev(int mouse, bool pressed, int x, int y, int modifier);
+    virtual bool motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modifier);
     virtual void Transform(float delta);
 
 private:

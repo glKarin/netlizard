@@ -33,6 +33,8 @@ enum Rotation_e
     Rotation_Right,
     Rotation_Up,
     Rotation_Down,
+    Rotation_Roll_Left,
+    Rotation_Roll_Right,
     Rotation_Total
 };
 

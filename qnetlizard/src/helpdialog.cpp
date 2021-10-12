@@ -22,21 +22,31 @@ HelpDialog::HelpDialog(QWidget *parent) :
              ;
 
     list << "1. This application is not support open/read jar/zip archive file directly, so please extract jar/zip archive first."
-            "2. The `resource path` file choose is root of jar/zip archive extracted(has a named `META-INF` folder) in all viewer.";
+            << "2. The `resource path` file choose is root of jar/zip archive extracted(has a named `META-INF` folder) in all viewer.";
     m_contentText.push_back(list);
 
     list.clear();
     list << "Key map:"
+         << "Move action: "
          << "W - Move forward"
          << "S - Move backward"
          << "A - Move left"
          << "D - Move right"
-         << "Q - Move down"
-         << "E - Move up"
+         << "Q / Control - Move down"
+         << "E / Space - Move up"
+         << ""
+         << "Turn action: "
          << "Up - Turn up"
          << "Down - Turn down"
          << "Left - Turn left"
          << "Right - Turn right"
+         << ""
+         << "Roll action: "
+         << "Z - Roll left"
+         << "C - Roll right"
+         << "X - Roll to 0"
+         << ""
+         << "Function action: "
          << "M - Grab mouse pointer(If pointer is hidden, moving mouse for turning)"
          << "Esc - Ungrab mouse pointer"
             ;
@@ -44,12 +54,15 @@ HelpDialog::HelpDialog(QWidget *parent) :
 
     list.clear();
     list << "Key map:"
+         << "Translate action: "
          << "Up - Move up"
          << "Down - Move down"
          << "Left - Move left"
          << "Right - Move right"
-         << "Wheel up - Zoom in"
-         << "Wheel down - Zoom out"
+         << ""
+         << "Zoom action: "
+         << "+ / Wheel up - Zoom out"
+         << "- / Wheel down - Zoom in"
             ;
     m_contentText.push_back(list);
 

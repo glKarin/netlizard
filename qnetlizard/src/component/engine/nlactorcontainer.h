@@ -19,10 +19,10 @@ public:
     NLActor * Get(const NLName &name);
     NLActor * Get(int index);
     virtual void Render();
-    virtual bool KeyEventHandler(int key, bool pressed, int modify);
-    virtual bool MouseEventHandler(int button, bool pressed, int x, int y, int modify);
-    virtual bool MouseMotionHandler(int button, bool pressed, int x, int y, int oldx, int oldy, int modify);
-    virtual bool WheelHandler(int orientation, int delta, int x, int y, int modify);
+    virtual bool KeyEventHandler(int key, bool pressed, int modifier);
+    virtual bool MouseEventHandler(int button, bool pressed, int x, int y, int modifier);
+    virtual bool MouseMotionHandler(int button, bool pressed, int x, int y, int oldx, int oldy, int modifier);
+    virtual bool WheelHandler(int orientation, int delta, int x, int y, int modifier);
 
     NLActor * operator[](const NLName &name);
     NLActor * operator[](int index);

@@ -26,49 +26,49 @@ void NLActorContainer::Construct()
     setObjectName("NLActorContainer");
 }
 
-bool NLActorContainer::KeyEventHandler(int key, bool pressed, int modify)
+bool NLActorContainer::KeyEventHandler(int key, bool pressed, int modifier)
 {
     int i = 0;
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        if((static_cast<NLActor *>(obj))->keyev(key, pressed, modify))
+        if((static_cast<NLActor *>(obj))->keyev(key, pressed, modifier))
             i++;
     }
     return i > 0;
 }
 
-bool NLActorContainer::MouseEventHandler(int button, bool pressed, int x, int y, int modify)
+bool NLActorContainer::MouseEventHandler(int button, bool pressed, int x, int y, int modifier)
 {
     int i = 0;
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        if((static_cast<NLActor *>(obj))->mouseev(button, pressed, x, y, modify))
+        if((static_cast<NLActor *>(obj))->mouseev(button, pressed, x, y, modifier))
             i++;
     }
     return i > 0;
 }
 
-bool NLActorContainer::MouseMotionHandler(int button, bool pressed, int x, int y, int oldx, int oldy, int modify)
+bool NLActorContainer::MouseMotionHandler(int button, bool pressed, int x, int y, int oldx, int oldy, int modifier)
 {
     int i = 0;
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        if((static_cast<NLActor *>(obj))->motionev(button, pressed, x, y, oldx, oldy, modify))
+        if((static_cast<NLActor *>(obj))->motionev(button, pressed, x, y, oldx, oldy, modifier))
             i++;
     }
     return i > 0;
 }
 
-bool NLActorContainer::WheelHandler(int orientation, int delta, int x, int y, int modify)
+bool NLActorContainer::WheelHandler(int orientation, int delta, int x, int y, int modifier)
 {
     int i = 0;
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        if((static_cast<NLActor *>(obj))->wheelev(orientation, delta, x, y, modify))
+        if((static_cast<NLActor *>(obj))->wheelev(orientation, delta, x, y, modifier))
             i++;
     }
     return i > 0;

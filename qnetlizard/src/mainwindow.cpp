@@ -19,6 +19,7 @@
 #include "logdialog.h"
 #include "qdef.h"
 #include "settings.h"
+#include "settingdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -113,7 +114,7 @@ void MainWindow::MenuActionSlot(QAction *action)
     }
     else if(type == "setting")
     {
-        AboutDialog::Show(this);
+        SettingDialog::Show(this);
     }
     else
     {

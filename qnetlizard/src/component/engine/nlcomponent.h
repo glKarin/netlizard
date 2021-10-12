@@ -21,10 +21,10 @@ public:
     NLComponentContainer * Container();
 
 protected:
-    virtual bool keyev(int key, bool pressed, int modify);
-    virtual bool mouseev(int mouse, bool pressed, int x, int y, int modify);
-    virtual bool motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modify);
-    virtual bool wheelev(int orientation, int delta, int x, int y, int modify);
+    virtual bool keyev(int key, bool pressed, int modifier);
+    virtual bool mouseev(int mouse, bool pressed, int x, int y, int modifier);
+    virtual bool motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modifier);
+    virtual bool wheelev(int orientation, int delta, int x, int y, int modifier);
     virtual void Destroy();
     virtual void Update(float delta);
     virtual void Mount(NLActor *actor);

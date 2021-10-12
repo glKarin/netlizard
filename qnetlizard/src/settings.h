@@ -7,12 +7,35 @@
 
 #include "qdef.h"
 
+struct SettingItem {
+    QString name;
+    QVariant value;
+    QString title;
+    QString type;
+    QVariantHash prop;
+    SettingItem(const QString &n, const QVariant &val, const QString &t, const QString &c)
+        : name(n),
+          value(val),
+          title(t),
+          type(c)
+    {
+    }
+    SettingItem & AddProp(const QString &name, const QVariant &val)
+    {
+        prop.insert(name, val);
+        return *this;
+    }
+};
+
+typedef QMultiHash<QString, SettingItem> SettingItemMap;
+
 class Settings : public QObject
 {
     Q_OBJECT
 public:
     virtual ~Settings();
     SINGLE_INSTANCE_DEF(Settings);
+    static const SettingItemMap & SettingsConfig();
     template<class T> T GetSetting(const QString &name, const T &def = T());
     template<class T> void SetSetting(const QString &name, const T &val);
     QVariant operator[](const QString &name);

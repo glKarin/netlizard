@@ -7,9 +7,9 @@
 #include "nlscene.h"
 #include "nlactor.h"
 
-const int SimpleControlComponent::M_Move_Sens = 1800;
-const int SimpleControlComponent::M_Turn_Sens = 18;
-const float SimpleControlComponent::M_Rot_Sens = 0.5;
+const int SimpleControlComponent::M_Move_Sens = 1500;
+const int SimpleControlComponent::M_Turn_Sens = 180;
+const float SimpleControlComponent::M_Rot_Sens = 0.35;
 
 SimpleControlComponent::SimpleControlComponent(const QVariantHash &prop, NLActor *parent) :
     NLComponent(prop, parent),
@@ -49,13 +49,13 @@ void SimpleControlComponent::Reset()
     NLComponent::Reset();
 }
 
-bool SimpleControlComponent::keyev(int key, bool pressed, int modify)
+bool SimpleControlComponent::keyev(int key, bool pressed, int modifier)
 {
     int i, j;
     bool r;
 
     r = false;
-    if(modify == Qt::NoModifier)
+    //if(modifier == Qt::NoModifier)
     {
         i = -1;
         j = -1;
@@ -74,9 +74,11 @@ bool SimpleControlComponent::keyev(int key, bool pressed, int modify)
             i = Direction_Right;
             break;
         case Qt::Key_Q:
+        case Qt::Key_Control:
             i = Direction_Down;
             break;
         case Qt::Key_E:
+        case Qt::Key_Space:
             i = Direction_Up;
             break;
 
@@ -91,6 +93,26 @@ bool SimpleControlComponent::keyev(int key, bool pressed, int modify)
             break;
         case Qt::Key_Right:
             j = Rotation_Right;
+            break;
+        case Qt::Key_Z:
+            j = Rotation_Roll_Left;
+            break;
+        case Qt::Key_C:
+            j = Rotation_Roll_Right;
+            break;
+        case Qt::Key_X:
+        {
+            NLActor *actor = Actor();
+            if(actor)
+            {
+                NLVector3 vec = actor->Rotation();
+                if(VECTOR3_Z(vec) != 0)
+                {
+                    VECTOR3_Z(vec) = 0;
+                    actor->SetRotation(vec);
+                }
+            }
+        }
             break;
 
         case Qt::Key_M:
@@ -126,25 +148,19 @@ bool SimpleControlComponent::keyev(int key, bool pressed, int modify)
         }
         goto __Exit;
     }
-    else if(modify & Qt::ControlModifier)
-    {
-        goto __Exit;
-    }
-    else
-        goto __Exit;
 
 __Exit:
     return r;
 }
 
-bool SimpleControlComponent::motionev(int button, bool pressed, int x, int y, int oldx, int oldy, int modify)
+bool SimpleControlComponent::motionev(int button, bool pressed, int x, int y, int oldx, int oldy, int modifier)
 {
     NLScene *scene = Scene();
     if(!scene)
         return false;
     if(pressed || scene->IsGrabMouseCursor())
     {
-        //if((modify & Qt::ControlModifier) == 0)
+        //if((modifier & Qt::ControlModifier) == 0)
         {
             float dx = x - oldx;
             float dy = y - oldy;
@@ -198,11 +214,12 @@ void SimpleControlComponent::Transform(float delta)
 
     if(m_rotation[Rotation_Up] || m_rotation[Rotation_Down]
             || m_rotation[Rotation_Left] || m_rotation[Rotation_Right]
+            || m_rotation[Rotation_Roll_Left] || m_rotation[Rotation_Roll_Right]
             )
     {
         vector3_s m_turn;
         VECTOR3_X(m_turn) = VECTOR3_Y(m_turn) = VECTOR3_Z(m_turn) = 0;
-        float turnsens = 10 * m_turnsens * delta;
+        float turnsens = m_turnsens * delta;
 
         if(m_rotation[Rotation_Up])
             VECTOR3_X(m_turn) = -turnsens;
@@ -213,6 +230,11 @@ void SimpleControlComponent::Transform(float delta)
             VECTOR3_Y(m_turn) = -turnsens;
         else if(m_rotation[Rotation_Right])
             VECTOR3_Y(m_turn) = turnsens;
+
+        if(m_rotation[Rotation_Roll_Left])
+            VECTOR3_Z(m_turn) = -turnsens;
+        else if(m_rotation[Rotation_Roll_Right])
+            VECTOR3_Z(m_turn) = turnsens;
 
         NLActor *actor = Actor();
         if(actor)

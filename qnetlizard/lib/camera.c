@@ -113,7 +113,7 @@ float clampangle(float angle)
     }
     else if(angle < 0)
     {
-        r = 360 - abs(i % 360 + f);
+        r = 360 - fabs(i % 360 + f);
     }
     else
         r = angle;

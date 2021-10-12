@@ -159,31 +159,31 @@ void NLActor::Destroy()
     NLObject::Destroy();
 }
 
-bool NLActor::keyev(int key, bool pressed, int modify)
+bool NLActor::keyev(int key, bool pressed, int modifier)
 {
     if(m_components)
-        return m_components->KeyEventHandler(key, pressed, modify);
+        return m_components->KeyEventHandler(key, pressed, modifier);
     return false;
 }
 
-bool NLActor::mouseev(int mouse, bool pressed, int x, int y, int modify)
+bool NLActor::mouseev(int mouse, bool pressed, int x, int y, int modifier)
 {
     if(m_components)
-        return m_components->MouseEventHandler(mouse, pressed, x, y, modify);
+        return m_components->MouseEventHandler(mouse, pressed, x, y, modifier);
     return false;
 }
 
-bool NLActor::motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modify)
+bool NLActor::motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modifier)
 {
     if(m_components)
-        return m_components->MouseMotionHandler(mouse, pressed, x, y, oldx, oldy, modify);
+        return m_components->MouseMotionHandler(mouse, pressed, x, y, oldx, oldy, modifier);
     return false;
 }
 
-bool NLActor::wheelev(int orientation, int delta, int x, int y, int modify)
+bool NLActor::wheelev(int orientation, int delta, int x, int y, int modifier)
 {
     if(m_components)
-        return m_components->WheelHandler(orientation, delta, x, y, modify);
+        return m_components->WheelHandler(orientation, delta, x, y, modifier);
     return false;
 }
 
@@ -342,7 +342,7 @@ NLActor * NLActor::Turn(const NLVector3 &v)
         return this;
     VECTOR3_X(m_rotation) = ClampAngle(VECTOR3_X(m_rotation) + VECTOR3_X(v));
     VECTOR3_Y(m_rotation) = ClampAngle(VECTOR3_Y(m_rotation) + VECTOR3_Y(v));
-    //VECTOR3_Z(m_rotation) = ClampAngle(VECTOR3_Z(m_rotation) + VECTOR3_Z(v));
+    VECTOR3_Z(m_rotation) = ClampAngle(VECTOR3_Z(m_rotation) + VECTOR3_Z(v));
     UpdateMatrix();
     UpdateDirection();
     emit rotationChanged(m_rotation);
@@ -388,10 +388,15 @@ void NLActor::UpdateLocalMatrix()
 
     Mesa_glRotate(&m_matrix, VECTOR3_X(m_rotation), 1, 0, 0);
     if(m_zIsUp)
+    {
+        Mesa_glRotate(&m_matrix, VECTOR3_Z(m_rotation), 0, -1, 0); // roll
         Mesa_glRotate(&m_matrix, VECTOR3_Y(m_rotation), 0, 0, 1); // z_is_up
+    }
     else
+    {
+        Mesa_glRotate(&m_matrix, VECTOR3_Z(m_rotation), 0, 0, 1); // roll
         Mesa_glRotate(&m_matrix, VECTOR3_Y(m_rotation), 0, 1, 0);
-    //Mesa_glRotate(&m_matrix, VECTOR3_Z(m_rotation), 0, 0, 1); //
+    }
 
     Mesa_glTranslate(&m_matrix,
                 -VECTOR3_X(m_position),
@@ -453,7 +458,7 @@ void NLActor::UpdateDirection()
 //    VECTOR3_Z(m_direction) = -z;
 //    vector3_normalizev(&m_direction);
 
-    float v[] = {0,0,-1};
+    float v[] = {0, 0, -1};
     Mesa_glTransform(VECTOR3_V(m_direction), v, &m_normalMatrix);
 
     vector3_crossv(&m_left, &m_direction, &m_up);
@@ -475,11 +480,12 @@ float NLActor::ClampAngle(float angle)
     }
     else if(angle < 0)
     {
-        r = 360 - abs(i % 360 + f);
+        r = 360 - fabs(i % 360 + f);
     }
     else
         r = angle;
     if(r == 360.0)
         r = 0.0;
+    qDebug() <<angle <<r;
     return r;
 }

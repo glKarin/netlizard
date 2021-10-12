@@ -3,6 +3,9 @@
 
 #include <QDialog>
 
+class SettingGroup;
+class QTreeWidgetItem;
+
 class SettingDialog : public QDialog
 {
     Q_OBJECT
@@ -15,9 +18,14 @@ signals:
     
 public slots:
 
-private Q_SLOTS:
-    void SaveSetting();
+private:
+    void Init();
 
+private Q_SLOTS:
+    void InitSettingContent(QTreeWidgetItem *item, int column);
+
+private:
+    SettingGroup *m_content;
     Q_DISABLE_COPY(SettingDialog)
 };
 
