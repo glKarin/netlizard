@@ -3,12 +3,6 @@
 
 #include "nlobject.h"
 
-#include "lib/vector3.h"
-#include "lib/mesa_gl_math.h"
-
-typedef vector3_s NLVector3;
-typedef GLmatrix NLMatrix4;
-
 class NLActorContainer;
 class NLRenderable;
 class NLComponentContainer;
@@ -43,8 +37,10 @@ public:
     NLINTERFACE NLActor * Move(const NLVector3 &v);
     NLINTERFACE NLActor * Turn(const NLVector3 &v);
     NLINTERFACE NLActor * Zoom(const NLVector3 &v);
-
-
+    bool AddComponent(NLComponent *item);
+    bool RemoveComponent(NLComponent *item);
+    bool AddChild(NLActor *actor);
+    bool RemoveChild(NLActor *actor);
 protected:
     virtual bool keyev(int key, bool pressed, int modifier);
     virtual bool mouseev(int mouse, bool pressed, int x, int y, int modifier);
@@ -56,8 +52,6 @@ protected:
     virtual void Render();
     virtual void Reset();
     void SetContainer(NLActorContainer *container);
-    bool AddComponent(NLComponent *item);
-    bool RemoveComponent(NLComponent *item);
     void SetZIsUp(bool b);
     
 signals:
@@ -75,7 +69,6 @@ private:
     void UpdateNormalMatrix();
     void UpdateChildrenMatrix();
     void UpdateDirection();
-    float ClampAngle(float angle);
 
 private:
     NLRenderable *m_renderable;

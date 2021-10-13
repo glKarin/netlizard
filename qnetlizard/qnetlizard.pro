@@ -13,6 +13,8 @@ INCLUDEPATH += . .. ../libnetlizard ./src ./src/gl ./src/utils ./src/widget ./sr
 PRE_TARGETDEPS += ../libnetlizard/debug/libnetlizard.a
 LIBS += ../libnetlizard/debug/libnetlizard.a
 
+CONFIG          += debug #_and_release
+
 # Input
 HEADERS += \
     src/imageviewer.h \
@@ -35,9 +37,7 @@ HEADERS += \
     src/logdialog.h \
     src/settings.h \
     src/settingdialog.h \
-    src/widget/settingwidget.h \
-    src/component/engine/nldef.h \
-    src/component/netlizardfontrenderer.h
+    src/widget/settingwidget.h
 
 SOURCES += \
     main.cpp \
@@ -60,11 +60,28 @@ SOURCES += \
     src/logdialog.cpp \
     src/settings.cpp \
     src/settingdialog.cpp \
-    src/widget/settingwidget.cpp \
-    src/component/netlizardfontrenderer.cpp
+    src/widget/settingwidget.cpp
+
+CONFIG(debug, debug|release) {
+# Test
+DEFINES += _DEV_TEST
+INCLUDEPATH += ./src/test
+DEPENDPATH += ./src/test
+HEADERS += \
+    src/test/testviewer.h \
+    src/test/testrenderer.h \
+    src/test/testwidget.h
+
+SOURCES += \
+    src/test/testviewer.cpp \
+    src/test/testrenderer.cpp \
+    src/test/testwidget.cpp
+} else {
+}
 
 # Engine
 HEADERS += \
+    src/component/engine/nldef.h \
     src/component/engine/nlscene.h \
     src/component/engine/nlobject.h \
     src/component/engine/nlactor.h \
@@ -82,7 +99,9 @@ HEADERS += \
     src/component/netlizardtexturerenderer.h \
     src/component/engine/nlscenecamera.h \
     src/component/engine/nlsceneorthocamera.h \
-    src/component/engine/nlsceneperspectivecamera.h
+    src/component/engine/nlsceneperspectivecamera.h \
+    src/component/netlizardfontrenderer.h \
+    src/component/engine/nlfuncs.h
 
 SOURCES += \
     src/component/engine/nlscene.cpp \
@@ -102,12 +121,14 @@ SOURCES += \
     src/component/netlizardtexturerenderer.cpp \
     src/component/engine/nlscenecamera.cpp \
     src/component/engine/nlsceneorthocamera.cpp \
-    src/component/engine/nlsceneperspectivecamera.cpp
+    src/component/engine/nlsceneperspectivecamera.cpp \
+    src/component/engine/nlfuncs.cpp \
+    src/component/netlizardfontrenderer.cpp
 
 # NL-GL
 HEADERS += \
     lib/mesa_gl_math.h \
-    lib/camera.h \
+#    lib/camera.h \
     lib/vector3.h \
     src/gl/nl_font.h \
     src/gl/gl_texture.h \
@@ -116,7 +137,7 @@ HEADERS += \
 
 SOURCES += \
     lib/mesa_gl_math.c \
-    lib/camera.c \
+#    lib/camera.c \
     lib/vector3.c \
     src/gl/gl_texture.c \
     src/gl/nl_texture.c \

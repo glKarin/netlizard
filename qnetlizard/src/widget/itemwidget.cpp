@@ -14,7 +14,9 @@ ItemWidget::ItemWidget(QWidget *parent)
 {
     setObjectName("ItemWidget");
 
-    SimpleCameraActor *camera = new SimpleCameraActor;
+    NLPropperties prop;
+    prop.insert("z_is_up", true);
+    SimpleCameraActor *camera = new SimpleCameraActor(prop);
     m_actors.Add(camera);
     NLActor *actor = new NLActor;
     m_actors.Add(actor);
@@ -108,8 +110,8 @@ void ItemWidget::Reset()
         free(m_model);
         m_model = 0;
     }
-    vector3_s startPos = VECTOR3(0, -1000, 150);
-    vector3_s startRotate = VECTOR3(180.0, 0, 0);
+    vector3_s startPos = VECTOR3(0, 150, 1000);
+    vector3_s startRotate = VECTOR3(0, 0, 0);
     SimpleCameraActor *camera = static_cast<SimpleCameraActor *>(m_actors[0]);
     camera->SetPosition(startPos);
     camera->SetRotation(startRotate);

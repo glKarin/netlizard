@@ -9,33 +9,7 @@
 #include "nlactorcontainer.h"
 #include "nlcomponentcontainer.h"
 #include "nlcomponent.h"
-
-#define DM(m_modelviewMatrix)  \
-qDebug()\
-         <<    m_modelviewMatrix.m[0]\
-            <<    m_modelviewMatrix.m[1]\
-               <<    m_modelviewMatrix.m[2]\
-                  <<    m_modelviewMatrix.m[3]\
-                     << "|"\
-                     <<    m_modelviewMatrix.m[4]\
-                        <<    m_modelviewMatrix.m[5]\
-                           <<    m_modelviewMatrix.m[6]\
-                              <<    m_modelviewMatrix.m[7]\
-                                 << "|"\
-                                 <<    m_modelviewMatrix.m[8]\
-                                    <<    m_modelviewMatrix.m[9]\
-                                       <<    m_modelviewMatrix.m[10]\
-                                          <<    m_modelviewMatrix.m[11]\
-                                             << "|"\
-                                             <<    m_modelviewMatrix.m[12]\
-                                                <<    m_modelviewMatrix.m[13]\
-                                                   <<    m_modelviewMatrix.m[14]\
-                                                      <<    m_modelviewMatrix.m[15]\
-                                                         << "\n"\
-    ;
-
-#define ator(a) ((double)(a) / 180.0 * M_PI)
-#define rtoa(r) ((double)(r) / M_PI * 180.0)
+#include "nlfuncs.h"
 
 static const NLVector3 InitUp_z = VECTOR3(0, 0, 1);
 static const NLVector3 InitUp_y = VECTOR3(0, 1, 0);
@@ -43,7 +17,7 @@ static const NLVector3 InitDirection_z = VECTOR3(0, 1, 0);
 static const NLVector3 InitDirection_y = VECTOR3(0, 0, -1);
 static const NLVector3 InitLeft = VECTOR3(-1, 0, 0);
 static const NLVector3 InitPosition = VECTOR3(0, 0, 0);
-static const NLVector3 InitRotation = VECTOR3(-90, 0, 0);
+static const NLVector3 InitRotation = VECTOR3(/*-9*/0, 0, 0);
 static const NLVector3 InitScale = VECTOR3(1, 1, 1);
 
 NLActor::NLActor(NLActor *parent) :
@@ -99,7 +73,6 @@ NLActor::~NLActor()
 
 void NLActor::Construct()
 {
-    //m_zIsUp = true;
     setObjectName("NLActor");
     SetType(NLObject::Type_Actor);
     Mesa_AllocGLMatrix(&m_matrix);
@@ -119,6 +92,10 @@ void NLActor::Init()
         return;
     if(m_renderable)
         m_renderable->InitRender();
+    if(m_components)
+        m_components->Init();
+    if(m_children)
+        m_children->Init();
     NLObject::Init();
 }
 
@@ -126,9 +103,11 @@ void NLActor::Update(float delta)
 {
     if(!IsActived())
         return;
+    NLObject::Update(delta);
     if(m_components)
         m_components->Update(delta);
-    NLObject::Update(delta);
+    if(m_children)
+        m_children->Update(delta);
 }
 
 void NLActor::Render()
@@ -136,8 +115,19 @@ void NLActor::Render()
     if(!IsActived())
         return;
     if(m_renderable)
-        m_renderable->Render();
-    //qDebug() << objectName() + ": " + Name() + " -> render";
+    {
+        glPushMatrix();
+        {
+            glMultMatrixf(GL_MATRIX_M(m_globalMatrix));
+            m_renderable->Render();
+        }
+        glPopMatrix();
+    }
+    if(m_children)
+        m_children->Render();
+    //qDebug() << objectName() + ": " + Name() + " -> render" << m_position.v[0] << m_position.v[1] << m_position.v[2];
+
+    //DM(m_globalMatrix);
 }
 
 void NLActor::Destroy()
@@ -156,6 +146,12 @@ void NLActor::Destroy()
         m_components->deleteLater();
         m_components = 0;
     }
+    if(m_children)
+    {
+        m_children->Destroy();
+        m_children->deleteLater();
+        m_children = 0;
+    }
     NLObject::Destroy();
 }
 
@@ -165,6 +161,8 @@ bool NLActor::keyev(int key, bool pressed, int modifier)
         return false;
     if(m_components)
         return m_components->KeyEventHandler(key, pressed, modifier);
+    if(m_children)
+        return m_children->KeyEventHandler(key, pressed, modifier);
     return false;
 }
 
@@ -174,6 +172,8 @@ bool NLActor::mouseev(int mouse, bool pressed, int x, int y, int modifier)
         return false;
     if(m_components)
         return m_components->MouseEventHandler(mouse, pressed, x, y, modifier);
+    if(m_children)
+        return m_children->MouseEventHandler(mouse, pressed, x, y, modifier);
     return false;
 }
 
@@ -183,6 +183,8 @@ bool NLActor::motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy
         return false;
     if(m_components)
         return m_components->MouseMotionHandler(mouse, pressed, x, y, oldx, oldy, modifier);
+    if(m_children)
+        return m_children->MouseMotionHandler(mouse, pressed, x, y, oldx, oldy, modifier);
     return false;
 }
 
@@ -192,6 +194,8 @@ bool NLActor::wheelev(int orientation, int delta, int x, int y, int modifier)
         return false;
     if(m_components)
         return m_components->WheelEventHandler(orientation, delta, x, y, modifier);
+    if(m_children)
+        return m_children->WheelEventHandler(orientation, delta, x, y, modifier);
     return false;
 }
 
@@ -206,6 +210,8 @@ NLActor * NLActor::ParentActor()
 void NLActor::SetParentActor(NLActor *actor)
 {
     setParent(actor);
+    if(actor)
+        UpdateGlobalMatrix();
 }
 
 NLActorContainer * NLActor::Container()
@@ -238,6 +244,31 @@ bool NLActor::RemoveComponent(NLComponent *item)
         return false;
     bool res = m_components->Remove(item);
     item->Destroy();
+    return res;
+}
+
+bool NLActor::AddChild(NLActor *actor)
+{
+    if(!actor)
+        return false;
+    if(actor->ParentActor())
+        return false;
+    if(!m_children)
+    {
+        m_children = new NLActorContainer(this);
+        m_children->SetScene(Scene());
+    }
+    return m_children->Add(actor);
+}
+
+bool NLActor::RemoveChild(NLActor *actor)
+{
+    if(!actor)
+        return false;
+    if(!m_children)
+        return false;
+    bool res = m_children->Remove(actor);
+    actor->Destroy();
     return res;
 }
 
@@ -354,9 +385,9 @@ NLActor * NLActor::Turn(const NLVector3 &v)
 {
     if(vector3_iszero(&v))
         return this;
-    VECTOR3_X(m_rotation) = ClampAngle(VECTOR3_X(m_rotation) + VECTOR3_X(v));
-    VECTOR3_Y(m_rotation) = ClampAngle(VECTOR3_Y(m_rotation) + VECTOR3_Y(v));
-    VECTOR3_Z(m_rotation) = ClampAngle(VECTOR3_Z(m_rotation) + VECTOR3_Z(v));
+    VECTOR3_X(m_rotation) = NL::clamp_angle(VECTOR3_X(m_rotation) + VECTOR3_X(v));
+    VECTOR3_Y(m_rotation) = NL::clamp_angle(VECTOR3_Y(m_rotation) + VECTOR3_Y(v));
+    VECTOR3_Z(m_rotation) = NL::clamp_angle(VECTOR3_Z(m_rotation) + VECTOR3_Z(v));
     UpdateMatrix();
     UpdateDirection();
     emit rotationChanged(m_rotation);
@@ -396,26 +427,31 @@ void NLActor::UpdateMatrix()
 void NLActor::UpdateLocalMatrix()
 {
     Mesa_glLoadIdentity(&m_matrix);
+
+    Mesa_glTranslate(&m_matrix,
+                VECTOR3_X(m_position),
+                VECTOR3_Y(m_position),
+                VECTOR3_Z(m_position)
+                );
+
+#if 0
     if(m_zIsUp)
         Mesa_glRotate(&m_matrix, 90, 1, 0, 0); // z_is_up
+#endif
 
     Mesa_glRotate(&m_matrix, VECTOR3_X(m_rotation), 1, 0, 0);
+#if 0
     if(m_zIsUp)
     {
         Mesa_glRotate(&m_matrix, VECTOR3_Z(m_rotation), 0, -1, 0); // roll
         Mesa_glRotate(&m_matrix, VECTOR3_Y(m_rotation), 0, 0, 1); // z_is_up
     }
     else
+#endif
     {
         Mesa_glRotate(&m_matrix, VECTOR3_Z(m_rotation), 0, 0, 1); // roll
         Mesa_glRotate(&m_matrix, VECTOR3_Y(m_rotation), 0, 1, 0);
     }
-
-    Mesa_glTranslate(&m_matrix,
-                -VECTOR3_X(m_position),
-                -VECTOR3_Y(m_position),
-                -VECTOR3_Z(m_position)
-                );
 
     Mesa_glScale(&m_matrix, VECTOR3_X(m_scale), VECTOR3_Y(m_scale), VECTOR3_Z(m_scale));
 
@@ -436,14 +472,7 @@ void NLActor::UpdateGlobalMatrix()
 
 void NLActor::UpdateNormalMatrix()
 {
-    float m[16] = {
-        GL_MATRIX_M(m_matrix)[0], GL_MATRIX_M(m_matrix)[1], GL_MATRIX_M(m_matrix)[2], 0.0,
-        GL_MATRIX_M(m_matrix)[4], GL_MATRIX_M(m_matrix)[5], GL_MATRIX_M(m_matrix)[6], 0.0,
-        GL_MATRIX_M(m_matrix)[8], GL_MATRIX_M(m_matrix)[9], GL_MATRIX_M(m_matrix)[10], 0.0,
-        0.0, 0.0, 0.0, 1.0
-    };
-    Mesa_glLoadIdentity(&m_normalMatrix);
-    Mesa_NormalMatrix(&m_normalMatrix, m);
+    NL::cale_normal_matrix(m_normalMatrix, m_matrix);
 }
 
 void NLActor::UpdateChildrenMatrix()
@@ -482,26 +511,6 @@ void NLActor::UpdateDirection()
 //    qDebug() << "up: " << QString::number(m_up.v[0]) << QString::number(m_up.v[1]) <<  QString::number(m_up.v[2]);
 //    qDebug() << "dir: " << QString::number(m_direction.v[0]) << QString::number(m_direction.v[1]) <<  QString::number(m_direction.v[2]);
 //    qDebug() << "\n";
-}
-
-float NLActor::ClampAngle(float angle)
-{
-    int i = (int)angle;
-    float f = angle - i;
-    float r = 0.0;
-    if(angle > 360)
-    {
-        r = i % 360 + f;
-    }
-    else if(angle < 0)
-    {
-        r = 360 - fabs(i % 360 + f);
-    }
-    else
-        r = angle;
-    if(r == 360.0)
-        r = 0.0;
-    return r;
 }
 
 void NLActor::SetZIsUp(bool b)

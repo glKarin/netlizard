@@ -11,6 +11,7 @@
 #include "nlobject.h"
 #include "nlobjectcontainer.h"
 #include "nlactorcontainer.h"
+#include "test/testwidget.h"
 
 static int Test(int argc, char **argv);
 
@@ -31,6 +32,9 @@ int main(int argc, char *argv[])
         return test;
 
     //qInstallMsgHandler(log_output_msg_handler);
+
+    //TestWidget w;
+    //w.show();
 
     MainWindow viewer;
     QWidget *win = &viewer;

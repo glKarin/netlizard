@@ -14,7 +14,9 @@ MapWidget::MapWidget(QWidget *parent)
 {
     setObjectName("MapWidget");
 
-    SimpleCameraActor *camera = new SimpleCameraActor;
+    NLPropperties prop;
+    prop.insert("z_is_up", true);
+    SimpleCameraActor *camera = new SimpleCameraActor(prop);
     m_actors.Add(camera);
     NLActor *actor = new NLActor;
     m_actors.Add(actor);
@@ -93,10 +95,10 @@ bool MapWidget::LoadFile(const QString &file, const QString &resourcePath, int g
 
     m_renderer->SetModel(m_model);
 
-    //vector3_s startPos = {{m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]}};
-    //vector3_s startRotate = {{m_model->start_angle[0] + 90.0, m_model->start_angle[1] - 180.0, 0}};
-    NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[1], m_model->start_pos[2]); // z_is_up
-    NLVector3 startRotate = VECTOR3(m_model->start_angle[0] - 90.0, m_model->start_angle[1] - 180.0, 0); // z_is_up
+    NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]);
+    NLVector3 startRotate = VECTOR3(m_model->start_angle[0] + 90.0, m_model->start_angle[1] - 180.0, 0);
+    // NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[1], m_model->start_pos[2]); // z_is_up
+    // NLVector3 startRotate = VECTOR3(m_model->start_angle[0] - 90.0, m_model->start_angle[1] - 180.0, 0); // z_is_up
 
     SimpleCameraActor *camera = static_cast<SimpleCameraActor *>(m_actors[0]);
     camera->SetPosition(startPos);

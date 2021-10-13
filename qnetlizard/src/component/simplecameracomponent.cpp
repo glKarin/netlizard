@@ -41,7 +41,13 @@ void SimpleCameraComponent::Update(float delta)
             m_camera->Update(scene->width(), scene->height());
         NLActor *actor = Actor();
         if(actor)
-            m_camera->SetModelViewMatrix(actor->GlobalMatrix());
+        {
+            NLActor *pa = actor->ParentActor();
+            if(pa)
+                m_camera->SetGlobalMatrix(pa->GlobalMatrix());
+            m_camera->SetPosition(actor->Position());
+            m_camera->SetRotation(actor->Rotation());
+        }
     }
     NLComponent::Update(delta);
 }
@@ -75,7 +81,7 @@ void SimpleCameraComponent::OnPositionChanged(const NLVector3 &pos)
     {
         NLActor *actor = Actor();
         if(actor)
-            m_camera->SetModelViewMatrix(actor->GlobalMatrix());
+            m_camera->SetPosition(actor->Position());
     }
 }
 
@@ -85,7 +91,7 @@ void SimpleCameraComponent::OnRotationChanged(const NLVector3 &rot)
     {
         NLActor *actor = Actor();
         if(actor)
-            m_camera->SetModelViewMatrix(actor->GlobalMatrix());
+            m_camera->SetRotation(actor->Rotation());
     }
 }
 
@@ -100,6 +106,8 @@ void SimpleCameraComponent::SetType(int type)
             m_camera = 0;
         }
         m_camera = m_type == NLSceneCamera::Type_Ortho ? (NLSceneCamera *)new NLSceneOrthoCamera : (NLSceneCamera *)new NLScenePerspectiveCamera;
+        if(GetProperty<bool>("z_is_up", false))
+            m_camera->SetZIsUp(type != NLSceneCamera::Type_Ortho); // z_is_up
         m_camera->SetScene(Scene());
     }
 }

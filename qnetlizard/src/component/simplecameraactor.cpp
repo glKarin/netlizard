@@ -31,7 +31,10 @@ void SimpleCameraActor::Init()
     QVariant type = GetProperty("type");
     if(type.isValid())
         prop.insert("type", type);
-    SetZIsUp(type != NLSceneCamera::Type_Ortho);
+    QVariant z_is_up = GetProperty("z_is_up");
+    if(z_is_up.isValid())
+        prop.insert("z_is_up", z_is_up);
+    //SetZIsUp(type != NLSceneCamera::Type_Ortho);
     m_camera = new SimpleCameraComponent(prop, this);
     m_camera->SetScene(Scene());
     if(type == NLSceneCamera::Type_Ortho)

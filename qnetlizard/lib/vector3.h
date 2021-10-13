@@ -24,6 +24,10 @@ typedef struct _vector3_s
 #define COLOR_G(vec) (vec).v[1]
 #define COLOR_B(vec) (vec).v[2]
 
+#define TEXCOORD_S(vec) (vec).v[0]
+#define TEXCOORD_T(vec) (vec).v[1]
+#define TEXCOORD_R(vec) (vec).v[2]
+
 #define EULER_PITCH(vec) (vec).v[0]
 #define EULER_YAW(vec) (vec).v[1]
 #define EULER_ROLL(vec) (vec).v[2]

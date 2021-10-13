@@ -5,17 +5,10 @@
 #include <QList>
 #include <QVariant>
 
-#define NLINTERFACE
-#define NLGETTER(x)
-#define NLSETTER(x)
-#define NLPROPERTY(x)
+#include "nldef.h"
 
 class NLObjectContainer;
 class NLScene;
-
-typedef QString NLName;
-typedef QVariantHash NLPropperties;
-typedef QVariant NLPropperty;
 
 class NLObject : public QObject
 {

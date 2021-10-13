@@ -81,12 +81,18 @@ NLName NLActorContainer::Find(const NLActor *item)
 
 bool NLActorContainer::Add(NLActor *item)
 {
-    return NLObjectContainer::Add(item);
+    bool res = NLObjectContainer::Add(item);
+    if(res)
+        item->SetParentActor(Actor());
+    return res;
 }
 
 bool NLActorContainer::Remove(NLActor *item)
 {
-    return NLObjectContainer::Remove(item);
+    bool res = NLObjectContainer::Remove(item);
+    if(res)
+        item->SetParentActor(0);
+    return res;
 }
 
 NLActor * NLActorContainer::Get(const NLName &name)
@@ -122,4 +128,17 @@ void NLActorContainer::Render()
     {
         (static_cast<NLActor *>(obj))->Render();
     }
+}
+
+NLActor * NLActorContainer::Actor()
+{
+    QObject *p = parent();
+    if(p)
+        return dynamic_cast<NLActor *>(p);
+    return 0;
+}
+
+void NLActorContainer::SetActor(NLActor *actor)
+{
+    setParent(actor);
 }

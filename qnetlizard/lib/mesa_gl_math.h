@@ -10,6 +10,18 @@ extern "C" {
 #define GL_MATRIX_M(matrix) (matrix).m
 #define GL_MATRIXV_M(matrix) (matrix)->m
 
+#define GL_MATRIX_MM(matrix) ((float **)(GL_MATRIX_M(matrix)))
+#define GL_MATRIXV_MM(matrix) ((float **)(GL_MATRIXV_M(matrix)))
+
+#define GL_MATRIX_M_CR(matrix, col, row) (GL_MATRIX_M(matrix))[row * 4 + col]
+#define GL_MATRIXV_M_CR(matrix, col, row) (GL_MATRIXV_M(matrix))[row * 4 + col]
+
+#define GL_MATRIX_M_CR4(matrix, col, row) (GL_MATRIX_M(matrix))[(row - 1) * 4 + (col - 1)]
+#define GL_MATRIXV_M_CR4(matrix, col, row) (GL_MATRIXV_M(matrix))[(row - 1) * 4 + (col - 1)]
+
+#define GL_MATRIX_M_I(matrix, i) (GL_MATRIX_M(matrix))[i]
+#define GL_MATRIXV_M_I(matrix, i) (GL_MATRIXV_M(matrix))[i]
+
 void Mesa_glTranslate(GLmatrix *mat, float x, float y, float z);
 void Mesa_glRotate(GLmatrix *mat, float angle, float x, float y, float z);
 void Mesa_glScale(GLmatrix *mat, float x, float y, float z);

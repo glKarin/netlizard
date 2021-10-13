@@ -1,7 +1,7 @@
 #ifndef _KARIN_NLSCENECAMERA_H
 #define _KARIN_NLSCENECAMERA_H
 
-#include "nlactor.h"
+#include "nldef.h"
 
 class NLScene;
 
@@ -30,24 +30,53 @@ public:
     NLScene * Scene();
     void SetScene(NLScene *scene);
     virtual void Render();
-    void SetModelViewMatrix(const NLMatrix4 *mat);
+    void SetGlobalMatrix(const NLMatrix4 *mat);
     void Reset();
     virtual void Update(float width, float height) = 0;
-    const NLMatrix4 * ModelViewMatrix() const;
+    const NLMatrix4 * ViewMatrix() const;
     const NLMatrix4 * ProjectionMatrix() const;
-    const NLMatrix4 * ModelViewProjectionMatrix() const;
+    const NLMatrix4 * NormalMatrix() const;
+    const NLMatrix4 * GlobalMatrix() const;
+    const NLMatrix4 * ViewProjectionMatrix() const;
+    void SetPosition(const NLVector3 &v);
+    void SetRotation(const NLVector3 &v);
+    void SetScale(const NLVector3 &v);
+    NLVector3 Position() const;
+    NLVector3 Rotation() const;
+    NLVector3 Scale() const;
+    NLVector3 Direction() const;
+    NLVector3 Up() const;
+    NLSceneCamera * Move(const NLVector3 &v);
+    NLSceneCamera * Turn(const NLVector3 &v);
+    NLSceneCamera * Zoom(const NLVector3 &v);
+    void SetZIsUp(bool b);
 
 protected:
     virtual void Projection() = 0;
-    virtual void ModelView();
-    virtual void UpdateProjectionMatrix(NLMatrix4 *mat) = 0;
+    virtual void View();
+    virtual void UpdateProjectionMatrix(NLMatrix4 *mat);
     void UpdateMatrix();
 
 private:
-    NLMatrix4 m_modelviewMatrix;
+    void UpdateViewMatrix();
+    void UpdateMvpMatrix();
+    void UpdateNormalMatrix();
+    void UpdateDirection();
+
+private:
+    NLScene *m_scene;
+    bool m_zIsUp;
+    NLVector3 m_position;
+    NLVector3 m_rotation;
+    NLVector3 m_scale;
+    NLVector3 m_direction;
+    NLVector3 m_up;
+    NLVector3 m_left;
+    NLMatrix4 m_viewMatrix;
     NLMatrix4 m_projectionMatrix;
     NLMatrix4 m_mvpMatrix;
-    NLScene *m_scene;
+    NLMatrix4 m_normalMatrix; // normal
+    NLMatrix4 m_globalMatrix;
 
     Q_DISABLE_COPY(NLSceneCamera)
 };

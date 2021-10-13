@@ -21,6 +21,10 @@
 #include "settings.h"
 #include "settingdialog.h"
 
+#ifdef _DEV_TEST
+#include "testviewer.h"
+#endif
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     m_logDialog(0)
@@ -63,6 +67,12 @@ void MainWindow::Init()
     menuItem->setData("sprite_viewer");
 
     menu = menuBar->addMenu("&View");
+
+#ifdef _DEV_TEST
+    menuItem = menu->addAction("&Test");
+    menuItem->setData("test");
+#endif
+
     menuItem = menu->addAction("&Log");
     menuItem->setData("log");
     menuItem = menu->addAction("&Close");
@@ -143,6 +153,12 @@ BaseViewer * MainWindow::GenViewer(const QString &type)
         ;
     else if(type == "sprite_viewer")
         ;
+
+#ifdef _DEV_TEST
+    else if(type == "test")
+        viewer = new TestViewer;
+#endif
+
     if(viewer)
     {
         setCentralWidget(viewer);
