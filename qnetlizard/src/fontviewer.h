@@ -4,7 +4,7 @@
 #include "baseviewer.h"
 
 class QTextEdit;
-class FontWidget;
+class FontScene;
 class QPushButton;
 class QFileDialog;
 class QColorDialog;
@@ -36,7 +36,7 @@ private:
 
 private:
     QTextEdit *m_textInput;
-    FontWidget *m_fontWidget;
+    FontScene *m_fontWidget;
     QPushButton *m_renderButton;
     QFileDialog *m_cfFileChooser;
     QFileDialog *m_fntFileChooser;

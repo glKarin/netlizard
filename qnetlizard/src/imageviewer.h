@@ -3,7 +3,7 @@
 
 #include "baseviewer.h"
 
-class ImageWidget;
+class ImageScene;
 class QComboBox;
 class QFileDialog;
 class QSpinBox;
@@ -35,7 +35,7 @@ private Q_SLOTS:
     void OnAlignCurrentIndexChanged(int index);
 
 private:
-    ImageWidget *m_imageWidget;
+    ImageScene *m_imageWidget;
     QComboBox *m_typeComboBox;
     QFileDialog *m_fileChooser;
     QSpinBox *m_indexSpinBox;

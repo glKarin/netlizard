@@ -3,7 +3,7 @@
 
 #include "baseviewer.h"
 
-class TestWidget;
+class TestScene;
 
 class TestViewer : public BaseViewer
 {
@@ -22,7 +22,7 @@ private:
 private Q_SLOTS:
 
 private:
-    TestWidget *m_widget;
+    TestScene *m_widget;
 
     Q_DISABLE_COPY(TestViewer)
     

@@ -3,12 +3,11 @@
 
 #include "baseviewer.h"
 
-class ImageWidget;
 class QComboBox;
 class QFileDialog;
 class QSpinBox;
 class QString;
-class MapWidget;
+class MapScene;
 class QPushButton;
 
 class MapViewer : public BaseViewer
@@ -34,7 +33,7 @@ private Q_SLOTS:
     void SetResourceDirPath(const QString &file);
 
 private:
-    MapWidget *m_mapWidget;
+    MapScene *m_mapWidget;
     QComboBox *m_gameComboBox;
     QFileDialog *m_fileChooser;
     QFileDialog *m_resourceDirChooser;

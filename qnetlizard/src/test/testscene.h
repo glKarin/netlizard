@@ -1,0 +1,31 @@
+#ifndef _KARIN_TESTSCENE_H
+#define _KARIN_TESTSCENE_H
+
+#include "nlscene.h"
+
+class TestRenderer;
+
+NLSCENE(TestScene)
+class TestScene : public NLScene
+{
+    Q_OBJECT
+public:
+    TestScene(QWidget *parent = 0);
+    virtual ~TestScene();
+
+public Q_SLOTS:
+    void Reset();
+
+protected:
+    virtual void Init();
+    virtual void paintGL();
+    virtual void Update(float f);
+    virtual void Deinit();
+
+private:
+    TestRenderer *m_renderer;
+
+    Q_DISABLE_COPY(TestScene)
+};
+
+#endif // _KARIN_TESTSCENE_H

@@ -3,12 +3,11 @@
 
 #include "baseviewer.h"
 
-class ImageWidget;
 class QComboBox;
 class QFileDialog;
 class QSpinBox;
 class QString;
-class ItemWidget;
+class ItemScene;
 class QColorDialog;
 class QPushButton;
 
@@ -37,7 +36,7 @@ private Q_SLOTS:
     void SetBackgroundColor(const QColor &color);
 
 private:
-    ItemWidget *m_itemWidget;
+    ItemScene *m_itemWidget;
     QComboBox *m_gameComboBox;
     QFileDialog *m_fileChooser;
     QFileDialog *m_resourceDirChooser;

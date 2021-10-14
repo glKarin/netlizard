@@ -11,7 +11,7 @@
 #include "nlobject.h"
 #include "nlobjectcontainer.h"
 #include "nlactorcontainer.h"
-#include "test/testwidget.h"
+#include "test/testscene.h"
 
 static int Test(int argc, char **argv);
 

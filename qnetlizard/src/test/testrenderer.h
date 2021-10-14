@@ -7,6 +7,7 @@
 
 #include "nlrenderable.h"
 
+NLRENDERER(TestRenderer)
 class TestRenderer : public NLRenderable
 {
 public:

@@ -14,7 +14,7 @@
 #include <QComboBox>
 #include <QSpinBox>
 
-#include "mapwidget.h"
+#include "mapscene.h"
 #include "netlizard.h"
 #include "qdef.h"
 
@@ -49,7 +49,7 @@ void MapViewer::Init()
 {
     QPushButton *button;
     m_gameComboBox = new QComboBox;
-    m_mapWidget = new MapWidget;
+    m_mapWidget = new MapScene;
     QHBoxLayout *toolLayout = ToolLayout();
     m_levelSpinBox = new QSpinBox;
 

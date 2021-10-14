@@ -14,7 +14,7 @@
 
 #include "utils/ioutility.h"
 
-#include "imagewidget.h"
+#include "imagescene.h"
 #include "gl/nl_gl.h"
 #include "netlizard.h"
 #include "qdef.h"
@@ -58,7 +58,7 @@ void ImageViewer::Init()
 {
     QPushButton *button;
     m_typeComboBox = new QComboBox;
-    m_imageWidget = new ImageWidget;
+    m_imageWidget = new ImageScene;
     QHBoxLayout *toolLayout = ToolLayout();
     m_indexSpinBox = new QSpinBox;
     m_alignComboBox = new QComboBox;

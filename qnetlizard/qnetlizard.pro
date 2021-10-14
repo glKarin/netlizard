@@ -7,8 +7,8 @@ TARGET = ../qnetlizard
 
 QT += opengl
 
-DEPENDPATH += . .. ../libnetlizard ./src ./src/gl ./src/utils ./src/widget ./src/component ./src/component/engine
-INCLUDEPATH += . .. ../libnetlizard ./src ./src/gl ./src/utils ./src/widget ./src/component ./src/component/engine
+DEPENDPATH += . .. ../libnetlizard ./src ./src/utils ./src/widget ./src/misc
+INCLUDEPATH += . .. ../libnetlizard ./src ./src/utils ./src/widget ./src/misc
 
 PRE_TARGETDEPS += ../libnetlizard/debug/libnetlizard.a
 LIBS += ../libnetlizard/debug/libnetlizard.a
@@ -17,128 +17,150 @@ CONFIG          += debug #_and_release
 
 # Input
 HEADERS += \
-    src/imageviewer.h \
-    src/widget/imagewidget.h \
-    src/textviewer.h \
-    src/stringviewer.h \
-    src/mainwindow.h \
     src/qdef.h \
-    src/widget/mapwidget.h \
-    src/mapviewer.h \
     src/utils/ioutility.h \
-    src/widget/fontwidget.h \
-    src/fontviewer.h \
-    src/widget/itemwidget.h \
-    src/itemviewer.h \
-    src/widget/baseviewer.h \
-    src/helpdialog.h \
-    src/aboutdialog.h \
-    src/component/logoutput.h \
-    src/logdialog.h \
-    src/settings.h \
-    src/settingdialog.h \
-    src/widget/settingwidget.h
+    src/misc/logoutput.h \
+    src/misc/settings.h
 
 SOURCES += \
     main.cpp \
+    src/utils/ioutility.cpp \
+    src/misc/logoutput.cpp \
+    src/misc/settings.cpp
+
+# Widget
+HEADERS += \
+    src/widget/baseviewer.h \
+    src/widget/settingwidget.h \
+    src/mainwindow.h \
+    src/imageviewer.h \
+    src/textviewer.h \
+    src/stringviewer.h \
+    src/mapviewer.h \
+    src/fontviewer.h \
+    src/itemviewer.h \
+    src/helpdialog.h \
+    src/aboutdialog.h \
+    src/logdialog.h \
+    src/settingdialog.h
+
+SOURCES += \
+    src/widget/baseviewer.cpp \
+    src/widget/settingwidget.cpp \
+    src/mainwindow.cpp \
     src/imageviewer.cpp \
-    src/widget/imagewidget.cpp \
     src/textviewer.cpp \
     src/stringviewer.cpp \
-    src/mainwindow.cpp \
-    src/widget/mapwidget.cpp \
     src/mapviewer.cpp \
-    src/utils/ioutility.cpp \
-   src/widget/fontwidget.cpp \
     src/fontviewer.cpp \
-    src/widget/itemwidget.cpp \
     src/itemviewer.cpp \
-    src/widget/baseviewer.cpp \
     src/helpdialog.cpp \
     src/aboutdialog.cpp \
-    src/component/logoutput.cpp \
     src/logdialog.cpp \
-    src/settings.cpp \
-    src/settingdialog.cpp \
-    src/widget/settingwidget.cpp
+    src/settingdialog.cpp
 
-CONFIG(debug, debug|release) {
-# Test
-DEFINES += _DEV_TEST
-INCLUDEPATH += ./src/test
-DEPENDPATH += ./src/test
+# Component
+DEPENDPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer
+INCLUDEPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer
+
 HEADERS += \
-    src/test/testviewer.h \
-    src/test/testrenderer.h \
-    src/test/testwidget.h
-
+    src/comp/simplecameraactor.h
 SOURCES += \
-    src/test/testviewer.cpp \
-    src/test/testrenderer.cpp \
-    src/test/testwidget.cpp
-} else {
-}
+    src/comp/simplecameraactor.cpp
+
+HEADERS += \
+    src/comp/component/simplecontrolcomponent.h \
+    src/comp/component/simplecontrol2dcomponent.h \
+    src/comp/component/simpleimagecontrolcomponent.h \
+    src/comp/component/simplecameracomponent.h
+SOURCES += \
+    src/comp/component/simplecontrolcomponent.cpp \
+    src/comp/component/simplecontrol2dcomponent.cpp \
+    src/comp/component/simpleimagecontrolcomponent.cpp \
+    src/comp/component/simplecameracomponent.cpp
+
+HEADERS += \
+    src/comp/renderer/netlizardmapmodelrenderer.h \
+    src/comp/renderer/netlizardtexturerenderer.h \
+    src/comp/renderer/netlizardfontrenderer.h
+SOURCES += \
+    src/comp/renderer/netlizardmapmodelrenderer.cpp \
+    src/comp/renderer/netlizardtexturerenderer.cpp \
+    src/comp/renderer/netlizardfontrenderer.cpp
+
+HEADERS += \
+    src/comp/scene/imagescene.h \
+    src/comp/scene/mapscene.h \
+    src/comp/scene/fontscene.h \
+    src/comp/scene/itemscene.h
+SOURCES += \
+    src/comp/scene/imagescene.cpp \
+    src/comp/scene/mapscene.cpp \
+    src/comp/scene/fontscene.cpp \
+    src/comp/scene/itemscene.cpp
 
 # Engine
+DEPENDPATH += ./src/engine
+INCLUDEPATH += ./src/engine
+
 HEADERS += \
-    src/component/engine/nldef.h \
-    src/component/engine/nlscene.h \
-    src/component/engine/nlobject.h \
-    src/component/engine/nlactor.h \
-    src/component/engine/nlrenderable.h \
-    src/component/engine/nlobjectcontainer.h \
-    src/component/engine/nlactorcontainer.h \
-    src/component/engine/nlcomponent.h \
-    src/component/engine/nlcomponentcontainer.h \
-    src/component/engine/nlobjectpool.h \
-    src/component/simplecontrolcomponent.h \
-    src/component/simplecontrol2dcomponent.h \
-    src/component/simplecameracomponent.h \
-    src/component/simplecameraactor.h \
-    src/component/netlizardmapmodelrenderer.h \
-    src/component/netlizardtexturerenderer.h \
-    src/component/engine/nlscenecamera.h \
-    src/component/engine/nlsceneorthocamera.h \
-    src/component/engine/nlsceneperspectivecamera.h \
-    src/component/netlizardfontrenderer.h \
-    src/component/engine/nlfuncs.h
+    src/engine/nldef.h \
+    src/engine/nlscene.h \
+    src/engine/nlobject.h \
+    src/engine/nlactor.h \
+    src/engine/nlrenderable.h \
+    src/engine/nlobjectcontainer.h \
+    src/engine/nlactorcontainer.h \
+    src/engine/nlcomponent.h \
+    src/engine/nlcomponentcontainer.h \
+    src/engine/nlobjectpool.h \
+    src/engine/nlscenecamera.h \
+    src/engine/nlsceneorthocamera.h \
+    src/engine/nlsceneperspectivecamera.h \
+    src/engine/nlfuncs.h \
+    src/engine/nlmath.h
 
 SOURCES += \
-    src/component/engine/nlscene.cpp \
-    src/component/engine/nlobject.cpp \
-    src/component/engine/nlactor.cpp \
-    src/component/engine/nlrenderable.cpp \
-    src/component/engine/nlobjectcontainer.cpp \
-    src/component/engine/nlactorcontainer.cpp \
-    src/component/engine/nlcomponent.cpp \
-    src/component/engine/nlcomponentcontainer.cpp \
-    src/component/engine/nlobjectpool.cpp \
-    src/component/simplecontrolcomponent.cpp \
-    src/component/simplecontrol2dcomponent.cpp \
-    src/component/simplecameracomponent.cpp \
-    src/component/simplecameraactor.cpp \
-    src/component/netlizardmapmodelrenderer.cpp \
-    src/component/netlizardtexturerenderer.cpp \
-    src/component/engine/nlscenecamera.cpp \
-    src/component/engine/nlsceneorthocamera.cpp \
-    src/component/engine/nlsceneperspectivecamera.cpp \
-    src/component/engine/nlfuncs.cpp \
-    src/component/netlizardfontrenderer.cpp
+    src/engine/nlscene.cpp \
+    src/engine/nlobject.cpp \
+    src/engine/nlactor.cpp \
+    src/engine/nlrenderable.cpp \
+    src/engine/nlobjectcontainer.cpp \
+    src/engine/nlactorcontainer.cpp \
+    src/engine/nlcomponent.cpp \
+    src/engine/nlcomponentcontainer.cpp \
+    src/engine/nlobjectpool.cpp \
+    src/engine/nlscenecamera.cpp \
+    src/engine/nlsceneorthocamera.cpp \
+    src/engine/nlsceneperspectivecamera.cpp \
+    src/engine/nlfuncs.cpp \
+    src/engine/nlmath.cpp
 
-# NL-GL
+# Lib
+DEPENDPATH += ./lib
+INCLUDEPATH += ./lib
+
 HEADERS += \
     lib/mesa_gl_math.h \
 #    lib/camera.h \
-    lib/vector3.h \
+    lib/vector3.h
+
+SOURCES += \
+    lib/mesa_gl_math.c \
+#    lib/camera.c \
+    lib/vector3.c
+
+# NL-GL
+DEPENDPATH += ./src/gl
+INCLUDEPATH += ./src/gl
+
+HEADERS += \
     src/gl/nl_font.h \
     src/gl/gl_texture.h \
     src/gl/nl_texture.h \
     src/gl/nl_gl.h
 
 SOURCES += \
-    lib/mesa_gl_math.c \
-#    lib/camera.c \
-    lib/vector3.c \
     src/gl/gl_texture.c \
     src/gl/nl_texture.c \
     src/gl/nl_gl_font.c \
@@ -148,6 +170,9 @@ SOURCES += \
     src/gl/nl_gl.c
 
 # Mesa GL math
+DEPENDPATH += ./lib/mesa_math
+INCLUDEPATH += ./lib/mesa_math
+
 HEADERS += \
            lib/mesa_math/m_clip_tmp.h \
            lib/mesa_math/m_copy_tmp.h \
@@ -178,5 +203,22 @@ SOURCES += \
            lib/mesa_math/m_xform.c \
            lib/mesa_math/main/imports.c
 
+# Test
+CONFIG(debug, debug|release) {
+DEFINES += _DEV_TEST
+INCLUDEPATH += ./src/test
+DEPENDPATH += ./src/test
+
+HEADERS += \
+    src/test/testviewer.h \
+    src/test/testrenderer.h \
+    src/test/testscene.h
+
+SOURCES += \
+    src/test/testviewer.cpp \
+    src/test/testrenderer.cpp \
+    src/test/testscene.cpp
+} else {
+}
 
 INSTALLS += qnetlizard

@@ -11,7 +11,7 @@
 #include <QTextEdit>
 #include <QColorDialog>
 
-#include "fontwidget.h"
+#include "fontscene.h"
 #include "qdef.h"
 
 FontViewer::FontViewer(QWidget *parent) :
@@ -56,7 +56,7 @@ void FontViewer::Init()
     m_textInput->setAcceptRichText(false);
     layout->addWidget(m_textInput);
     layout->addLayout(vLayout);
-    m_fontWidget = new FontWidget;
+    m_fontWidget = new FontScene;
     m_fontWidget->setMinimumWidth(320);
     layout->addWidget(m_fontWidget);
 

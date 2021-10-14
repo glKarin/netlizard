@@ -15,7 +15,7 @@
 #include <QSpinBox>
 #include <QColorDialog>
 
-#include "itemwidget.h"
+#include "itemscene.h"
 #include "netlizard.h"
 #include "qdef.h"
 
@@ -51,7 +51,7 @@ void ItemViewer::Init()
 {
     QPushButton *button;
     m_gameComboBox = new QComboBox;
-    m_itemWidget = new ItemWidget;
+    m_itemWidget = new ItemScene;
     QHBoxLayout *toolLayout = ToolLayout();
     m_indexSpinBox = new QSpinBox;
 
