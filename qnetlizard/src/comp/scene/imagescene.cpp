@@ -27,9 +27,9 @@ ImageScene::ImageScene(QWidget *parent)
     NLPropperties prop;
     prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
-    m_actors.Add(camera);
+    AddActor(camera);
     NLActor *actor = new NLActor;
-    m_actors.Add(actor);
+    AddActor(actor);
     SimpleImageControlComponent *control = new SimpleImageControlComponent(NLPropperties(), actor);
     actor->AddComponent(control);
     m_renderer = new NETLizardTextureRenderer;
@@ -75,7 +75,7 @@ void ImageScene::SetAlignment(Qt::Alignment align)
         vector3_s startPos = VECTOR3(0, 0, 0);
         vector3_s startRotate = VECTOR3(0, 0, 0);
 
-        SimpleCameraActor *camera = static_cast<SimpleCameraActor *>(m_actors[0]);
+        SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
         camera->SetPosition(startPos);
         camera->SetRotation(startRotate);
         static_cast<NLSceneOrthoCamera *>(camera->Camera())->SetAlignment(align);

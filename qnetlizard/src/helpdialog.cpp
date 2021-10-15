@@ -46,7 +46,7 @@ HelpDialog::HelpDialog(QWidget *parent) :
          << "C - Roll right"
          << "X - Roll to 0"
          << ""
-         << "Function action: "
+         << "Other action: "
          << "M - Grab mouse pointer(If pointer is hidden, moving mouse for turning)"
          << "Esc - Ungrab mouse pointer"
             ;
@@ -60,9 +60,17 @@ HelpDialog::HelpDialog(QWidget *parent) :
          << "Left - Move left"
          << "Right - Move right"
          << ""
+         << "Rotate action: "
+         << ", - Rotate left"
+         << ". - Rotate right"
+         << "/ - Rotate to 0"
+         << ""
          << "Zoom action: "
          << "+ / Wheel up - Zoom out"
          << "- / Wheel down - Zoom in"
+         << ""
+         << "Other action: "
+         << "Esc - All reset"
             ;
     m_contentText.push_back(list);
 

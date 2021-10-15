@@ -246,8 +246,28 @@ bool NLActor::RemoveComponent(NLComponent *item)
     if(!m_components)
         return false;
     bool res = m_components->Remove(item);
-    item->Destroy();
+    if(res)
+    {
+        item->Destroy();
+        delete item;
+    }
     return res;
+}
+
+bool NLActor::RemoveComponent(int index)
+{
+    if(!m_components)
+        return false;
+    NLComponent *comp = GetComponent(index);
+    return RemoveComponent(comp);
+}
+
+bool NLActor::RemoveComponent(const NLName &name)
+{
+    if(!m_components)
+        return false;
+    NLComponent *comp = GetComponent(name);
+    return RemoveComponent(comp);
 }
 
 bool NLActor::AddChild(NLActor *actor)
@@ -271,8 +291,78 @@ bool NLActor::RemoveChild(NLActor *actor)
     if(!m_children)
         return false;
     bool res = m_children->Remove(actor);
-    actor->Destroy();
+    if(res)
+    {
+        actor->Destroy();
+        delete actor;
+    }
     return res;
+}
+
+bool NLActor::RemoveChild(int index)
+{
+    if(!m_children)
+        return false;
+    NLActor *actor = GetChild(index);
+    return RemoveChild(actor);
+}
+
+bool NLActor::RemoveChild(const NLName &name)
+{
+    if(!m_children)
+        return false;
+    NLActor *actor = GetChild(name);
+    return RemoveChild(actor);
+}
+
+NLActor * NLActor::GetChild(const NLName &name)
+{
+    if(!m_children)
+        return 0;
+    return m_children->Get(name);
+}
+
+NLActor * NLActor::GetChild(int index)
+{
+    if(!m_children)
+        return 0;
+    return m_children->Get(index);
+}
+
+NLComponent * NLActor::GetComponent(const NLName &name)
+{
+    if(!m_components)
+        return 0;
+    return m_components->Get(name);
+}
+
+NLComponent * NLActor::GetComponent(int index)
+{
+    if(!m_components)
+        return 0;
+    return m_components->Get(index);
+}
+
+NLActor * NLActor::operator[](int index)
+{
+    return GetChild(index);
+}
+
+NLActor * NLActor::operator[](const NLName &name)
+{
+    return GetChild(name);
+}
+
+NLActor & operator+(NLActor &actor, NLComponent *item)
+{
+    actor.AddComponent(item);
+    return actor;
+}
+
+NLActor & operator-(NLActor &actor, NLComponent *item)
+{
+    actor.RemoveComponent(item);
+    return actor;
 }
 
 void NLActor::SetRenderable(NLRenderable *renderable)

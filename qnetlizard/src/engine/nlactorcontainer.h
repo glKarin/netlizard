@@ -16,8 +16,11 @@ public:
     NLName Find(const NLActor *item);
     bool Add(NLActor *item);
     bool Remove(NLActor *item);
+    bool Remove(int index);
+    bool Remove(const NLName &name);
     NLActor * Get(const NLName &name);
     NLActor * Get(int index);
+    virtual void Clear();
     virtual void Render();
     virtual bool KeyEventHandler(int key, bool pressed, int modifier);
     virtual bool MouseEventHandler(int button, bool pressed, int x, int y, int modifier);

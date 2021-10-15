@@ -21,6 +21,12 @@ public:
     void GrabMouseCursor(bool b);
     bool IsGrabMouseCursor() const;
     bool IsCursorVisible() const;
+    bool IsLoop() const;
+    QPoint MousePointerPosition() const;
+    float CurrendDelta() const;
+    qint64 UpdateTime() const;
+    float FPS() const;
+    void SetFPS(float fps);
     
 signals:
     void sizeChanged(const QSize &s);
@@ -38,6 +44,15 @@ protected:
     virtual void Deinit();
     void SetCurrentCamera(NLSceneCamera *camera);
     NLSceneCamera * CurrentCamera();
+    bool MousePressed() const;
+    void AddActor(NLActor *actor);
+    void RemoveActor(NLActor *actor);
+    void RemoveActor(int index);
+    NLActor * GetActor(int index);
+    template <class T>
+    T * GetActor_T(int index);
+    NLActor * operator[](int index);
+    NLScene & operator<<(NLActor *actor);
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
@@ -58,7 +73,7 @@ private Q_SLOTS:
 private:
     void ExecLoop();
 
-protected:
+private:
     QColor m_clearColor;
     bool m_pressed;
     bool m_loop;
@@ -69,8 +84,18 @@ protected:
     NLSceneCamera *m_currentCamera;
     bool m_cursorVisible;
     bool m_grabMouse;
+    float m_fps;
 
     Q_DISABLE_COPY(NLScene)
 };
+
+template <class T>
+T * NLScene::GetActor_T(int index)
+{
+    NLActor *obj = GetActor(index);
+    if(!obj)
+        return 0;
+    return dynamic_cast<T *>(obj);
+}
 
 #endif // _KARIN_NLSCENE_H

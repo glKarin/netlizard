@@ -17,9 +17,9 @@ ItemScene::ItemScene(QWidget *parent)
     NLPropperties prop;
     prop.insert("z_is_up", true);
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
-    m_actors.Add(camera);
+    AddActor(camera);
     NLActor *actor = new NLActor;
-    m_actors.Add(actor);
+    AddActor(actor);
     m_renderer = new NETLizardMapModelRenderer;
     actor->SetRenderable(m_renderer);
     SetCurrentCamera(camera->Camera());
@@ -115,7 +115,7 @@ void ItemScene::Reset()
 
     vector3_s startPos = VECTOR3(0, 150, 1000);
     vector3_s startRotate = VECTOR3(0, 0, 0);
-    SimpleCameraActor *camera = static_cast<SimpleCameraActor *>(m_actors[0]);
+    SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
     camera->SetPosition(startPos);
     camera->SetRotation(startRotate);
 }

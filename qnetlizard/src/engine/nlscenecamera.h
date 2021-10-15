@@ -4,6 +4,8 @@
 #include "nldef.h"
 
 class NLScene;
+class NLActor;
+class NLActorContainer;
 
 enum GL_matrix_e
 {
@@ -29,7 +31,10 @@ public:
     virtual ~NLSceneCamera();
     NLScene * Scene();
     void SetScene(NLScene *scene);
-    virtual void Render();
+    void Render();
+    void Render(NLScene *scene);
+    void Render(NLActor *actor);
+    void Render(NLActorContainer *actors);
     void SetGlobalMatrix(const NLMatrix4 *mat);
     void Reset();
     virtual void Update(float width, float height) = 0;
@@ -56,6 +61,15 @@ protected:
     virtual void View();
     virtual void UpdateProjectionMatrix(NLMatrix4 *mat);
     void UpdateMatrix();
+
+private:
+    typedef struct GL_matrix_status_s {
+        GLint mode;
+        GLfloat modelview_matrix[16];
+        GLfloat projection_matrix[16];
+    } GL_matrix_status;
+    GL_matrix_status BeginRender();
+    void EndRender(const GL_matrix_status &status);
 
 private:
     void UpdateViewMatrix();

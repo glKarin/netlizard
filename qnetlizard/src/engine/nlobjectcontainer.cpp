@@ -45,7 +45,7 @@ void NLObjectContainer::Destroy()
         obj->Destroy();
         delete obj;
     }
-    Clear();
+    m_objectList.clear();
 }
 
 void NLObjectContainer::Update(float delta)
@@ -131,12 +131,25 @@ bool NLObjectContainer::Remove(NLObject *item)
     return true;
 }
 
-bool NLObjectContainer::Delete(NLObject *item)
+bool NLObjectContainer::Remove(int index)
 {
-    if(!Remove(item))
+    NLObject *item = Get(index);
+    if(!item)
         return false;
-    item->Destroy();
-    delete item;
+    m_objectList.removeOne(item);
+    item->SetContainer(0);
+    item->SetScene(0);
+    return true;
+}
+
+bool NLObjectContainer::Remove(const NLName &name)
+{
+    NLObject *item = Get(name);
+    if(!item)
+        return false;
+    m_objectList.removeOne(item);
+    item->SetContainer(0);
+    item->SetScene(0);
     return true;
 }
 
@@ -169,6 +182,11 @@ NLObject * NLObjectContainer::operator[](int index)
 
 void NLObjectContainer::Clear()
 {
+    Q_FOREACH(NLObject *obj, m_objectList)
+    {
+        obj->SetContainer(0);
+        obj->SetScene(0);
+    }
     m_objectList.clear();
 }
 

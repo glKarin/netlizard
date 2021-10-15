@@ -21,10 +21,15 @@ public:
     NLName Find(const NLObject *item);
     bool Add(NLObject *item);
     bool Remove(NLObject *item);
-    bool Delete(NLObject *item);
+    bool Remove(int index);
+    bool Remove(const NLName &name);
     NLObject * Get(const NLName &name);
     NLObject * Get(int index);
-    void Clear();
+    template <class T>
+    T * Get_T(const NLName &name);
+    template <class T>
+    T * Get_T(int index);
+    virtual void Clear();
     virtual void Init();
     virtual void Destroy();
     virtual void Update(float delta);
@@ -53,5 +58,23 @@ private:
     Q_DISABLE_COPY(NLObjectContainer)
     
 };
+
+template <class T>
+T * NLObjectContainer::Get_T(const NLName &name)
+{
+    NLObject *obj = Get(name);
+    if(!obj)
+        return 0;
+    return dynamic_cast<T *>(obj);
+}
+
+template <class T>
+T * NLObjectContainer::Get_T(int index)
+{
+    NLObject *obj = Get(index);
+    if(!obj)
+        return 0;
+    return dynamic_cast<T *>(obj);
+}
 
 #endif // _KARIN_NLOBJECTCONTAINER_H

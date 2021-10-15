@@ -6,6 +6,8 @@
 #include <math.h>
 
 #include "nlscene.h"
+#include "nlactor.h"
+#include "nlactorcontainer.h"
 #include "nlfuncs.h"
 
 static const NLVector3 InitUp_z = VECTOR3(0, 0, 1);
@@ -196,14 +198,12 @@ void NLSceneCamera::View()
     glMultMatrixf(GL_MATRIX_M(m_viewMatrix));
 }
 
-void NLSceneCamera::Render()
+NLSceneCamera::GL_matrix_status NLSceneCamera::BeginRender()
 {
-    GLint mode;
-    GLfloat mm[16];
-    GLfloat pm[16];
-    glGetIntegerv(GL_MATRIX_MODE, &mode);
-    glGetFloatv(GL_MODELVIEW_MATRIX, mm);
-    glGetFloatv(GL_PROJECTION_MATRIX, pm);
+    NLSceneCamera::GL_matrix_status status;
+    glGetIntegerv(GL_MATRIX_MODE, &status.mode);
+    glGetFloatv(GL_MODELVIEW_MATRIX, status.modelview_matrix);
+    glGetFloatv(GL_PROJECTION_MATRIX, status.projection_matrix);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -213,15 +213,55 @@ void NLSceneCamera::Render()
     View();
 
     glPushMatrix();
-    {
-        m_scene->Render();
-    }
+    return status;
+}
+
+void NLSceneCamera::EndRender(const NLSceneCamera::GL_matrix_status &status)
+{
     glPopMatrix();
 
-    glLoadMatrixf(mm);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf(status.modelview_matrix);
     glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(pm);
-    glMatrixMode(mode);
+    glLoadMatrixf(status.projection_matrix);
+    glMatrixMode(status.mode);
+}
+
+#define CAMERA_RENDER(x) \
+{ \
+    NLSceneCamera::GL_matrix_status status = BeginRender(); \
+    { \
+    x; \
+    } \
+    EndRender(status); \
+}
+
+void NLSceneCamera::Render()
+{
+    if(!m_scene)
+        return;
+    CAMERA_RENDER(m_scene->Render())
+}
+
+void NLSceneCamera::Render(NLScene *scene)
+{
+    if(!scene)
+        return;
+    CAMERA_RENDER(scene->Render())
+}
+
+void NLSceneCamera::Render(NLActor *actor)
+{
+    if(!actor)
+        return;
+    CAMERA_RENDER(actor->Render())
+}
+
+void NLSceneCamera::Render(NLActorContainer *actors)
+{
+    if(!actors)
+        return;
+    CAMERA_RENDER(actors->Render())
 }
 
 NLScene * NLSceneCamera::Scene()

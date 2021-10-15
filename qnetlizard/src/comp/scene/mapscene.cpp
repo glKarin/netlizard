@@ -17,9 +17,9 @@ MapScene::MapScene(QWidget *parent)
     NLPropperties prop;
     prop.insert("z_is_up", true);
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
-    m_actors.Add(camera);
+    AddActor(camera);
     NLActor *actor = new NLActor;
-    m_actors.Add(actor);
+    AddActor(actor);
     m_renderer = new NETLizardMapModelRenderer;
     actor->SetRenderable(m_renderer);
     SetCurrentCamera(camera->Camera());
@@ -100,7 +100,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     // NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[1], m_model->start_pos[2]); // z_is_up
     // NLVector3 startRotate = VECTOR3(m_model->start_angle[0] - 90.0, m_model->start_angle[1] - 180.0, 0); // z_is_up
 
-    SimpleCameraActor *camera = static_cast<SimpleCameraActor *>(m_actors[0]);
+    SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
     camera->SetPosition(startPos);
     camera->SetRotation(startRotate);
 

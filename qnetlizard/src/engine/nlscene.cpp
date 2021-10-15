@@ -6,7 +6,6 @@
 
 #include <QMouseEvent>
 
-#include "lib/vector3.h"
 #include "nlscenecamera.h"
 #include "qdef.h"
 
@@ -26,12 +25,14 @@ NLScene::NLScene(QWidget *parent) :
     m_pressed(false),
     m_loop(false),
     m_delta(0.0f),
+    m_currentCamera(0),
     m_cursorVisible(true),
-    m_grabMouse(false)
+    m_grabMouse(false),
+    m_fps(0)
 {
     setObjectName("NLScene");
-    m_clearColor = QColor::fromRgbF(1.0, 1.0, 1.0);
     m_actors.SetScene(this);
+    m_clearColor = QColor::fromRgbF(1.0, 1.0, 1.0);
 }
 
 NLScene::~NLScene()
@@ -126,12 +127,12 @@ void NLScene::mouseMoveEvent(QMouseEvent* event)
     int x = event->x();
     int y = event->y();
     bool res = m_actors.MouseMotionHandler(event->button(), m_pressed, x, y, m_lastPos.x(), m_lastPos.y(), event->modifiers());
+    if(res)
+        event->accept();
     m_lastPos.setX(x);
     m_lastPos.setY(y);
     if(m_grabMouse)
         MoveCursorToCenter();
-    if(res)
-        event->accept();
     QGLWidget::mouseMoveEvent(event);
 }
 
@@ -274,4 +275,78 @@ void NLScene::SetCurrentCamera(NLSceneCamera *camera)
 NLSceneCamera * NLScene::CurrentCamera()
 {
     return m_currentCamera;
+}
+
+bool NLScene::MousePressed() const
+{
+    return m_pressed;
+}
+
+void NLScene::AddActor(NLActor *actor)
+{
+    if(!actor)
+        return;
+    m_actors.Add(actor);
+}
+
+NLScene & NLScene::operator<<(NLActor *actor)
+{
+    AddActor(actor);
+    return *this;
+}
+
+void NLScene::RemoveActor(NLActor *actor)
+{
+    if(!actor)
+        return;
+    m_actors.Remove(actor);
+}
+
+void NLScene::RemoveActor(int index)
+{
+    m_actors.Remove(index);
+}
+
+NLActor * NLScene::GetActor(int index)
+{
+    return m_actors.Get(index);
+}
+
+NLActor * NLScene::operator[](int index)
+{
+    return GetActor(index);
+}
+
+bool NLScene::IsLoop() const
+{
+    return m_loop;
+}
+
+QPoint NLScene::MousePointerPosition() const
+{
+    return m_lastPos;
+}
+
+float NLScene::CurrendDelta() const
+{
+    return m_delta;
+}
+
+qint64 NLScene::UpdateTime() const
+{
+    return m_lastTime;
+}
+
+float NLScene::FPS() const
+{
+    return m_fps;
+}
+
+void NLScene::SetFPS(float fps)
+{
+    if(m_fps != fps)
+    {
+        m_fps = fps;
+        // TODO
+    }
 }

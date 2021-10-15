@@ -17,8 +17,11 @@ public:
     NLName Find(const NLComponent *item);
     bool Add(NLComponent *item);
     bool Remove(NLComponent *item);
+    bool Remove(int index);
+    bool Remove(const NLName &name);
     NLComponent * Get(const NLName &name);
     NLComponent * Get(int index);
+    virtual void Clear();
     virtual bool KeyEventHandler(int key, bool pressed, int modifier);
     virtual bool MouseEventHandler(int button, bool pressed, int x, int y, int modifier);
     virtual bool MouseMotionHandler(int button, bool pressed, int x, int y, int oldx, int oldy, int modifier);

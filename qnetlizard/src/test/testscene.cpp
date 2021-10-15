@@ -14,9 +14,9 @@ TestScene::TestScene(QWidget *parent)
     setObjectName("TestScene");
 
     SimpleCameraActor *camera = new SimpleCameraActor;
-    m_actors.Add(camera);
+    AddActor(camera);
     NLActor *actor = new NLActor;
-    m_actors.Add(actor);
+    AddActor(actor);
     m_renderer = new TestRenderer;
     actor->SetRenderable(m_renderer);
     SetCurrentCamera(camera->Camera());
@@ -131,7 +131,7 @@ void TestScene::Init()
     //actor->SetRotation(vr);
     //m_actors.Get(1)->SetRotation(vr);
     //m_actors.Get(1)->SetPosition(v);
-    m_actors.Get(1)->AddChild(actor);
+    GetActor(1)->AddChild(actor);
 
 }
 

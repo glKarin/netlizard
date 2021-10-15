@@ -96,6 +96,28 @@ bool NLComponentContainer::Remove(NLComponent *item)
     return res;
 }
 
+bool NLComponentContainer::Remove(int index)
+{
+    NLComponent *item = Get(index);
+    if(!item)
+        return false;
+    bool res = NLObjectContainer::Remove(item);
+    if(res)
+        item->Unmount();
+    return res;
+}
+
+bool NLComponentContainer::Remove(const NLName &name)
+{
+    NLComponent *item = Get(name);
+    if(!item)
+        return false;
+    bool res = NLObjectContainer::Remove(item);
+    if(res)
+        item->Unmount();
+    return res;
+}
+
 NLComponent * NLComponentContainer::Get(const NLName &name)
 {
     return static_cast<NLComponent *>(NLObjectContainer::Get(name));
@@ -133,4 +155,14 @@ NLActor * NLComponentContainer::Actor()
 void NLComponentContainer::SetActor(NLActor *actor)
 {
     setParent(actor);
+}
+
+void NLComponentContainer::Clear()
+{
+    NLObjectList &list = ObjectList();
+    Q_FOREACH(NLObject *obj, list)
+    {
+        (static_cast<NLComponent *>(obj))->Unmount();
+    }
+    NLObjectContainer::Clear();
 }

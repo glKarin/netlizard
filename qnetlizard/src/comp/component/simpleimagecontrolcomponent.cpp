@@ -7,6 +7,8 @@
 #include "nlscene.h"
 #include "nlactor.h"
 
+#define MIN_SCALE 0.1
+
 const float SimpleImageControlComponent::M_Trans_Sens = 1000;
 const float SimpleImageControlComponent::M_Rot_Sens = 100;
 const float SimpleImageControlComponent::M_Zoom_Sens = 0.001;
@@ -168,7 +170,6 @@ bool SimpleImageControlComponent::wheelev(int orientation, int delta, int x, int
     if(!actor)
         return false;
 
-#define MIN_SCALE 0.1
     if(orientation == Qt::Vertical)
     {
         NLVector3 scale = actor->Scale();
@@ -187,7 +188,6 @@ bool SimpleImageControlComponent::wheelev(int orientation, int delta, int x, int
         actor->Zoom(unit);
         return true;
     }
-#undef MIN_SCALE
     return false;
 }
 
@@ -231,6 +231,31 @@ void SimpleImageControlComponent::Transform(float delta)
         vector3_invertv(&m_turn);
 
         actor->Turn(m_turn);
+    }
+
+    if(m_action[NLAction_Zoom_Out] || m_action[NLAction_Zoom_In])
+    {
+        float d = 0;
+        if(m_action[NLAction_Zoom_Out])
+            d -= delta;
+        else if(m_action[NLAction_Zoom_In])
+            d += delta;
+        if(d != 0)
+        {
+            NLVector3 scale = actor->Scale();
+            if(delta < 0 && (VECTOR3_X(scale) * VECTOR3_Y(scale) < 1.0))
+                d /= 4;
+            NLVector3 unit = VECTOR3(0, 0, 0);
+            if(VECTOR3_X(scale) + d < MIN_SCALE)
+                VECTOR3_X(unit) = VECTOR3_X(scale) - MIN_SCALE;
+            else
+                VECTOR3_X(unit) = d;
+            if(VECTOR3_Y(scale) + d < MIN_SCALE)
+                VECTOR3_Y(unit) = VECTOR3_Y(scale) - MIN_SCALE;
+            else
+                VECTOR3_Y(unit) = d;
+            actor->Zoom(unit);
+        }
     }
 }
 
