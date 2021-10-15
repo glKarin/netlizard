@@ -70,9 +70,8 @@ void NETLizardTextureRenderer::Render()
             end_x, end_y,
         };
 
-        //glScalef(VECTOR3_X(m_cam.scale), VECTOR3_Y(m_cam.scale), VECTOR3_Z(m_cam.scale));
         glDisable(GL_DEPTH_TEST);
-        //glDisable(GL_CULL_FACE);
+        glDepthMask(GL_FALSE);
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glVertexPointer(2, GL_FLOAT, 0, vertex);
@@ -82,8 +81,8 @@ void NETLizardTextureRenderer::Render()
         glBindTexture(GL_TEXTURE_2D, 0);
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDepthMask(GL_TRUE);
         glEnable(GL_DEPTH_TEST);
-        //glEnable(GL_CULL_FACE);
     }
     glPopMatrix();
 }

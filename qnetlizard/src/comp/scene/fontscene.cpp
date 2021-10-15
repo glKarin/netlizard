@@ -24,13 +24,14 @@ FontScene::FontScene(QWidget *parent) :
     NLPropperties prop;
     prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
+    Qt::Alignment align = Qt::AlignLeft | Qt::AlignTop;
     AddActor(camera);
     NLActor *actor = new NLActor;
     AddActor(actor);
     m_renderer = new NETLizardFontRenderer;
     actor->SetRenderable(m_renderer);
     NLSceneOrthoCamera *orthoCam = static_cast<NLSceneOrthoCamera *>(camera->Camera());
-    orthoCam->SetAlignment(Qt::AlignLeft | Qt::AlignTop);
+    orthoCam->SetAlignment(align);
     SetCurrentCamera(orthoCam);
 }
 

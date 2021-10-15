@@ -13,6 +13,10 @@ public:
     virtual void Reset();
     NLSETTER(moveSens) void SetMoveSens(float moveSens);
     NLGETTER(moveSens) float MoveSens() const;
+    NLSETTER(invertX) void SetInvertX(bool b);
+    NLSETTER(invertY) void SetInvertY(bool b);
+    NLGETTER(invertX) bool InvertX() const;
+    NLGETTER(invertY) bool InvertY() const;
     
 signals:
     
@@ -28,6 +32,8 @@ protected:
 private:
     NLPROPERTY(float, moveSens) float m_moveSens;
     bool m_action[NLAction_Total];
+    NLPROPERTY(bool, invertX) bool m_invertX;
+    NLPROPERTY(bool, invertY)bool m_invertY;
 
     static const float M_Move_Sens;
 };

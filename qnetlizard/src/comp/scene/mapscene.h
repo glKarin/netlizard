@@ -5,6 +5,8 @@
 #include "gl/nl_gl.h"
 
 class NETLizardMapModelRenderer;
+class NETLizardTextureRenderer;
+class NLSceneOrthoCamera;
 
 NLSCENE(MapScene)
 class MapScene : public NLScene
@@ -28,7 +30,11 @@ protected:
 
 private:
     GL_NETLizard_3D_Model *m_model;
+    NLActor *m_mapActor;
+    NLActor *m_skyActor;
     NETLizardMapModelRenderer *m_renderer;
+    NETLizardTextureRenderer *m_skyRenderer;
+    NLSceneOrthoCamera *m_skyCamera;
 
     Q_DISABLE_COPY(MapScene)
 };

@@ -12,6 +12,7 @@
 #include "simplecameraactor.h"
 #include "nlsceneorthocamera.h"
 #include "simpleimagecontrolcomponent.h"
+#include "simplecontrol2dcomponent.h"
 #include "netlizardtexturerenderer.h"
 
 ImageScene::ImageScene(QWidget *parent)
@@ -26,10 +27,10 @@ ImageScene::ImageScene(QWidget *parent)
 
     NLPropperties prop;
     prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
-    SimpleCameraActor *camera = new SimpleCameraActor(prop);
-    AddActor(camera);
     NLActor *actor = new NLActor;
     AddActor(actor);
+    SimpleCameraActor *camera = new SimpleCameraActor(prop);
+    AddActor(camera);
     SimpleImageControlComponent *control = new SimpleImageControlComponent(NLPropperties(), actor);
     actor->AddComponent(control);
     m_renderer = new NETLizardTextureRenderer;
@@ -72,13 +73,18 @@ void ImageScene::SetAlignment(Qt::Alignment align)
     if(m_align != a)
     {
         m_align = (Qt::Alignment)a;
-        vector3_s startPos = VECTOR3(0, 0, 0);
-        vector3_s startRotate = VECTOR3(0, 0, 0);
 
-        SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
-        camera->SetPosition(startPos);
-        camera->SetRotation(startRotate);
+        SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(1);
+        camera->Reset();
+
+        NLActor *actor = GetActor(0);
+        actor->Reset();
         static_cast<NLSceneOrthoCamera *>(camera->Camera())->SetAlignment(align);
+        m_renderer->SetAlignment(align);
+
+        bool invertY = align & Qt::AlignTop;
+        (actor->GetComponent_T<SimpleImageControlComponent>(0))->SetInvertY(invertY);
+        (camera->GetComponent_T<SimpleControl2DComponent>(1))->SetInvertY(invertY);
     }
 }
 

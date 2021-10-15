@@ -294,6 +294,7 @@ void NLSceneCamera::SetGlobalMatrix(const NLMatrix4 *mat)
 
 void NLSceneCamera::UpdateMatrix()
 {
+    //NLDEBUG_VECTOR3(m_position);
     UpdateViewMatrix();
     UpdateMvpMatrix();
 }

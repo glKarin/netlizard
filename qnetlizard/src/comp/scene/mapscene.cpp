@@ -6,23 +6,50 @@
 #include "qdef.h"
 #include "simplecameraactor.h"
 #include "netlizardmapmodelrenderer.h"
+#include "simplecameracomponent.h"
+#include "nlsceneorthocamera.h"
+#include "netlizardtexturerenderer.h"
 
 MapScene::MapScene(QWidget *parent)
     : NLScene(parent),
       m_model(0),
-      m_renderer(0)
+      m_mapActor(0),
+      m_skyActor(0),
+      m_renderer(0),
+      m_skyRenderer(0),
+      m_skyCamera(0)
 {
     setObjectName("MapScene");
+    NLActor *actor;
 
     NLPropperties prop;
+    // 3D camera + 3D control
     prop.insert("z_is_up", true);
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
     AddActor(camera);
-    NLActor *actor = new NLActor;
-    AddActor(actor);
+
+    // render model
+    m_mapActor = new NLActor;
+    AddActor(m_mapActor);
     m_renderer = new NETLizardMapModelRenderer;
-    actor->SetRenderable(m_renderer);
+    m_mapActor->SetRenderable(m_renderer);
     SetCurrentCamera(camera->Camera());
+
+    // 2d camera
+    actor = new NLActor;
+    AddActor(actor);
+    prop.clear();
+    prop.insert("type", NLSceneCamera::Type_Ortho);
+    SimpleCameraComponent *camera_2d = new SimpleCameraComponent(prop, actor);
+    actor->AddComponent(camera_2d);
+    m_skyCamera = static_cast<NLSceneOrthoCamera *>(camera_2d->Camera());
+    m_skyCamera->SetAlignment(Qt::AlignCenter);
+
+    // 2d background render
+    m_skyActor = new NLActor;
+    AddActor(m_skyActor);
+    m_skyRenderer = new NETLizardTextureRenderer;
+    m_skyActor->SetRenderable(m_skyRenderer);
 }
 
 MapScene::~MapScene()
@@ -45,7 +72,21 @@ void MapScene::paintGL()
         return;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    NLScene::paintGL();
+    if(m_model->bg_tex)
+    {
+        float factorX = (float)width() / (float)m_model->bg_tex->width;
+        float factorY = (float)height() / (float)m_model->bg_tex->height;
+        float factor = qMax(factorX, factorY);
+        NLVector3 scale = VECTOR3(
+                    factor,
+                    factor,
+                    1
+                    );
+        m_skyActor->SetScale(scale);
+        m_skyCamera->Render(m_skyActor);
+    }
+
+    CurrentCamera()->Render(m_mapActor);
 
     glFlush();
 }
@@ -94,6 +135,8 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     }
 
     m_renderer->SetModel(m_model);
+    if(m_model->bg_tex)
+        m_skyRenderer->SetTexture(m_model->bg_tex);
 
     NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]);
     NLVector3 startRotate = VECTOR3(m_model->start_angle[0] + 90.0, m_model->start_angle[1] - 180.0, 0);
@@ -118,6 +161,7 @@ void MapScene::Reset()
         m_model = 0;
     }
     m_renderer->SetModel(0);
+    m_skyRenderer->SetTexture(0);
 
     NLScene::Reset();
 }

@@ -11,7 +11,9 @@ const float SimpleControl2DComponent::M_Move_Sens = 1000;
 
 SimpleControl2DComponent::SimpleControl2DComponent(const NLPropperties &prop, NLActor *parent) :
     NLComponent(prop, parent),
-      m_moveSens(M_Move_Sens)
+      m_moveSens(M_Move_Sens),
+        m_invertX(false),
+        m_invertY(false)
 {
     setObjectName("SimpleControl2DComponent");
     Reset();
@@ -115,7 +117,10 @@ void SimpleControl2DComponent::Transform(float delta)
         else if(m_action[NLAction_Move_Up])
             VECTOR3_Y(m_move) = movesens;
 
-        vector3_invertv(&m_move);
+        if(m_invertX)
+            VECTOR3_X(m_move) = -VECTOR3_X(m_move);
+        if(m_invertY)
+            VECTOR3_Y(m_move) = -VECTOR3_Y(m_move);
         actor->Move(m_move);
     }
 }
@@ -137,4 +142,26 @@ void SimpleControl2DComponent::SetMoveSens(float moveSens)
 float SimpleControl2DComponent::MoveSens() const
 {
     return m_moveSens;
+}
+
+void SimpleControl2DComponent::SetInvertX(bool b)
+{
+    if(m_invertX != b)
+        m_invertX = b;
+}
+
+void SimpleControl2DComponent::SetInvertY(bool b)
+{
+    if(m_invertY != b)
+        m_invertY = b;
+}
+
+bool SimpleControl2DComponent::InvertX() const
+{
+    return m_invertX;
+}
+
+bool SimpleControl2DComponent::InvertY() const
+{
+    return m_invertY;
 }

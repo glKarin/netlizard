@@ -146,13 +146,13 @@ void NLActor::Destroy()
     if(m_components)
     {
         m_components->Destroy();
-        m_components->deleteLater();
+        delete m_components;
         m_components = 0;
     }
     if(m_children)
     {
         m_children->Destroy();
-        m_children->deleteLater();
+        delete m_children;
         m_children = 0;
     }
     NLObject::Destroy();

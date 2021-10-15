@@ -17,6 +17,10 @@ public:
     NLGETTER(transSens) float TransSens() const;
     NLGETTER(rotSens) float RotSens() const;
     NLGETTER(zoomSens) float ZoomSens() const;
+    NLSETTER(invertX) void SetInvertX(bool b);
+    NLSETTER(invertY) void SetInvertY(bool b);
+    NLGETTER(invertX) bool InvertX() const;
+    NLGETTER(invertY) bool InvertY() const;
     
 signals:
     
@@ -36,6 +40,8 @@ private:
     NLPROPERTY(float, rotSens) float m_rotSens;
     NLPROPERTY(float, zoomSens) float m_zoomSens;
     bool m_action[NLAction_Total];
+    NLPROPERTY(bool, invertX) bool m_invertX;
+    NLPROPERTY(bool, invertY)bool m_invertY;
 
     static const float M_Trans_Sens;
     static const float M_Rot_Sens;

@@ -17,7 +17,9 @@ SimpleImageControlComponent::SimpleImageControlComponent(const NLPropperties &pr
     NLComponent(prop, parent),
       m_transSens(M_Trans_Sens),
         m_rotSens(M_Rot_Sens),
-    m_zoomSens(M_Zoom_Sens)
+    m_zoomSens(M_Zoom_Sens),
+    m_invertX(false),
+    m_invertY(false)
 {
     setObjectName("SimpleImageControlComponent");
     Reset();
@@ -151,7 +153,7 @@ bool SimpleImageControlComponent::motionev(int button, bool pressed, int x, int 
             float dy = y - oldy;
             if(dx != 0 || dy != 0)
             {
-                vector3_s m_rot = VECTOR3(-dx, - -dy, 0);
+                vector3_s m_rot = VECTOR3(dx, -dy, 0);
                 NLActor *actor = Actor();
                 if(actor)
                 {
@@ -215,6 +217,10 @@ void SimpleImageControlComponent::Transform(float delta)
             VECTOR3_Y(m_move) = -movesens;
 
         vector3_invertv(&m_move);
+        if(m_invertX)
+            VECTOR3_X(m_move) = -VECTOR3_X(m_move);
+        if(m_invertY)
+            VECTOR3_Y(m_move) = -VECTOR3_Y(m_move);
         actor->Move(m_move);
     }
 
@@ -228,7 +234,8 @@ void SimpleImageControlComponent::Transform(float delta)
         else if(m_action[NLAction_Turn_Right])
             VECTOR3_Z(m_turn) = turnsens;
 
-        vector3_invertv(&m_turn);
+        if(!m_invertY)
+            vector3_invertv(&m_turn);
 
         actor->Turn(m_turn);
     }
@@ -292,3 +299,24 @@ float SimpleImageControlComponent::ZoomSens() const
     return m_zoomSens;
 }
 
+void SimpleImageControlComponent::SetInvertX(bool b)
+{
+    if(m_invertX != b)
+        m_invertX = b;
+}
+
+void SimpleImageControlComponent::SetInvertY(bool b)
+{
+    if(m_invertY != b)
+        m_invertY = b;
+}
+
+bool SimpleImageControlComponent::InvertX() const
+{
+    return m_invertX;
+}
+
+bool SimpleImageControlComponent::InvertY() const
+{
+    return m_invertY;
+}
