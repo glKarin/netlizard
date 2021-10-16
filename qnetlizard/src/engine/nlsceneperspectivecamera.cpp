@@ -137,3 +137,29 @@ void NLScenePerspectiveCamera::UpdateProjectionMatrix(NLMatrix4 *mat)
     Mesa_glLoadIdentity(mat);
     Mesa_gluPerspective(mat, m_fovy, m_aspect, m_zNear, m_zFar);
 }
+
+float NLScenePerspectiveCamera::Fovy() const
+{
+    return m_fovy;
+}
+
+float NLScenePerspectiveCamera::Aspect() const
+{
+    return m_aspect;
+}
+
+float NLScenePerspectiveCamera::ZNear() const
+{
+    return m_zNear;
+}
+
+float NLScenePerspectiveCamera::ZFar() const
+{
+    return m_zFar;
+}
+
+float NLScenePerspectiveCamera::ZDistance() const
+{
+    return m_zFar - m_zNear;
+}
+

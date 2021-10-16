@@ -6,7 +6,9 @@
 
 class NETLizardMapModelRenderer;
 class NETLizardTextureRenderer;
+class NETLizardItemModelRenderer;
 class NLSceneOrthoCamera;
+class NLScenePerspectiveCamera;
 
 NLSCENE(MapScene)
 class MapScene : public NLScene
@@ -32,9 +34,12 @@ private:
     GL_NETLizard_3D_Model *m_model;
     NLActor *m_mapActor;
     NLActor *m_skyActor;
+    NLActor *m_sky3DActor;
     NETLizardMapModelRenderer *m_renderer;
     NETLizardTextureRenderer *m_skyRenderer;
+    NETLizardItemModelRenderer *m_sky3DRenderer;
     NLSceneOrthoCamera *m_skyCamera;
+    NLScenePerspectiveCamera *m_sky3DCamera;
 
     Q_DISABLE_COPY(MapScene)
 };

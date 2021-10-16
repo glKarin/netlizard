@@ -1,5 +1,5 @@
-#ifndef NLSCENEORTHOCAMERA_H
-#define NLSCENEORTHOCAMERA_H
+#ifndef _KARIN_NLSCENEORTHOCAMERA_H
+#define _KARIN_NLSCENEORTHOCAMERA_H
 
 #include <Qt>
 
@@ -21,6 +21,15 @@ public:
     void SetZFar(float far);
     void Set2D();
     void Set(float left, float right, float bottom, float top, float near = -1, float far = 1);
+    float Left() const;
+    float Right() const;
+    float Bottom() const;
+    float Top() const;
+    float ZNear() const;
+    float ZFar() const;
+    float XDistance() const;
+    float YDistance() const;
+    float ZDistance() const;
 
 protected:
     virtual void Projection();
@@ -36,4 +45,4 @@ private:
     float m_zFar;
 };
 
-#endif // NLSCENEORTHOCAMERA_H
+#endif // _KARIN_NLSCENEORTHOCAMERA_H

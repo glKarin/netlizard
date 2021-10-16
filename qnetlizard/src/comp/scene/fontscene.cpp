@@ -52,8 +52,8 @@ void FontScene::Update(float delta)
 
 void FontScene::Deinit()
 {
-    NLScene::Deinit();
     Reset();
+    NLScene::Deinit();
 }
 
 void FontScene::Reset()

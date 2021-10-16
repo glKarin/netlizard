@@ -81,10 +81,12 @@ SOURCES += \
 
 HEADERS += \
     src/comp/renderer/netlizardmapmodelrenderer.h \
+    src/comp/renderer/netlizarditemmodelrenderer.h \
     src/comp/renderer/netlizardtexturerenderer.h \
     src/comp/renderer/netlizardfontrenderer.h
 SOURCES += \
     src/comp/renderer/netlizardmapmodelrenderer.cpp \
+    src/comp/renderer/netlizarditemmodelrenderer.cpp \
     src/comp/renderer/netlizardtexturerenderer.cpp \
     src/comp/renderer/netlizardfontrenderer.cpp
 

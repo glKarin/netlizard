@@ -6,8 +6,10 @@
 #include "qdef.h"
 #include "simplecameraactor.h"
 #include "netlizardmapmodelrenderer.h"
+#include "netlizarditemmodelrenderer.h"
 #include "simplecameracomponent.h"
 #include "nlsceneorthocamera.h"
+#include "nlsceneperspectivecamera.h"
 #include "netlizardtexturerenderer.h"
 
 MapScene::MapScene(QWidget *parent)
@@ -15,9 +17,12 @@ MapScene::MapScene(QWidget *parent)
       m_model(0),
       m_mapActor(0),
       m_skyActor(0),
+      m_sky3DActor(0),
       m_renderer(0),
       m_skyRenderer(0),
-      m_skyCamera(0)
+      m_sky3DRenderer(0),
+      m_skyCamera(0),
+      m_sky3DCamera(0)
 {
     setObjectName("MapScene");
     NLActor *actor;
@@ -35,7 +40,7 @@ MapScene::MapScene(QWidget *parent)
     m_mapActor->SetRenderable(m_renderer);
     SetCurrentCamera(camera->Camera());
 
-    // 2d camera
+    // 2D background camera
     actor = new NLActor;
     AddActor(actor);
     prop.clear();
@@ -45,11 +50,26 @@ MapScene::MapScene(QWidget *parent)
     m_skyCamera = static_cast<NLSceneOrthoCamera *>(camera_2d->Camera());
     m_skyCamera->SetAlignment(Qt::AlignCenter);
 
-    // 2d background render
+    // 2D background render
     m_skyActor = new NLActor;
     AddActor(m_skyActor);
     m_skyRenderer = new NETLizardTextureRenderer;
     m_skyActor->SetRenderable(m_skyRenderer);
+
+    // 3D background camera
+    actor = new NLActor;
+    AddActor(actor);
+    prop.clear();
+    prop.insert("z_is_up", true);
+    SimpleCameraComponent *camera_3d = new SimpleCameraComponent(prop, actor);
+    actor->AddComponent(camera_3d);
+    m_sky3DCamera = static_cast<NLScenePerspectiveCamera *>(camera_3d->Camera());
+
+    // 3D background render
+    m_sky3DActor = new NLActor;
+    AddActor(m_sky3DActor);
+    m_sky3DRenderer = new NETLizardItemModelRenderer;
+    m_sky3DActor->SetRenderable(m_sky3DRenderer);
 }
 
 MapScene::~MapScene()
@@ -72,7 +92,7 @@ void MapScene::paintGL()
         return;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    if(m_model->bg_tex)
+    if(m_skyRenderer->Texture())
     {
         float factorX = (float)width() / (float)m_model->bg_tex->width;
         float factorY = (float)height() / (float)m_model->bg_tex->height;
@@ -85,6 +105,11 @@ void MapScene::paintGL()
         m_skyActor->SetScale(scale);
         m_skyCamera->Render(m_skyActor);
     }
+    else if(m_sky3DRenderer->Model())
+    {
+        m_sky3DCamera->SetRotation(CurrentCamera()->Rotation());
+        m_sky3DCamera->Render(m_sky3DActor);
+    }
 
     CurrentCamera()->Render(m_mapActor);
 
@@ -93,8 +118,8 @@ void MapScene::paintGL()
 
 void MapScene::Deinit()
 {
-    NLScene::Deinit();
     Reset();
+    NLScene::Deinit();
 }
 
 bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int game, int level)
@@ -138,7 +163,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     }
 
     m_renderer->SetModel(m_model);
-    if(m_model->bg_tex)
+    if(m_model->bg_tex && m_model->bg_tex)
         m_skyRenderer->SetTexture(m_model->bg_tex);
 
     NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]);
@@ -149,6 +174,29 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
     camera->SetPosition(startPos);
     camera->SetRotation(startRotate);
+
+    if(game == NL_SHADOW_OF_EGYPT_3D
+            && (level == 0 || level == 8 || level == 9 || level == 10 || level == 12
+            )
+            )
+    {
+        for(int i = 0; i < m_model->item_count; i++)
+        {
+            GL_NETLizard_3D_Item_Mesh *mesh = m_model->item_meshes + i;
+            if(mesh->item_type == Item_Box_Type)
+            {
+                GLfloat xs = mesh->item_mesh.ortho[0] - mesh->item_mesh.ortho[3];
+                GLfloat ys = mesh->item_mesh.ortho[1] - mesh->item_mesh.ortho[4];
+                GLfloat zs = mesh->item_mesh.ortho[2] - mesh->item_mesh.ortho[5];
+                float d = m_sky3DCamera->ZDistance();
+                NLVector3 scale = VECTOR3(d / xs, d / ys, d / zs);
+                NLDEBUG_VECTOR3(scale);
+                m_sky3DActor->SetScale(scale);
+                m_sky3DRenderer->SetModel(&mesh->item_mesh, m_model->texes);
+                break;
+            }
+        }
+    }
 
     GrabMouseCursor(true);
 
@@ -165,6 +213,7 @@ void MapScene::Reset()
     }
     m_renderer->SetModel(0);
     m_skyRenderer->SetTexture(0);
+    m_sky3DRenderer->SetModel(0, 0);
 
     NLScene::Reset();
 }

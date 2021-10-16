@@ -54,8 +54,8 @@ void ItemScene::paintGL()
 
 void ItemScene::Deinit()
 {
-    NLScene::Deinit();
     Reset();
+    NLScene::Deinit();
 }
 
 bool ItemScene::LoadFile(const QString &file, const QString &resourcePath, int game, int index)

@@ -19,9 +19,6 @@ protected:
     virtual void DeinitRender();
 
 private:
-    void RenderSky();
-
-private:
     GL_NETLizard_3D_Model *m_model;
 
     Q_DISABLE_COPY(NETLizardMapModelRenderer)

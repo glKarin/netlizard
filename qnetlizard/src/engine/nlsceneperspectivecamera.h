@@ -1,5 +1,5 @@
-#ifndef NLSCENEPERSPECTIVECAMERA_H
-#define NLSCENEPERSPECTIVECAMERA_H
+#ifndef _KARIN_NLSCENEPERSPECTIVECAMERA_H
+#define _KARIN_NLSCENEPERSPECTIVECAMERA_H
 
 #include "nlscenecamera.h"
 
@@ -16,6 +16,11 @@ public:
     void SetZFar(float far);
     void Set(float fovy, float width, float height, float near, float far);
     void Set(float fovy, float aspect, float near, float far);
+    float Fovy() const;
+    float Aspect() const;
+    float ZNear() const;
+    float ZFar() const;
+    float ZDistance() const;
 
 protected:
     virtual void Projection();
@@ -33,4 +38,4 @@ private:
     float m_zFar;
 };
 
-#endif // NLSCENEPERSPECTIVECAMERA_H
+#endif // _KARIN_NLSCENEPERSPECTIVECAMERA_H

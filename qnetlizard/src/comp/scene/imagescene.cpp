@@ -95,8 +95,8 @@ Qt::Alignment ImageScene::Alignment() const
 
 void ImageScene::Deinit()
 {
-    NLScene::Deinit();
     Reset();
+    NLScene::Deinit();
 }
 
 bool ImageScene::GenTexture(const NETLizard_Texture *tex)

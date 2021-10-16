@@ -187,3 +187,48 @@ Qt::Alignment NLSceneOrthoCamera::Alignment() const
 {
     return m_align;
 }
+
+float NLSceneOrthoCamera::Left() const
+{
+    return m_left;
+}
+
+float NLSceneOrthoCamera::Right() const
+{
+    return m_right;
+}
+
+float NLSceneOrthoCamera::Bottom() const
+{
+    return m_bottom;
+}
+
+float NLSceneOrthoCamera::Top() const
+{
+    return m_top;
+}
+
+float NLSceneOrthoCamera::ZNear() const
+{
+    return m_zNear;
+}
+
+float NLSceneOrthoCamera::ZFar() const
+{
+    return m_zFar;
+}
+
+float NLSceneOrthoCamera::XDistance() const
+{
+    return m_right - m_left;
+}
+
+float NLSceneOrthoCamera::YDistance() const
+{
+    return m_top - m_bottom;
+}
+
+float NLSceneOrthoCamera::ZDistance() const
+{
+    return m_zFar - m_zNear;
+}
