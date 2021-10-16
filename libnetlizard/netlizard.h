@@ -378,7 +378,7 @@ NLboolean nlReadCT3DItemModelFile(const char* name, NLint index, NETLizard_3D_Mo
 NLboolean nlLoadCT3DItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
 
 // Army Ranger 3D: Operation Artcle
-NLboolean nlReadSpecnaz3DModelFile(const char* name, int level, const char *resc_path, NETLizard_3D_Model *model);
+NLboolean nlReadSpecnaz3DModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
 NLboolean nlLoadSpecnaz3DModelData(const char* data, NLsizei size, int level, const char *resc_path, NETLizard_3D_Model *model);
 NLboolean nlReadSpecnaz3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
 NLboolean nlLoadSpecnaz3DItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
@@ -392,10 +392,10 @@ NLboolean nlLoadCT3DEp2ItemModelData(const char* data, NLsizei size, NLint index
 // 3D Shadows of Egypt
 NLboolean nlReadEgypt3DModelFile(const char* name, const char *resc_path, NETLizard_3D_Model *model);
 NLboolean nlLoadEgypt3DModelData(const char* data, NLsizei size, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlReadEgypt3DItemModelFile(const char* name, int index, NETLizard_3D_Model *model);
-NLboolean nlLoadEgypt3DItemModelData(const char* data, NLsizei size, int index, NETLizard_3D_Model *model);
-NLboolean nlReadEgypt3DRoleModelFile(const char* name, int index, NETLizard_3D_Model *model);
-NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, int index, NETLizard_3D_Model *model);
+NLboolean nlReadEgypt3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLboolean nlLoadEgypt3DItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
+NLboolean nlReadEgypt3DRoleModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
 
 // Clone 3D
 NLboolean nlReadClone3DModelFile(const char* name, const char *resc_path, NETLizard_3D_Model *model);
@@ -404,9 +404,10 @@ NLboolean nlReadClone3DItemModelFile(const char* name, int index, NETLizard_3D_M
 NLboolean nlReadClone3DRoleModelFile(const char* name, int index, NETLizard_3D_Model *model);
 
 // Contr Terrisiem 3D: Episode-3
-NLboolean nlReadCT3DEp3ModelFile(const char* name, int level, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlLoadCT3DEp3Model(const char* name, NLsizei size, int level, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlReadCT3DEp3ItemModelFile(const char* name, int index, NETLizard_3D_Model *model);
+NLboolean nlReadCT3DEp3ModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
+NLboolean nlLoadCT3DEp3ModelData(const char* data, NLsizei size, NLint level, const char *resc_path, NETLizard_3D_Model *model);
+NLboolean nlReadCT3DEp3ItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLboolean nlLoadCT3DEp3ItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
 
 /* Texture util */
 NETLizard_Texture_Type nlGetPNGType(const char *data, NLsizei length); // check png image/texture file type

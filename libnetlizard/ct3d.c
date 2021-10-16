@@ -458,17 +458,17 @@ void read_CT3D_map_items(T_array(class__g__item) *class_g_array__h__item, const 
             char *name = make_resource_file_path(CT3D_OBJ_SUBFIX, i11, resc_path);
 			array arr;
 			int res = file_get_contents(name, &arr);
-			free(name);
+            free(name);
             if(res > 0)
 			{
                 class_h__function_S_void__item(h, arr.array);
                 delete_array(&arr);
-			}
-			else
-			{
+            }
+            else
+            {
                 ARRAY_NULL(h->int_array_6__a__vertex);
                 ARRAY_NULL(h->int_array_16__b__primitive);
-			}
+            }
 		}
 		else
         {

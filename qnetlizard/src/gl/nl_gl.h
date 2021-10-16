@@ -177,10 +177,10 @@ GLboolean NETLizard_ReadGLEgypt3DItemModelFile(const char *name, int index, cons
 GLboolean NETLizard_ReadGLEgypt3DMapModelFile(const char *name, const char *resource_path, GL_NETLizard_3D_Model *model);
 GLboolean NETLizard_ReadGLEgypt3DRoleModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Animation_Model *model);
 
-#if 0
-GL_NETLizard_3D_Model * NETLizard_ReadGLCT3DEp3MapModelFile(const char *name, int i);
-GL_NETLizard_3D_Model * NETLizard_ReadGLCT3DEp3ItemModelFile(const char *name, int index);
+GLboolean NETLizard_ReadGLCT3DEp3MapModelFile(const char *name, int i, const char *resource_path, GL_NETLizard_3D_Model *model);
+GLboolean NETLizard_ReadGLCT3DEp3ItemModelFile(const char *name, int i, const char *resource_path, GL_NETLizard_3D_Model *model);
 
+#if 0
 GL_NETLizard_3D_Model * NETLizard_ReadGLSpecnaz3DMapModelFile(const char *name, int level);
 GL_NETLizard_3D_Model * NETLizard_ReadGLSpecnaz3DItemModelFile(const char *name, int index);
 

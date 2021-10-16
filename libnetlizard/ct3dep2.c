@@ -143,7 +143,7 @@ NLboolean nlLoadCT3DEp2ModelData(const char* data, NLsizei res, NLint level, con
     class__l__lvl *lv = &lvl;
 
 	ZERO(model, NETLizard_3D_Model);
-    array *h_ar = &lv->class_h_array__ar__scene;
+    T_array(class__h__scene) *h_ar = &lv->class_h_array__ar__scene;
     jint *dP = (jint *)(lv->int_array__dP__texcoord.array);
     jint *ak = (jint *)(lv->int_array__ak__normal.array);
     model->data.data = NEW_II(NETLizard_3D_Mesh, h_ar->length);
@@ -197,8 +197,8 @@ NLboolean nlLoadCT3DEp2ModelData(const char* data, NLsizei res, NLint level, con
 		k = 0;
         for(j = 0; j < obj->int_array_2__l__plane.length; j += 2)
 		{
-			int normal_index = l[j];
-			int position_index = l[j + 1];
+            jint normal_index = l[j];
+            jint position_index = l[j + 1];
             NETLizard_3D_Plane *plane = ((NETLizard_3D_Plane *)(mesh->plane.data)) + k;
 			plane->normal[0] = ak[normal_index];
 			plane->normal[1] = ak[normal_index + 1];
@@ -383,6 +383,7 @@ NLboolean nlLoadCT3DEp2ItemModelData(const char* data, NLsizei res, NLint index,
 	mesh->angle[0] = 0;
 	mesh->angle[1] = 0;
 	mesh->obj_index = index;
+
     if(ARRAY_DATA(obj.int_array_6__a__vertex) && ARRAY_DATA(obj.int_array_16__b__primitive))
 	{
         // vertex
@@ -461,18 +462,20 @@ void read_CT3DEp2_map_items(T_array(class__k__item) *k_an, const char *resc_path
         array arr;
         int res = file_get_contents(name, &arr);
 		free(name);
+        ARRAY_NULL(an->int_array_6__a__vertex);
+        ARRAY_NULL(an->int_array_16__b__primitive);
         if(res > 0)
-		{
+        {
             ARRAY_NULL(an->int_array_6__a__vertex);
             ARRAY_NULL(an->int_array_16__b__primitive);
             class_l__function_I_void__item(an, arr.array);
             delete_array(&arr);
-		}
-		else
-		{
+        }
+        else
+        {
             ARRAY_NULL(an->int_array_6__a__vertex);
             ARRAY_NULL(an->int_array_16__b__primitive);
-		}
+        }
 	}
 }
 

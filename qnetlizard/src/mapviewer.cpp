@@ -181,6 +181,8 @@ bool MapViewer::OpenFile()
     case NL_CONTR_TERRORISM_3D_EPISODE_2:
     case NL_ARMY_RANGER_3D:
     case NL_SHADOW_OF_EGYPT_3D:
+    //case NL_CLONE_3D:
+    case NL_CONTR_TERRORISM_3D_EPISODE_3:
         res = m_mapWidget->LoadFile(m_lvlPath, m_resourceDirPath, game, level);
     break;
     default:

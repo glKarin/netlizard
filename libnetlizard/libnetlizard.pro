@@ -51,7 +51,8 @@ SOURCES += \
     png_file.c \
     ct3dep2.c \
     specnaz3d.c \
-    egypt3d.c
+    egypt3d.c \
+    ct3dep3.c
 
 #libnetlizard.files = $$DESTDIR/libnetlizard*
 #libnetlizard.path = /usr/lib

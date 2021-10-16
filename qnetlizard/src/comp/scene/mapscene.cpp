@@ -122,6 +122,9 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     case NL_SHADOW_OF_EGYPT_3D:
         b = NETLizard_ReadGLEgypt3DMapModelFile(path, resc_path, m_model);
         break;
+    case NL_CONTR_TERRORISM_3D_EPISODE_3:
+        b = NETLizard_ReadGLCT3DEp3MapModelFile(path, level, resc_path, m_model);
+        break;
     default:
         qDebug() << "Unsupport game";
         break;

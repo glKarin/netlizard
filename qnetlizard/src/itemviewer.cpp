@@ -78,7 +78,7 @@ void ItemViewer::Init()
     toolLayout->addWidget(new QLabel("Game: "));
     toolLayout->addWidget(m_gameComboBox);
     toolLayout->addStretch();
-    toolLayout->addWidget(new QLabel("Level: "));
+    toolLayout->addWidget(new QLabel("Index: "));
     toolLayout->addWidget(m_indexSpinBox);
 
     button = new QPushButton;
@@ -197,6 +197,8 @@ bool ItemViewer::OpenFile()
     case NL_CONTR_TERRORISM_3D_EPISODE_2:
     case NL_ARMY_RANGER_3D:
     case NL_SHADOW_OF_EGYPT_3D:
+    //case NL_CLONE_3D:
+    case NL_CONTR_TERRORISM_3D_EPISODE_3:
         res = m_itemWidget->LoadFile(m_objPath, m_resourceDirPath, game, index);
     break;
     default:

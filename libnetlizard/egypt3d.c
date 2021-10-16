@@ -144,7 +144,7 @@ static void read_Egypt3D_map_items(array *g_f, const char *resc_path);
 static void class_e__function_Y_void__item(class__g__item *f, const byte arrayOfByte1[]);
 static void class_e__function_aa_void__role(class__r__role *obj, const byte arrayOfByte[]);
 
-NLboolean nlReadEgypt3DRoleModelFile(const char* name, int index, NETLizard_3D_Model *model)
+NLboolean nlReadEgypt3DRoleModelFile(const char* name, NLint index, NETLizard_3D_Model *model)
 {
     array arr;
     int res;
@@ -159,7 +159,7 @@ NLboolean nlReadEgypt3DRoleModelFile(const char* name, int index, NETLizard_3D_M
     return b;
 }
 
-NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, int index, NETLizard_3D_Model *model)
+NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model)
 {
 	ZERO(model, NETLizard_3D_Model);
 
@@ -231,7 +231,7 @@ NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, int index, 
     return NL_TRUE;
 }
 
-NLboolean nlReadEgypt3DItemModelFile(const char* name, int index, NETLizard_3D_Model *model)
+NLboolean nlReadEgypt3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model)
 {
     array arr;
     int res;
@@ -246,7 +246,7 @@ NLboolean nlReadEgypt3DItemModelFile(const char* name, int index, NETLizard_3D_M
     return b;
 }
 
-NLboolean nlLoadEgypt3DItemModelData(const char* data, NLsizei size, int index, NETLizard_3D_Model *model)
+NLboolean nlLoadEgypt3DItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model)
 {
 	ZERO(model, NETLizard_3D_Model);
 
@@ -577,17 +577,17 @@ void read_Egypt3D_map_items(array *g_f, const char *resc_path)
         char *name = make_resource_file_path(EGYPT3D_OBJ_SUBFIX, i11, resc_path);
         array arr;
         int res = file_get_contents(name, &arr);
-		free(name);
+        free(name);
         if(res > 0)
         {
             class_e__function_Y_void__item(f, arr.array);
             delete_array(&arr);
-		}
-		else
-		{
+        }
+        else
+        {
             ARRAY_NULL(f->short_array_3__a__vertex);
             ARRAY_NULL(f->short_array_16__b__primitive);
-		}
+        }
 	}
 }
 

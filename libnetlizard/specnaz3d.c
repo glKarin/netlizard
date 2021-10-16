@@ -480,17 +480,17 @@ void read_Specnaz3D_map_items(T_array(class__j__item) *j_l, const char *resc_pat
         char *name = make_resource_file_path(SPECNAZ3D_OBJ_SUBFIX, i11, resc_path);
         array arr;
         int res = file_get_contents(name, &arr);
-		free(name);
+        free(name);
         if(res > 0)
 		{
             class_k__function_P_void__item(l, arr.array);
             delete_array(&arr);
-		}
-		else
-		{
+        }
+        else
+        {
             ARRAY_NULL(l->int_array_6__a__vertex);
             ARRAY_NULL(l->int_array_16__b__primitive);
-		}
+        }
 	}
 }
 /* ****** static ****** */
