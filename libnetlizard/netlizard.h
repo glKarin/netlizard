@@ -11,9 +11,11 @@ extern "C" {
 #define ARR_MIN_LEN(x)
 
 /* NETLizard 3D game v2 texture header. 3D CT - 3D CT2 */
-#define NL_TEXTURE_V2_MAGIC_HEADER "&&&"
+#define NL_TEXTURE_V2_HEADER_MAGIC "&&&"
 /* NETLizard 3D game v3 texture header. 3D Egypt - 3D Clone */
-#define NL_TEXTURE_V3_MAGIC_HEADER "BIP"
+#define NL_TEXTURE_V3_HEADER_MAGIC "BIP"
+/* NETLizard Racing evolution 3D mesh header.*/
+#define NL_RE3D_MESH_HEADER_MAGIC "NL_MESH"
 /* NETLizard game png encode/decode factor. exam: a_byte = a_byte ^ 100 */
 #define NL_ENCODE_DECODE_FACTOR 100
 
@@ -165,7 +167,9 @@ typedef enum NETLizard_3D_Model_Type_e
     NL_CLONE_3D_ITEM_MODEL,
     NL_CLONE_3D_ROLE_MODEL,
     NL_CT_3D_EP3_MAP_MODEL,
-    NL_CT_3D_EP3_ITEM_MODEL
+    NL_CT_3D_EP3_ITEM_MODEL,
+    NL_RE_3D_MAP_MODEL,
+    NL_RE_3D_CAR_MODEL
 } NETLizard_3D_Model_Type;
 
 /* NETLizard 3D map BSP??? node */
@@ -247,6 +251,44 @@ typedef struct NETLizard_3D_Model_s
         NLuint count;
     } bsp_data; // If type is 3D map, it means BSP??? data
 } NETLizard_3D_Model;
+
+typedef struct NETLizard_RE3D_Mesh_s
+{
+    NLuint vertex_count;
+    struct {
+        NLfloat *data;
+        NLuint count;
+    } vertex; // vertex
+    struct {
+        NLfloat *data;
+        NLuint count;
+    } texcoord; // texcoord
+    /* triangle strip */
+    struct {
+        NLuint *data;
+        NLuint count;
+    } index; // index
+    struct {
+        NLuint *data;
+        NLuint count;
+    } primitive; // triangle strip's count
+    NLfloat translation[3]; // position
+    NLint tex_index;
+} NETLizard_RE3D_Mesh;
+
+typedef struct NETLizard_RE3D_Model_s
+{
+    NETLizard_Game game;
+    NETLizard_3D_Model_Type type;
+    struct {
+        NETLizard_RE3D_Mesh *data;
+        NLuint count;
+    } meshes;
+    struct {
+        char **data; // file name string
+        NLuint count;
+    } texes;
+} NETLizard_RE3D_Model;
 
 /* NETLizard 3D spirit */
 typedef struct NETLizard_Spirit_s
@@ -400,14 +442,22 @@ NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, NLint index
 // Clone 3D
 NLboolean nlReadClone3DModelFile(const char* name, const char *resc_path, NETLizard_3D_Model *model);
 NLboolean nlLoadClone3DModel(const char* data, NLsizei size, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlReadClone3DItemModelFile(const char* name, int index, NETLizard_3D_Model *model);
-NLboolean nlReadClone3DRoleModelFile(const char* name, int index, NETLizard_3D_Model *model);
+NLboolean nlReadClone3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLboolean nlReadClone3DRoleModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
 
 // Contr Terrisiem 3D: Episode-3
 NLboolean nlReadCT3DEp3ModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
 NLboolean nlLoadCT3DEp3ModelData(const char* data, NLsizei size, NLint level, const char *resc_path, NETLizard_3D_Model *model);
 NLboolean nlReadCT3DEp3ItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
 NLboolean nlLoadCT3DEp3ItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
+
+// Racing Evolution 3D
+NLboolean nlIsRE3DMeshFile(const char *name);
+NLboolean nlIsRE3DMesh(const char *data, NLsizei len);
+void delete_NETLizard_RE3D_Mesh(NETLizard_RE3D_Mesh *mesh);
+void delete_NETLizard_RE3D_Model(NETLizard_RE3D_Model *model);
+NLboolean nlReadRE3DMeshFile(const char *name, NETLizard_RE3D_Model *model);
+NLboolean nlLoadRE3DMeshData(const char *data,  NLsizei size,  NETLizard_RE3D_Model *model);
 
 /* Texture util */
 NETLizard_Texture_Type nlGetPNGType(const char *data, NLsizei length); // check png image/texture file type

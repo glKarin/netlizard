@@ -72,10 +72,10 @@ void delete_GL_NETLizard_3D_Mesh(GL_NETLizard_3D_Mesh *mesh)
 	if(!mesh)
         return;
 
-    if(mesh->vertex_array.vertex_data.vertex)
-        free(mesh->vertex_array.vertex_data.vertex);
-    if(mesh->vertex_array.vertex_data.index)
-        free(mesh->vertex_array.vertex_data.index);
+    if(mesh->vertex_data.vertex)
+        free(mesh->vertex_data.vertex);
+    if(mesh->vertex_data.index)
+        free(mesh->vertex_data.index);
 
 	if(mesh->plane)
 		free(mesh->plane);
@@ -213,12 +213,11 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 			m->materials = NULL;
 			m->tex_index = NULL;
 			m->plane_count = 0;
-			m->plane = NULL;
-            m->vertex_array.gl = 1;
-			m->vertex_array.vertex_data.vertex = NULL;
-			m->vertex_array.vertex_data.vertex_count = 0;
-			m->vertex_array.vertex_data.index = NULL;
-			m->vertex_array.vertex_data.index_count = 0;
+            m->plane = NULL;
+            m->vertex_data.vertex = NULL;
+            m->vertex_data.vertex_count = 0;
+            m->vertex_data.index = NULL;
+            m->vertex_data.index_count = 0;
 			m->bsp_count = 0;
 			m->bsp = NULL;
 
@@ -263,7 +262,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                 GL_NETLizard_3D_Vertex *vertex = calloc(vertex_count, sizeof(GL_NETLizard_3D_Vertex));
                 GLushort *indexs = calloc(index_count, sizeof(GLushort));
                 GL_NETLizard_3D_Material *materials = calloc(m->count, sizeof(GL_NETLizard_3D_Material));
-                int *mesh_vertex = (int *)(mesh->vertex.data);
+                NLint *mesh_vertex = (NLint *)(mesh->vertex.data);
 				GLint c = 0;
 				for(o = 0; o < (GLint)m->count; o++)
 				{
@@ -276,8 +275,9 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 						char *name = NULL;
                         if(resource_path)
 						{
-                            name = calloc(strlen(subfix) + strlen(resource_path) + 1 + 1, 1);
-                            memset(name, '\0', sizeof(char) * ((strlen(subfix) + strlen(resource_path) + 1 + 1)));
+                            int rplen = strlen(subfix) + strlen(resource_path) + 1 + 1;
+                            name = calloc(rplen, 1);
+                            memset(name, '\0', rplen);
                             sprintf(name, "%s/%s", resource_path, subfix);
 						}
 						else
@@ -350,15 +350,16 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 					materials[o].tex_index = m->tex_index[o];
 					materials[o].index_start = c;
 					materials[o].index_count = a - c;
+                    materials[o].mode = GL_TRIANGLES;
 
 					c = a;
 				}
 
                 m->materials = materials;
-				m->vertex_array.vertex_data.vertex = vertex;
-				m->vertex_array.vertex_data.vertex_count = vertex_count;
-				m->vertex_array.vertex_data.index_count = index_count;
-				m->vertex_array.vertex_data.index = indexs;
+                m->vertex_data.vertex = vertex;
+                m->vertex_data.vertex_count = vertex_count;
+                m->vertex_data.index_count = index_count;
+                m->vertex_data.index = indexs;
 			}
 
             if(mesh->plane.data)
@@ -397,12 +398,12 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 					for(k = 0; k < m->materials[j].index_count; k++)
 					{
 						GLuint index = (m->materials[j].index_start + k) * 3;
-						planes[n].position[0] = m->vertex_array.vertex_data.vertex[index].position[0];
-						planes[n].position[1] = m->vertex_array.vertex_data.vertex[index].position[1];
-						planes[n].position[2] = m->vertex_array.vertex_data.vertex[index].position[2];
-						planes[n].normal[0] = m->vertex_array.vertex_data.vertex[index].normal[0];
-						planes[n].normal[1] = m->vertex_array.vertex_data.vertex[index].normal[1];
-						planes[n].normal[2] = m->vertex_array.vertex_data.vertex[index].normal[2];
+                        planes[n].position[0] = m->vertex_data.vertex[index].position[0];
+                        planes[n].position[1] = m->vertex_data.vertex[index].position[1];
+                        planes[n].position[2] = m->vertex_data.vertex[index].position[2];
+                        planes[n].normal[0] = m->vertex_data.vertex[index].normal[0];
+                        planes[n].normal[1] = m->vertex_data.vertex[index].normal[1];
+                        planes[n].normal[2] = m->vertex_data.vertex[index].normal[2];
 						n++;
 					}
 				}
@@ -483,10 +484,10 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 			m->item_mesh.count = 0;
 			m->item_mesh.materials = NULL;
             m->item_mesh.tex_index = NULL;
-			m->item_mesh.vertex_array.vertex_data.vertex = NULL;
-			m->item_mesh.vertex_array.vertex_data.vertex_count = 0;
-			m->item_mesh.vertex_array.vertex_data.index = NULL;
-			m->item_mesh.vertex_array.vertex_data.index_count = 0;
+            m->item_mesh.vertex_data.vertex = NULL;
+            m->item_mesh.vertex_data.vertex_count = 0;
+            m->item_mesh.vertex_data.index = NULL;
+            m->item_mesh.vertex_data.index_count = 0;
 			m->item_mesh.plane_count = 0;
 			m->item_mesh.plane = NULL;
 
@@ -502,33 +503,33 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 				GLuint tex_count_i = 0;
                 GLint *tex_index_set = calloc(mesh->item_mesh.primitive.count, sizeof(GLint));
                 for(o = 0; o < mesh->item_mesh.primitive.count; o++)
-				{
+                {
 					tex_index_set[o] = -1;
 				}
                 for(o = 0; o < mesh->item_mesh.primitive.count; o++)
 				{
                     int tex_i = ((NETLizard_3D_Primitive *)(mesh->item_mesh.primitive.data))[o].tex_index;
 					if(tex_i < 0)
-						continue;
-					GLuint n;
-					for(n = 0; n < tex_count_i; n++)
-					{
-						if(tex_index_set[n] == -1)
-							break;
-						if(tex_index_set[n] == tex_i)
-							break;
-					}
-					if(n == tex_count_i)
-					{
-						tex_index_set[tex_count_i] = tex_i;
-						tex_count_i++;
-					}
+                        continue;
+                    GLuint n;
+                    for(n = 0; n < tex_count_i; n++)
+                    {
+                        if(tex_index_set[n] == -1)
+                            break;
+                        if(tex_index_set[n] == tex_i)
+                            break;
+                    }
+                    if(n == tex_count_i)
+                    {
+                        tex_index_set[tex_count_i] = tex_i;
+                        tex_count_i++;
+                    }
 				}
-				m->item_mesh.count = tex_count_i;
+                m->item_mesh.count = tex_count_i;
                 m->item_mesh.tex_index = calloc(m->item_mesh.count, sizeof(GLint));
 				for(o = 0; o < (GLint)m->item_mesh.count; o++)
 				{
-					m->item_mesh.tex_index[o] = tex_index_set[o];
+                    m->item_mesh.tex_index[o] = tex_index_set[o];
 				}
 				free(tex_index_set);
 
@@ -539,7 +540,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                 GL_NETLizard_3D_Material *materials = calloc(m->item_mesh.count, sizeof(GL_NETLizard_3D_Material));
                 GLuint plane_count = mesh->item_mesh.primitive.count;
                 GL_NETLizard_3D_Plane *planes = calloc(plane_count, sizeof(GL_NETLizard_3D_Plane));
-                int *mesh_vertex = (int *)(mesh->item_mesh.vertex.data);
+                NLint *mesh_vertex = (NLint *)(mesh->item_mesh.vertex.data);
 #if 0
 				if(mesh->obj_index >= 40 && mesh->obj_index <= 43)
 					printf("e=prop %d 0.2 0 0.0 40.0 0 10.0 0 0 0.0 360.0 0 0\n", i);
@@ -548,7 +549,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 				GLint b = 0;
 				GLint c = 0;
 				for(o = 0; o < (GLint)m->item_mesh.count; o++)
-				{
+                {
                     texture_s *tex = texes[m->item_mesh.tex_index[o]];
                     if(!tex && m->item_mesh.tex_index[o] < tex_count && m->item_mesh.tex_index[o] > 0)
 					{
@@ -557,9 +558,10 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 						sprintf(subfix, subfix_str, m->item_mesh.tex_index[o]);
 						char *name = NULL;
                         if(resource_path)
-						{
-                            name = calloc(strlen(subfix) + strlen(resource_path) + 1 + 1, 1);
-                            memset(name, '\0', sizeof(char) * ((strlen(subfix) + strlen(resource_path) + 1 + 1)));
+                        {
+                            int rplen = strlen(subfix) + strlen(resource_path) + 1 + 1;
+                            name = calloc(rplen, 1);
+                            memset(name, '\0', rplen);
                             sprintf(name, "%s/%s", resource_path, subfix);
 						}
 						else
@@ -637,15 +639,16 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 					materials[o].tex_index = m->item_mesh.tex_index[o];
 					materials[o].index_start = c;
 					materials[o].index_count = a - c;
+                    materials[o].mode = GL_TRIANGLES;
 
 					c = a;
 				}
 
                 m->item_mesh.materials = materials;
-				m->item_mesh.vertex_array.vertex_data.vertex_count = vertex_count;
-				m->item_mesh.vertex_array.vertex_data.vertex = vertex;
-				m->item_mesh.vertex_array.vertex_data.index_count = index_count;
-				m->item_mesh.vertex_array.vertex_data.index = indexs;
+                m->item_mesh.vertex_data.vertex_count = vertex_count;
+                m->item_mesh.vertex_data.vertex = vertex;
+                m->item_mesh.vertex_data.index_count = index_count;
+                m->item_mesh.vertex_data.index = indexs;
 				m->item_mesh.plane_count = plane_count;
 				m->item_mesh.plane = planes;
 			}
@@ -703,7 +706,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 		free(name);
 	}
 
-    memset(glmodel, 0, sizeof(glmodel));
+    memset(glmodel, 0, sizeof(GL_NETLizard_3D_Model));
 	glmodel->meshes = meshes;
     glmodel->count = model->data.count ? model->data.count : 0;
 	glmodel->item_meshes = item_meshes;
@@ -804,12 +807,11 @@ GL_NETLizard_3D_Animation_Model * NETLizard_MakeGL3DAnimationModel(const NETLiza
 		GL_NETLizard_3D_Mesh *m = item_meshes + i;
 		m->count = 0;
 		m->materials = NULL;
-		m->tex_index = NULL;
-		m->vertex_array.gl = OPENGL_RENDER_VERTEX_DATA;
-		m->vertex_array.vertex_data.vertex = NULL;
-		m->vertex_array.vertex_data.vertex_count = 0;
-		m->vertex_array.vertex_data.index = NULL;
-		m->vertex_array.vertex_data.index_count = 0;
+        m->tex_index = NULL;
+        m->vertex_data.vertex = NULL;
+        m->vertex_data.vertex_count = 0;
+        m->vertex_data.index = NULL;
+        m->vertex_data.index_count = 0;
 		m->plane_count = 0;
 		m->plane = NULL;
 
@@ -904,12 +906,11 @@ GL_NETLizard_3D_Animation_Model * NETLizard_MakeGL3DAnimationModel(const NETLiza
 
 			m->tex_index = tex_index;
 			m->materials = materials;
-			m->count = count;
-			m->vertex_array.gl = OPENGL_RENDER_VERTEX_DATA;
-			m->vertex_array.vertex_data.vertex_count = vertex_count;
-			m->vertex_array.vertex_data.vertex = vertex;
-			m->vertex_array.vertex_data.index_count = index_count;
-			m->vertex_array.vertex_data.index = indexs;
+            m->count = count;
+            m->vertex_data.vertex_count = vertex_count;
+            m->vertex_data.vertex = vertex;
+            m->vertex_data.index_count = index_count;
+            m->vertex_data.index = indexs;
 		}
 	}
 
@@ -943,18 +944,8 @@ GLvoid NETLizard_MoveItemModel(GL_NETLizard_3D_Item_Mesh *dst, GL_NETLizard_3D_I
 
 	memcpy(dst->item_mesh.ortho, src->item_mesh.ortho, sizeof(GLfloat) * 6);
 
-	dst->item_mesh.vertex_array.gl = src->item_mesh.vertex_array.gl;
-	if(src->item_mesh.vertex_array.gl & OPENGL_RENDER_VERTEX_DATA)
-	{
-		memcpy(&dst->item_mesh.vertex_array.vertex_data, &src->item_mesh.vertex_array.vertex_data, sizeof(GL_NETLizard_3D_Vertex_Data));
-		src->item_mesh.vertex_array.vertex_data.vertex = NULL;
-		src->item_mesh.vertex_array.vertex_data.index = NULL;
-	}
-	else if(src->item_mesh.vertex_array.gl & OPENGL_RENDER_VERTEX_BUFFER)
-	{
-		memcpy(&dst->item_mesh.vertex_array.vertex_buffer, &src->item_mesh.vertex_array.vertex_buffer, sizeof(GL_NETLizard_3D_Vertex_Buffer));
-		src->item_mesh.vertex_array.vertex_buffer.vertex_buffer = 0;
-		src->item_mesh.vertex_array.vertex_buffer.index_buffer = 0;
-	}
+    memcpy(&dst->item_mesh.vertex_data, &src->item_mesh.vertex_data, sizeof(GL_NETLizard_3D_Vertex_Data));
+    src->item_mesh.vertex_data.vertex = NULL;
+    src->item_mesh.vertex_data.index = NULL;
 }
 #endif

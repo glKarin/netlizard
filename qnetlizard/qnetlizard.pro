@@ -26,7 +26,8 @@ SOURCES += \
     main.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
-    src/misc/settings.cpp
+    src/misc/settings.cpp \
+    src/gl/nl_gl_re3d.c
 
 # Widget
 HEADERS += \

@@ -25,6 +25,7 @@ static const QPair<int, QString> Types[] = {
     QPair<int, QString>(NL_SHADOW_OF_EGYPT_3D, "3D Shadows of Egypt"),
     QPair<int, QString>(NL_CLONE_3D, "3D Clone"),
     QPair<int, QString>(NL_CONTR_TERRORISM_3D_EPISODE_3, "3D Contr Terrorism : Episode-3"),
+    QPair<int, QString>(NL_RACING_EVOLUTION_3D, "3D Racing Evolution"),
 };
 
 MapViewer::MapViewer(QWidget *parent) :
@@ -53,7 +54,7 @@ void MapViewer::Init()
     QHBoxLayout *toolLayout = ToolLayout();
     m_levelSpinBox = new QSpinBox;
 
-    for(int i = 0; i < 6; i++)
+    for(int i = 0; i < 7; i++)
     {
         const QPair<int, QString> &p = Types[i];
         m_gameComboBox->addItem(p.second, QVariant(p.first));
@@ -183,6 +184,7 @@ bool MapViewer::OpenFile()
     case NL_SHADOW_OF_EGYPT_3D:
     //case NL_CLONE_3D:
     case NL_CONTR_TERRORISM_3D_EPISODE_3:
+    case NL_RACING_EVOLUTION_3D:
         res = m_mapWidget->LoadFile(m_lvlPath, m_resourceDirPath, game, level);
     break;
     default:

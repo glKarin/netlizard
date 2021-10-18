@@ -81,10 +81,10 @@ GLboolean NETLizard_ReadFont(GL_NETLizard_Font *fnt, const char *map_file, const
             vertexs[j].texcoord[1] = texcoord[j * 2 + 1];
         }
 
-        c->vertex_array.vertex_data.vertex = vertexs;
-        c->vertex_array.vertex_data.vertex_count = 4;
-        c->vertex_array.vertex_data.index = indexes;
-        c->vertex_array.vertex_data.index_count = 6;
+        c->vertex_data.vertex = vertexs;
+        c->vertex_data.vertex_count = 4;
+        c->vertex_data.index = indexes;
+        c->vertex_data.index_count = 6;
     }
     delete_NETLizard_Font(&o);
     return GL_TRUE;
@@ -104,10 +104,10 @@ GLvoid delete_GL_NETLizard_Font(GL_NETLizard_Font *fnt)
 	for(i = 0; i < fnt->char_map_count; i++)
 	{
         GL_NETLizard_Font_Char *c = fnt->char_map + i;
-        if(c->vertex_array.vertex_data.vertex)
-            free(c->vertex_array.vertex_data.vertex);
-        if(c->vertex_array.vertex_data.index)
-            free(c->vertex_array.vertex_data.index);
+        if(c->vertex_data.vertex)
+            free(c->vertex_data.vertex);
+        if(c->vertex_data.index)
+            free(c->vertex_data.index);
     }
 }
 
@@ -122,12 +122,12 @@ GLvoid NETLizard_RenderFontChar(const GL_NETLizard_Font *fnt, GLuint i)
 
     glBindTexture(GL_TEXTURE_2D, fnt->tex.texid);
     const GL_NETLizard_Font_Char *c = fnt->char_map + i;
-    glVertexPointer(3, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), c->vertex_array.vertex_data.vertex[0].position);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), c->vertex_array.vertex_data.vertex[0].texcoord);
+    glVertexPointer(3, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), c->vertex_data.vertex[0].position);
+    glTexCoordPointer(2, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), c->vertex_data.vertex[0].texcoord);
 	glPushMatrix();
     {
         glTranslatef(0.0, c->y_stride, 0.0);
-        glDrawElements(GL_TRIANGLES, c->vertex_array.vertex_data.index_count, GL_UNSIGNED_SHORT, c->vertex_array.vertex_data.index);
+        glDrawElements(GL_TRIANGLES, c->vertex_data.index_count, GL_UNSIGNED_SHORT, c->vertex_data.index);
         //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
     glPopMatrix();

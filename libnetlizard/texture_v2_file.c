@@ -215,7 +215,7 @@ NLboolean nlSavePixelDataToTextureV2File(const NLuchar *data,  int width, int he
 	int i2 = 3; // 3
 	int i3 = format != NL_RGB ? 1 : 0; // 4
 	char c;
-    const char magic[] = NL_TEXTURE_V2_MAGIC_HEADER;
+    const char magic[] = NL_TEXTURE_V2_HEADER_MAGIC;
     fwrite(magic + i, ESIZE(char, 1), 3, file);
 	c = (char)i3;
     fwrite(&c, ESIZE(char, 1), 1, file);

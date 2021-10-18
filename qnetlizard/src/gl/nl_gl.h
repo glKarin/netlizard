@@ -9,43 +9,6 @@ extern "C" {
 
 #include "gl_texture.h"
 
-#if 0
-typedef struct _GL_RE3D_Mesh
-{
-	GLuint buffers[total_buffer_type];
-	GLfloat translations[3];
-	GLuint *strips;
-	GLuint primitive;
-	GLint tex_index;
-	GLfloat ortho[6];
-} GL_RE3D_Mesh;
-
-typedef struct _GL_RE3D_Model
-{
-	GL_RE3D_Mesh *meshes;
-	GLuint count;
-	texture **texes;
-	GLuint tex_count;
-	texture *bg_tex;
-} GL_RE3D_Model;
-
-GL_RE3D_Model * NETLizard_MakeGL2RE3DModel(const RE3D_Model *model);
-GLvoid delete_GL_RE3D_Model(GL_RE3D_Model *model);
-GLvoid delete_GL_RE3D_Mesh(GL_RE3D_Mesh *mesh);
-GLvoid NETLizard_RenderGLRE3DModel(const GL_RE3D_Model *model);
-GLvoid NETLizard_RenderGLRE3DModelScene(const GL_RE3D_Model *model, GLint *scene, GLuint count);
-GL_RE3D_Model * NETLizard_ReadGLRE3DModelFile(const char *name);
-GL_RE3D_Model * NETLizard_ReadGLRE3DCarModelFile(const char *car_file, const char *tex_file);
-#endif
-
-typedef struct _GL_NETLizard_3D_Primitive
-{
-	GLuint index[3];
-	GLfloat texcoord[6];
-	GLfloat normal[3];
-	GLint tex_index;
-} GL_NETLizard_3D_Primitive; // UNUSED 2017 06 26
-
 typedef struct _GL_NETLizard_3D_Plane
 {
 	GLfloat position[3];
@@ -66,6 +29,7 @@ typedef struct _GL_NETLizard_3D_Material
 	GLint tex_index;
 	GLuint index_start;
 	GLuint index_count;
+    GLenum mode;
 } GL_NETLizard_3D_Material;
 
 typedef struct _GL_NETLizard_3D_Vertex
@@ -77,30 +41,34 @@ typedef struct _GL_NETLizard_3D_Vertex
 
 typedef struct _GL_NETLizard_3D_Vertex_Data
 {
-	GLuint vertex_count;
-	GLuint index_count;
-	GL_NETLizard_3D_Vertex *vertex;
+    GL_NETLizard_3D_Vertex *vertex;
+    GLuint vertex_count;
 	GLushort *index;
+    GLuint index_count;
 } GL_NETLizard_3D_Vertex_Data;
 
-typedef struct _GL_NETLizard_3D_Vertex_Array
-{
-	GLuint gl;
-    GL_NETLizard_3D_Vertex_Data vertex_data;
-} GL_NETLizard_3D_Vertex_Array;
+
+//typedef struct _GL_NETLizard_3D_Vertex_Array
+//{
+//	GLuint gl;
+//    GL_NETLizard_3D_Vertex_Data vertex_data;
+//} GL_NETLizard_3D_Vertex_Array;
 
 typedef struct _GL_NETLizard_3D_Mesh
 {
-	GLuint count;
+    GL_NETLizard_3D_Vertex_Data vertex_data;
 	GL_NETLizard_3D_Material *materials;
-	GLint *tex_index;
-	GL_NETLizard_3D_Vertex_Array vertex_array;
-	GLuint plane_count;
+    GLuint count;
+    GLint *tex_index;
 	GL_NETLizard_3D_Plane *plane;
+    GLuint plane_count;
 	GLfloat ortho[6];
 	GLuint item_index_range[2];
 	GLint *bsp;
 	GLuint bsp_count;
+
+    //GLfloat pos[3];
+    //GLfloat angle[2];
 } GL_NETLizard_3D_Mesh;
 
 typedef struct _GL_NETLizard_3D_Item_Mesh
@@ -150,6 +118,25 @@ typedef struct _GL_NETLizard_3D_Item_Model
     texture_s tex;
 } GL_NETLizard_3D_Item_Model;
 
+//typedef struct _GL_NETLizard_RE3D_Mesh
+//{
+//    GL_NETLizard_3D_Vertex_Data vertex_data;
+//    GLfloat translations[3];
+//    GLuint *strips;
+//    GLuint primitive;
+//    GLint tex_index;
+//    GLfloat ortho[6];
+//} GL_NETLizard_RE3D_Mesh;
+
+//typedef struct _GL_NETLizard_RE3D_Model
+//{
+//    GL_RE3D_Mesh *meshes;
+//    GLuint count;
+//    texture **texes;
+//    GLuint tex_count;
+//    texture *bg_tex;
+//} GL_NETLizard_RE3D_Model;
+
 GLvoid NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model);
 GLvoid NETLizard_RenderGL3DItemModel(const GL_NETLizard_3D_Item_Model *m);
 GLvoid NETLizard_RenderGL3DAnimationModel(const GL_NETLizard_3D_Animation_Model *m, GLuint anim, GLuint frame);
@@ -161,6 +148,7 @@ GLvoid delete_GL_NETLizard_3D_Model(GL_NETLizard_3D_Model *model);
 GLvoid delete_GL_NETLizard_3D_Animation_Model(GL_NETLizard_3D_Animation_Model *model);
 
 GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *resource_path, GL_NETLizard_3D_Model *glmodel);
+GLboolean NETLizard_MakeGLRE3DModel(const NETLizard_RE3D_Model *model, const char *resource_path, GL_NETLizard_3D_Model *glmodel);
 GL_NETLizard_3D_Model * NETLizard_MakeGL3DItemModel(const NETLizard_3D_Model *model);
 GL_NETLizard_3D_Animation_Model * NETLizard_MakeGL3DAnimationModel(const NETLizard_3D_Model *model);
 
@@ -180,6 +168,8 @@ GLboolean NETLizard_ReadGLEgypt3DRoleModelFile(const char *name, int index, cons
 GLboolean NETLizard_ReadGLCT3DEp3MapModelFile(const char *name, int i, const char *resource_path, GL_NETLizard_3D_Model *model);
 GLboolean NETLizard_ReadGLCT3DEp3ItemModelFile(const char *name, int i, const char *resource_path, GL_NETLizard_3D_Model *model);
 
+GLboolean NETLizard_ReadGLRE3DMapModelFile(const char *name, const char *resource_path, GL_NETLizard_3D_Model *model);
+
 #if 0
 GL_NETLizard_3D_Model * NETLizard_ReadGLSpecnaz3DMapModelFile(const char *name, int level);
 GL_NETLizard_3D_Model * NETLizard_ReadGLSpecnaz3DItemModelFile(const char *name, int index);
@@ -194,7 +184,7 @@ GLvoid NETLizard_RenderGL3DItemMesh(const GL_NETLizard_3D_Mesh *m, const texture
 
 typedef struct _GL_NETLizard_Font_Char
 {
-    GL_NETLizard_3D_Vertex_Array vertex_array;
+    GL_NETLizard_3D_Vertex_Data vertex_data;
 	GLfloat width;
 	GLfloat height;
 	GLfloat x_stride;

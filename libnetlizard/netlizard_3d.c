@@ -153,7 +153,7 @@ static NETLizard_3D_Model_Config Game_Config[] = {
     {
         NL_RACING_EVOLUTION_3D,
         0,
-        NL_TEXTURE_3D_ENGINE_V2,
+        NL_TEXTURE_ENCODE_PNG,
         1,
         1,
         NL_FALSE,
@@ -262,6 +262,28 @@ void delete_NETLizard_3D_Model(NETLizard_3D_Model *model)
     free(model->item_data.data);
 
     free(model->bsp_data.data);
+}
+
+void delete_NETLizard_RE3D_Mesh(NETLizard_RE3D_Mesh *mesh)
+{
+    free(mesh->vertex.data);
+    free(mesh->texcoord.data);
+    free(mesh->index.data);
+    free(mesh->primitive.data);
+}
+
+void delete_NETLizard_RE3D_Model(NETLizard_RE3D_Model *model)
+{
+    int i;
+    for(i = 0; i < model->meshes.count; i++)
+    {
+        delete_NETLizard_RE3D_Mesh(model->meshes.data + i);
+    }
+    free(model->meshes.data);
+
+    for(i = 0; i < model->texes.count; i++)
+        free(model->texes.data[i]);
+    free(model->texes.data);
 }
 
 NETLizard_Texture_Type nlGetPNGType(const char *data, NLsizei length)
@@ -572,6 +594,33 @@ const NETLizard_3D_Model_Config * nlGet3DGameModelConfig(NETLizard_Game game)
     if(game > NL_CONTR_TERRORISM_3D_EPISODE_3)
         return NULL;
     return Game_Config + game;
+}
+
+NLboolean nlIsRE3DMeshFile(const char *name)
+{
+    int len;
+    array arr;
+    NLboolean ret;
+    char data[7] = {0};
+
+    ret = NL_FALSE;
+    make_array(&arr, 1, 7, data);
+    len = file_get_contents_s(name, &arr);
+    if(len == 7)
+        ret = nlIsRE3DMesh((char *)arr.array, arr.length);
+    return ret;
+}
+
+NLboolean nlIsRE3DMesh(const char *data, NLsizei len)
+{
+    if(len < 7)
+        return NL_FALSE;
+    const unsigned char NL_RE3D_Mesh_Dec[] = {
+        78, 76, 95, 77, 69, 83, 72
+    };
+
+    int res = memcmp(data, NL_RE3D_Mesh_Dec, sizeof(NL_RE3D_Mesh_Dec));
+    return res == 0 ? NL_TRUE : NL_FALSE;
 }
 
 char * make_resource_file_path(const char *format, int index, const char *resc_path)

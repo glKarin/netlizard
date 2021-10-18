@@ -472,7 +472,7 @@ void read_Specnaz3D_map_items(T_array(class__j__item) *j_l, const char *resc_pat
 {
 	if(!j_l)
 		return;
-	int i;
+    int i;
 	for(i = 0; i < j_l->length; i++)
 	{
 		class__j__item *l = ((class__j__item *)(j_l->array)) + i;
@@ -482,7 +482,7 @@ void read_Specnaz3D_map_items(T_array(class__j__item) *j_l, const char *resc_pat
         int res = file_get_contents(name, &arr);
         free(name);
         if(res > 0)
-		{
+        {
             class_k__function_P_void__item(l, arr.array);
             delete_array(&arr);
         }
@@ -813,7 +813,7 @@ class__k__lvl class_k__function_h_1int__scene(const byte arrayOfByte[], const ch
 					l[i19].int__p__rotation = 0;
 				}
 				i1 += 2;
-				l[i19].byte__t__obj = ((byte)marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]));
+                l[i19].byte__t__obj = ((byte)marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]));
 				if (l[i19].byte__t__obj < 120)
 				{
 					/*
@@ -822,11 +822,10 @@ class__k__lvl class_k__function_h_1int__scene(const byte arrayOfByte[], const ch
 						 }
 						 */
 					if (l[i19].byte__t__obj >= 90)
-					{
+                    {
 						class__j__item *tmp2767_2766 = l + i19;
-						tmp2767_2766->byte__t__obj = ((byte)(tmp2767_2766->byte__t__obj - 50));
-						//bX[i20] = -1;
-						l[i19].byte__t__obj -= 50;
+                        tmp2767_2766->byte__t__obj = ((byte)(tmp2767_2766->byte__t__obj - 50)); // l[i19].byte__t__obj -= 50;
+                        //bX[i20] = -1;
 					}
 					//bu[l[i19].byte__t__obj] = true;
 				}

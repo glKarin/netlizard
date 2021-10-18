@@ -282,7 +282,7 @@ NLboolean nlSavePixelDataToTextureV3File(const NLuchar *data, NLint _i, int widt
 	int m4 = 0; // 4
 	int k = format != NL_RGB ? 1 : 0; // 5
 	char c;
-    const char magic[] = NL_TEXTURE_V3_MAGIC_HEADER;
+    const char magic[] = NL_TEXTURE_V3_HEADER_MAGIC;
     fwrite(magic + i, ESIZE(char, 1), 3, file);
 	c = (char)k;
     fwrite(&c, ESIZE(char, 1), 1, file);

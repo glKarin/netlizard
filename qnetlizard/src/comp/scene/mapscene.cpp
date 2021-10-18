@@ -8,6 +8,7 @@
 #include "netlizardmapmodelrenderer.h"
 #include "netlizarditemmodelrenderer.h"
 #include "simplecameracomponent.h"
+#include "simplecontrolcomponent.h"
 #include "nlsceneorthocamera.h"
 #include "nlsceneperspectivecamera.h"
 #include "netlizardtexturerenderer.h"
@@ -150,6 +151,9 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     case NL_CONTR_TERRORISM_3D_EPISODE_3:
         b = NETLizard_ReadGLCT3DEp3MapModelFile(path, level, resc_path, m_model);
         break;
+    case NL_RACING_EVOLUTION_3D:
+        b = NETLizard_ReadGLRE3DMapModelFile(path, resc_path, m_model);
+        break;
     default:
         qDebug() << "Unsupport game";
         break;
@@ -166,35 +170,52 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     if(m_model->bg_tex && m_model->bg_tex)
         m_skyRenderer->SetTexture(m_model->bg_tex);
 
-    NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]);
-    NLVector3 startRotate = VECTOR3(m_model->start_angle[0] + 90.0, m_model->start_angle[1] - 180.0, 0);
-    // NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[1], m_model->start_pos[2]); // z_is_up
-    // NLVector3 startRotate = VECTOR3(m_model->start_angle[0] - 90.0, m_model->start_angle[1] - 180.0, 0); // z_is_up
-
-    SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
-    camera->SetPosition(startPos);
-    camera->SetRotation(startRotate);
-
-    if(game == NL_SHADOW_OF_EGYPT_3D
-            && (level == 0 || level == 8 || level == 9 || level == 10 || level == 12
-            )
-            )
+    // RE3D using java MSG 3D, like OpenGL, y is up
+    if(game == NL_RACING_EVOLUTION_3D)
     {
-        for(int i = 0; i < m_model->item_count; i++)
+        CurrentCamera()->SetZIsUp(false);
+        m_sky3DCamera->SetZIsUp(false);
+        SimpleCameraActor *cameraActor = GetActor_T<SimpleCameraActor>(0);
+        SimpleControlComponent *control = cameraActor->GetComponent_T<SimpleControlComponent>(1);
+        control->SetMoveSens(control->MoveSens() / 20);
+    }
+    else
+    {
+        NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]);
+        NLVector3 startRotate = VECTOR3(m_model->start_angle[0] + 90.0, m_model->start_angle[1] - 180.0, 0);
+        // NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[1], m_model->start_pos[2]); // z_is_up
+        // NLVector3 startRotate = VECTOR3(m_model->start_angle[0] - 90.0, m_model->start_angle[1] - 180.0, 0); // z_is_up
+
+        SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
+        camera->SetPosition(startPos);
+        camera->SetRotation(startRotate);
+
+        CurrentCamera()->SetZIsUp(true);
+        m_sky3DCamera->SetZIsUp(true);
+        // Egypt 3D level 0(main menu) 8 9 10 12 has a cube sky model
+        if(game == NL_SHADOW_OF_EGYPT_3D)
         {
-            GL_NETLizard_3D_Item_Mesh *mesh = m_model->item_meshes + i;
-            if(mesh->item_type == Item_Box_Type)
+            if(level == 0 || level == 8 || level == 9 || level == 10 || level == 12)
             {
-                GLfloat xs = mesh->item_mesh.ortho[0] - mesh->item_mesh.ortho[3];
-                GLfloat ys = mesh->item_mesh.ortho[1] - mesh->item_mesh.ortho[4];
-                GLfloat zs = mesh->item_mesh.ortho[2] - mesh->item_mesh.ortho[5];
-                float d = m_sky3DCamera->ZDistance();
-                NLVector3 scale = VECTOR3(d / xs, d / ys, d / zs);
-                NLDEBUG_VECTOR3(scale);
-                m_sky3DActor->SetScale(scale);
-                m_sky3DRenderer->SetModel(&mesh->item_mesh, m_model->texes);
-                break;
+                for(int i = 0; i < m_model->item_count; i++)
+                {
+                    GL_NETLizard_3D_Item_Mesh *mesh = m_model->item_meshes + i;
+                    if(mesh->item_type == Item_Box_Type)
+                    {
+                        GLfloat xs = mesh->item_mesh.ortho[0] - mesh->item_mesh.ortho[3];
+                        GLfloat ys = mesh->item_mesh.ortho[1] - mesh->item_mesh.ortho[4];
+                        GLfloat zs = mesh->item_mesh.ortho[2] - mesh->item_mesh.ortho[5];
+                        float d = m_sky3DCamera->ZDistance();
+                        NLVector3 scale = VECTOR3(d / xs, d / ys, d / zs);
+                        NLDEBUG_VECTOR3(scale);
+                        m_sky3DActor->SetScale(scale);
+                        m_sky3DRenderer->SetModel(&mesh->item_mesh, m_model->texes);
+                        break;
+                    }
+                }
             }
+            CurrentCamera()->SetZIsUp(true);
+            m_sky3DCamera->SetZIsUp(true);
         }
     }
 

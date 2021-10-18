@@ -393,6 +393,11 @@ void NLActor::Reset()
     emit positionChanged(m_position);
     emit rotationChanged(m_rotation);
     emit scaleChanged(m_scale);
+    if(m_components)
+        return m_components->Reset();
+    if(m_children)
+        return m_children->Reset();
+    NLObject::Reset();
 }
 
 void NLActor::SetPosition(const vector3_s &v)

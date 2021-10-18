@@ -6,7 +6,7 @@ NLboolean nlIsNL3DTextureV2(const char *data, NLsizei length)
 {
     if(length < 3)
         return NL_FALSE;
-    const char F[] = NL_TEXTURE_V2_MAGIC_HEADER; // &&&
+    const char F[] = NL_TEXTURE_V2_HEADER_MAGIC; // &&&
     int res = memcmp(data, F, 3);
     return BOOL_VALUE(res == 0);
 }
