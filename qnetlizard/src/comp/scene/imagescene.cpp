@@ -14,6 +14,7 @@
 #include "simpleimagecontrolcomponent.h"
 #include "simplecontrol2dcomponent.h"
 #include "netlizardtexturerenderer.h"
+#include "settings.h"
 
 ImageScene::ImageScene(QWidget *parent)
     : NLScene(parent),
@@ -21,9 +22,11 @@ ImageScene::ImageScene(QWidget *parent)
       m_renderer(0),
       m_align(Qt::AlignCenter)
 {
+    setObjectName("ImageScene");
+    SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
+
     memset(&m_data.data, 0, sizeof(m_data.data));
     m_data.type = NL_TEXTURE_UNKNOWN;
-    setObjectName("ImageScene");
 
     NLPropperties prop;
     prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));

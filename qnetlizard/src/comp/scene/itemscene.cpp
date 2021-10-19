@@ -9,12 +9,15 @@
 #include "netlizardmapmodelrenderer.h"
 #include "simplecontrolcomponent.h"
 #include "nlsceneorthocamera.h"
+#include "settings.h"
 
 ItemScene::ItemScene(QWidget *parent)
     : NLScene(parent),
       m_model(0),
       m_renderer(0)
 {
+    SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
+
     setObjectName("ItemScene");
 
     NLPropperties prop;

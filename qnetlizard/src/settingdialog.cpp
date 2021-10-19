@@ -46,6 +46,10 @@ void SettingDialog::Init()
     subItem->setText(0, "2D control");
     subItem->setData(0, Qt::UserRole, "2d_control");
     item->addChild(subItem);
+    subItem = new QTreeWidgetItem;
+    subItem->setText(0, "Render");
+    subItem->setData(0, Qt::UserRole, "render");
+    item->addChild(subItem);
     tree->addTopLevelItem(item);
 
     item = new QTreeWidgetItem;

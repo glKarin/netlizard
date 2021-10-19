@@ -10,6 +10,7 @@
 #include "simplecameraactor.h"
 #include "nlsceneorthocamera.h"
 #include "netlizardfontrenderer.h"
+#include "settings.h"
 
 FontScene::FontScene(QWidget *parent) :
     NLScene(parent),
@@ -20,6 +21,8 @@ FontScene::FontScene(QWidget *parent) :
     m_lineSpacing(1)
 {
     setObjectName("FontScene");
+
+    SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
 
     NLPropperties prop;
     prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));

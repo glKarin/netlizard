@@ -27,6 +27,7 @@ public:
     qint64 UpdateTime() const;
     float FPS() const;
     void SetFPS(float fps);
+    float CurrentFPS() const;
     
 signals:
     void sizeChanged(const QSize &s);
@@ -72,6 +73,7 @@ private Q_SLOTS:
 
 private:
     void ExecLoop();
+    void UpdateCurrentFPS(qint64 delta);
 
 private:
     QColor m_clearColor;
@@ -85,6 +87,9 @@ private:
     bool m_cursorVisible;
     bool m_grabMouse;
     float m_fps;
+    qint64 m_updateGLInterval;
+    qint64 m_updateGLLastTime;
+    float m_currentFps;
 
     Q_DISABLE_COPY(NLScene)
 };

@@ -6,6 +6,7 @@
 #include "qdef.h"
 #include "simplecameraactor.h"
 #include "testrenderer.h"
+#include "settings.h"
 
 TestScene::TestScene(QWidget *parent)
     : NLScene(parent),
@@ -14,8 +15,10 @@ TestScene::TestScene(QWidget *parent)
     setObjectName("TestScene");
 
     SimpleCameraActor *camera = new SimpleCameraActor;
+    camera->setObjectName("[[[SimpleCameraActor");
     AddActor(camera);
     NLActor *actor = new NLActor;
+    actor->setObjectName("[[[RootRenderActor");
     AddActor(actor);
     m_renderer = new TestRenderer;
     actor->SetRenderable(m_renderer);
@@ -123,7 +126,7 @@ void TestScene::Init()
     TestRenderer *renderer = new TestRenderer;
     (*renderer)<<(itemc);
     NLActor *actor = new NLActor;
-    actor->setObjectName("asdasdsad");
+    actor->setObjectName("[[[ChildRenderActor");
     actor->SetRenderable(renderer);
     NLVector3 v = VECTOR3(-800, 200, -200);
     NLVector3 vr = VECTOR3(45,0,0);
@@ -133,6 +136,7 @@ void TestScene::Init()
     //m_actors.Get(1)->SetPosition(v);
     GetActor(1)->AddChild(actor);
 
+    SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
 }
 
 void TestScene::Update(float delta)

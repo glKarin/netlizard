@@ -162,44 +162,48 @@ bool NLActor::keyev(int key, bool pressed, int modifier)
 {
     if(!IsActived())
         return false;
+    bool res = false;
     if(m_components)
-        return m_components->KeyEventHandler(key, pressed, modifier);
+        res = m_components->KeyEventHandler(key, pressed, modifier);
     if(m_children)
-        return m_children->KeyEventHandler(key, pressed, modifier);
-    return false;
+        res = m_children->KeyEventHandler(key, pressed, modifier) || res;
+    return res;
 }
 
 bool NLActor::mouseev(int mouse, bool pressed, int x, int y, int modifier)
 {
     if(!IsActived())
         return false;
+    bool res = false;
     if(m_components)
-        return m_components->MouseEventHandler(mouse, pressed, x, y, modifier);
+        res =  m_components->MouseEventHandler(mouse, pressed, x, y, modifier);
     if(m_children)
-        return m_children->MouseEventHandler(mouse, pressed, x, y, modifier);
-    return false;
+        res = m_children->MouseEventHandler(mouse, pressed, x, y, modifier) || res;
+    return res;
 }
 
 bool NLActor::motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modifier)
 {
     if(!IsActived())
         return false;
+    bool res = false;
     if(m_components)
-        return m_components->MouseMotionHandler(mouse, pressed, x, y, oldx, oldy, modifier);
+        res = m_components->MouseMotionHandler(mouse, pressed, x, y, oldx, oldy, modifier);
     if(m_children)
-        return m_children->MouseMotionHandler(mouse, pressed, x, y, oldx, oldy, modifier);
-    return false;
+        res = m_children->MouseMotionHandler(mouse, pressed, x, y, oldx, oldy, modifier) || res;
+    return res;
 }
 
 bool NLActor::wheelev(int orientation, int delta, int x, int y, int modifier)
 {
     if(!IsActived())
         return false;
+    bool res = false;
     if(m_components)
-        return m_components->WheelEventHandler(orientation, delta, x, y, modifier);
+        res = m_components->WheelEventHandler(orientation, delta, x, y, modifier);
     if(m_children)
-        return m_children->WheelEventHandler(orientation, delta, x, y, modifier);
-    return false;
+        res = m_children->WheelEventHandler(orientation, delta, x, y, modifier) || res;
+    return res;
 }
 
 NLActor * NLActor::ParentActor()
@@ -394,9 +398,9 @@ void NLActor::Reset()
     emit rotationChanged(m_rotation);
     emit scaleChanged(m_scale);
     if(m_components)
-        return m_components->Reset();
+        m_components->Reset();
     if(m_children)
-        return m_children->Reset();
+        m_children->Reset();
     NLObject::Reset();
 }
 
@@ -608,6 +612,7 @@ void NLActor::SetZIsUp(bool b)
 
 void NLActor::InitProperty()
 {
+    NLObject::InitProperty();
     NLVector3 v = VECTOR3(
                 GetProperty<float>("x", 0),
                 GetProperty<float>("y", 0),

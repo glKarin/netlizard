@@ -22,7 +22,8 @@ NLObject::NLObject(const NLPropperties &prop, QObject *parent) :
     m_type(NLObject::Type_General),
     m_inited(false),
     m_container(0),
-    m_scene(0)
+    m_scene(0),
+    m_enabled(true)
 {
     Construct(prop);
 }
@@ -32,7 +33,8 @@ NLObject::NLObject(NLScene *scene, QObject *parent) :
     m_type(NLObject::Type_General),
     m_inited(false),
     m_container(0),
-    m_scene(scene)
+    m_scene(scene),
+    m_enabled(true)
 {
     Construct();
 }
@@ -42,7 +44,8 @@ NLObject::NLObject(NLScene *scene, const NLPropperties &prop, QObject *parent) :
     m_type(NLObject::Type_General),
     m_inited(false),
     m_container(0),
-    m_scene(scene)
+    m_scene(scene),
+    m_enabled(true)
 {
     Construct(prop);
 }

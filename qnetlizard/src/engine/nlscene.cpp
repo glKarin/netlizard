@@ -3,11 +3,15 @@
 #include <QTimer>
 #include <QDebug>
 #include <QDateTime>
+#include <QWaitCondition>
+#include <QMutex>
 
 #include <QMouseEvent>
 
 #include "nlscenecamera.h"
 #include "qdef.h"
+
+#define LOOP_INTERVAL 10 // 0
 
 inline void printfgl()
 {
@@ -28,10 +32,14 @@ NLScene::NLScene(QWidget *parent) :
     m_currentCamera(0),
     m_cursorVisible(true),
     m_grabMouse(false),
-    m_fps(0)
+    m_fps(0),
+    m_updateGLInterval(0),
+    m_updateGLLastTime(0),
+    m_currentFps(0)
 {
     setObjectName("NLScene");
     m_actors.SetScene(this);
+    m_actors.setObjectName("SceneRootActorContainer");
     m_clearColor = QColor::fromRgbF(1.0, 1.0, 1.0);
 }
 
@@ -57,8 +65,6 @@ void NLScene::Init()
 
 void NLScene::initializeGL()
 {
-    QGLWidget::makeCurrent();
-
     printfgl();
 
     //glClearColor(1, 1, 1, 1);
@@ -215,7 +221,7 @@ void NLScene::RunLoop(bool b)
 void NLScene::ExecLoop()
 {
     if(m_loop)
-        QTimer::singleShot(0, this, SLOT(IdleTimer_slot()));
+        QTimer::singleShot(LOOP_INTERVAL, this, SLOT(IdleTimer_slot()));
 }
 
 void NLScene::IdleTimer_slot()
@@ -224,8 +230,24 @@ void NLScene::IdleTimer_slot()
     qint64 delta = ts - m_lastTime;
     m_delta = delta / 1000.0f;
     m_lastTime = ts;
-    updateGL();
     Update(m_delta);
+
+    if(m_updateGLInterval > 0)
+    {
+        qint64 fd = m_lastTime - m_updateGLLastTime;
+        if(fd >= m_updateGLInterval)
+        {
+            m_updateGLLastTime = m_lastTime;
+            updateGL();
+            UpdateCurrentFPS(fd);
+        }
+    }
+    else
+    {
+        updateGL();
+        UpdateCurrentFPS(ts);
+    }
+
     ExecLoop();
 }
 
@@ -347,6 +369,23 @@ void NLScene::SetFPS(float fps)
     if(m_fps != fps)
     {
         m_fps = fps;
-        // TODO
+        if(m_fps <= 0)
+            m_updateGLInterval = 0;
+        else
+        {
+            m_updateGLInterval = qRound(1000.0 / (float)m_fps);
+            qDebug() << "SetFPS" << m_fps << "UpdateGLInterval" << m_updateGLInterval;
+        }
     }
+}
+
+float NLScene::CurrentFPS() const
+{
+    return m_currentFps;
+}
+
+void NLScene::UpdateCurrentFPS(qint64 delta)
+{
+    m_currentFps = qRound(1000.0 / (float)delta);
+    //qDebug() << m_currentFps;
 }

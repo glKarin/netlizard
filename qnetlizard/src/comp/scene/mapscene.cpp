@@ -12,6 +12,7 @@
 #include "nlsceneorthocamera.h"
 #include "nlsceneperspectivecamera.h"
 #include "netlizardtexturerenderer.h"
+#include "settings.h"
 
 MapScene::MapScene(QWidget *parent)
     : NLScene(parent),
@@ -25,6 +26,7 @@ MapScene::MapScene(QWidget *parent)
       m_skyCamera(0),
       m_sky3DCamera(0)
 {
+    SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
     setObjectName("MapScene");
     NLActor *actor;
 
