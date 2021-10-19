@@ -26,4 +26,9 @@
 }
 #define SINGLE_INSTANCE_OBJ(C) C::Instance()
 
+#define _B(x) "<b>"x"</b>"
+#define _I(x) "<i>"x"</i>"
+#define _F(x, color) "<font color=\""color"\">"x"</font>"
+#define _S(x, size) "<font size=\""size"\">"x"</font>"
+
 #endif // _KARIN_QDEF_H

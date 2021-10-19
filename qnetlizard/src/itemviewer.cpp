@@ -26,6 +26,7 @@ static const QPair<int, QString> Types[] = {
     QPair<int, QString>(NL_SHADOW_OF_EGYPT_3D, "3D Shadows of Egypt"),
     QPair<int, QString>(NL_CLONE_3D, "3D Clone"),
     QPair<int, QString>(NL_CONTR_TERRORISM_3D_EPISODE_3, "3D Contr Terrorism : Episode-3"),
+    QPair<int, QString>(NL_RACING_EVOLUTION_3D, "3D Racing Evolution"),
 };
 
 ItemViewer::ItemViewer(QWidget *parent) :
@@ -55,7 +56,7 @@ void ItemViewer::Init()
     QHBoxLayout *toolLayout = ToolLayout();
     m_indexSpinBox = new QSpinBox;
 
-    for(int i = 0; i < 6; i++)
+    for(int i = 0; i < 7; i++)
     {
         const QPair<int, QString> &p = Types[i];
         m_gameComboBox->addItem(p.second, QVariant(p.first));
@@ -65,13 +66,13 @@ void ItemViewer::Init()
     m_indexSpinBox->setValue(-1);
     m_openObjButton = new QPushButton;
     connect(m_openObjButton, SIGNAL(clicked()), this, SLOT(OpenObjFileChooser()));
-    m_openObjButton->setText("obj file");
+    m_openObjButton->setText("obj/o/car file");
     toolLayout->addWidget(m_openObjButton);
     toolLayout->addStretch();
 
     m_openResourcePathButton = new QPushButton;
     connect(m_openResourcePathButton, SIGNAL(clicked()), this, SLOT(OpenResourceDirChooser()));
-    m_openResourcePathButton->setText("resource path");
+    m_openResourcePathButton->setText("Resource path");
     toolLayout->addWidget(m_openResourcePathButton);
     toolLayout->addStretch();
 
@@ -199,6 +200,7 @@ bool ItemViewer::OpenFile()
     case NL_SHADOW_OF_EGYPT_3D:
     //case NL_CLONE_3D:
     case NL_CONTR_TERRORISM_3D_EPISODE_3:
+    case NL_RACING_EVOLUTION_3D:
         res = m_itemWidget->LoadFile(m_objPath, m_resourceDirPath, game, index);
     break;
     default:

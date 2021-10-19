@@ -64,13 +64,13 @@ void MapViewer::Init()
     m_levelSpinBox->setValue(-1);
     m_openLvlButton = new QPushButton;
     connect(m_openLvlButton, SIGNAL(clicked()), this, SLOT(OpenFileChooser()));
-    m_openLvlButton->setText("lvl/dm file");
+    m_openLvlButton->setText("lvl/dm/track file");
     toolLayout->addWidget(m_openLvlButton);
     toolLayout->addStretch();
 
     m_openResourcePathButton = new QPushButton;
     connect(m_openResourcePathButton, SIGNAL(clicked()), this, SLOT(OpenResourceDirChooser()));
-    m_openResourcePathButton->setText("resource path");
+    m_openResourcePathButton->setText("Resource path");
     toolLayout->addWidget(m_openResourcePathButton);
     toolLayout->addStretch();
 

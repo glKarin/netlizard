@@ -56,6 +56,7 @@ void SettingDialog::Init()
     m_content->setCheckable(false);
     area->setWidget(m_content);
 
+    tree->setHeaderLabel("Setting items");
     tree->setMaximumWidth(128);
     tree->setMinimumWidth(96);
     contentLayout->addWidget(tree);

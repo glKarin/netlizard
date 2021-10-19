@@ -171,173 +171,33 @@ GLboolean NETLizard_ReadGLRE3DMapModelFile(const char *name, const char *resourc
     return GL_TRUE;
 }
 
-#if 0
-GLvoid NETLizard_RenderGLRE3DModel(const GL_RE3D_Model *model)
+GLboolean NETLizard_ReadGLRE3DCarModelFile(const char *car_file, const char *tex_file, const char *resource_path, GL_NETLizard_3D_Model *model)
 {
-	if(!model)
-		return;
+    if(!car_file || !tex_file)
+        return GL_FALSE;
+    NETLizard_RE3D_Model m;
+    if(!nlReadRE3DMeshFile(car_file, &m))
+        return GL_FALSE;
 
-	if(!model->meshes)
-		return;
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    int i;
+    for(i = 0; i < m.texes.count; i++)
+        free(m.texes.data[i]);
+    free(m.texes.data);
+    m.texes.count = 1;
+    m.texes.data = calloc(1, sizeof(char *));
+    m.texes.data[0] = strdup(tex_file);
 
-	unsigned int i;
-	for(i = 0; i < model->count; i++)
-	{
-		GL_RE3D_Mesh *m = model->meshes + i;
-		if(m->tex_index != -1 && model->texes[m->tex_index])
-			oglBindTexture(GL_TEXTURE_2D, model->texes[m->tex_index]->texid);
-		glBindBuffer(GL_ARRAY_BUFFER, m->buffers[texcoord_buffer_type]);
-		glTexCoordPointer(2, GL_FLOAT, 0, NULL);
-		glBindBuffer(GL_ARRAY_BUFFER, m->buffers[vertex_buffer_type]);
-		glVertexPointer(3, GL_FLOAT, 0, NULL);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffers[index_buffer_type]);
-		glPushMatrix();
-		{
-			glTranslatef(m->translations[0], m->translations[1], m->translations[2]);
-			unsigned int k;
-			int l = 0;
-			for(k = 0; k < m->primitive; k++)
-			{
-				GLuint s = m->strips[k];
-                glDrawElements(GL_TRIANGLE_STRIP, s, GL_UNSIGNED_SHORT, (GLuint *)NULL + l);
-				l += s;
-			}
+    NETLizard_MakeGLRE3DModel(&m, resource_path, model);
+    delete_NETLizard_RE3D_Model(&m);
+    return GL_TRUE;
 
-		}
-		glPopMatrix();
-		oglBindTexture(GL_TEXTURE_2D, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+//    RE3D_Model *m = nlReadRE3DMeshFile(car_file);
+//    if(!m)
+//        return NULL;
+//    GL_RE3D_Model *model = NETLizard_MakeGL2RE3DModel(m);
+//    model->texes[0] = new_texture_from_nl_file(tex_file);
+//    delete_RE3D_Model(m);
+//    free(m);
+//    return model;
 }
-
-GL_RE3D_Model * NETLizard_ReadGLRE3DModelFile(const char *name)
-{
-	if(!name)
-		return NULL;
-	RE3D_Model *m = nlReadRE3DMeshFile(name);
-	if(!m)
-		return NULL;
-	GL_RE3D_Model *model = NETLizard_MakeGL2RE3DModel(m);
-	delete_RE3D_Model(m);
-	free(m);
-	return model;
-}
-
-GL_RE3D_Model * NETLizard_ReadGLRE3DCarModelFile(const char *car_file, const char *tex_file)
-{
-	if(!car_file || !tex_file)
-		return NULL;
-	RE3D_Model *m = nlReadRE3DMeshFile(car_file);
-	if(!m)
-		return NULL;
-	GL_RE3D_Model *model = NETLizard_MakeGL2RE3DModel(m);
-	model->texes[0] = new_texture_from_nl_file(tex_file);
-	delete_RE3D_Model(m);
-	free(m);
-	return model;
-}
-
-GLvoid nlCastAABB(array *vertex, GLfloat *min_x_r, GLfloat *min_y_r, GLfloat *min_z_r, GLfloat *max_x_r, GLfloat *max_y_r, GLfloat *max_z_r)
-{
-	if(!vertex)
-		return;
-	GLfloat min_x = 0.0f;
-	GLfloat min_y = 0.0f;
-	GLfloat min_z = 0.0f;
-	GLfloat max_x = 0.0f;
-	GLfloat max_y = 0.0f;
-	GLfloat max_z = 0.0f;
-
-	if(vertex->array)
-	{
-		int i;
-		for(i = 0; i < vertex->length; i += 3)
-		{
-			GLfloat x = ((float *)(vertex->array))[i];
-			GLfloat y = ((float *)(vertex->array))[i + 1];
-			GLfloat z = ((float *)(vertex->array))[i + 2];
-			if(i == 0)
-			{
-				min_x = x;
-				min_y = y;
-				min_z = z;
-				max_x = x;
-				max_y = y;
-				max_z = z;
-			}
-			else
-			{
-				if(x < min_x) min_x = x;
-				if(y < min_y) min_y = y;
-				if(z < min_z) min_z = z;
-				if(x > max_x) max_x = x;
-				if(y > max_y) max_y = y;
-				if(z > max_z) max_z = z;
-			}
-		}
-	}
-	if(min_x_r) *min_x_r = min_x;
-	if(min_y_r) *min_y_r = min_y;
-	if(min_z_r) *min_z_r = min_z;
-	if(max_x_r) *max_x_r = max_x;
-	if(max_y_r) *max_y_r = max_y;
-	if(max_z_r) *max_z_r = max_z;
-}
-
-GLvoid NETLizard_RenderGLRE3DModelScene(const GL_RE3D_Model *model, GLint *scene, GLuint count)
-{
-	if(!model)
-		return;
-	if(!scene || count == 0)
-	{
-		NETLizard_RenderGLRE3DModel(model);
-		return;
-	}
-
-	if(!model->meshes)
-		return;
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	unsigned int i;
-	for(i = 0; i < count; i++)
-	{
-		int c = model->count;
-		if(scene[i] >= 0 && scene[i] < c)
-		{
-			GL_RE3D_Mesh *m = model->meshes + scene[i];
-			if(m->tex_index != -1 && model->texes[m->tex_index])
-				oglBindTexture(GL_TEXTURE_2D, model->texes[m->tex_index]->texid);
-			glBindBuffer(GL_ARRAY_BUFFER, m->buffers[texcoord_buffer_type]);
-			glTexCoordPointer(2, GL_FLOAT, 0, NULL);
-			glBindBuffer(GL_ARRAY_BUFFER, m->buffers[vertex_buffer_type]);
-			glVertexPointer(3, GL_FLOAT, 0, NULL);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffers[index_buffer_type]);
-			glPushMatrix();
-			{
-				glTranslatef(m->translations[0], m->translations[1], m->translations[2]);
-				unsigned int k;
-				int l = 0;
-				for(k = 0; k < m->primitive; k++)
-				{
-					GLuint s = m->strips[k];
-					oglDrawElements(GL_TRIANGLE_STRIP, s, GL_UNSIGNED_SHORT, (GLuint *)NULL + l);
-					l += s;
-				}
-
-			}
-			glPopMatrix();
-			oglBindTexture(GL_TEXTURE_2D, 0);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		}
-	}
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-}
-#endif

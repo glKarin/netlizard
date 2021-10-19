@@ -2,10 +2,13 @@
 
 #include <QDebug>
 #include <QByteArray>
+#include <QFileInfo>
 
 #include "qdef.h"
 #include "simplecameraactor.h"
 #include "netlizardmapmodelrenderer.h"
+#include "simplecontrolcomponent.h"
+#include "nlsceneorthocamera.h"
 
 ItemScene::ItemScene(QWidget *parent)
     : NLScene(parent),
@@ -86,6 +89,26 @@ bool ItemScene::LoadFile(const QString &file, const QString &resourcePath, int g
     case NL_CONTR_TERRORISM_3D_EPISODE_3:
         b = NETLizard_ReadGLCT3DEp3ItemModelFile(path, index, resc_path, m_model);
         break;
+    case NL_RACING_EVOLUTION_3D:
+    {
+        QFileInfo info(path);
+        QRegExp regexp("car(\\d+)");
+        int carIndex = index;
+        if(carIndex == -1)
+        {
+            int pos = regexp.indexIn(info.fileName());
+            if(pos != -1)
+            {
+                carIndex = regexp.cap(1).toInt();
+            }
+        }
+        QString texPath = QString("car%1_tex.png").arg(carIndex);
+        qDebug() << "Car tex: " << texPath;
+        QByteArray ba3 = texPath.toLocal8Bit();
+        const char *tex_path = ba3.data();
+        b = NETLizard_ReadGLRE3DCarModelFile(path, tex_path, resc_path, m_model);
+    }
+        break;
     default:
         qDebug() << "Unsupport game";
         break;
@@ -99,6 +122,21 @@ bool ItemScene::LoadFile(const QString &file, const QString &resourcePath, int g
     }
 
     m_renderer->SetModel(m_model);
+
+    if(game == NL_RACING_EVOLUTION_3D)
+    {
+        CurrentCamera()->SetZIsUp(false);
+        SimpleCameraActor *cameraActor = GetActor_T<SimpleCameraActor>(0);
+        SimpleControlComponent *control = cameraActor->GetComponent_T<SimpleControlComponent>(1);
+        control->SetMoveSens(control->MoveSens() / 50);
+    }
+    else
+    {
+        CurrentCamera()->SetZIsUp(true);
+        vector3_s startPos = VECTOR3(0, 150, 1000);
+        SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
+        camera->SetPosition(startPos);
+    }
 
     GrabMouseCursor(true);
 
@@ -115,12 +153,6 @@ void ItemScene::Reset()
     }
 
     NLScene::Reset();
-
-    vector3_s startPos = VECTOR3(0, 150, 1000);
-    vector3_s startRotate = VECTOR3(0, 0, 0);
-    SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
-    camera->SetPosition(startPos);
-    camera->SetRotation(startRotate);
 }
 
 bool ItemScene::IsValid() const

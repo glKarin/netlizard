@@ -181,6 +181,8 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     }
     else
     {
+        CurrentCamera()->SetZIsUp(true);
+        m_sky3DCamera->SetZIsUp(true);
         NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]);
         NLVector3 startRotate = VECTOR3(m_model->start_angle[0] + 90.0, m_model->start_angle[1] - 180.0, 0);
         // NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[1], m_model->start_pos[2]); // z_is_up
@@ -189,9 +191,6 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
         SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
         camera->SetPosition(startPos);
         camera->SetRotation(startRotate);
-
-        CurrentCamera()->SetZIsUp(true);
-        m_sky3DCamera->SetZIsUp(true);
         // Egypt 3D level 0(main menu) 8 9 10 12 has a cube sky model
         if(game == NL_SHADOW_OF_EGYPT_3D)
         {
