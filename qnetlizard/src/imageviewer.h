@@ -35,7 +35,7 @@ private Q_SLOTS:
     void OnAlignCurrentIndexChanged(int index);
 
 private:
-    ImageScene *m_imageWidget;
+    ImageScene *m_imageScene;
     QComboBox *m_typeComboBox;
     QFileDialog *m_fileChooser;
     QSpinBox *m_indexSpinBox;

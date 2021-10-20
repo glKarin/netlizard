@@ -39,7 +39,7 @@ static const QPair<Qt::Alignment, QString> Aligns[] = {
 
 ImageViewer::ImageViewer(QWidget *parent) :
     BaseViewer(parent),
-    m_imageWidget(0),
+    m_imageScene(0),
     m_typeComboBox(0),
     m_fileChooser(0),
     m_indexSpinBox(0),
@@ -58,7 +58,7 @@ void ImageViewer::Init()
 {
     QPushButton *button;
     m_typeComboBox = new QComboBox;
-    m_imageWidget = new ImageScene;
+    m_imageScene = new ImageScene;
     QHBoxLayout *toolLayout = ToolLayout();
     m_indexSpinBox = new QSpinBox;
     m_alignComboBox = new QComboBox;
@@ -69,7 +69,7 @@ void ImageViewer::Init()
         m_typeComboBox->addItem(p.second, QVariant(p.first));
     }
     m_typeComboBox->setMaximumWidth(180);
-    Qt::Alignment align = m_imageWidget->Alignment();
+    Qt::Alignment align = m_imageScene->Alignment();
     for(int i = 0; i < 6; i++)
     {
         const QPair<Qt::Alignment, QString> &p = Aligns[i];
@@ -101,7 +101,7 @@ void ImageViewer::Init()
     connect(m_typeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));
     connect(m_alignComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnAlignCurrentIndexChanged(int)));
 
-    SetCentralWidget(m_imageWidget);
+    SetCentralWidget(m_imageScene);
     SetTitle("NETLizard image/texture resource viewer");
 }
 
@@ -119,7 +119,7 @@ void ImageViewer::OpenFileChooser()
 
 void ImageViewer::OpenSaveChooser()
 {
-    if(!m_imageWidget->IsValid())
+    if(!m_imageScene->IsValid())
         return;
 
     if(!m_saveChooser)
@@ -130,7 +130,7 @@ void ImageViewer::OpenSaveChooser()
         connect(m_saveChooser, SIGNAL(fileSelected(const QString &)), this, SLOT(SaveData(const QString &)));
     }
 
-    QString ext = m_imageWidget->GetSaveTextureSuffix();
+    QString ext = m_imageScene->GetSaveTextureSuffix();
     if(!ext.isEmpty())
     {
         m_saveChooser->setNameFilter("*." + ext);
@@ -148,7 +148,7 @@ void ImageViewer::OnTypeCurrentIndexChanged(int index)
 void ImageViewer::OnAlignCurrentIndexChanged(int index)
 {
     Qt::Alignment align = Aligns[index].first;
-    m_imageWidget->SetAlignment(align);
+    m_imageScene->SetAlignment(align);
 }
 
 bool ImageViewer::OpenFile(const QString &file)
@@ -156,14 +156,14 @@ bool ImageViewer::OpenFile(const QString &file)
     Reset();
     int selectedIndex = m_typeComboBox->currentIndex();
     int type = Types[selectedIndex].first;
-    bool res = m_imageWidget->LoadFile(file, type, m_indexSpinBox->value());
+    bool res = m_imageScene->LoadFile(file, type, m_indexSpinBox->value());
     if(!res)
     {
         QMessageBox::warning(this, "Error", "Load image/texture file fail!");
         return false;
     }
     m_saveButton->setEnabled(true);
-    const texture_s *tex = m_imageWidget->Texture();
+    const texture_s *tex = m_imageScene->Texture();
     SetTitleLabel(QString("%1: width %2, height %3, format %4").arg(Types[selectedIndex].second).arg(tex->width).arg(tex->height).arg(tex->format == GL_RGB ? "RGB" : "RGBA"));
 
     return true;
@@ -173,18 +173,18 @@ void ImageViewer::Reset()
 {
     BaseViewer::Reset();
     m_saveButton->setEnabled(false);
-    m_imageWidget->Reset();
+    m_imageScene->Reset();
 }
 
 bool ImageViewer::SaveData(const QString &file)
 {
-    if(!m_imageWidget->IsValid())
+    if(!m_imageScene->IsValid())
     {
         QMessageBox::warning(this, "Error", "No data!");
         return false;
     }
 
-    bool res = m_imageWidget->SaveData(file);
+    bool res = m_imageScene->SaveData(file);
     if(res)
         QMessageBox::information(this, "Success", "File path is " + file);
     else

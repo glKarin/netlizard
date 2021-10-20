@@ -12,6 +12,7 @@ public:
     virtual ~NETLizardItemModelRenderer();
     GL_NETLizard_3D_Mesh * Model();
     void SetModel(GL_NETLizard_3D_Mesh *model, texture_s **tex);
+    void SetIndex(int index);
 
 protected:
     virtual void InitRender();
@@ -24,6 +25,7 @@ private:
 private:
     GL_NETLizard_3D_Mesh *m_itemMesh;
     texture_s **m_tex;
+    int m_index;
 
     Q_DISABLE_COPY(NETLizardItemModelRenderer)
     

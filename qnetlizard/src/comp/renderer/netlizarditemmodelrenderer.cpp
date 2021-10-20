@@ -7,7 +7,8 @@
 NETLizardItemModelRenderer::NETLizardItemModelRenderer(NLActor *actor) :
     NLRenderable(actor),
     m_itemMesh(0),
-    m_tex(0)
+    m_tex(0),
+    m_index(0)
 {
 }
 
@@ -25,18 +26,15 @@ void NETLizardItemModelRenderer::InitRender()
 
 void NETLizardItemModelRenderer::Render()
 {
+    if(!m_index < 0)
+        return;
     if(!m_itemMesh || !m_tex)
         return;
     if(!m_itemMesh->materials)
         return;
     glPushMatrix();
     {
-
-        glDepthMask(GL_FALSE);
-        glDisable(GL_DEPTH_TEST);
-        NETLizard_RenderGL3DMesh(m_itemMesh, m_tex);
-        glDepthMask(GL_TRUE);
-        glEnable(GL_DEPTH_TEST);
+        NETLizard_RenderGL3DMesh(m_itemMesh + m_index, m_tex);
     }
     glPopMatrix();
 }
@@ -45,6 +43,7 @@ void NETLizardItemModelRenderer::DeinitRender()
 {
     m_itemMesh = 0;
     m_tex = 0;
+    m_index = 0;
 }
 
 GL_NETLizard_3D_Mesh * NETLizardItemModelRenderer::Model()
@@ -56,4 +55,10 @@ void NETLizardItemModelRenderer::SetModel(GL_NETLizard_3D_Mesh *model, texture_s
 {
     m_itemMesh = model;
     m_tex = tex;
+}
+
+void NETLizardItemModelRenderer::SetIndex(int index)
+{
+    if(m_index != index)
+        m_index = index;
 }

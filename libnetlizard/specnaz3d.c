@@ -225,12 +225,12 @@ NLboolean nlLoadSpecnaz3DModelData(const char* data, NLsizei res, NLint paramInt
 		}
 
         // box
-		mesh->ortho[0] = obj->int__f__aabb >> 16;
-		mesh->ortho[1] = obj->int__g__aabb >> 16;
-		mesh->ortho[2] = obj->int__h__aabb >> 16;
-		mesh->ortho[3] = obj->int__i__aabb >> 16;
-		mesh->ortho[4] = obj->int__j__aabb >> 16;
-		mesh->ortho[5] = obj->int__k__aabb >> 16;
+        mesh->box.max[0] = obj->int__f__aabb >> 16;
+        mesh->box.max[1] = obj->int__g__aabb >> 16;
+        mesh->box.max[2] = obj->int__h__aabb >> 16;
+        mesh->box.min[0] = obj->int__i__aabb >> 16;
+        mesh->box.min[1] = obj->int__j__aabb >> 16;
+        mesh->box.min[2] = obj->int__k__aabb >> 16;
 		mesh->item_index_range[0] = obj->int__q__begin;
 		mesh->item_index_range[1] = obj->int__e__end;
 
@@ -271,11 +271,11 @@ NLboolean nlLoadSpecnaz3DModelData(const char* data, NLsizei res, NLint paramInt
 			}
 
             // position/rotation
-			mesh->pos[0] = obj->int__m__translation >> 16;
-			mesh->pos[1] = obj->int__n__translation >> 16;
-			mesh->pos[2] = obj->int__o__translation >> 16;
-			mesh->angle[0] = obj->int__p__rotation;
-			mesh->angle[1] = obj->int__q__rotation;
+            mesh->position[0] = obj->int__m__translation >> 16;
+            mesh->position[1] = obj->int__n__translation >> 16;
+            mesh->position[2] = obj->int__o__translation >> 16;
+            mesh->rotation[0] = obj->int__p__rotation;
+            mesh->rotation[1] = obj->int__q__rotation;
 			mesh->obj_index = obj->byte__t__obj;
 
             // vertex
@@ -321,12 +321,12 @@ NLboolean nlLoadSpecnaz3DModelData(const char* data, NLsizei res, NLint paramInt
 			}
 
             // box
-			mesh->item_mesh.ortho[0] = obj->int__f__aabb >> 16;
-			mesh->item_mesh.ortho[1] = obj->int__g__aabb >> 16;
-			mesh->item_mesh.ortho[2] = obj->int__h__aabb >> 16;
-			mesh->item_mesh.ortho[3] = obj->int__i__aabb >> 16;
-			mesh->item_mesh.ortho[4] = obj->int__j__aabb >> 16;
-			mesh->item_mesh.ortho[5] = obj->int__k__aabb >> 16;
+            mesh->item_mesh.box.max[0] = obj->int__f__aabb >> 16;
+            mesh->item_mesh.box.max[1] = obj->int__g__aabb >> 16;
+            mesh->item_mesh.box.max[2] = obj->int__h__aabb >> 16;
+            mesh->item_mesh.box.min[0] = obj->int__i__aabb >> 16;
+            mesh->item_mesh.box.min[1] = obj->int__j__aabb >> 16;
+            mesh->item_mesh.box.min[2] = obj->int__k__aabb >> 16;
 		}
 	}
 
@@ -396,11 +396,11 @@ NLboolean nlLoadSpecnaz3DItemModelData(const char* data, NLsizei res, NLint inde
     mesh->item_mesh.vertex.count = 0;
     mesh->item_mesh.primitive.data = NULL;
     mesh->item_mesh.primitive.count = 0;
-	mesh->pos[0] = 0;
-	mesh->pos[1] = 0;
-	mesh->pos[2] = 0;
-	mesh->angle[0] = 0;
-	mesh->angle[1] = 0;
+    mesh->position[0] = 0;
+    mesh->position[1] = 0;
+    mesh->position[2] = 0;
+    mesh->rotation[0] = 0;
+    mesh->rotation[1] = 0;
 	mesh->obj_index = index;
     if(ARRAY_DATA(obj.int_array_6__a__vertex) && ARRAY_DATA(obj.int_array_16__b__primitive))
 	{
@@ -447,12 +447,12 @@ NLboolean nlLoadSpecnaz3DItemModelData(const char* data, NLsizei res, NLint inde
 		}
 
         // box
-		mesh->item_mesh.ortho[0] = obj.int__f__aabb >> 16;
-		mesh->item_mesh.ortho[1] = obj.int__g__aabb >> 16;
-		mesh->item_mesh.ortho[2] = obj.int__h__aabb >> 16;
-		mesh->item_mesh.ortho[3] = obj.int__i__aabb >> 16;
-		mesh->item_mesh.ortho[4] = obj.int__j__aabb >> 16;
-		mesh->item_mesh.ortho[5] = obj.int__k__aabb >> 16;
+        mesh->item_mesh.box.max[0] = obj.int__f__aabb >> 16;
+        mesh->item_mesh.box.max[1] = obj.int__g__aabb >> 16;
+        mesh->item_mesh.box.max[2] = obj.int__h__aabb >> 16;
+        mesh->item_mesh.box.min[0] = obj.int__i__aabb >> 16;
+        mesh->item_mesh.box.min[1] = obj.int__j__aabb >> 16;
+        mesh->item_mesh.box.min[2] = obj.int__k__aabb >> 16;
 	}
 
     // free

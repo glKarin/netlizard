@@ -20,14 +20,27 @@ HEADERS += \
     src/qdef.h \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
-    src/misc/settings.h
+    src/misc/settings.h \
+    lib/bound.h \
+    lib/plane.h \
+    lib/triangle.h \
+    lib/line.h \
+    src/comp/scene/rolescene.h \
+    src/roleviewer.h \
+    src/comp/renderer/netlizardanimationmodelrenderer.h
 
 SOURCES += \
     main.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
-    src/gl/nl_gl_re3d.c
+    lib/bound.c \
+    lib/plane.c \
+    lib/triangle.c \
+    lib/line.c \
+    src/comp/scene/rolescene.cpp \
+    src/roleviewer.cpp \
+    src/comp/renderer/netlizardanimationmodelrenderer.cpp
 
 # Widget
 HEADERS += \
@@ -170,7 +183,8 @@ SOURCES += \
     src/gl/nl_font.c \
     src/gl/nl_gl_reader.c \
     src/gl/nl_gl_render.c \
-    src/gl/nl_gl.c
+    src/gl/nl_gl.c \
+    src/gl/nl_gl_re3d.c
 
 # Mesa GL math
 DEPENDPATH += ./lib/mesa_math

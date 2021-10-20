@@ -23,6 +23,7 @@ extern "C" {
 #define NL_FALSE 0
 
 /* Basic type define */
+typedef void NLvoid;
 typedef int8_t NLbyte;
 typedef int8_t NLchar;
 typedef uint8_t NLuchar;
@@ -37,6 +38,7 @@ typedef double NLdouble;
 typedef uint8_t NLboolean;
 typedef uint32_t NLsizei;
 typedef NLsizei NLsize;
+typedef void * NLdata;
 
 //typedef char byte; // unsigned
 
@@ -138,17 +140,17 @@ typedef enum NETLizard_3D_Item_Type_e
 /* NETLizard 3D game character animation category */
 typedef enum NETLizard_3D_Animation_Type_e
 {
-    Animation_Idle_Type = 0,
-    Animation_Walk_Type = 1,
-    Animation_Run_Type = 2,
-    Animation_Fighting1_Type = 3,
-    Animation_Fighting2_Type = 4,
-    Animation_Attack1_Type = 5,
-    Animation_Attack2_Type = 6,
-    Animation_Dead1_Type = 7,
-    Animation_Dead2_Type = 8,
-    Animation_Total_Type = 9,
-    Animation_Unknow_Type
+    NL_FRAME_ANIMATION_IDLE = 0,
+    NL_FRAME_ANIMATION_WALK = 1,
+    NL_FRAME_ANIMATION_RUN = 2,
+    NL_FRAME_ANIMATION_FIGHTING_1 = 3,
+    NL_FRAME_ANIMATION_FIGHTING_2 = 4,
+    NL_FRAME_ANIMATION_ATTACK_1 = 5,
+    NL_FRAME_ANIMATION_ATTACK_2 = 6,
+    NL_FRAME_ANIMATION_DEAD_1 = 7,
+    NL_FRAME_ANIMATION_DEAD_2 = 8,
+    NL_FRAME_ANIMATION_TOTAL = 9,
+    NL_FRAME_ANIMATION_UNKNOWN = -1
 } NETLizard_3D_Animation_Type;
 
 /* NETLizard 3D model type */
@@ -201,7 +203,10 @@ typedef struct NETLizard_3D_Primitive_s
 /* NETLizard 3D model mesh */
 typedef struct NETLizard_3D_Mesh_s
 {
-    NLint ortho[6]; // AABB box with min-max
+    struct {
+        NLint min[3];
+        NLint max[3];
+    } box; // AABB box with min-max
     struct {
         NLint *data;
         NLuint count;
@@ -224,8 +229,8 @@ typedef struct NETLizard_3D_Mesh_s
 /* NETLizard 3D item model mesh */
 typedef struct NETLizard_3D_Item_Mesh_s
 {
-    NLint pos[3];
-    NLint angle[2];
+    NLint position[3];
+    NLint rotation[2];
     NLuint obj_index; // item's index
     NETLizard_3D_Mesh item_mesh;
 } NETLizard_3D_Item_Mesh;
@@ -252,6 +257,7 @@ typedef struct NETLizard_3D_Model_s
     } bsp_data; // If type is 3D map, it means BSP??? data
 } NETLizard_3D_Model;
 
+/* NETLizard Racing Evolution 3D model mesh */
 typedef struct NETLizard_RE3D_Mesh_s
 {
     NLuint vertex_count;
@@ -276,6 +282,7 @@ typedef struct NETLizard_RE3D_Mesh_s
     NLint tex_index;
 } NETLizard_RE3D_Mesh;
 
+/* NETLizard Racing Evolution 3D model */
 typedef struct NETLizard_RE3D_Model_s
 {
     NETLizard_Game game;
@@ -289,6 +296,15 @@ typedef struct NETLizard_RE3D_Model_s
         NLuint count;
     } texes;
 } NETLizard_RE3D_Model;
+
+/* NETLizard 3D model frame animation */
+typedef struct _NETLizard_3D_Frame_Animation
+{
+    NETLizard_3D_Animation_Type type;
+    NLint begin_frame;
+    NLint end_frame;
+    NLuint count;
+} NETLizard_3D_Frame_Animation;
 
 /* NETLizard 3D spirit */
 typedef struct NETLizard_Spirit_s
@@ -405,7 +421,7 @@ void delete_NETLizard_3D_Model(NETLizard_3D_Model *model); // free 3D model
 const char * nlGet3DModelAnimationName(NETLizard_3D_Animation_Type anim); // get 3D Egypt/3D Clone player character animation name
 NLboolean nlCheck3DGameLevelIsAvailable(NETLizard_Game game, int level); // check 3D game level is availabel
 int nlGetItemType(NETLizard_Game game, int index); // get 3D game item type
-int nlGet3DModelAnimationRange(NETLizard_Game game, int index, int animation[]); // get 3D Egypt/3D Clone player character animation index start and end
+const NETLizard_3D_Frame_Animation * nlGet3DModelFrameAnimationConfig(NETLizard_Game game, NLuint index); // get 3D Egypt/3D Clone player character animation index start and end
 const char * nlGet3DGameLevelName(NETLizard_Game game, NLuint level);
 NLboolean nlGet3DGameLevelRange(NETLizard_Game game, NLint *start, NLint *count);
 const char * nlGet3DGameName(NETLizard_Game game);

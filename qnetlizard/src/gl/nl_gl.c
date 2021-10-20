@@ -8,65 +8,10 @@
 #include "netlizard_3d.h"
 #include "lib/vector3.h"
 #include "nl_texture.h"
+#include "lib/triangle.h"
+#include "lib/plane.h"
+#include "lib/bound.h"
 
-typedef struct _plane_t
-{
-    vector3_s position;
-    vector3_s normal;
-} plane_t;
-
-typedef struct _bound_s
-{
-    vector3_s min_position;
-    vector3_s max_position;
-} bound_s;
-
-void Math3D_GetAABBPlanes(const bound_s *ab, plane_t *r)
-{
-#define COPY_NORMAL(n, xx, yy, zz) \
-    { \
-    VECTOR3_X(n) = xx; \
-        VECTOR3_Y(n) = yy; \
-        VECTOR3_Z(n) = zz; \
-    }
-    if(!ab || !r)
-        return;
-    memset(r, 0, sizeof(plane_t) * 6);
-    // bottom
-    r[0].position = ab->min_position;
-    COPY_NORMAL(r[0].normal, 0.0, 0.0, 1.0)
-    // left
-    r[1].position = ab->min_position;
-    COPY_NORMAL(r[1].normal, 1.0, 0.0, 0.0)
-    // front
-    r[2].position = ab->min_position;
-    COPY_NORMAL(r[2].normal, 0.0, 1.0, 0.0)
-    // top
-    r[3].position = ab->max_position;
-    COPY_NORMAL(r[3].normal, 0.0, 0.0, -1.0)
-    // right
-    r[4].position = ab->max_position;
-    COPY_NORMAL(r[4].normal, -1.0, 0.0, 0.0)
-    // back
-    r[5].position = ab->max_position;
-    COPY_NORMAL(r[5].normal, 0.0, -1.0, 0.0)
-#undef COPY_NORMAL
-}
-
-vector3_s Math3D_GetTriangleNormal(const vector3_s *v0, const vector3_s *v1, const vector3_s *v2)
-{
-    vector3_s first;
-    vector3_s second;
-    vector3_subtractv(&first, v1, v0);
-    vector3_subtractv(&second, v2, v0);
-
-    //vector3_s normal = Vector3_CrossVector3(&second, &first); // org
-    vector3_s normal;
-    vector3_crossv(&normal, &first, &second);
-    vector3_normalizev(&normal);
-
-    return normal;
-}
 void delete_GL_NETLizard_3D_Mesh(GL_NETLizard_3D_Mesh *mesh)
 {
 	if(!mesh)
@@ -87,12 +32,10 @@ void delete_GL_NETLizard_3D_Mesh(GL_NETLizard_3D_Mesh *mesh)
 		free(mesh->materials);
 }
 
-void delete_GL_NETLizard_3D_Item_Mesh(GL_NETLizard_3D_Item_Mesh *mesh)
-{
-	if(!mesh)
-		return;
-	delete_GL_NETLizard_3D_Mesh(&mesh->item_mesh);
-}
+//void delete_GL_NETLizard_3D_Item_Mesh(GL_NETLizard_3D_Item_Mesh *mesh)
+//{
+//    delete_GL_NETLizard_3D_Mesh(mesh);
+//}
 
 #if 0
 void delete_GL_NETLizard_3D_Animation_Model(GL_NETLizard_3D_Animation_Model *model)
@@ -132,7 +75,7 @@ void delete_GL_NETLizard_3D_Model(GL_NETLizard_3D_Model *model)
 	{
 		unsigned int i;
 		for(i = 0; i < model->item_count; i++)
-			delete_GL_NETLizard_3D_Item_Mesh(model->item_meshes + i);
+            delete_GL_NETLizard_3D_Mesh(model->item_meshes + i);
 		free(model->item_meshes);
 	}
 	if(model->texes)
@@ -310,11 +253,10 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 
 							vertex[a + 2].position[0] = (GLfloat)mesh_vertex[i2 * 3];
 							vertex[a + 2].position[1] = (GLfloat)mesh_vertex[i2 * 3 + 1];
-							vertex[a + 2].position[2] = (GLfloat)mesh_vertex[i2 * 3 + 2];
-							vector3_s v0 = VECTOR3V(vertex[a].position);
-							vector3_s v1 = VECTOR3V(vertex[a + 1].position);
-							vector3_s v2 = VECTOR3V(vertex[a + 2].position);
-							vector3_s v_normal = Math3D_GetTriangleNormal(&v0, &v1, &v2);
+                            vertex[a + 2].position[2] = (GLfloat)mesh_vertex[i2 * 3 + 2];
+                            vector3_s v_normal;
+                            triangle_s tri = TRIANGLEV(vertex[a].position, vertex[a + 1].position, vertex[a + 2].position);
+                            triangle_cale_normal(&tri, &v_normal);
                             vertex[a].normal[0] = VECTOR3_X(v_normal);
                             vertex[a].normal[1] = VECTOR3_Y(v_normal);
                             vertex[a].normal[2] = VECTOR3_Z(v_normal);
@@ -413,21 +355,21 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 			else
 			{
 				GLuint plane_count = 1;
-				plane_t ps[6];
+                plane_s ps[6];
 				bound_s item_box = {
                     VECTOR3(
-                        (GLfloat)mesh->ortho[3],
-						(GLfloat)mesh->ortho[4],
-						(GLfloat)mesh->ortho[5]
+                        (GLfloat)mesh->box.min[0],
+                        (GLfloat)mesh->box.min[1],
+                        (GLfloat)mesh->box.min[2]
                     ),
                     VECTOR3(
-						(GLfloat)mesh->ortho[0],
-						(GLfloat)mesh->ortho[1],
-						(GLfloat)mesh->ortho[2]
+                        (GLfloat)mesh->box.max[0],
+                        (GLfloat)mesh->box.max[1],
+                        (GLfloat)mesh->box.max[2]
                     )
 				};
                 GL_NETLizard_3D_Plane *planes = calloc(plane_count, sizeof(GL_NETLizard_3D_Plane));
-				Math3D_GetAABBPlanes(&item_box, ps);
+                bound_get_box_plane(&item_box, ps);
 				int o;
 				int q = 0;
 				for(o = 0; o < 6; o++)
@@ -446,12 +388,12 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 				m->plane = planes;
 			}
 
-			m->ortho[0] = (GLfloat)mesh->ortho[0];
-			m->ortho[1] = (GLfloat)mesh->ortho[1];
-			m->ortho[2] = (GLfloat)mesh->ortho[2];
-			m->ortho[3] = (GLfloat)mesh->ortho[3];
-			m->ortho[4] = (GLfloat)mesh->ortho[4];
-			m->ortho[5] = (GLfloat)mesh->ortho[5];
+            m->box.min[0] = (GLfloat)mesh->box.min[0];
+            m->box.min[1] = (GLfloat)mesh->box.min[1];
+            m->box.min[2] = (GLfloat)mesh->box.min[2];
+            m->box.max[0] = (GLfloat)mesh->box.max[0];
+            m->box.max[1] = (GLfloat)mesh->box.max[1];
+            m->box.max[2] = (GLfloat)mesh->box.max[2];
 			m->item_index_range[0] = (GLuint)mesh->item_index_range[0];
 			m->item_index_range[1] = (GLuint)mesh->item_index_range[1];
 
@@ -481,21 +423,21 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 		{
             NETLizard_3D_Item_Mesh *mesh = ((NETLizard_3D_Item_Mesh *)(model->item_data.data)) + i;
 			GL_NETLizard_3D_Item_Mesh *m = item_meshes + i;
-			m->item_mesh.count = 0;
-			m->item_mesh.materials = NULL;
-            m->item_mesh.tex_index = NULL;
-            m->item_mesh.vertex_data.vertex = NULL;
-            m->item_mesh.vertex_data.vertex_count = 0;
-            m->item_mesh.vertex_data.index = NULL;
-            m->item_mesh.vertex_data.index_count = 0;
-			m->item_mesh.plane_count = 0;
-			m->item_mesh.plane = NULL;
+            m->count = 0;
+            m->materials = NULL;
+            m->tex_index = NULL;
+            m->vertex_data.vertex = NULL;
+            m->vertex_data.vertex_count = 0;
+            m->vertex_data.index = NULL;
+            m->vertex_data.index_count = 0;
+            m->plane_count = 0;
+            m->plane = NULL;
 
-			m->pos[0] = (GLfloat)mesh->pos[0];
-			m->pos[1] = (GLfloat)mesh->pos[1];
-			m->pos[2] = (GLfloat)mesh->pos[2];
-			m->angle[0] = (GLfloat)mesh->angle[0];
-			m->angle[1] = (GLfloat)mesh->angle[1];
+            m->position[0] = (GLfloat)mesh->position[0];
+            m->position[1] = (GLfloat)mesh->position[1];
+            m->position[2] = (GLfloat)mesh->position[2];
+            m->rotation[0] = (GLfloat)mesh->rotation[0];
+            m->rotation[1] = (GLfloat)mesh->rotation[1];
 			m->item_type = nlGetItemType(game, mesh->obj_index);
             if(mesh->item_mesh.vertex.count && mesh->item_mesh.primitive.count)
 			{
@@ -525,11 +467,11 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                         tex_count_i++;
                     }
 				}
-                m->item_mesh.count = tex_count_i;
-                m->item_mesh.tex_index = calloc(m->item_mesh.count, sizeof(GLint));
-				for(o = 0; o < (GLint)m->item_mesh.count; o++)
+                m->count = tex_count_i;
+                m->tex_index = calloc(m->count, sizeof(GLint));
+                for(o = 0; o < (GLint)m->count; o++)
 				{
-                    m->item_mesh.tex_index[o] = tex_index_set[o];
+                    m->tex_index[o] = tex_index_set[o];
 				}
 				free(tex_index_set);
 
@@ -537,7 +479,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                 GLuint index_count = mesh->item_mesh.primitive.count * 3;
                 GL_NETLizard_3D_Vertex *vertex = calloc(vertex_count, sizeof(GL_NETLizard_3D_Vertex));
                 GLushort *indexs = calloc(index_count, sizeof(GLushort));
-                GL_NETLizard_3D_Material *materials = calloc(m->item_mesh.count, sizeof(GL_NETLizard_3D_Material));
+                GL_NETLizard_3D_Material *materials = calloc(m->count, sizeof(GL_NETLizard_3D_Material));
                 GLuint plane_count = mesh->item_mesh.primitive.count;
                 GL_NETLizard_3D_Plane *planes = calloc(plane_count, sizeof(GL_NETLizard_3D_Plane));
                 NLint *mesh_vertex = (NLint *)(mesh->item_mesh.vertex.data);
@@ -548,14 +490,14 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 
 				GLint b = 0;
 				GLint c = 0;
-				for(o = 0; o < (GLint)m->item_mesh.count; o++)
+                for(o = 0; o < (GLint)m->count; o++)
                 {
-                    texture_s *tex = texes[m->item_mesh.tex_index[o]];
-                    if(!tex && m->item_mesh.tex_index[o] < tex_count && m->item_mesh.tex_index[o] > 0)
+                    texture_s *tex = texes[m->tex_index[o]];
+                    if(!tex && m->tex_index[o] < tex_count && m->tex_index[o] > 0)
 					{
 						char subfix[SUBFIX_LENGTH];
 						memset(subfix, '\0', SUBFIX_LENGTH);
-						sprintf(subfix, subfix_str, m->item_mesh.tex_index[o]);
+                        sprintf(subfix, subfix_str, m->tex_index[o]);
 						char *name = NULL;
                         if(resource_path)
                         {
@@ -570,7 +512,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                         memset(tex, 0, sizeof(texture_s));
                         new_OpenGL_texture_2d(tex, name);
 						free(name);
-                        texes[m->item_mesh.tex_index[o]] = tex;
+                        texes[m->tex_index[o]] = tex;
                     }
 
                     NETLizard_3D_Primitive *p = (NETLizard_3D_Primitive *)(mesh->item_mesh.primitive.data);
@@ -578,7 +520,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 					GLint n;
                     for(n = 0; n < mesh->item_mesh.primitive.count; n++)
 					{
-						if(m->item_mesh.tex_index[o] == p[n].tex_index)
+                        if(m->tex_index[o] == p[n].tex_index)
 						{
 							int i0 = p[n].index[0] / item_index_factory;
 							int i1 = p[n].index[1] / item_index_factory;
@@ -593,10 +535,9 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 							vertex[a + 2].position[0] = (GLfloat)mesh_vertex[i2 * 3];
 							vertex[a + 2].position[1] = (GLfloat)mesh_vertex[i2 * 3 + 1];
 							vertex[a + 2].position[2] = (GLfloat)mesh_vertex[i2 * 3 + 2];
-							vector3_s v0 = VECTOR3V(vertex[a].position);
-							vector3_s v1 = VECTOR3V(vertex[a + 1].position);
-							vector3_s v2 = VECTOR3V(vertex[a + 2].position);
-							vector3_s v_normal = Math3D_GetTriangleNormal(&v0, &v1, &v2);
+                            vector3_s v_normal;
+                            triangle_s tri = TRIANGLEV(vertex[a].position, vertex[a + 1].position, vertex[a + 2].position);
+                            triangle_cale_normal(&tri, &v_normal);
                             vertex[a].normal[0] = VECTOR3_X(v_normal);
                             vertex[a].normal[1] = VECTOR3_Y(v_normal);
                             vertex[a].normal[2] = VECTOR3_Z(v_normal);
@@ -636,7 +577,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 							a += 3;
 						}
 					}
-					materials[o].tex_index = m->item_mesh.tex_index[o];
+                    materials[o].tex_index = m->tex_index[o];
 					materials[o].index_start = c;
 					materials[o].index_count = a - c;
                     materials[o].mode = GL_TRIANGLES;
@@ -644,20 +585,20 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 					c = a;
 				}
 
-                m->item_mesh.materials = materials;
-                m->item_mesh.vertex_data.vertex_count = vertex_count;
-                m->item_mesh.vertex_data.vertex = vertex;
-                m->item_mesh.vertex_data.index_count = index_count;
-                m->item_mesh.vertex_data.index = indexs;
-				m->item_mesh.plane_count = plane_count;
-				m->item_mesh.plane = planes;
+                m->materials = materials;
+                m->vertex_data.vertex_count = vertex_count;
+                m->vertex_data.vertex = vertex;
+                m->vertex_data.index_count = index_count;
+                m->vertex_data.index = indexs;
+                m->plane_count = plane_count;
+                m->plane = planes;
 			}
-			m->item_mesh.ortho[0] = (GLfloat)mesh->item_mesh.ortho[0];
-			m->item_mesh.ortho[1] = (GLfloat)mesh->item_mesh.ortho[1];
-			m->item_mesh.ortho[2] = (GLfloat)mesh->item_mesh.ortho[2];
-			m->item_mesh.ortho[3] = (GLfloat)mesh->item_mesh.ortho[3];
-			m->item_mesh.ortho[4] = (GLfloat)mesh->item_mesh.ortho[4];
-			m->item_mesh.ortho[5] = (GLfloat)mesh->item_mesh.ortho[5];
+            m->box.min[0] = (GLfloat)mesh->item_mesh.box.min[0];
+            m->box.min[1] = (GLfloat)mesh->item_mesh.box.min[1];
+            m->box.min[2] = (GLfloat)mesh->item_mesh.box.min[2];
+            m->box.max[0] = (GLfloat)mesh->item_mesh.box.max[0];
+            m->box.max[1] = (GLfloat)mesh->item_mesh.box.max[1];
+            m->box.max[2] = (GLfloat)mesh->item_mesh.box.max[2];
 		}
 	}
 
@@ -861,11 +802,10 @@ GL_NETLizard_3D_Animation_Model * NETLizard_MakeGL3DAnimationModel(const NETLiza
 				vertex[a + 1].position[2] = (GLfloat)mesh_vertex[i1 * 3 + 2];
 				vertex[a + 2].position[0] = (GLfloat)mesh_vertex[i2 * 3];
 				vertex[a + 2].position[1] = (GLfloat)mesh_vertex[i2 * 3 + 1];
-				vertex[a + 2].position[2] = (GLfloat)mesh_vertex[i2 * 3 + 2];
-				vector3_s v0 = VECTOR3V(vertex[a].position);
-				vector3_s v1 = VECTOR3V(vertex[a + 1].position);
-				vector3_s v2 = VECTOR3V(vertex[a + 2].position);
-				vector3_s v_normal = Math3D_GetTriangleNormal(&v0, &v1, &v2);
+                vertex[a + 2].position[2] = (GLfloat)mesh_vertex[i2 * 3 + 2];
+                vector3_s v_normal;
+                triangle_s tri = TRIANGLEV(vertex[a].position, vertex[a + 1].position, vertex[a + 2].position);
+                triangle_cale_normal(&tri, &v_normal);
 				vertex[a].normal[0] = v_normal.x;
 				vertex[a].normal[1] = v_normal.y;
 				vertex[a].normal[2] = v_normal.z;

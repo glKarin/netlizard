@@ -17,7 +17,7 @@
 FontViewer::FontViewer(QWidget *parent) :
     BaseViewer(parent),
     m_textInput(0),
-    m_fontWidget(0),
+    m_fontScene(0),
     m_renderButton(0),
     m_cfFileChooser(0),
     m_fntFileChooser(0),
@@ -31,7 +31,7 @@ FontViewer::FontViewer(QWidget *parent) :
 
 FontViewer::~FontViewer()
 {
-    m_fontWidget->Reset();
+    m_fontScene->Reset();
 }
 
 void FontViewer::Init()
@@ -56,9 +56,9 @@ void FontViewer::Init()
     m_textInput->setAcceptRichText(false);
     layout->addWidget(m_textInput);
     layout->addLayout(vLayout);
-    m_fontWidget = new FontScene;
-    m_fontWidget->setMinimumWidth(320);
-    layout->addWidget(m_fontWidget);
+    m_fontScene = new FontScene;
+    //m_fontScene->setMinimumWidth(320);
+    layout->addWidget(m_fontScene, 1);
 
     m_openCfButton = new QPushButton;
     m_openCfButton->setText("config file(cf.png)");
@@ -89,7 +89,7 @@ void FontViewer::OpenBackgroundColorChooser()
         m_colorChooser = new QColorDialog(this);
         connect(m_colorChooser, SIGNAL(colorSelected(const QColor &)), this, SLOT(SetBackgroundColor(const QColor &)));
     }
-    m_colorChooser->setCurrentColor(m_fontWidget->ClearColor());
+    m_colorChooser->setCurrentColor(m_fontScene->ClearColor());
 
     m_colorChooser->exec();
 }
@@ -120,7 +120,7 @@ void FontViewer::OpenFntFileChooser()
 
 void FontViewer::SetBackgroundColor(const QColor &color)
 {
-    m_fontWidget->SetClearColor(color);
+    m_fontScene->SetClearColor(color);
 }
 
 void FontViewer::SetCfFile(const QString &file)
@@ -154,7 +154,7 @@ bool FontViewer::LoadFont()
         QFileInfo info(m_cfFile);
         SetFntFile(info.absolutePath() + "/fnt.png");
     }
-    bool res = m_fontWidget->LoadFile(m_cfFile, m_fntFile);
+    bool res = m_fontScene->LoadFile(m_cfFile, m_fntFile);
     if(res)
     {
         m_renderButton->setEnabled(true);
@@ -171,20 +171,20 @@ bool FontViewer::LoadFont()
 
 bool FontViewer::RenderString()
 {
-    if(!m_fontWidget->IsValid())
+    if(!m_fontScene->IsValid())
         return false;
     QString str = m_textInput->toPlainText();
     if(str.isEmpty())
         return false;
-    m_fontWidget->SetText(str);
-    m_fontWidget->updateGL();
+    m_fontScene->SetText(str);
+    m_fontScene->updateGL();
     return true;
 }
 
 void FontViewer::Reset()
 {
     BaseViewer::Reset();
-    m_fontWidget->Reset();
+    m_fontScene->Reset();
     m_renderButton->setEnabled(false);
     m_textInput->setEnabled(false);
 }

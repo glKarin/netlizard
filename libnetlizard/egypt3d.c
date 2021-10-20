@@ -175,11 +175,11 @@ NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, NLint index
         mesh->item_mesh.vertex.count = 0;
         mesh->item_mesh.primitive.data = NULL;
         mesh->item_mesh.primitive.count = 0;
-		mesh->pos[0] = 0;
-		mesh->pos[1] = 0;
-		mesh->pos[2] = 0;
-		mesh->angle[0] = 0;
-		mesh->angle[1] = 0;
+        mesh->position[0] = 0;
+        mesh->position[1] = 0;
+        mesh->position[2] = 0;
+        mesh->rotation[0] = 0;
+        mesh->rotation[1] = 0;
 		mesh->obj_index = index;
         array *a = &((array *)(obj.short_2_array_3__a__vertex.array))[i];
         if(/*a && */ARRAY_DATA(obj.short_array_16__b__primitive))
@@ -257,11 +257,11 @@ NLboolean nlLoadEgypt3DItemModelData(const char* data, NLsizei size, NLint index
     mesh->item_mesh.vertex.count = 0;
     mesh->item_mesh.primitive.data = NULL;
     mesh->item_mesh.primitive.count = 0;
-	mesh->pos[0] = 0;
-	mesh->pos[1] = 0;
-	mesh->pos[2] = 0;
-	mesh->angle[0] = 0;
-	mesh->angle[1] = 0;
+    mesh->position[0] = 0;
+    mesh->position[1] = 0;
+    mesh->position[2] = 0;
+    mesh->rotation[0] = 0;
+    mesh->rotation[1] = 0;
 	mesh->obj_index = index;
     if(ARRAY_DATA(obj.short_array_3__a__vertex) && ARRAY_DATA(obj.short_array_16__b__primitive))
 	{
@@ -304,12 +304,12 @@ NLboolean nlLoadEgypt3DItemModelData(const char* data, NLsizei size, NLint index
 		}
 
         // box
-		mesh->item_mesh.ortho[0] = obj.int__e__aabb >> 16;
-		mesh->item_mesh.ortho[1] = obj.int__f__aabb >> 16;
-		mesh->item_mesh.ortho[2] = obj.int__g__aabb >> 16;
-		mesh->item_mesh.ortho[3] = obj.int__h__aabb >> 16;
-		mesh->item_mesh.ortho[4] = obj.int__i__aabb >> 16;
-		mesh->item_mesh.ortho[5] = obj.int__j__aabb >> 16;
+        mesh->item_mesh.box.max[0] = obj.int__e__aabb >> 16;
+        mesh->item_mesh.box.max[1] = obj.int__f__aabb >> 16;
+        mesh->item_mesh.box.max[2] = obj.int__g__aabb >> 16;
+        mesh->item_mesh.box.min[0] = obj.int__h__aabb >> 16;
+        mesh->item_mesh.box.min[1] = obj.int__i__aabb >> 16;
+        mesh->item_mesh.box.min[2] = obj.int__j__aabb >> 16;
 	}
 
     // free
@@ -423,12 +423,12 @@ NLboolean nlLoadEgypt3DModelData(const char* data, NLsizei size, const char *res
 		}
 
         // box
-		mesh->ortho[0] = obj->int__d__aabb >> 16;
-		mesh->ortho[1] = obj->int__e__aabb >> 16;
-		mesh->ortho[2] = obj->int__f__aabb >> 16;
-		mesh->ortho[3] = obj->int__g__aabb >> 16;
-		mesh->ortho[4] = obj->int__h__aabb >> 16;
-		mesh->ortho[5] = obj->int__i__aabb >> 16;
+        mesh->box.max[0] = obj->int__d__aabb >> 16;
+        mesh->box.max[1] = obj->int__e__aabb >> 16;
+        mesh->box.max[2] = obj->int__f__aabb >> 16;
+        mesh->box.min[0] = obj->int__g__aabb >> 16;
+        mesh->box.min[1] = obj->int__h__aabb >> 16;
+        mesh->box.min[2] = obj->int__i__aabb >> 16;
 		mesh->item_index_range[0] = obj->short__o__begin;
 		mesh->item_index_range[1] = obj->short__c__end;
 
@@ -465,11 +465,11 @@ NLboolean nlLoadEgypt3DModelData(const char* data, NLsizei size, const char *res
 		}
 
         // position/rotation
-		mesh->pos[0] = obj->int__l__translation >> 16;
-		mesh->pos[1] = obj->int__m__translation >> 16;
-		mesh->pos[2] = obj->int__n__translation >> 16;
-		mesh->angle[0] = obj->int__o__rotation;
-		mesh->angle[1] = obj->int__p__rotation;
+        mesh->position[0] = obj->int__l__translation >> 16;
+        mesh->position[1] = obj->int__m__translation >> 16;
+        mesh->position[2] = obj->int__n__translation >> 16;
+        mesh->rotation[0] = obj->int__o__rotation;
+        mesh->rotation[1] = obj->int__p__rotation;
 		mesh->obj_index = obj->byte__s__obj;
 
         // vertex
@@ -511,12 +511,12 @@ NLboolean nlLoadEgypt3DModelData(const char* data, NLsizei size, const char *res
 		}
 
         // box
-		mesh->item_mesh.ortho[0] = obj->int__e__aabb >> 16;
-		mesh->item_mesh.ortho[1] = obj->int__f__aabb >> 16;
-		mesh->item_mesh.ortho[2] = obj->int__g__aabb >> 16;
-		mesh->item_mesh.ortho[3] = obj->int__h__aabb >> 16;
-		mesh->item_mesh.ortho[4] = obj->int__i__aabb >> 16;
-		mesh->item_mesh.ortho[5] = obj->int__j__aabb >> 16;
+        mesh->item_mesh.box.max[0] = obj->int__e__aabb >> 16;
+        mesh->item_mesh.box.max[1] = obj->int__f__aabb >> 16;
+        mesh->item_mesh.box.max[2] = obj->int__g__aabb >> 16;
+        mesh->item_mesh.box.min[0] = obj->int__h__aabb >> 16;
+        mesh->item_mesh.box.min[1] = obj->int__i__aabb >> 16;
+        mesh->item_mesh.box.min[2] = obj->int__j__aabb >> 16;
 	}
 
     // bsp

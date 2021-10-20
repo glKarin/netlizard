@@ -1,5 +1,5 @@
-#ifndef _KARIN_ITEMVIEWER_H
-#define _KARIN_ITEMVIEWER_H
+#ifndef _KARIN_ROLEVIEWER_H
+#define _KARIN_ROLEVIEWER_H
 
 #include "baseviewer.h"
 
@@ -7,16 +7,17 @@ class QComboBox;
 class QFileDialog;
 class QSpinBox;
 class QString;
-class ItemScene;
+class RoleScene;
 class QColorDialog;
 class QPushButton;
+class QSlider;
 
-class ItemViewer : public BaseViewer
+class RoleViewer : public BaseViewer
 {
     Q_OBJECT
 public:
-    explicit ItemViewer(QWidget *parent = 0);
-    virtual ~ItemViewer();
+    explicit RoleViewer(QWidget *parent = 0);
+    virtual ~RoleViewer();
 
 signals:
 
@@ -34,9 +35,11 @@ private Q_SLOTS:
     void SetObjFile(const QString &file);
     void SetResourceDirPath(const QString &file);
     void SetBackgroundColor(const QColor &color);
+    void SetAnim(int anim);
+    void SetFrame(int frame);
 
 private:
-    ItemScene *m_itemScene;
+    RoleScene *m_roleScene;
     QComboBox *m_gameComboBox;
     QFileDialog *m_fileChooser;
     QFileDialog *m_resourceDirChooser;
@@ -44,11 +47,12 @@ private:
     QColorDialog *m_colorChooser;
     QPushButton *m_openObjButton;
     QPushButton *m_openResourcePathButton;
+    QComboBox *m_animComboBox;
+    QSlider *m_frameSlider;
     QString m_objPath;
     QString m_resourceDirPath;
 
-
-    Q_DISABLE_COPY(ItemViewer)
+    Q_DISABLE_COPY(RoleViewer)
 };
 
-#endif // _KARIN_ITEMVIEWER_H
+#endif // _KARIN_ROLEVIEWER_H

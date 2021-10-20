@@ -36,11 +36,10 @@ GLboolean NETLizard_MakeGLRE3DModel(const NETLizard_RE3D_Model *model, const cha
     int i;
 
     const int mesh_count = model->meshes.count;
-    GL_NETLizard_3D_Item_Mesh *mesh = calloc(model->meshes.count, sizeof(GL_NETLizard_3D_Item_Mesh));
+    GL_NETLizard_3D_Mesh *mesh = calloc(model->meshes.count, sizeof(GL_NETLizard_3D_Mesh));
     for(i = 0; i < model->meshes.count; i++)
 	{
-        GL_NETLizard_3D_Item_Mesh *im = mesh + i;
-        GL_NETLizard_3D_Mesh *m = &im->item_mesh;
+        GL_NETLizard_3D_Mesh *m = mesh + i;
         const NETLizard_RE3D_Mesh *mesh = model->meshes.data + i;
         int j;
 
@@ -83,9 +82,9 @@ GLboolean NETLizard_MakeGLRE3DModel(const NETLizard_RE3D_Model *model, const cha
         }
 
         // position
-        im->pos[0] = mesh->translation[0];
-        im->pos[1] = mesh->translation[1];
-        im->pos[2] = mesh->translation[2];
+        m->position[0] = mesh->translation[0];
+        m->position[1] = mesh->translation[1];
+        m->position[2] = mesh->translation[2];
 
 
 //		vector3_s min = {0.0, 0.0, 0.0};
@@ -145,8 +144,8 @@ GLboolean NETLizard_MakeGLRE3DModel(const NETLizard_RE3D_Model *model, const cha
     }
 
     memset(glmodel, 0, sizeof(GL_NETLizard_3D_Model));
-    glmodel->item_meshes = mesh;
-    glmodel->item_count = mesh_count;
+    glmodel->meshes = mesh;
+    glmodel->count = mesh_count;
     glmodel->texes = texes;
     glmodel->tex_count = texes_count;
     if(sky.texid)

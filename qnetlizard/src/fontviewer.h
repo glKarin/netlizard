@@ -36,7 +36,7 @@ private:
 
 private:
     QTextEdit *m_textInput;
-    FontScene *m_fontWidget;
+    FontScene *m_fontScene;
     QPushButton *m_renderButton;
     QFileDialog *m_cfFileChooser;
     QFileDialog *m_fntFileChooser;

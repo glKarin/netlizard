@@ -47,7 +47,6 @@ typedef struct _GL_NETLizard_3D_Vertex_Data
     GLuint index_count;
 } GL_NETLizard_3D_Vertex_Data;
 
-
 //typedef struct _GL_NETLizard_3D_Vertex_Array
 //{
 //	GLuint gl;
@@ -62,29 +61,34 @@ typedef struct _GL_NETLizard_3D_Mesh
     GLint *tex_index;
 	GL_NETLizard_3D_Plane *plane;
     GLuint plane_count;
-	GLfloat ortho[6];
+    struct {
+        GLfloat min[3];
+        GLfloat max[3];
+    } box;
 	GLuint item_index_range[2];
 	GLint *bsp;
 	GLuint bsp_count;
 
-    //GLfloat pos[3];
-    //GLfloat angle[2];
+    GLfloat position[3];
+    GLfloat rotation[2];
+    GLint item_type;
 } GL_NETLizard_3D_Mesh;
+typedef GL_NETLizard_3D_Mesh GL_NETLizard_3D_Item_Mesh;
 
-typedef struct _GL_NETLizard_3D_Item_Mesh
-{
-	GL_NETLizard_3D_Mesh item_mesh;
-	GLfloat pos[3];
-	GLfloat angle[2];
-	GLint item_type;
-} GL_NETLizard_3D_Item_Mesh;
+//typedef struct _GL_NETLizard_3D_Item_Mesh
+//{
+//	GL_NETLizard_3D_Mesh item_mesh;
+//	GLfloat pos[3];
+//	GLfloat angle[2];
+//	GLint item_type;
+//} GL_NETLizard_3D_Item_Mesh;
 
 typedef struct _GL_NETLizard_3D_Model
 {
     NETLizard_Game game;
 	GL_NETLizard_3D_Mesh *meshes;
 	GLuint count;
-	GL_NETLizard_3D_Item_Mesh *item_meshes;
+    GL_NETLizard_3D_Item_Mesh *item_meshes;
 	GLuint item_count;
     texture_s **texes;
 	GLuint tex_count;
@@ -95,62 +99,23 @@ typedef struct _GL_NETLizard_3D_Model
 	GLuint bsp_count;
 } GL_NETLizard_3D_Model;
 
-typedef struct _NETLizard_3D_Role_Animation
-{
-	GLuint begin;
-	GLuint end;
-	NETLizard_3D_Animation_Type type;
-} NETLizard_3D_Role_Animation;
-
-typedef struct _GL_NETLizard_3D_Animation_Model
-{
-	NETLizard_3D_Item_Type item_type;
-	GL_NETLizard_3D_Mesh *meshes;
-	GLuint count;
-    texture_s tex;
-	NETLizard_3D_Role_Animation *animations;
-	GLuint anim_count;
-} GL_NETLizard_3D_Animation_Model;
-
 typedef struct _GL_NETLizard_3D_Item_Model
 {
 	GL_NETLizard_3D_Mesh item_mesh;
     texture_s tex;
 } GL_NETLizard_3D_Item_Model;
 
-//typedef struct _GL_NETLizard_RE3D_Mesh
-//{
-//    GL_NETLizard_3D_Vertex_Data vertex_data;
-//    GLfloat translations[3];
-//    GLuint *strips;
-//    GLuint primitive;
-//    GLint tex_index;
-//    GLfloat ortho[6];
-//} GL_NETLizard_RE3D_Mesh;
-
-//typedef struct _GL_NETLizard_RE3D_Model
-//{
-//    GL_RE3D_Mesh *meshes;
-//    GLuint count;
-//    texture **texes;
-//    GLuint tex_count;
-//    texture *bg_tex;
-//} GL_NETLizard_RE3D_Model;
-
 GLvoid NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model);
 GLvoid NETLizard_RenderGL3DItemModel(const GL_NETLizard_3D_Item_Model *m);
-GLvoid NETLizard_RenderGL3DAnimationModel(const GL_NETLizard_3D_Animation_Model *m, GLuint anim, GLuint frame);
 GLvoid NETLizard_RenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint *scenes, GLuint count);
+GLvoid NETLizard_RenderGL3DModelFrameAnimation(const GL_NETLizard_3D_Model *m, const NETLizard_3D_Frame_Animation *config, GLuint anim, GLuint frame);
 
 GLvoid delete_GL_NETLizard_3D_Mesh(GL_NETLizard_3D_Mesh *mesh);
-GLvoid delete_GL_NETLizard_3D_Item_Mesh(GL_NETLizard_3D_Item_Mesh *mesh);
 GLvoid delete_GL_NETLizard_3D_Model(GL_NETLizard_3D_Model *model);
-GLvoid delete_GL_NETLizard_3D_Animation_Model(GL_NETLizard_3D_Animation_Model *model);
 
 GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *resource_path, GL_NETLizard_3D_Model *glmodel);
 GLboolean NETLizard_MakeGLRE3DModel(const NETLizard_RE3D_Model *model, const char *resource_path, GL_NETLizard_3D_Model *glmodel);
 GL_NETLizard_3D_Model * NETLizard_MakeGL3DItemModel(const NETLizard_3D_Model *model);
-GL_NETLizard_3D_Animation_Model * NETLizard_MakeGL3DAnimationModel(const NETLizard_3D_Model *model);
 
 GLboolean NETLizard_ReadGLCT3DMapModelFile(const char *name, int i, const char *resouce_path, GL_NETLizard_3D_Model *model);
 GLboolean NETLizard_ReadGLCT3DItemModelFile(const char *name, int i, const char *resouce_path, GL_NETLizard_3D_Model *model);
@@ -163,7 +128,7 @@ GLboolean NETLizard_ReadGLSpecnaz3DItemModelFile(const char *name, int i, const 
 
 GLboolean NETLizard_ReadGLEgypt3DItemModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Model *model);
 GLboolean NETLizard_ReadGLEgypt3DMapModelFile(const char *name, const char *resource_path, GL_NETLizard_3D_Model *model);
-GLboolean NETLizard_ReadGLEgypt3DRoleModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Animation_Model *model);
+GLboolean NETLizard_ReadGLEgypt3DRoleModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Model *model);
 
 GLboolean NETLizard_ReadGLCT3DEp3MapModelFile(const char *name, int i, const char *resource_path, GL_NETLizard_3D_Model *model);
 GLboolean NETLizard_ReadGLCT3DEp3ItemModelFile(const char *name, int i, const char *resource_path, GL_NETLizard_3D_Model *model);
@@ -172,9 +137,6 @@ GLboolean NETLizard_ReadGLRE3DMapModelFile(const char *name, const char *resourc
 GLboolean NETLizard_ReadGLRE3DCarModelFile(const char *car_file, const char *tex_file, const char *resource_path, GL_NETLizard_3D_Model *model);
 
 #if 0
-GL_NETLizard_3D_Model * NETLizard_ReadGLSpecnaz3DMapModelFile(const char *name, int level);
-GL_NETLizard_3D_Model * NETLizard_ReadGLSpecnaz3DItemModelFile(const char *name, int index);
-
 GL_NETLizard_3D_Model * NETLizard_ReadGLClone3DMapModelFile(const char *name);
 GL_NETLizard_3D_Model * NETLizard_ReadGLClone3DItemModelFile(const char *name, int index);
 GL_NETLizard_3D_Animation_Model * NETLizard_ReadGLClone3DRoleModelFile(const char *name, int index);

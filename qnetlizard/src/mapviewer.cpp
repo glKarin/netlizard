@@ -30,7 +30,7 @@ static const QPair<int, QString> Types[] = {
 
 MapViewer::MapViewer(QWidget *parent) :
     BaseViewer(parent),
-    m_mapWidget(0),
+    m_mapScene(0),
     m_gameComboBox(0),
     m_fileChooser(0),
     m_resourceDirChooser(0),
@@ -50,7 +50,7 @@ void MapViewer::Init()
 {
     QPushButton *button;
     m_gameComboBox = new QComboBox;
-    m_mapWidget = new MapScene;
+    m_mapScene = new MapScene;
     QHBoxLayout *toolLayout = ToolLayout();
     m_levelSpinBox = new QSpinBox;
 
@@ -88,7 +88,7 @@ void MapViewer::Init()
 
     connect(m_gameComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));
 
-    SetCentralWidget(m_mapWidget);
+    SetCentralWidget(m_mapScene);
     SetTitle("NETLizard 3D FPS map viewer");
 }
 
@@ -147,7 +147,7 @@ bool MapViewer::OpenFile()
         QMessageBox::warning(this, "Error", "Choose lvl file and resource path!");
         return false;
     }
-    m_mapWidget->Reset();
+    m_mapScene->Reset();
     int selectedIndex = m_gameComboBox->currentIndex();
     int game = Types[selectedIndex].first;
     int level = m_levelSpinBox->value();
@@ -185,7 +185,7 @@ bool MapViewer::OpenFile()
     //case NL_CLONE_3D:
     case NL_CONTR_TERRORISM_3D_EPISODE_3:
     case NL_RACING_EVOLUTION_3D:
-        res = m_mapWidget->LoadFile(m_lvlPath, m_resourceDirPath, game, level);
+        res = m_mapScene->LoadFile(m_lvlPath, m_resourceDirPath, game, level);
     break;
     default:
         QMessageBox::warning(this, "Error", "Unsupport 3D game!");
@@ -194,8 +194,8 @@ bool MapViewer::OpenFile()
     SetTitleLabel(QString("%1(level-%2)  lvl: %3, resource directory: %4 -> %5").arg(Types[selectedIndex].second).arg(level).arg(m_lvlPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
     if(res)
     {
-        m_mapWidget->setFocus();
-        //m_mapWidget->SetHideMouse(true);
+        m_mapScene->setFocus();
+        //m_mapScene->SetHideMouse(true);
     }
     else
     {

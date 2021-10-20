@@ -14,6 +14,7 @@
 #include "mapviewer.h"
 #include "fontviewer.h"
 #include "itemviewer.h"
+#include "roleviewer.h"
 #include "helpdialog.h"
 #include "aboutdialog.h"
 #include "logdialog.h"
@@ -150,7 +151,7 @@ BaseViewer * MainWindow::GenViewer(const QString &type)
     else if(type == "item_viewer")
         viewer = new ItemViewer;
     else if(type == "character_animation_viewer")
-        ;
+        viewer = new RoleViewer;
     else if(type == "sprite_viewer")
         ;
 

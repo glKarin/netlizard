@@ -22,16 +22,9 @@ void NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
 				for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++) 
                 {
 					GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
-					if(!im->item_mesh.materials) // REDO
-						continue;
-					glPushMatrix();
-                    {
-                        glTranslatef(im->pos[0], im->pos[1], im->pos[2]);
-                        glRotatef(im->angle[0], 1.0f, 0.0f, 0.0f);
-                        glRotatef(im->angle[1], 0.0f, 0.0f, 1.0f);
-						NETLizard_RenderGL3DMesh(&(im->item_mesh), model->texes);
-					}
-					glPopMatrix();
+                    if(!im->materials) // REDO
+                        continue;
+                    NETLizard_RenderGL3DMesh(im, model->texes);
 				}
 			}
 		}
@@ -43,18 +36,11 @@ void NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
 		for(i = 0; i < model->item_count; i++)
         {
 			GL_NETLizard_3D_Item_Mesh *m = model->item_meshes + i;
-			if(!m->item_mesh.materials) // REDO
+            if(!m->materials) // REDO
 				continue;
 			if(m->item_type == Item_Box_Type)
                 continue;
-			glPushMatrix();
-            {
-                glTranslatef(m->pos[0], m->pos[1], m->pos[2]);
-                glRotatef(m->angle[0], 1.0f, 0.0f, 0.0f);
-                glRotatef(m->angle[1], 0.0f, 0.0f, 1.0f);
-				NETLizard_RenderGL3DMesh(&(m->item_mesh), model->texes);
-			}
-			glPopMatrix();
+            NETLizard_RenderGL3DMesh(m, model->texes);
 		}
 	}
 }
@@ -81,16 +67,9 @@ void NETLizard_RenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint
                     for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
                     {
                         GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
-                        if(!im->item_mesh.materials) // REDO
+                        if(!im->materials) // REDO
                             continue;
-                        glPushMatrix();
-                        {
-                            glTranslatef(im->pos[0], im->pos[1], im->pos[2]);
-                            glRotatef(im->angle[0], 1.0f, 0.0f, 0.0f);
-                            glRotatef(im->angle[1], 0.0f, 0.0f, 1.0f);
-                            NETLizard_RenderGL3DMesh(&(im->item_mesh), model->texes);
-                        }
-                        glPopMatrix();
+                        NETLizard_RenderGL3DMesh(im, model->texes);
                     }
                 }
             }
@@ -111,18 +90,11 @@ void NETLizard_RenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint
                         for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
                         {
                             GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
-                            if(!im->item_mesh.materials) // REDO
+                            if(!im->materials) // REDO
                                 continue;
                             if(im->item_type == Item_Box_Type)
                                 continue;
-                            glPushMatrix();
-                            {
-                                glTranslatef(im->pos[0], im->pos[1], im->pos[2]);
-                                glRotatef(im->angle[0], 1.0f, 0.0f, 0.0f);
-                                glRotatef(im->angle[1], 0.0f, 0.0f, 1.0f);
-                                NETLizard_RenderGL3DMesh(&(im->item_mesh), model->texes);
-                            }
-                            glPopMatrix();
+                            NETLizard_RenderGL3DMesh(im, model->texes);
                         }
                     }
                 }
@@ -138,20 +110,20 @@ GLvoid NETLizard_RenderGL3DItemModel(const GL_NETLizard_3D_Item_Model *m)
     NETLizard_RenderGL3DItemMesh(&(m->item_mesh), &m->tex);
 }
 
-#if 0
-GLvoid NETLizard_RenderGL3DAnimationModel(const GL_NETLizard_3D_Animation_Model *m, GLuint anim, GLuint frame)
+GLvoid NETLizard_RenderGL3DModelFrameAnimation(const GL_NETLizard_3D_Model *m, const NETLizard_3D_Frame_Animation *config, GLuint anim, GLuint frame)
 {
-	if(!m)
+    if(!m || !config)
 		return;
-	if(anim >= m->anim_count)
-		anim = 0;
-	NETLizard_3D_Role_Animation *animation = m->animations + anim;
-	if(frame > animation->end - animation->begin)
-		frame = 0;
-	GL_NETLizard_3D_Mesh *mesh = m->meshes + animation->begin + frame;
-	NETLizard_RenderGL3DItemMesh(mesh, m->tex);
+    if(anim >= NL_FRAME_ANIMATION_TOTAL || frame < 0)
+        return;
+    const NETLizard_3D_Frame_Animation *c = config + anim;
+    if(frame >= c->count)
+        return;
+    int f = c->begin_frame + frame;
+    GL_NETLizard_3D_Mesh *mesh = m->meshes + f;
+    NETLizard_RenderGL3DMesh(mesh, m->texes);
+    //NETLizard_RenderGL3DItemMesh(mesh, m->texes[mesh->tex_index[0]]);
 }
-#endif
 
 GLvoid NETLizard_RenderGL3DMesh(const GL_NETLizard_3D_Mesh *m, texture_s **const texes)
 {
@@ -162,17 +134,25 @@ GLvoid NETLizard_RenderGL3DMesh(const GL_NETLizard_3D_Mesh *m, texture_s **const
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    glNormalPointer(GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), m->vertex_data.vertex[0].normal);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), m->vertex_data.vertex[0].texcoord);
-    glVertexPointer(3, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), m->vertex_data.vertex[0].position);
-    GLuint j;
-    for(j = 0; j < m->count; j++)
+    glPushMatrix();
     {
-        if(m->materials[j].tex_index >= 0 && texes[m->materials[j].tex_index])
-            glBindTexture(GL_TEXTURE_2D, texes[m->materials[j].tex_index]->texid);
-        glDrawElements(/*GL_TRIANGLES*/m->materials[j].mode, m->materials[j].index_count, GL_UNSIGNED_SHORT, m->vertex_data.index + m->materials[j].index_start);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glTranslatef(m->position[0], m->position[1], m->position[2]);
+        glRotatef(m->rotation[0], 1.0f, 0.0f, 0.0f);
+        glRotatef(m->rotation[1], 0.0f, 0.0f, 1.0f);
+
+        glNormalPointer(GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), m->vertex_data.vertex[0].normal);
+        glTexCoordPointer(2, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), m->vertex_data.vertex[0].texcoord);
+        glVertexPointer(3, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), m->vertex_data.vertex[0].position);
+        GLuint j;
+        for(j = 0; j < m->count; j++)
+        {
+            if(m->materials[j].tex_index >= 0 && texes[m->materials[j].tex_index])
+                glBindTexture(GL_TEXTURE_2D, texes[m->materials[j].tex_index]->texid);
+            glDrawElements(/*GL_TRIANGLES*/m->materials[j].mode, m->materials[j].index_count, GL_UNSIGNED_SHORT, m->vertex_data.index + m->materials[j].index_start);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
     }
+    glPopMatrix();
 
 #if 0 // render point and normal
 	glDisable(GL_DEPTH_TEST);

@@ -68,23 +68,23 @@ GLboolean NETLizard_ReadGLSpecnaz3DItemModelFile(const char *name, int i, const 
     if(!name)
         return GL_FALSE;
     NETLizard_3D_Model m;
-    if(!nlReadSpecnaz3DItemModelFile(name, i, &m))
+    if(!nlReadEgypt3DRoleModelFile(name, i, &m))
         return GL_FALSE;
     NETLizard_MakeGL3DModel(&m, resource_path, model);
     delete_NETLizard_3D_Model(&m);
     return GL_TRUE;
 }
 
-GLboolean NETLizard_ReadGLEgypt3DRoleModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Animation_Model *model)
+GLboolean NETLizard_ReadGLEgypt3DRoleModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Model *model)
 {
-//    if(!name)
-//        return GL_FALSE;
-//    NETLizard_3D_Model m;
-//    if(!nlReadEgypt3DRoleModelFile(name, index, &m))
-//        return GL_FALSE;
-//    NETLizard_MakeGL3DAnimationModel(&m, resource_path, model);
-//    delete_NETLizard_3D_Model(&m);
-//    return GL_TRUE;
+    if(!name)
+        return GL_FALSE;
+    NETLizard_3D_Model m;
+    if(!nlReadEgypt3DRoleModelFile(name, index, &m))
+        return GL_FALSE;
+    NETLizard_MakeGL3DModel(&m, resource_path, model);
+    delete_NETLizard_3D_Model(&m);
+    return GL_TRUE;
 }
 
 GLboolean NETLizard_ReadGLEgypt3DItemModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Model *model)

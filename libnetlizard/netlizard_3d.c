@@ -149,7 +149,7 @@ static const int Game_Level[] = {
     CT3DEP3_LEVEL
 };
 
-static NETLizard_3D_Model_Config Game_Config[] = {
+static const NETLizard_3D_Model_Config Game_Config[] = {
     {
         NL_RACING_EVOLUTION_3D,
         0,
@@ -234,6 +234,162 @@ static NETLizard_3D_Model_Config Game_Config[] = {
         CT3DEP3_TEX_SUBFIX,
         CT3DEP3_OBJ_SUBFIX
     },
+};
+
+#define FRAME_ANIM(type, start, end) {type, start, end, end - start + 1}
+#define FRAME_ANIM_NULL(type) {type, -1, -1, 0}
+static const NETLizard_3D_Frame_Animation Egypt_3D_Frame_Animation[8][NL_FRAME_ANIMATION_TOTAL] = {
+    {
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_IDLE),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_WALK),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_RUN),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_FIGHTING_1),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_FIGHTING_2),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_ATTACK_1),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_ATTACK_2),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_DEAD_1),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_DEAD_2),
+    }, // 0 unused
+    {
+        FRAME_ANIM(NL_FRAME_ANIMATION_IDLE, 0, 0),
+        FRAME_ANIM(NL_FRAME_ANIMATION_WALK, 1, 7),
+        FRAME_ANIM(NL_FRAME_ANIMATION_RUN, 1, 7),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_1, 8, 11),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_2, 8, 11),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_1, 8, 11),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_2, 8, 11),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_1, 12, 13),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_2, 12, 13),
+    }, // 1
+    {
+        FRAME_ANIM(NL_FRAME_ANIMATION_IDLE, 0, 0),
+        FRAME_ANIM(NL_FRAME_ANIMATION_WALK, 1, 7),
+        FRAME_ANIM(NL_FRAME_ANIMATION_RUN, 1, 7),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_1, 8, 10),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_2, 8, 10),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_1, 8, 10),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_2, 8, 10),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_1, 11, 13), // 12
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_2, 11, 13),
+    }, // 2
+    {
+        FRAME_ANIM(NL_FRAME_ANIMATION_IDLE, 0, 0),
+        FRAME_ANIM(NL_FRAME_ANIMATION_WALK, 0, 0),
+        FRAME_ANIM(NL_FRAME_ANIMATION_RUN, 0, 0),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_1, 1, 5),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_2, 1, 5),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_1, 1, 5),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_2, 1, 5),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_1, 6, 6),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_2, 6, 6),
+    }, // 3
+    {
+        FRAME_ANIM(NL_FRAME_ANIMATION_IDLE, 2, 2),
+        FRAME_ANIM(NL_FRAME_ANIMATION_WALK, 0, 8),
+        FRAME_ANIM(NL_FRAME_ANIMATION_RUN, 0, 8),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_1, 0, 8),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_2, 0, 8),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_1, 0, 8),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_2, 0, 8),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_1, 2, 2),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_2, 2, 2),
+    }, // 4
+    {
+        FRAME_ANIM(NL_FRAME_ANIMATION_IDLE, 0, 0),
+        FRAME_ANIM(NL_FRAME_ANIMATION_WALK, 1, 9),
+        FRAME_ANIM(NL_FRAME_ANIMATION_RUN, 1, 9),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_1, 10, 14),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_2, 10, 14),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_1, 10, 14),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_2, 10, 14),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_1, 14, 17),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_2, 14, 20),
+    }, // 5
+    {
+        FRAME_ANIM(NL_FRAME_ANIMATION_IDLE, 0, 0),
+        FRAME_ANIM(NL_FRAME_ANIMATION_WALK, 1, 7),
+        FRAME_ANIM(NL_FRAME_ANIMATION_RUN, 1, 7),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_1, 8, 13),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_2, 8, 13),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_1, 8, 13),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_2, 8, 13),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_1, 14, 17),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_2, 14, 17),
+    }, // 6
+    {
+        FRAME_ANIM(NL_FRAME_ANIMATION_IDLE, 0, 8),
+        FRAME_ANIM(NL_FRAME_ANIMATION_WALK, 0, 8),
+        FRAME_ANIM(NL_FRAME_ANIMATION_RUN, 0, 8),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_1, 8, 18),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_2, 8, 18),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_1, 18, 26),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_2, 18, 26),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_1, 12, 12),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_2, 17, 17),
+    }, // 7
+};
+
+static const NETLizard_3D_Frame_Animation Clone_3D_Frame_Animation[5][NL_FRAME_ANIMATION_TOTAL] = {
+    {
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_IDLE),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_WALK),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_RUN),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_FIGHTING_1),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_FIGHTING_2),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_ATTACK_1),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_ATTACK_2),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_DEAD_1),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_DEAD_2),
+    }, // 0 unused
+    {
+        FRAME_ANIM(NL_FRAME_ANIMATION_IDLE, 26, 26),
+        FRAME_ANIM(NL_FRAME_ANIMATION_WALK, 27, 35),
+        FRAME_ANIM(NL_FRAME_ANIMATION_RUN, 36, 42),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_1, 1, 7),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_2, 9, 15),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_1, 0, 0),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_2, 8, 8),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_1, 16, 20),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_2, 21, 25),
+    }, // 1
+    {
+        FRAME_ANIM(NL_FRAME_ANIMATION_IDLE, 0, 0),
+        FRAME_ANIM(NL_FRAME_ANIMATION_WALK, 1, 9),
+        FRAME_ANIM(NL_FRAME_ANIMATION_RUN, 1, 9),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_1, 10, 19),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_2, 20, 29),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_1, 10, 10),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_2, 20, 20),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_1, 30, 34),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_2, 30, 34),
+    }, // 2
+    {
+        FRAME_ANIM(NL_FRAME_ANIMATION_IDLE, 0, 0),
+        FRAME_ANIM(NL_FRAME_ANIMATION_WALK, 1, 9),
+        FRAME_ANIM(NL_FRAME_ANIMATION_RUN, 1, 9),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_1, 10, 11),
+        FRAME_ANIM(NL_FRAME_ANIMATION_FIGHTING_2, 10, 11),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_1, 10, 11),
+        FRAME_ANIM(NL_FRAME_ANIMATION_ATTACK_2, 10, 11),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_1, 0, 0),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_2, 0, 0),
+    }, // 3
+    {
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_IDLE),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_WALK),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_RUN),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_FIGHTING_1),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_FIGHTING_2),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_ATTACK_1),
+        FRAME_ANIM_NULL(NL_FRAME_ANIMATION_ATTACK_2),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_1, 0, 3),
+        FRAME_ANIM(NL_FRAME_ANIMATION_DEAD_2, 0, 3),
+    }, // 4
+};
+
+static const NETLizard_3D_Frame_Animation **Frame_Animation[2] = {
+    Egypt_3D_Frame_Animation,
+    Clone_3D_Frame_Animation,
 };
 
 void delete_NETLizard_3D_Mesh(NETLizard_3D_Mesh *mesh)
@@ -337,9 +493,9 @@ NETLizard_Texture_Type nlGetPNGFileType(const char *name)
 
 const char * nlGet3DModelAnimationName(NETLizard_3D_Animation_Type anim)
 {
-	if(anim >= Animation_Total_Type)
+	if(anim >= NL_FRAME_ANIMATION_TOTAL)
 		return NULL;
-	static const char *names[Animation_Total_Type] = {
+	static const char *names[NL_FRAME_ANIMATION_TOTAL] = {
 		"Idel Animation",
 		"Walk Animation",
 		"Run Animation",
@@ -353,10 +509,10 @@ const char * nlGet3DModelAnimationName(NETLizard_3D_Animation_Type anim)
 	return names[anim];
 }
 
-
-int nlGet3DModelAnimationRange(NETLizard_Game game, int index, int animation[])
+const NETLizard_3D_Frame_Animation * nlGet3DModelFrameAnimationConfig(NETLizard_Game game, NLuint index)
 {
-	const int anim[2][8][Animation_Total_Type * 2] = {
+#if 0
+	const int anim[2][8][NL_FRAME_ANIMATION_TOTAL * 2] = {
 		{
 			{
 				-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
@@ -411,23 +567,20 @@ int nlGet3DModelAnimationRange(NETLizard_Game game, int index, int animation[])
 		} // clone 3d 4
 	};
 
-	const int anim_count[2][8] = {
+    const int anim_count[2][8] = {
 		{0, 5, 5, 5, 5, 6, 5, 6}, // egypt 3d 7
 		{0, 9, 7, 5, 1, 0, 0, 0}, // clone 3d 4
 	};
-    if(game == NL_SHADOW_OF_EGYPT_3D)
-	{
-		if(animation)
-			memcpy(animation, anim[0][index], sizeof(int) * Animation_Total_Type * 2);
-		return anim_count[0][index];
+#endif
+    if(game == NL_SHADOW_OF_EGYPT_3D && index <= 8)
+    {
+        return Egypt_3D_Frame_Animation[index];
 	}
-    else if(game == NL_CLONE_3D)
-	{
-		if(animation)
-			memcpy(animation, anim[1][index], sizeof(int) * Animation_Total_Type * 2);
-		return anim_count[1][index];
+    else if(game == NL_CLONE_3D && index <= 4)
+    {
+        return Clone_3D_Frame_Animation[index];
 	}
-	return -1;
+    return NULL;
 }
 
 int nlGetItemType(NETLizard_Game game, int index)

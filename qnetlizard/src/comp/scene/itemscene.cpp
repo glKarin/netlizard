@@ -148,6 +148,7 @@ bool ItemScene::LoadFile(const QString &file, const QString &resourcePath, int g
 
 void ItemScene::Reset()
 {
+    m_renderer->SetModel(0);
     if(m_model)
     {
         delete_GL_NETLizard_3D_Model(m_model);

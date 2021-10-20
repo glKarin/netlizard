@@ -266,6 +266,7 @@ QString ImageScene::GetSaveTextureSuffix() const
 
 void ImageScene::Reset()
 {
+    m_renderer->SetTexture(0);
     if(m_tex)
     {
         if(glIsTexture(m_tex->texid))
@@ -274,7 +275,6 @@ void ImageScene::Reset()
         m_tex = 0;
     }
     UnsetData();
-    m_renderer->SetTexture(0);
 
     NLScene::Reset();
 }

@@ -203,14 +203,14 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
                     GL_NETLizard_3D_Item_Mesh *mesh = m_model->item_meshes + i;
                     if(mesh->item_type == Item_Box_Type)
                     {
-                        GLfloat xs = mesh->item_mesh.ortho[0] - mesh->item_mesh.ortho[3];
-                        GLfloat ys = mesh->item_mesh.ortho[1] - mesh->item_mesh.ortho[4];
-                        GLfloat zs = mesh->item_mesh.ortho[2] - mesh->item_mesh.ortho[5];
+                        GLfloat xs = mesh->box.max[0] - mesh->box.min[0];
+                        GLfloat ys = mesh->box.max[1] - mesh->box.min[1];
+                        GLfloat zs = mesh->box.max[2] - mesh->box.min[2];
                         float d = m_sky3DCamera->ZDistance();
                         NLVector3 scale = VECTOR3(d / xs, d / ys, d / zs);
                         NLDEBUG_VECTOR3(scale);
                         m_sky3DActor->SetScale(scale);
-                        m_sky3DRenderer->SetModel(&mesh->item_mesh, m_model->texes);
+                        m_sky3DRenderer->SetModel(mesh, m_model->texes);
                         break;
                     }
                 }
@@ -227,15 +227,15 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
 
 void MapScene::Reset()
 {
+    m_renderer->SetModel(0);
+    m_skyRenderer->SetTexture(0);
+    m_sky3DRenderer->SetModel(0, 0);
     if(m_model)
     {
         delete_GL_NETLizard_3D_Model(m_model);
         free(m_model);
         m_model = 0;
     }
-    m_renderer->SetModel(0);
-    m_skyRenderer->SetTexture(0);
-    m_sky3DRenderer->SetModel(0, 0);
 
     NLScene::Reset();
 }

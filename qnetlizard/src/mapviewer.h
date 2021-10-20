@@ -33,7 +33,7 @@ private Q_SLOTS:
     void SetResourceDirPath(const QString &file);
 
 private:
-    MapScene *m_mapWidget;
+    MapScene *m_mapScene;
     QComboBox *m_gameComboBox;
     QFileDialog *m_fileChooser;
     QFileDialog *m_resourceDirChooser;
