@@ -14,7 +14,7 @@
 #include "mapviewer.h"
 #include "fontviewer.h"
 #include "itemviewer.h"
-#include "roleviewer.h"
+#include "animationviewer.h"
 #include "helpdialog.h"
 #include "aboutdialog.h"
 #include "logdialog.h"
@@ -62,8 +62,8 @@ void MainWindow::Init()
     menuItem->setData("map_viewer");
     menuItem = menu->addAction("&Item viewer");
     menuItem->setData("item_viewer");
-    menuItem = menu->addAction("&Character animation viewer");
-    menuItem->setData("character_animation_viewer");
+    menuItem = menu->addAction("&Animation viewer");
+    menuItem->setData("animation_viewer");
     menuItem = menu->addAction("&Sprite viewer");
     menuItem->setData("sprite_viewer");
 
@@ -150,8 +150,8 @@ BaseViewer * MainWindow::GenViewer(const QString &type)
         viewer = new MapViewer;
     else if(type == "item_viewer")
         viewer = new ItemViewer;
-    else if(type == "character_animation_viewer")
-        viewer = new RoleViewer;
+    else if(type == "animation_viewer")
+        viewer = new AnimationViewer;
     else if(type == "sprite_viewer")
         ;
 

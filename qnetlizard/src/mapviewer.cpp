@@ -18,16 +18,6 @@
 #include "netlizard.h"
 #include "qdef.h"
 
-static const QPair<int, QString> Types[] = {
-    QPair<int, QString>(NL_CONTR_TERRORISM_3D, "3D Contr Terrorism"),
-    QPair<int, QString>(NL_ARMY_RANGER_3D, "3D Army Ranger"),
-    QPair<int, QString>(NL_CONTR_TERRORISM_3D_EPISODE_2, "3D Contr Terrorism : Episode-2"),
-    QPair<int, QString>(NL_SHADOW_OF_EGYPT_3D, "3D Shadows of Egypt"),
-    QPair<int, QString>(NL_CLONE_3D, "3D Clone"),
-    QPair<int, QString>(NL_CONTR_TERRORISM_3D_EPISODE_3, "3D Contr Terrorism : Episode-3"),
-    QPair<int, QString>(NL_RACING_EVOLUTION_3D, "3D Racing Evolution"),
-};
-
 MapViewer::MapViewer(QWidget *parent) :
     BaseViewer(parent),
     m_mapScene(0),
@@ -54,10 +44,9 @@ void MapViewer::Init()
     QHBoxLayout *toolLayout = ToolLayout();
     m_levelSpinBox = new QSpinBox;
 
-    for(int i = 0; i < 7; i++)
+    for(int i = 0; i <= NL_CONTR_TERRORISM_3D_EPISODE_3; i++)
     {
-        const QPair<int, QString> &p = Types[i];
-        m_gameComboBox->addItem(p.second, QVariant(p.first));
+        m_gameComboBox->addItem(nlGet3DGameName(static_cast<NETLizard_Game>(i)), QVariant(i));
     }
     m_gameComboBox->setMaximumWidth(180);
     m_levelSpinBox->setMinimum(-1);
@@ -149,7 +138,7 @@ bool MapViewer::OpenFile()
     }
     m_mapScene->Reset();
     int selectedIndex = m_gameComboBox->currentIndex();
-    int game = Types[selectedIndex].first;
+    int game = selectedIndex + NL_RACING_EVOLUTION_3D;
     int level = m_levelSpinBox->value();
     if(m_resourceDirPath.isEmpty())
     {
@@ -191,7 +180,7 @@ bool MapViewer::OpenFile()
         QMessageBox::warning(this, "Error", "Unsupport 3D game!");
         break;
     }
-    SetTitleLabel(QString("%1(level-%2)  lvl: %3, resource directory: %4 -> %5").arg(Types[selectedIndex].second).arg(level).arg(m_lvlPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
+    SetTitleLabel(QString("%1(level-%2)  lvl: %3, resource directory: %4 -> %5").arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(level).arg(m_lvlPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
     if(res)
     {
         m_mapScene->setFocus();

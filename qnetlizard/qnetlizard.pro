@@ -20,27 +20,13 @@ HEADERS += \
     src/qdef.h \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
-    src/misc/settings.h \
-    lib/bound.h \
-    lib/plane.h \
-    lib/triangle.h \
-    lib/line.h \
-    src/comp/scene/rolescene.h \
-    src/roleviewer.h \
-    src/comp/renderer/netlizardanimationmodelrenderer.h
+    src/misc/settings.h
 
 SOURCES += \
     main.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
-    src/misc/settings.cpp \
-    lib/bound.c \
-    lib/plane.c \
-    lib/triangle.c \
-    lib/line.c \
-    src/comp/scene/rolescene.cpp \
-    src/roleviewer.cpp \
-    src/comp/renderer/netlizardanimationmodelrenderer.cpp
+    src/misc/settings.cpp
 
 # Widget
 HEADERS += \
@@ -56,6 +42,7 @@ HEADERS += \
     src/helpdialog.h \
     src/aboutdialog.h \
     src/logdialog.h \
+    src/animationviewer.h \
     src/settingdialog.h
 
 SOURCES += \
@@ -71,6 +58,7 @@ SOURCES += \
     src/helpdialog.cpp \
     src/aboutdialog.cpp \
     src/logdialog.cpp \
+    src/animationviewer.cpp \
     src/settingdialog.cpp
 
 # Component
@@ -97,22 +85,26 @@ HEADERS += \
     src/comp/renderer/netlizardmapmodelrenderer.h \
     src/comp/renderer/netlizarditemmodelrenderer.h \
     src/comp/renderer/netlizardtexturerenderer.h \
-    src/comp/renderer/netlizardfontrenderer.h
+    src/comp/renderer/netlizardfontrenderer.h \
+    src/comp/renderer/netlizardanimationmodelrenderer.h
 SOURCES += \
     src/comp/renderer/netlizardmapmodelrenderer.cpp \
     src/comp/renderer/netlizarditemmodelrenderer.cpp \
     src/comp/renderer/netlizardtexturerenderer.cpp \
-    src/comp/renderer/netlizardfontrenderer.cpp
+    src/comp/renderer/netlizardfontrenderer.cpp \
+    src/comp/renderer/netlizardanimationmodelrenderer.cpp
 
 HEADERS += \
     src/comp/scene/imagescene.h \
     src/comp/scene/mapscene.h \
     src/comp/scene/fontscene.h \
+    src/comp/scene/animationscene.h \
     src/comp/scene/itemscene.h
 SOURCES += \
     src/comp/scene/imagescene.cpp \
     src/comp/scene/mapscene.cpp \
     src/comp/scene/fontscene.cpp \
+    src/comp/scene/animationscene.cpp \
     src/comp/scene/itemscene.cpp
 
 # Engine
@@ -159,12 +151,20 @@ INCLUDEPATH += ./lib
 HEADERS += \
     lib/mesa_gl_math.h \
 #    lib/camera.h \
-    lib/vector3.h
+    lib/vector3.h \
+    lib/bound.h \
+    lib/plane.h \
+    lib/triangle.h \
+    lib/line.h
 
 SOURCES += \
     lib/mesa_gl_math.c \
 #    lib/camera.c \
-    lib/vector3.c
+    lib/vector3.c \
+    lib/bound.c \
+    lib/plane.c \
+    lib/triangle.c \
+    lib/line.c
 
 # NL-GL
 DEPENDPATH += ./src/gl

@@ -72,7 +72,7 @@ void NETLizardAnimationModelRenderer::SetAnim(int anim, int frame)
 {
     if(m_anim != anim)
     {
-        SetAnim(anim);
+        m_anim = anim;
         SetFrame(frame);
     }
 }

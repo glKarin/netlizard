@@ -18,6 +18,11 @@
 #define instanceofv(obj, T) ((dynamic_cast<T *>(obj)) != 0)
 #endif
 
+#ifndef countof
+#define countof(arr) (sizeof(arr) / sizeof(arr[0]))
+#define lengthof countof
+#endif
+
 #define SINGLE_INSTANCE_DEF(C) static C * Instance();
 #define SINGLE_INSTANCE_DECL(C) C * C::Instance() \
 {\

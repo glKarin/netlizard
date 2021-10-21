@@ -392,6 +392,18 @@ static const NETLizard_3D_Frame_Animation **Frame_Animation[2] = {
     Clone_3D_Frame_Animation,
 };
 
+static const char *Frame_Animation_Name[NL_FRAME_ANIMATION_TOTAL] = {
+    "Idel",
+    "Walk",
+    "Run",
+    "Fighting-1",
+    "Fighting-2",
+    "Attack-1",
+    "Attack-2",
+    "Dead-1",
+    "Dead-2"
+};
+
 void delete_NETLizard_3D_Mesh(NETLizard_3D_Mesh *mesh)
 {
     free(mesh->vertex.data);
@@ -491,22 +503,11 @@ NETLizard_Texture_Type nlGetPNGFileType(const char *name)
     return type;
 }
 
-const char * nlGet3DModelAnimationName(NETLizard_3D_Animation_Type anim)
+const char * nlGet3DModelFrameAnimationName(NETLizard_3D_Animation_Type anim)
 {
 	if(anim >= NL_FRAME_ANIMATION_TOTAL)
-		return NULL;
-	static const char *names[NL_FRAME_ANIMATION_TOTAL] = {
-		"Idel Animation",
-		"Walk Animation",
-		"Run Animation",
-		"Fighting-1 Animation",
-		"Fighting-2 Animation",
-		"Attack-1 Animation",
-		"Attack-2 Animation",
-		"Dead-1 Animation",
-		"Dead-2 Animation"
-	};
-	return names[anim];
+        return NULL;
+    return Frame_Animation_Name[anim];
 }
 
 const NETLizard_3D_Frame_Animation * nlGet3DModelFrameAnimationConfig(NETLizard_Game game, NLuint index)

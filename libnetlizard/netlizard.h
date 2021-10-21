@@ -418,7 +418,7 @@ void delete_NETLizard_3D_Item_Mesh(NETLizard_3D_Item_Mesh *mesh); // free 3D ite
 void delete_NETLizard_3D_Model(NETLizard_3D_Model *model); // free 3D model
 
 // util
-const char * nlGet3DModelAnimationName(NETLizard_3D_Animation_Type anim); // get 3D Egypt/3D Clone player character animation name
+const char * nlGet3DModelFrameAnimationName(NETLizard_3D_Animation_Type anim); // get 3D Egypt/3D Clone player character animation name
 NLboolean nlCheck3DGameLevelIsAvailable(NETLizard_Game game, int level); // check 3D game level is availabel
 int nlGetItemType(NETLizard_Game game, int index); // get 3D game item type
 const NETLizard_3D_Frame_Animation * nlGet3DModelFrameAnimationConfig(NETLizard_Game game, NLuint index); // get 3D Egypt/3D Clone player character animation index start and end

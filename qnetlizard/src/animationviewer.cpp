@@ -1,4 +1,4 @@
-#include "roleviewer.h"
+#include "animationviewer.h"
 
 #include <QDebug>
 #include <QPair>
@@ -16,31 +16,16 @@
 #include <QColorDialog>
 #include <QGroupBox>
 #include <QSlider>
+#include <QCheckBox>
+#include <QToolButton>
 
-#include "rolescene.h"
+#include "animationscene.h"
 #include "netlizard.h"
 #include "qdef.h"
 
-static const QPair<int, QString> Types[] = {
-    QPair<int, QString>(NL_SHADOW_OF_EGYPT_3D, "3D Shadows of Egypt"),
-    QPair<int, QString>(NL_CLONE_3D, "3D Clone"),
-};
-
-static const QPair<int, QString> Anims[NL_FRAME_ANIMATION_TOTAL] = {
-    QPair<int, QString>(NL_FRAME_ANIMATION_IDLE, "Idle"),
-    QPair<int, QString>(NL_FRAME_ANIMATION_WALK, "Walk"),
-    QPair<int, QString>(NL_FRAME_ANIMATION_RUN, "Run"),
-    QPair<int, QString>(NL_FRAME_ANIMATION_FIGHTING_1, "Fighting 1"),
-    QPair<int, QString>(NL_FRAME_ANIMATION_FIGHTING_2, "Fighting 2"),
-    QPair<int, QString>(NL_FRAME_ANIMATION_ATTACK_1, "Attack 1"),
-    QPair<int, QString>(NL_FRAME_ANIMATION_ATTACK_2, "Attack 2"),
-    QPair<int, QString>(NL_FRAME_ANIMATION_DEAD_1, "Dead 1"),
-    QPair<int, QString>(NL_FRAME_ANIMATION_DEAD_2, "Dead 2"),
-};
-
-RoleViewer::RoleViewer(QWidget *parent) :
+AnimationViewer::AnimationViewer(QWidget *parent) :
     BaseViewer(parent),
-    m_roleScene(0),
+    m_animationScene(0),
     m_gameComboBox(0),
     m_fileChooser(0),
     m_resourceDirChooser(0),
@@ -49,21 +34,24 @@ RoleViewer::RoleViewer(QWidget *parent) :
     m_openObjButton(0),
     m_openResourcePathButton(0),
     m_animComboBox(0),
-    m_frameSlider(0)
+    m_frameSlider(0),
+    m_playButton(0),
+    m_animFPSSpinBox(0),
+    m_playSeqCheckBox(0)
 {
-    setObjectName("RoleViewer");
+    setObjectName("AnimationViewer");
     Init();
 }
 
-RoleViewer::~RoleViewer()
+AnimationViewer::~AnimationViewer()
 {
 }
 
-void RoleViewer::Init()
+void AnimationViewer::Init()
 {
     QPushButton *button;
     m_gameComboBox = new QComboBox;
-    m_roleScene = new RoleScene;
+    m_animationScene = new AnimationScene;
     QHBoxLayout *toolLayout = ToolLayout();
     m_indexSpinBox = new QSpinBox;
     QHBoxLayout *layout = new QHBoxLayout;
@@ -71,33 +59,54 @@ void RoleViewer::Init()
     QGroupBox *widget = new QGroupBox;
     m_animComboBox = new QComboBox;
     m_frameSlider = new QSlider;
+    m_playButton = new QToolButton;
+    m_animFPSSpinBox = new QSpinBox;
+    m_playSeqCheckBox = new QCheckBox("Invert");
 
-    for(int i = 0; i < NL_FRAME_ANIMATION_TOTAL; i++)
+    for(int i = NL_FRAME_ANIMATION_IDLE; i < NL_FRAME_ANIMATION_TOTAL; i++)
     {
-        const QPair<int, QString> &p = Anims[i];
-        m_animComboBox->addItem(p.second, QVariant(p.first));
+        m_animComboBox->addItem(nlGet3DModelFrameAnimationName(static_cast<NETLizard_3D_Animation_Type>(i)), QVariant(i));
     }
-    widget->setMaximumWidth(240);
-    vLayout->addWidget(new QLabel("Animation"));
+    widget->setTitle("Operation");
+    widget->setMinimumWidth(240);
+    widget->setMaximumWidth(360);
+    vLayout->addWidget(new QLabel("Animation: "));
     vLayout->addWidget(m_animComboBox);
     vLayout->addSpacing(1);
-    vLayout->addWidget(new QLabel("Frame"));
+    vLayout->addWidget(new QLabel("Frame: "));
     m_frameSlider->setMinimum(0);
-    m_frameSlider->setMaximum(10);
+    m_frameSlider->setMaximum(0);
     m_frameSlider->setOrientation(Qt::Horizontal);
     m_frameSlider->setTickPosition(QSlider::TicksRight);
     //m_frameSlider->setMaximumWidth(200);
     vLayout->addWidget(m_frameSlider);
+    vLayout->addSpacing(1);
+    vLayout->addWidget(new QLabel("FPS: "));
+    m_animFPSSpinBox->setMinimum(0);
+    m_animFPSSpinBox->setMaximum(60);
+    m_animFPSSpinBox->setValue(m_animationScene->AnimFPS());
+    vLayout->addWidget(m_animFPSSpinBox);
+    vLayout->addSpacing(1);
+    vLayout->addWidget(new QLabel("Play sequence: "));
+    vLayout->addWidget(m_playSeqCheckBox);
+    vLayout->addSpacing(1);
+    m_playButton->setText("Play");
+    m_playButton->setCheckable(true);
+    vLayout->addWidget(m_playButton);
     vLayout->addStretch(1);
+
     widget->setLayout(vLayout);
     layout->addWidget(widget);
-    //m_roleScene->setMinimumWidth(320);
-    layout->addWidget(m_roleScene, 1);
+    //m_animationScene->setMinimumWidth(320);
+    layout->addWidget(m_animationScene, 1);
 
-    for(int i = 0; i < 2; i++)
+    const NETLizard_Game Games[] = {
+        NL_SHADOW_OF_EGYPT_3D,
+        NL_CLONE_3D
+    };
+    for(int i = 0; i < countof(Games); i++)
     {
-        const QPair<int, QString> &p = Types[i];
-        m_gameComboBox->addItem(p.second, QVariant(p.first));
+        m_gameComboBox->addItem(nlGet3DGameName(Games[i]), QVariant(Games[i]));
     }
     m_gameComboBox->setMaximumWidth(180);
     m_indexSpinBox->setMinimum(-1);
@@ -131,27 +140,31 @@ void RoleViewer::Init()
     button->setText("Load");
     toolLayout->addWidget(button);
 
-    connect(m_gameComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));
-    connect(m_animComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetAnim(int)));
-    connect(m_frameSlider, SIGNAL(sliderMoved(int)), this, SLOT(SetFrame(int)));
+    connect(m_animComboBox, SIGNAL(currentIndexChanged(int)), m_animationScene, SLOT(SetAnim(int)));
+    connect(m_frameSlider, SIGNAL(sliderMoved(int)), m_animationScene, SLOT(SetFrame(int)));
+    connect(m_animFPSSpinBox, SIGNAL(valueChanged(int)), m_animationScene, SLOT(SetAnimFPS(int)));
+    connect(m_animationScene, SIGNAL(frameChanged(int)), m_frameSlider, SLOT(setValue(int)));
+    connect(m_animationScene, SIGNAL(animChanged(int)), this, SLOT(OnAnimChanged(int)));
+    connect(m_playSeqCheckBox, SIGNAL(clicked(bool)), m_animationScene, SLOT(SetPlaySequence(bool)));
+    connect(m_playButton, SIGNAL(clicked(bool)), m_animationScene, SLOT(SetPlaying(bool)));
 
     CentralWidget()->setLayout(layout);
     SetTitle("NETLizard 3D FPS role viewer");
 }
 
-void RoleViewer::OpenBackgroundColorChooser()
+void AnimationViewer::OpenBackgroundColorChooser()
 {
     if(!m_colorChooser)
     {
         m_colorChooser = new QColorDialog(this);
         connect(m_colorChooser, SIGNAL(colorSelected(const QColor &)), this, SLOT(SetBackgroundColor(const QColor &)));
     }
-    m_colorChooser->setCurrentColor(m_roleScene->ClearColor());
+    m_colorChooser->setCurrentColor(m_animationScene->ClearColor());
 
     m_colorChooser->exec();
 }
 
-void RoleViewer::OpenObjFileChooser()
+void AnimationViewer::OpenObjFileChooser()
 {
     if(!m_fileChooser)
     {
@@ -163,7 +176,7 @@ void RoleViewer::OpenObjFileChooser()
     m_fileChooser->exec();
 }
 
-void RoleViewer::OpenResourceDirChooser()
+void AnimationViewer::OpenResourceDirChooser()
 {
     if(!m_resourceDirChooser)
     {
@@ -175,7 +188,7 @@ void RoleViewer::OpenResourceDirChooser()
     m_resourceDirChooser->exec();
 }
 
-void RoleViewer::SetObjFile(const QString &file)
+void AnimationViewer::SetObjFile(const QString &file)
 {
     if(m_objPath != file)
     {
@@ -185,7 +198,7 @@ void RoleViewer::SetObjFile(const QString &file)
     }
 }
 
-void RoleViewer::SetResourceDirPath(const QString &file)
+void AnimationViewer::SetResourceDirPath(const QString &file)
 {
     if(m_resourceDirPath != file)
     {
@@ -194,45 +207,44 @@ void RoleViewer::SetResourceDirPath(const QString &file)
     }
 }
 
-void RoleViewer::SetBackgroundColor(const QColor &color)
+void AnimationViewer::SetBackgroundColor(const QColor &color)
 {
-    m_roleScene->SetClearColor(color);
+    m_animationScene->SetClearColor(color);
 }
 
-void RoleViewer::OnTypeCurrentIndexChanged(int index)
+void AnimationViewer::OnAnimChanged(int index)
 {
-    //m_levelSpinBox->setEnabled(index == 2);
-}
-
-void RoleViewer::SetAnim(int index)
-{
-    m_roleScene->SetAnim(index);
     m_frameSlider->setValue(0);
-    int count = m_roleScene->CurrentAnimationFrames();
-    if(count > 0)
-        m_frameSlider->setMaximum(count - 1);
+    const NETLizard_3D_Frame_Animation *config = m_animationScene->CurrentAnimation();
+    if(config)
+    {
+        SetTitleLabel(QString("Animation: %1, frame range: %2 - %3, frame count: %4").arg(nlGet3DModelFrameAnimationName(config->type)).arg(config->begin_frame).arg(config->end_frame).arg(config->count));
+        m_frameSlider->setMaximum(config->count - 1);
+    }
     else
+    {
+        SetTitleLabel("Invalid frame animation!");
         m_frameSlider->setMaximum(0);
+    }
 }
 
-void RoleViewer::SetFrame(int index)
-{
-    m_roleScene->SetFrame(index);
-}
-
-bool RoleViewer::OpenFile()
+bool AnimationViewer::OpenFile()
 {
     if(m_objPath.isEmpty())
     {
         QMessageBox::warning(this, "Error", "Choose obj file and resource path!");
         return false;
     }
+    const NETLizard_Game Games[] = {
+        NL_SHADOW_OF_EGYPT_3D,
+        NL_CLONE_3D
+    };
     m_animComboBox->setCurrentIndex(0);
     m_frameSlider->setMaximum(0);
     m_frameSlider->setValue(0);
-    m_roleScene->Reset();
+    m_animationScene->Reset();
     int selectedIndex = m_gameComboBox->currentIndex();
-    int game = Types[selectedIndex].first;
+    int game = Games[selectedIndex];
     int index = m_indexSpinBox->value();
     if(m_resourceDirPath.isEmpty())
     {
@@ -254,17 +266,18 @@ bool RoleViewer::OpenFile()
     switch(game)
     {
     case NL_SHADOW_OF_EGYPT_3D:
-    //case NL_CLONE_3D:
-        res = m_roleScene->LoadFile(m_objPath, m_resourceDirPath, game, index);
+    case NL_CLONE_3D:
+        res = m_animationScene->LoadFile(m_objPath, m_resourceDirPath, game, index);
     break;
     default:
         QMessageBox::warning(this, "Error", "Unsupport 3D game!");
         break;
     }
-    SetTitleLabel(QString("%1(index-%2)  obj: %3, resource directory: %4 -> %5").arg(Types[selectedIndex].second).arg(index).arg(m_objPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
+    SetTitleLabel(QString("%1(index-%2)  obj: %3, resource directory: %4 -> %5").arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(index).arg(m_objPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
     if(res)
     {
-        m_roleScene->setFocus();
+        m_animationScene->setFocus();
+        m_animationScene->Play();
     }
     else
     {

@@ -1,18 +1,18 @@
-#ifndef _KARIN_ROLESCENE_H
-#define _KARIN_ROLESCENE_H
+#ifndef _KARIN_ANIMATIONSCENE_H
+#define _KARIN_ANIMATIONSCENE_H
 
 #include "nlscene.h"
 #include "gl/nl_gl.h"
 
 class NETLizardAnimationModelRenderer;
 
-NLSCENE(RoleScene)
-class RoleScene : public NLScene
+NLSCENE(AnimationScene)
+class AnimationScene : public NLScene
 {
     Q_OBJECT
 public:
-    RoleScene(QWidget *parent = 0);
-    virtual ~RoleScene();
+    AnimationScene(QWidget *parent = 0);
+    virtual ~AnimationScene();
     bool IsValid() const;
     const GL_NETLizard_3D_Model * Model() const;
     const NETLizard_3D_Frame_Animation * Config() const;
@@ -22,6 +22,7 @@ public:
     int Frame() const;
     int AnimFPS() const;
     bool IsPlaying() const;
+    bool PlaySequence() const;
 
 public Q_SLOTS:
     bool LoadFile(const QString &file, const QString &resourcePath, int game, int index);
@@ -34,6 +35,8 @@ public Q_SLOTS:
     void SetAnim(int anim);
     void SetFrame(int frame);
     void SetAnimFPS(int fps);
+    void SetPlaySequence(bool invert);
+    void SetPlaying(bool playing);
 
 Q_SIGNALS:
     void frameChanged(int frame);
@@ -58,10 +61,11 @@ private:
     int m_frame;
     bool m_playing;
     int m_animFPS;
+    bool m_playSequence;
     int m_frameInterval;
     qint64 m_lastFrameTime;
 
-    Q_DISABLE_COPY(RoleScene)
+    Q_DISABLE_COPY(AnimationScene)
 };
 
-#endif // _KARIN_ROLESCENE_H
+#endif // _KARIN_ANIMATIONSCENE_H

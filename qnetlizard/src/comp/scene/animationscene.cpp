@@ -1,4 +1,4 @@
-#include "rolescene.h"
+#include "animationscene.h"
 
 #include <QDebug>
 #include <QByteArray>
@@ -11,7 +11,7 @@
 #include "nlsceneorthocamera.h"
 #include "settings.h"
 
-RoleScene::RoleScene(QWidget *parent)
+AnimationScene::AnimationScene(QWidget *parent)
     : NLScene(parent),
       m_model(0),
       m_renderer(0),
@@ -20,13 +20,14 @@ RoleScene::RoleScene(QWidget *parent)
       m_frame(-1),
       m_playing(false),
       m_animFPS(0),
+      m_playSequence(false),
       m_frameInterval(0),
       m_lastFrameTime(0)
 {
     SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
     SetAnimFPS(2);
 
-    setObjectName("RoleScene");
+    setObjectName("AnimationScene");
 
     NLPropperties prop;
     prop.insert("z_is_up", true);
@@ -39,30 +40,36 @@ RoleScene::RoleScene(QWidget *parent)
     SetCurrentCamera(camera->Camera());
 }
 
-RoleScene::~RoleScene()
+AnimationScene::~AnimationScene()
 {
     DEBUG_DESTROY_Q;
 }
 
-void RoleScene::Init()
+void AnimationScene::Init()
 {
     NLScene::Init();
 }
 
-void RoleScene::Update(float delta)
+void AnimationScene::Update(float delta)
 {
     //qDebug() << delta;
     NLScene::Update(delta);
-    qint64 t = UpdateTime();
-    qint64 d = t - m_lastFrameTime;
-    if(m_frameInterval == 0 || d > m_frameInterval)
+    if(m_playing)
     {
-        m_lastFrameTime = t;
-        NextFrame();
+        qint64 t = UpdateTime();
+        qint64 d = t - m_lastFrameTime;
+        if(m_frameInterval == 0 || d > m_frameInterval)
+        {
+            m_lastFrameTime = t;
+            if(m_playSequence)
+                PrevFrame();
+            else
+                NextFrame();
+        }
     }
 }
 
-void RoleScene::paintGL()
+void AnimationScene::paintGL()
 {
     if(!m_model)
         return;
@@ -73,13 +80,13 @@ void RoleScene::paintGL()
     glFlush();
 }
 
-void RoleScene::Deinit()
+void AnimationScene::Deinit()
 {
     Reset();
     NLScene::Deinit();
 }
 
-bool RoleScene::LoadFile(const QString &file, const QString &resourcePath, int game, int index)
+bool AnimationScene::LoadFile(const QString &file, const QString &resourcePath, int game, int index)
 {
     Reset();
     QByteArray ba1 = file.toLocal8Bit();
@@ -123,8 +130,9 @@ bool RoleScene::LoadFile(const QString &file, const QString &resourcePath, int g
     return true;
 }
 
-void RoleScene::Reset()
+void AnimationScene::Reset()
 {
+    Stop();
     m_frameAnim = 0;
     m_renderer->SetModel(0, 0);
     m_renderer->SetAnim(-1);
@@ -139,17 +147,17 @@ void RoleScene::Reset()
     NLScene::Reset();
 }
 
-bool RoleScene::IsValid() const
+bool AnimationScene::IsValid() const
 {
     return m_model != 0;
 }
 
-const GL_NETLizard_3D_Model * RoleScene::Model() const
+const GL_NETLizard_3D_Model * AnimationScene::Model() const
 {
     return m_model;
 }
 
-void RoleScene::SetAnim(int anim)
+void AnimationScene::SetAnim(int anim)
 {
     if(m_anim != anim)
     {
@@ -159,7 +167,7 @@ void RoleScene::SetAnim(int anim)
     }
 }
 
-void RoleScene::SetFrame(int frame)
+void AnimationScene::SetFrame(int frame)
 {
     if(m_frame != frame)
     {
@@ -169,7 +177,7 @@ void RoleScene::SetFrame(int frame)
     }
 }
 
-void RoleScene::LoadAnimFrame(int index)
+void AnimationScene::LoadAnimFrame(int index)
 {
     m_frameAnim = 0;
     if(!m_model)
@@ -178,19 +186,21 @@ void RoleScene::LoadAnimFrame(int index)
     m_frameAnim = nlGet3DModelFrameAnimationConfig(static_cast<NETLizard_Game>(game), index);
 }
 
-const NETLizard_3D_Frame_Animation * RoleScene::Config() const
+const NETLizard_3D_Frame_Animation * AnimationScene::Config() const
 {
     return m_frameAnim;
 }
 
-const NETLizard_3D_Frame_Animation * RoleScene::CurrentAnimation() const
+const NETLizard_3D_Frame_Animation * AnimationScene::CurrentAnimation() const
 {
+    if(!m_frameAnim)
+        return 0;
     if(!m_frameAnim || m_anim < 0)
         return 0;
     return m_frameAnim + m_anim;
 }
 
-int RoleScene::CurrentAnimationFrames() const
+int AnimationScene::CurrentAnimationFrames() const
 {
     const NETLizard_3D_Frame_Animation *config = CurrentAnimation();
     if(config && config->end_frame != -1 && config->begin_frame != -1)
@@ -199,17 +209,17 @@ int RoleScene::CurrentAnimationFrames() const
         return 0;
 }
 
-int RoleScene::Anim() const
+int AnimationScene::Anim() const
 {
     return m_anim;
 }
 
-int RoleScene::Frame() const
+int AnimationScene::Frame() const
 {
     return m_frame;
 }
 
-void RoleScene::NextFrame()
+void AnimationScene::NextFrame()
 {
     int count = CurrentAnimationFrames();
     int frame = m_frame;
@@ -220,7 +230,7 @@ void RoleScene::NextFrame()
     SetFrame(frame);
 }
 
-void RoleScene::PrevFrame()
+void AnimationScene::PrevFrame()
 {
     int count = CurrentAnimationFrames();
     int frame = m_frame;
@@ -231,20 +241,21 @@ void RoleScene::PrevFrame()
     SetFrame(frame);
 }
 
-bool RoleScene::IsPlaying() const
+bool AnimationScene::IsPlaying() const
 {
     return m_playing;
 }
 
-void RoleScene::Play()
+void AnimationScene::Play()
 {
     if(m_playing)
         return;
     m_playing = true;
+    m_lastFrameTime = UpdateTime();
     emit playing();
 }
 
-void RoleScene::Stop()
+void AnimationScene::Stop()
 {
     if(!m_playing)
         return;
@@ -252,7 +263,7 @@ void RoleScene::Stop()
     emit stopped();
 }
 
-void RoleScene::Toggle()
+void AnimationScene::Toggle()
 {
     if(m_playing)
         Stop();
@@ -260,12 +271,20 @@ void RoleScene::Toggle()
         Play();
 }
 
-int RoleScene::AnimFPS() const
+void AnimationScene::SetPlaying(bool playing)
+{
+    if(m_playing != playing)
+    {
+        Toggle();
+    }
+}
+
+int AnimationScene::AnimFPS() const
 {
     return m_animFPS;
 }
 
-void RoleScene::SetAnimFPS(int fps)
+void AnimationScene::SetAnimFPS(int fps)
 {
     if(m_animFPS != fps)
     {
@@ -277,4 +296,15 @@ void RoleScene::SetAnimFPS(int fps)
             m_frameInterval = qRound(1000.0 / (float)m_animFPS);
         }
     }
+}
+
+bool AnimationScene::PlaySequence() const
+{
+    return m_playSequence;
+}
+
+void AnimationScene::SetPlaySequence(bool invert)
+{
+    if(m_playSequence != invert)
+        m_playSequence = invert;
 }

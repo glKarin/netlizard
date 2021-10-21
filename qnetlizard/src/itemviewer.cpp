@@ -19,16 +19,6 @@
 #include "netlizard.h"
 #include "qdef.h"
 
-static const QPair<int, QString> Types[] = {
-    QPair<int, QString>(NL_CONTR_TERRORISM_3D, "3D Contr Terrorism"),
-    QPair<int, QString>(NL_ARMY_RANGER_3D, "3D Army Ranger"),
-    QPair<int, QString>(NL_CONTR_TERRORISM_3D_EPISODE_2, "3D Contr Terrorism : Episode-2"),
-    QPair<int, QString>(NL_SHADOW_OF_EGYPT_3D, "3D Shadows of Egypt"),
-    QPair<int, QString>(NL_CLONE_3D, "3D Clone"),
-    QPair<int, QString>(NL_CONTR_TERRORISM_3D_EPISODE_3, "3D Contr Terrorism : Episode-3"),
-    QPair<int, QString>(NL_RACING_EVOLUTION_3D, "3D Racing Evolution"),
-};
-
 ItemViewer::ItemViewer(QWidget *parent) :
     BaseViewer(parent),
     m_itemScene(0),
@@ -56,10 +46,9 @@ void ItemViewer::Init()
     QHBoxLayout *toolLayout = ToolLayout();
     m_indexSpinBox = new QSpinBox;
 
-    for(int i = 0; i < 7; i++)
+    for(int i = 0; i <= NL_CONTR_TERRORISM_3D_EPISODE_3; i++)
     {
-        const QPair<int, QString> &p = Types[i];
-        m_gameComboBox->addItem(p.second, QVariant(p.first));
+        m_gameComboBox->addItem(nlGet3DGameName(static_cast<NETLizard_Game>(i)), QVariant(i));
     }
     m_gameComboBox->setMaximumWidth(180);
     m_indexSpinBox->setMinimum(-1);
@@ -173,7 +162,7 @@ bool ItemViewer::OpenFile()
     }
     m_itemScene->Reset();
     int selectedIndex = m_gameComboBox->currentIndex();
-    int game = Types[selectedIndex].first;
+    int game = selectedIndex + NL_RACING_EVOLUTION_3D;
     int index = m_indexSpinBox->value();
     if(m_resourceDirPath.isEmpty())
     {
@@ -207,7 +196,7 @@ bool ItemViewer::OpenFile()
         QMessageBox::warning(this, "Error", "Unsupport 3D game!");
         break;
     }
-    SetTitleLabel(QString("%1(index-%2)  obj: %3, resource directory: %4 -> %5").arg(Types[selectedIndex].second).arg(index).arg(m_objPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
+    SetTitleLabel(QString("%1(index-%2)  obj: %3, resource directory: %4 -> %5").arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(index).arg(m_objPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
     if(res)
     {
         m_itemScene->setFocus();

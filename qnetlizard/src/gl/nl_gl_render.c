@@ -120,7 +120,7 @@ GLvoid NETLizard_RenderGL3DModelFrameAnimation(const GL_NETLizard_3D_Model *m, c
     if(frame >= c->count)
         return;
     int f = c->begin_frame + frame;
-    GL_NETLizard_3D_Mesh *mesh = m->meshes + f;
+    GL_NETLizard_3D_Mesh *mesh = m->item_meshes + f;
     NETLizard_RenderGL3DMesh(mesh, m->texes);
     //NETLizard_RenderGL3DItemMesh(mesh, m->texes[mesh->tex_index[0]]);
 }
