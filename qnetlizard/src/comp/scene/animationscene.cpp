@@ -25,7 +25,7 @@ AnimationScene::AnimationScene(QWidget *parent)
       m_lastFrameTime(0)
 {
     SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
-    SetAnimFPS(2);
+    SetAnimFPS(10);
 
     setObjectName("AnimationScene");
 
@@ -125,7 +125,9 @@ bool AnimationScene::LoadFile(const QString &file, const QString &resourcePath, 
     SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
     camera->SetPosition(startPos);
 
-    GrabMouseCursor(true);
+    //SetAnim(0);
+
+    //GrabMouseCursor(true);
 
     return true;
 }
@@ -149,7 +151,7 @@ void AnimationScene::Reset()
 
 bool AnimationScene::IsValid() const
 {
-    return m_model != 0;
+    return m_model && m_frameAnim;
 }
 
 const GL_NETLizard_3D_Model * AnimationScene::Model() const
@@ -159,9 +161,12 @@ const GL_NETLizard_3D_Model * AnimationScene::Model() const
 
 void AnimationScene::SetAnim(int anim)
 {
+    if(anim >= 0 && !m_frameAnim)
+        return;
     if(m_anim != anim)
     {
         m_anim = anim;
+        SetFrame(0);
         m_renderer->SetAnim(anim);
         emit animChanged(anim);
     }
@@ -169,6 +174,8 @@ void AnimationScene::SetAnim(int anim)
 
 void AnimationScene::SetFrame(int frame)
 {
+    if(frame >= 0 && !m_frameAnim)
+        return;
     if(m_frame != frame)
     {
         m_frame = frame;
@@ -221,9 +228,13 @@ int AnimationScene::Frame() const
 
 void AnimationScene::NextFrame()
 {
+    if(!IsValid())
+        return;
     int count = CurrentAnimationFrames();
+    if(count == 0)
+        return;
     int frame = m_frame;
-    if(m_frame >= count)
+    if(m_frame >= count - 1)
         frame = 0;
     else
         frame++;
@@ -232,9 +243,13 @@ void AnimationScene::NextFrame()
 
 void AnimationScene::PrevFrame()
 {
+    if(!IsValid())
+        return;
     int count = CurrentAnimationFrames();
+    if(count == 0)
+        return;
     int frame = m_frame;
-    if(m_frame < 0)
+    if(m_frame <= 0)
         frame = count - 1;
     else
         frame--;
@@ -248,6 +263,8 @@ bool AnimationScene::IsPlaying() const
 
 void AnimationScene::Play()
 {
+    if(!IsValid())
+        return;
     if(m_playing)
         return;
     m_playing = true;
@@ -257,6 +274,8 @@ void AnimationScene::Play()
 
 void AnimationScene::Stop()
 {
+    if(!IsValid())
+        return;
     if(!m_playing)
         return;
     m_playing = false;
@@ -265,6 +284,8 @@ void AnimationScene::Stop()
 
 void AnimationScene::Toggle()
 {
+    if(!IsValid())
+        return;
     if(m_playing)
         Stop();
     else
@@ -273,6 +294,8 @@ void AnimationScene::Toggle()
 
 void AnimationScene::SetPlaying(bool playing)
 {
+    if(!IsValid())
+        return;
     if(m_playing != playing)
     {
         Toggle();

@@ -13,6 +13,7 @@ class QPushButton;
 class QSlider;
 class QCheckBox;
 class QToolButton;
+class QToolBar;
 
 class AnimationViewer : public BaseViewer
 {
@@ -27,6 +28,8 @@ public slots:
 
 private:
     void Init();
+    void UpdatePlayState(bool b);
+    void Reset();
 
 private Q_SLOTS:
     void OpenObjFileChooser();
@@ -37,6 +40,10 @@ private Q_SLOTS:
     void SetResourceDirPath(const QString &file);
     void SetBackgroundColor(const QColor &color);
     void OnAnimChanged(int anim);
+    void NextFrame();
+    void PrevFrame();
+    void OnPlaying();
+    void OnStopped();
 
 private:
     AnimationScene *m_animationScene;
@@ -52,6 +59,7 @@ private:
     QToolButton *m_playButton;
     QSpinBox *m_animFPSSpinBox;
     QCheckBox *m_playSeqCheckBox;
+    QToolBar *m_toolbar;
     QString m_objPath;
     QString m_resourceDirPath;
 

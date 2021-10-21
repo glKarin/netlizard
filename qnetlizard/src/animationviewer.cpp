@@ -18,6 +18,7 @@
 #include <QSlider>
 #include <QCheckBox>
 #include <QToolButton>
+#include <QToolBar>
 
 #include "animationscene.h"
 #include "netlizard.h"
@@ -37,7 +38,8 @@ AnimationViewer::AnimationViewer(QWidget *parent) :
     m_frameSlider(0),
     m_playButton(0),
     m_animFPSSpinBox(0),
-    m_playSeqCheckBox(0)
+    m_playSeqCheckBox(0),
+    m_toolbar(0)
 {
     setObjectName("AnimationViewer");
     Init();
@@ -62,6 +64,9 @@ void AnimationViewer::Init()
     m_playButton = new QToolButton;
     m_animFPSSpinBox = new QSpinBox;
     m_playSeqCheckBox = new QCheckBox("Invert");
+    m_toolbar = new QToolBar;
+    QToolButton *nextFrame = new QToolButton;
+    QToolButton *prevFrame = new QToolButton;
 
     for(int i = NL_FRAME_ANIMATION_IDLE; i < NL_FRAME_ANIMATION_TOTAL; i++)
     {
@@ -77,8 +82,7 @@ void AnimationViewer::Init()
     m_frameSlider->setMinimum(0);
     m_frameSlider->setMaximum(0);
     m_frameSlider->setOrientation(Qt::Horizontal);
-    m_frameSlider->setTickPosition(QSlider::TicksRight);
-    //m_frameSlider->setMaximumWidth(200);
+    m_frameSlider->setTickPosition(QSlider::TicksBelow);
     vLayout->addWidget(m_frameSlider);
     vLayout->addSpacing(1);
     vLayout->addWidget(new QLabel("FPS: "));
@@ -92,7 +96,13 @@ void AnimationViewer::Init()
     vLayout->addSpacing(1);
     m_playButton->setText("Play");
     m_playButton->setCheckable(true);
-    vLayout->addWidget(m_playButton);
+    m_toolbar->addWidget(m_playButton);
+    prevFrame->setArrowType(Qt::LeftArrow);
+    m_toolbar->addWidget(prevFrame);
+    nextFrame->setArrowType(Qt::RightArrow);
+    m_toolbar->addWidget(nextFrame);
+    m_toolbar->setEnabled(false);
+    vLayout->addWidget(m_toolbar);
     vLayout->addStretch(1);
 
     widget->setLayout(vLayout);
@@ -104,7 +114,7 @@ void AnimationViewer::Init()
         NL_SHADOW_OF_EGYPT_3D,
         NL_CLONE_3D
     };
-    for(int i = 0; i < countof(Games); i++)
+    for(uint i = 0; i < countof(Games); i++)
     {
         m_gameComboBox->addItem(nlGet3DGameName(Games[i]), QVariant(Games[i]));
     }
@@ -147,6 +157,10 @@ void AnimationViewer::Init()
     connect(m_animationScene, SIGNAL(animChanged(int)), this, SLOT(OnAnimChanged(int)));
     connect(m_playSeqCheckBox, SIGNAL(clicked(bool)), m_animationScene, SLOT(SetPlaySequence(bool)));
     connect(m_playButton, SIGNAL(clicked(bool)), m_animationScene, SLOT(SetPlaying(bool)));
+    connect(nextFrame, SIGNAL(clicked()), this, SLOT(NextFrame()));
+    connect(prevFrame, SIGNAL(clicked()), this, SLOT(PrevFrame()));
+    connect(m_animationScene, SIGNAL(playing()), this, SLOT(OnPlaying()));
+    connect(m_animationScene, SIGNAL(stopped()), this, SLOT(OnStopped()));
 
     CentralWidget()->setLayout(layout);
     SetTitle("NETLizard 3D FPS role viewer");
@@ -198,6 +212,18 @@ void AnimationViewer::SetObjFile(const QString &file)
     }
 }
 
+void AnimationViewer::NextFrame()
+{
+    m_animationScene->Stop();
+    m_animationScene->NextFrame();
+}
+
+void AnimationViewer::PrevFrame()
+{
+    m_animationScene->Stop();
+    m_animationScene->PrevFrame();
+}
+
 void AnimationViewer::SetResourceDirPath(const QString &file)
 {
     if(m_resourceDirPath != file)
@@ -228,6 +254,40 @@ void AnimationViewer::OnAnimChanged(int index)
     }
 }
 
+void AnimationViewer::UpdatePlayState(bool b)
+{
+    if(b)
+    {
+        m_playButton->setText("Stop");
+        m_playButton->setChecked(true);
+    }
+    else
+    {
+        m_playButton->setText("Play");
+        m_playButton->setChecked(false);
+    }
+}
+
+void AnimationViewer::OnPlaying()
+{
+    UpdatePlayState(true);
+}
+
+void AnimationViewer::OnStopped()
+{
+    UpdatePlayState(false);
+}
+
+void AnimationViewer::Reset()
+{
+    OnStopped();
+    m_animationScene->Reset();
+    m_animComboBox->setCurrentIndex(0);
+    m_frameSlider->setMaximum(0);
+    m_frameSlider->setValue(0);
+    m_toolbar->setEnabled(false);
+}
+
 bool AnimationViewer::OpenFile()
 {
     if(m_objPath.isEmpty())
@@ -235,14 +295,12 @@ bool AnimationViewer::OpenFile()
         QMessageBox::warning(this, "Error", "Choose obj file and resource path!");
         return false;
     }
+    Reset();
+
     const NETLizard_Game Games[] = {
         NL_SHADOW_OF_EGYPT_3D,
         NL_CLONE_3D
     };
-    m_animComboBox->setCurrentIndex(0);
-    m_frameSlider->setMaximum(0);
-    m_frameSlider->setValue(0);
-    m_animationScene->Reset();
     int selectedIndex = m_gameComboBox->currentIndex();
     int game = Games[selectedIndex];
     int index = m_indexSpinBox->value();
@@ -276,7 +334,9 @@ bool AnimationViewer::OpenFile()
     SetTitleLabel(QString("%1(index-%2)  obj: %3, resource directory: %4 -> %5").arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(index).arg(m_objPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
     if(res)
     {
+        m_toolbar->setEnabled(true);
         m_animationScene->setFocus();
+        m_animationScene->SetAnim(0);
         m_animationScene->Play();
     }
     else

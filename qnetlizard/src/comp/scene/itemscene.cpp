@@ -132,6 +132,8 @@ bool ItemScene::LoadFile(const QString &file, const QString &resourcePath, int g
         SimpleCameraActor *cameraActor = GetActor_T<SimpleCameraActor>(0);
         SimpleControlComponent *control = cameraActor->GetComponent_T<SimpleControlComponent>(1);
         control->SetMoveSens(control->MoveSens() / 50);
+        vector3_s startPos = VECTOR3(0, 0.5, 5);
+        cameraActor->SetPosition(startPos);
     }
     else
     {

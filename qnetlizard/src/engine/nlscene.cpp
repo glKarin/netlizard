@@ -40,7 +40,10 @@ NLScene::NLScene(QWidget *parent) :
     setObjectName("NLScene");
     m_actors.SetScene(this);
     m_actors.setObjectName("SceneRootActorContainer");
-    m_clearColor = QColor::fromRgbF(1.0, 1.0, 1.0);
+    m_clearColor = QColor::fromRgbF(
+                //1.0, 1.0, 1.0
+                0.0, 0.0, 0.0
+                );
 }
 
 NLScene::~NLScene()
