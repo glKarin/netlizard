@@ -1298,10 +1298,10 @@ void class_e__function_aa_void__role(class__r__role *obj, const byte arrayOfByte
     jint i8;
 	for (i8 = 0; i8 < i5; i8++) {
         short_array *arr = &((short_array *)(obj->short_2_array_3__a__vertex.array))[i8];
+        jshort *a = (jshort *)(arr->array);
         jint i9;
 		for (i9 = 0; i9 < i3; i9++)
-		{
-            jshort *a = (jshort *)(arr->array);
+        {
 			i1 += 2;
             a[(i9 * 3)] = ((jshort)marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]));
 			i1 += 2;

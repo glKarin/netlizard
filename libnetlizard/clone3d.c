@@ -1374,7 +1374,7 @@ void class_g__function_b_1int__role(class__t__role *obj, const byte arrayOfByte[
 	for (i11 = 0; i11 < i6; i11++) {
 		for (i12 = 0; i12 < i4; i12 += 3)
 		{
-            byte *c = (byte *)((((array **)(obj->c.array))[i11])->array);
+            byte *c = (byte *)((((array *)(obj->c.array))[i11]).array);
 			i1++;
 			c[i12] = ((byte)(arrayOfByte[i1] * i9));
 			i1++;
