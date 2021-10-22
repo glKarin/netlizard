@@ -456,7 +456,7 @@ void read_CT3DEp2_map_items(T_array(class__k__item) *k_an, const char *resc_path
 	for(i = 0; i < k_an->length; /* 45 */i++)
 	{
 		class__k__item *an = ((class__k__item *)(k_an->array)) + i;
-		int i11 = an->byte__t__obj;
+        jint i11 = an->byte__t__obj;
 
         char *name = make_resource_file_path(CT3DEP2_OBJ_SUBFIX, i11, resc_path);
         array arr;

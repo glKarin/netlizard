@@ -53,7 +53,8 @@ SOURCES += \
     specnaz3d.c \
     egypt3d.c \
     ct3dep3.c \
-    re3d.c
+    re3d.c \
+    clone3d.c
 
 #libnetlizard.files = $$DESTDIR/libnetlizard*
 #libnetlizard.path = /usr/lib

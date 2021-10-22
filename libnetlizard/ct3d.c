@@ -452,7 +452,7 @@ void read_CT3D_map_items(T_array(class__g__item) *class_g_array__h__item, const 
 	for(i = 0; i < class_g_array__h__item->length; i++)
 	{
 		class__g__item *h = ((class__g__item *)(class_g_array__h__item->array)) + i;
-		int i11 = h->byte__s__obj;
+        jint i11 = h->byte__s__obj;
 		if ((i11 != 0) || (i11 == 55))
         {
             char *name = make_resource_file_path(CT3D_OBJ_SUBFIX, i11, resc_path);

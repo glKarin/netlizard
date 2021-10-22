@@ -427,8 +427,6 @@ NLboolean nlGet3DGameLevelRange(NETLizard_Game game, NLint *start, NLint *count)
 const char * nlGet3DGameName(NETLizard_Game game);
 const NETLizard_3D_Model_Config * nlGet3DGameModelConfig(NETLizard_Game game);
 
-// Racing Evolution 3D
-
 // Contr Terrisiem 3D
 NLboolean nlReadCT3DModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
 NLboolean nlLoadCT3DModelData(const char* data, NLsizei size, NLint level, const char *resc_path, NETLizard_3D_Model *model);
@@ -457,9 +455,11 @@ NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, NLint index
 
 // Clone 3D
 NLboolean nlReadClone3DModelFile(const char* name, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlLoadClone3DModel(const char* data, NLsizei size, const char *resc_path, NETLizard_3D_Model *model);
+NLboolean nlLoadClone3DModelData(const char* data, NLsizei size, const char *resc_path, NETLizard_3D_Model *model);
 NLboolean nlReadClone3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLboolean nlLoadClone3DItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
 NLboolean nlReadClone3DRoleModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLboolean nlLoadClone3DRoleModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
 
 // Contr Terrisiem 3D: Episode-3
 NLboolean nlReadCT3DEp3ModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);

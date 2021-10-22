@@ -476,7 +476,7 @@ void read_Specnaz3D_map_items(T_array(class__j__item) *j_l, const char *resc_pat
 	for(i = 0; i < j_l->length; i++)
 	{
 		class__j__item *l = ((class__j__item *)(j_l->array)) + i;
-        int i11 = l->byte__t__obj;
+        jint i11 = l->byte__t__obj;
         char *name = make_resource_file_path(SPECNAZ3D_OBJ_SUBFIX, i11, resc_path);
         array arr;
         int res = file_get_contents(name, &arr);

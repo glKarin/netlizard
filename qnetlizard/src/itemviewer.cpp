@@ -187,7 +187,7 @@ bool ItemViewer::OpenFile()
     case NL_CONTR_TERRORISM_3D_EPISODE_2:
     case NL_ARMY_RANGER_3D:
     case NL_SHADOW_OF_EGYPT_3D:
-    //case NL_CLONE_3D:
+    case NL_CLONE_3D:
     case NL_CONTR_TERRORISM_3D_EPISODE_3:
     case NL_RACING_EVOLUTION_3D:
         res = m_itemScene->LoadFile(m_objPath, m_resourceDirPath, game, index);

@@ -102,9 +102,9 @@ bool AnimationScene::LoadFile(const QString &file, const QString &resourcePath, 
     case NL_SHADOW_OF_EGYPT_3D:
         b = NETLizard_ReadGLEgypt3DRoleModelFile(path, index, resc_path, m_model);
         break;
-    //case NL_CLONE_3D:
-       // b = NETLizard_ReadGLCT3DEp3ItemModelFile(path, index, resc_path, m_model);
-        //break;
+    case NL_CLONE_3D:
+        b = NETLizard_ReadGLClone3DRoleModelFile(path, index, resc_path, m_model);
+        break;
     default:
         qDebug() << "Unsupport game";
         break;

@@ -482,7 +482,7 @@ void read_CT3DEp3_map_items(T_array(class__i__item) *i_q, const char *resc_path)
 	for(i = 0; i < i_q->length; /* 45 */i++)
 	{
 		class__i__item *q = ((class__i__item *)(i_q->array)) + i;
-		int i11 = q->byte__t__obj;
+		jint i11 = q->byte__t__obj;
 
         char *name = make_resource_file_path(CT3DEP3_OBJ_SUBFIX, i11, resc_path);
         array arr;

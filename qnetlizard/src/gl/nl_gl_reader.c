@@ -111,6 +111,42 @@ GLboolean NETLizard_ReadGLEgypt3DMapModelFile(const char *name, const char *reso
     return GL_TRUE;
 }
 
+GLboolean NETLizard_ReadGLClone3DRoleModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Model *model)
+{
+    if(!name)
+        return GL_FALSE;
+    NETLizard_3D_Model m;
+    if(!nlReadClone3DRoleModelFile(name, index, &m))
+        return GL_FALSE;
+    NETLizard_MakeGL3DModel(&m, resource_path, model);
+    delete_NETLizard_3D_Model(&m);
+    return GL_TRUE;
+}
+
+GLboolean NETLizard_ReadGLClone3DItemModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Model *model)
+{
+    if(!name)
+        return GL_FALSE;
+    NETLizard_3D_Model m;
+    if(!nlReadClone3DItemModelFile(name, index, &m))
+        return GL_FALSE;
+    NETLizard_MakeGL3DModel(&m, resource_path, model);
+    delete_NETLizard_3D_Model(&m);
+    return GL_TRUE;
+}
+
+GLboolean NETLizard_ReadGLClone3DMapModelFile(const char *name, const char *resource_path, GL_NETLizard_3D_Model *model)
+{
+    if(!name)
+        return GL_FALSE;
+    NETLizard_3D_Model m;
+    if(!nlReadClone3DModelFile(name, resource_path, &m))
+        return GL_FALSE;
+    NETLizard_MakeGL3DModel(&m, resource_path, model);
+    delete_NETLizard_3D_Model(&m);
+    return GL_TRUE;
+}
+
 GLboolean NETLizard_ReadGLCT3DEp3MapModelFile(const char *name, int i, const char *resource_path, GL_NETLizard_3D_Model *model)
 {
     if(!name)
@@ -137,45 +173,6 @@ GLboolean NETLizard_ReadGLCT3DEp3ItemModelFile(const char *name, int i, const ch
 
 
 #if 0
-GL_NETLizard_3D_Animation_Model * NETLizard_ReadGLClone3DRoleModelFile(const char *name, int index)
-{
-	if(!name)
-		return NULL;
-	NETLizard_3D_Model *m = nlReadClone3DRoleModelFile(name, index);
-	if(!m)
-		return NULL;
-	GL_NETLizard_3D_Animation_Model *model = NETLizard_MakeGL3DAnimationModel(m);
-	delete_NETLizard_3D_Model(m);
-	free(m);
-	return model;
-}
-
-GL_NETLizard_3D_Model * NETLizard_ReadGLClone3DItemModelFile(const char *name, int index)
-{
-	if(!name)
-		return NULL;
-	NETLizard_3D_Model *m = nlReadClone3DItemModelFile(name, index);
-	if(!m)
-		return NULL;
-	GL_NETLizard_3D_Model *model = NETLizard_MakeGL3DModel(m);
-	delete_NETLizard_3D_Model(m);
-	free(m);
-	return model;
-}
-
-GL_NETLizard_3D_Model * NETLizard_ReadGLClone3DMapModelFile(const char *name)
-{
-	if(!name)
-		return NULL;
-	NETLizard_3D_Model *m = nlReadClone3DModelFile(name);
-	if(!m)
-		return NULL;
-	GL_NETLizard_3D_Model *model = NETLizard_MakeGL3DModel(m);
-	delete_NETLizard_3D_Model(m);
-	free(m);
-	return model;
-}
-
 GL_NETLizard_3D_Model * NETLizard_ReadGLCT3DEp3MapModelFile(const char *name, int i)
 {
 	if(!name)

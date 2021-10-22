@@ -67,7 +67,7 @@ typedef struct _class__r__role // role
     T_array(short_array) short_2_array_3__a__vertex; // short[][]
   short_array short_array_16__b__primitive; // short[]
   T_array(byte_array) c; // byte[][]
-  int d;
+  jint d;
 } class__r__role;
 
 typedef struct _class__e__lvl
@@ -111,7 +111,6 @@ static void delete_class__r__role(class__r__role *role)
     }
     delete_array(&role->c);
 
-    delete_array(&role->short_2_array_3__a__vertex);
     delete_array(&role->short_array_16__b__primitive);
 }
 
@@ -165,7 +164,7 @@ NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, NLint index
 
 	class__r__role obj;
     class_e__function_aa_void__role(&obj, data);
-    int item_mesh_count = obj.short_2_array_3__a__vertex.length;
+    const int item_mesh_count = obj.short_2_array_3__a__vertex.length;
     NETLizard_3D_Item_Mesh *item_meshes = NEW_II(NETLizard_3D_Item_Mesh, obj.short_2_array_3__a__vertex.length);
 	int i;
     for(i = 0; i < obj.short_2_array_3__a__vertex.length; i++)
@@ -181,7 +180,7 @@ NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, NLint index
         mesh->rotation[0] = 0;
         mesh->rotation[1] = 0;
 		mesh->obj_index = index;
-        array *a = &((array *)(obj.short_2_array_3__a__vertex.array))[i];
+        short_array *a = &((short_array *)(obj.short_2_array_3__a__vertex.array))[i];
         if(/*a && */ARRAY_DATA(obj.short_array_16__b__primitive))
 		{
             // vertex
@@ -347,8 +346,8 @@ NLboolean nlLoadEgypt3DModelData(const char* data, NLsizei size, const char *res
     class__e__lvl *lv = &lvl;
 
 	ZERO(model, NETLizard_3D_Model);
-    array *a_h = &lv->class_a_array__h__scene;
-    int mesh_count = a_h->length;
+    T_array(class__a__scene) *a_h = &lv->class_a_array__h__scene;
+    const int mesh_count = a_h->length;
     NETLizard_3D_Mesh *meshes = NEW_II(NETLizard_3D_Mesh, a_h->length);
     jshort *bh = NULL;
 
@@ -449,7 +448,7 @@ NLboolean nlLoadEgypt3DModelData(const char* data, NLsizei size, const char *res
 
     // item model
     T_array(class__g__item) *g_f = &lv->class_g_array__f__item;
-    int item_mesh_count = g_f->length;
+    const int item_mesh_count = g_f->length;
     NETLizard_3D_Item_Mesh *item_meshes = NEW_II(NETLizard_3D_Item_Mesh, g_f->length);
 	for(i = 0; i < g_f->length; i++)
 	{
@@ -545,10 +544,7 @@ NLboolean nlLoadEgypt3DModelData(const char* data, NLsizei size, const char *res
 			bsp_data[j].normal[1] = bsp[j].int_array_3__a__normal[1];
 			bsp_data[j].normal[2] = bsp[j].int_array_3__a__normal[2];
 		}
-	}
-
-    // free
-    delete_class__e__lvl(lv);
+    }
 
     model->data.data = meshes;
     model->data.count = mesh_count;
@@ -562,6 +558,10 @@ NLboolean nlLoadEgypt3DModelData(const char* data, NLsizei size, const char *res
     model->type = NL_EGYPT_3D_MAP_MODEL;
     model->game = NL_SHADOW_OF_EGYPT_3D;
     model->has_sky = 0;
+
+    // free
+    delete_class__e__lvl(lv);
+
     return NL_TRUE;
 }
 
@@ -887,7 +887,7 @@ class__e__lvl class_e__function_h_1int__scene(const byte arrayOfByte1[], const c
 		dprintfsii("Scene item count", i20, i18);
         h[i20].short__o__begin = ((jshort)i19);
         h[i20].short__c__end = ((jshort)(i19 + i18));
-		int i21;
+		jint i21;
 		for (i21 = 0; i21 < i18; i21++)
 		{
             f[i19].q = ((jshort)i20);
@@ -900,7 +900,7 @@ class__e__lvl class_e__function_h_1int__scene(const byte arrayOfByte1[], const c
 			i1 += 2;
 			f[i19].int__o__rotation = marge_digit(arrayOfByte1[i1], arrayOfByte1[(i1 + 1)]);
 			i1 += 2;
-			f[i19].int__p__rotation = ((short)marge_digit(arrayOfByte1[i1], arrayOfByte1[(i1 + 1)]));
+			f[i19].int__p__rotation = ((jshort)marge_digit(arrayOfByte1[i1], arrayOfByte1[(i1 + 1)]));
 			if (f[i19].int__p__rotation > 360) {
 				f[i19].int__p__rotation = (65536 - f[i19].int__p__rotation);
 			}
@@ -934,7 +934,7 @@ class__e__lvl class_e__function_h_1int__scene(const byte arrayOfByte1[], const c
 			}
 			//S[f[i19].byte__s__obj] = true;
 			i1 += 2;
-			f[i19].d = ((short)marge_digit(arrayOfByte1[i1], arrayOfByte1[(i1 + 1)]));
+			f[i19].d = ((jshort)marge_digit(arrayOfByte1[i1], arrayOfByte1[(i1 + 1)]));
 			if ((f[i19].byte__s__obj == 14) || (f[i19].byte__s__obj == 15)) {
 				// 14 传送门光柱
 				// 15 传送门光柱底座
@@ -1283,7 +1283,7 @@ void class_e__function_aa_void__role(class__r__role *obj, const byte arrayOfByte
     new_array(&obj->short_2_array_3__a__vertex, sizeof(short_array), i5); // short[][]
     new_array(&obj->c, sizeof(byte_array), i5); // byte[][]
 	obj->d = i3;
-	int i7;
+	jint i7;
 	for (i7 = 0; i7 < i5; i7++)
 	{
         short_array *a = (short_array *)(obj->short_2_array_3__a__vertex.array);
@@ -1297,7 +1297,7 @@ void class_e__function_aa_void__role(class__r__role *obj, const byte arrayOfByte
     jshort *arrayOfShort = NEW_II(jshort, i4);
     jint i8;
 	for (i8 = 0; i8 < i5; i8++) {
-        array *arr = &((array *)(obj->short_2_array_3__a__vertex.array))[i8];
+        short_array *arr = &((short_array *)(obj->short_2_array_3__a__vertex.array))[i8];
         jint i9;
 		for (i9 = 0; i9 < i3; i9++)
 		{
