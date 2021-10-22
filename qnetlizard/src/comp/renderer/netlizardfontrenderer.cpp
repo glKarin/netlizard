@@ -11,7 +11,6 @@
 NETLizardFontRenderer::NETLizardFontRenderer(NLActor *actor) :
     NLRenderable(actor),
     m_font(0),
-      m_lineCount(0),
       m_paddingWidth(2),
       m_lineSpacing(1)
 {
@@ -30,6 +29,16 @@ void NETLizardFontRenderer::InitRender()
 
 void NETLizardFontRenderer::SetText(const QString &str)
 {
+    if(m_text != str)
+    {
+        m_text = str;
+        UpdateLayout();
+    }
+}
+
+void NETLizardFontRenderer::UpdateLayout()
+{
+    m_list.clear();
     if(!m_font)
         return;
     NLActor *actor = Actor();
@@ -38,37 +47,37 @@ void NETLizardFontRenderer::SetText(const QString &str)
     NLScene *scene = actor->Scene();
     if(!scene)
         return;
-    if(m_text != str)
+    int width = scene->width();
+    QByteArray ba = m_text.toLocal8Bit();
+
+    const char *p = ba.constData();
+    size_t len = strlen(p);
+    GLint count = 0;
+    GLint line_count = 0;
+    while(count < (GLint)len)
     {
-        m_text = str;
-        QByteArray ba = m_text.toLocal8Bit();
-
-        const char *p = ba.constData();
-        size_t len = strlen(p);
-        GLint count = 0;
-        GLint line_count = 0;
-        while(count < (GLint)len)
+        GLint c = Font_GetCharCountOfWidth(m_font, width - 2 * m_paddingWidth, p);
+        if(c == -1)
+            break;
+        GLint i;
+        for(i = 0; i < c; i++)
         {
-            GLint c = Font_GetCharCountOfWidth(m_font, scene->width() - 2 * m_paddingWidth, p);
-            if(c == -1)
-                break;
-            GLint i;
-            for(i = 0; i < c; i++)
+            if(p[i] == '\n')
             {
-                if(p[i] == '\n')
-                {
-                    i++;
-                    break;
-                }
+                i++;
+                break;
             }
-            count += i;
-            line_count++;
-            p += i;
         }
+        count += i;
+        char *str = (char *)calloc(i + 1, sizeof(char));
+        strncpy(str, p, i);
+        str[i] = '\0';
+        m_list.push_back(str);
+        free(str);
+        p += i;
         line_count++;
-
-        m_lineCount = line_count;
     }
+    line_count++;
 }
 
 void NETLizardFontRenderer::Render()
@@ -94,60 +103,30 @@ font_s * NETLizardFontRenderer::Font()
     return m_font;
 }
 
-void NETLizardFontRenderer::SetFont(font_s *tex)
+void NETLizardFontRenderer::SetFont(font_s *f)
 {
-    m_font = m_font;
+    m_font = f;
 }
 
 void NETLizardFontRenderer::RenderText()
 {
-    if(m_text.isEmpty())
-        return;
-    NLActor *actor = Actor();
-    if(!actor)
-        return;
-    NLScene *scene = actor->Scene();
-    if(!scene)
-        return;
-
     GLfloat h = 0.0;
-    //GLfloat p = height();
-    glPushMatrix();
+    //glDisable(GL_CULL_FACE);
+    glTranslatef(m_paddingWidth, m_paddingWidth, 0.01);
+    int char_height = m_font->height;
+    Q_FOREACH(const QString &text, m_list)
     {
-        glTranslatef(m_paddingWidth, scene->height() - m_paddingWidth, 0.01);
-        QByteArray ba = m_text.toLocal8Bit();
-        const char *ptr = ba.constData();
-        GLint count = 0;
-        GLint i;
-        int char_height = m_font->height;
-        int width = scene->width();
-        for(i = 0; i < m_lineCount; i++)
-        {
-            h += char_height;
-            GLint c = Font_GetCharCountOfWidth(m_font, width - m_paddingWidth * 2, ptr);
-            if(c == -1)
-                break;
-            GLint j;
-            for(j = 0; j < c; j++)
-            {
-                if(ptr[j] == '\n')
-                {
-                    j++;
-                    break;
-                }
-            }
-            count += j;
-            glTranslatef(0.0, -char_height, 0.0);
-            char *str = (char *)calloc(j + 1, sizeof(char));
-            strncpy(str, ptr, j);
-            str[j] = '\0';
-            Font_RenderString(m_font, 0, 0, 1, 1, 1, 1, str);
-            free(str);
-            ptr += j;
-            h += m_lineSpacing;
-            glTranslatef(0.0, -m_lineSpacing, 0.0);
-        }
+        QByteArray ba = text.toLocal8Bit();
+        const char *str = ba.constData();
+        h += char_height;
+        glTranslatef(0.0, char_height, 0.0);
+        glPushMatrix();
+        glRotatef(180, 1, 0, 0);
+        Font_RenderString(m_font, 0, 0, 1, 1, 1, 1, str);
+        glPopMatrix();
+        h += m_lineSpacing;
+        glTranslatef(0.0, m_lineSpacing, 0.0);
     }
-    glPopMatrix();
+    //glEnable(GL_CULL_FACE);
 }
 

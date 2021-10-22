@@ -15,6 +15,7 @@
 #include "fontviewer.h"
 #include "itemviewer.h"
 #include "animationviewer.h"
+#include "indexviewer.h"
 #include "helpdialog.h"
 #include "aboutdialog.h"
 #include "logdialog.h"
@@ -103,10 +104,18 @@ void MainWindow::Init()
     resize(w, h);
     setWindowTitle(qApp->applicationName());
     //resize(640, 480);
+    MenuActionSlot(0);
 }
 
 void MainWindow::MenuActionSlot(QAction *action)
 {
+    if(!action)
+    {
+        BaseViewer *viewer = GenViewer("home_viewer");
+        setCentralWidget(viewer);
+        return;
+    }
+
     QString type = action->data().toString();
 
     if(type == "exit")
@@ -159,6 +168,13 @@ BaseViewer * MainWindow::GenViewer(const QString &type)
     else if(type == "test")
         viewer = new TestViewer;
 #endif
+
+    else
+    {
+        IndexViewer *home = new IndexViewer;
+        connect(home, SIGNAL(openViewer(QAction *)), this, SLOT(MenuActionSlot(QAction*)));
+        viewer = home;
+    }
 
     if(viewer)
     {

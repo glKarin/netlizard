@@ -177,7 +177,6 @@ bool FontViewer::RenderString()
     if(str.isEmpty())
         return false;
     m_fontScene->SetText(str);
-    m_fontScene->updateGL();
     return true;
 }
 

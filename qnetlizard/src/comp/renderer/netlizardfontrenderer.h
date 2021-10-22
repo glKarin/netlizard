@@ -1,6 +1,8 @@
 #ifndef _KARIN_NETLIZARDFONTENDERER_H
 #define _KARIN_NETLIZARDFONTENDERER_H
 
+#include <QStringList>
+
 #include "nlrenderable.h"
 #include "gl/nl_font.h"
 
@@ -13,6 +15,7 @@ public:
     font_s * Font();
     void SetFont(font_s *tex);
     void SetText(const QString &str);
+    void UpdateLayout();
 
 protected:
     virtual void InitRender();
@@ -25,7 +28,7 @@ private:
 private:
     font_s *m_font;
     QString m_text;
-    int m_lineCount;
+    QStringList m_list;
     int m_paddingWidth;
     int m_lineSpacing;
 

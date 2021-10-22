@@ -4,31 +4,7 @@
 #include <QWidget>
 #include <QGroupBox>
 
-class QLabel;
-class QBoxLayout;
-
-class SettingGroupItem : public QWidget
-{
-    Q_OBJECT
-public:
-    virtual ~SettingGroupItem();
-    static SettingGroupItem * Make(const QString &title, QWidget *widget);
-    void SetWidget(QWidget *widget = 0);
-    void SetTitle(const QString &title);
-    void Set(const QString &title, QWidget *widget = 0);
-    void Clear();
-
-private:
-    void Init();
-
-private:
-    QLabel *m_label;
-    QWidget *m_widget;
-    QBoxLayout *m_layout;
-    explicit SettingGroupItem(QWidget *parent = 0);
-
-    Q_DISABLE_COPY(SettingGroupItem)
-};
+class QFormLayout;
 
 class SettingGroup : public QGroupBox
 {
@@ -50,7 +26,7 @@ private Q_SLOTS:
 
 private:
     QString m_name;
-    QBoxLayout *m_layout;
+    QFormLayout *m_layout;
 
     Q_DISABLE_COPY(SettingGroup)
 };

@@ -26,6 +26,7 @@ protected:
     virtual void paintGL();
     virtual void Update(float f);
     virtual void Deinit();
+    virtual void resizeEvent(QResizeEvent *event);
     
 signals:
     

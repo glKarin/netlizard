@@ -28,6 +28,7 @@ FontScene::FontScene(QWidget *parent) :
     prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
     Qt::Alignment align = Qt::AlignLeft | Qt::AlignTop;
+    //align = Qt::AlignCenter;
     AddActor(camera);
     NLActor *actor = new NLActor;
     AddActor(actor);
@@ -124,4 +125,10 @@ void FontScene::SetText(const QString &str)
         m_text = str;
         m_renderer->SetText(str);
     }
+}
+
+void FontScene::resizeEvent(QResizeEvent *event)
+{
+    NLScene::resizeEvent(event);
+    m_renderer->UpdateLayout();
 }
