@@ -306,8 +306,8 @@ typedef struct _NETLizard_3D_Frame_Animation
     NLuint count;
 } NETLizard_3D_Frame_Animation;
 
-/* NETLizard 3D spirit */
-typedef struct NETLizard_Spirit_s
+/* NETLizard sprite cell */
+typedef struct NETLizard_Sprite_Cell_s
 {
     NLshort index;
     NLshort x;
@@ -316,7 +316,14 @@ typedef struct NETLizard_Spirit_s
     NLshort height;
     NLshort private_4;
     NLshort private_5;
-} NETLizard_Spirit;
+} NETLizard_Sprite_Cell;
+
+/* NETLizard sprite */
+typedef struct NETLizard_Sprite_s
+{
+    NETLizard_Sprite_Cell *data;
+    NLuint count;
+} NETLizard_Sprite;
 
 /* NETLizard 3D font char */
 typedef struct NETLizard_Font_Char_Raster_s
@@ -342,9 +349,9 @@ typedef struct NETLizard_Font_s
   } offset;
   NLsizei char_count; // char count
 
-  NLuchar private_e; // byte unknow
-  NLuchar private_l; // byte unknow
-  NLuchar private_m; // byte unknow
+  NLuchar private_e; // byte unknown
+  NLuchar private_l; // byte unknown
+  NLuchar private_m; // byte unknown
 
   char fnt_file[8]; // file name, aways 'fnt.png'
 } NETLizard_Font;
@@ -403,9 +410,12 @@ NLboolean nlSaveAndHandleTextData(const char *data, NLsizei len, const char *to)
 char * nlGet3DGameLevelMusicFileName(NETLizard_Game game, NLint level, char *file ARR_MIN_LEN(8)); // get 3D game music file of level
 char * nlGet3DGameMenuMusicFileName(NETLizard_Game game, char *file ARR_MIN_LEN(8)); // get 3D game main menu music file
 
-/* 3D spirit: exam broken bodies in `3D Clone` */
-int nlReadSpiritMapFile(const char *file, NETLizard_Spirit **ret);
-int nlLoadSpiritMapData(const char *data, NLsizei len, NETLizard_Spirit **ret);
+/* 3D sprite: exam broken bodies in `3D Clone` */
+NLint nlGetSpiritFileCount(const char *file);
+NLint nlGetSpiritDataCount(const char *data, NLsizei length);
+NLboolean nlReadSpiritMapFile(const char *file, NETLizard_Sprite *ret);
+NLboolean nlLoadSpiritMapData(const char *data, NLsizei len, NETLizard_Sprite *ret);
+void delete_NETLizard_Sprite(NETLizard_Sprite *sprite); // free sprite
 
 /* Font: exam `fnt.png` */
 NLboolean nlLoadNETLizardFontData(const char *data, NLsizei size, NETLizard_Font *fnt); // load font data

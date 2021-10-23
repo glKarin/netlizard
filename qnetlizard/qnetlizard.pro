@@ -21,14 +21,21 @@ HEADERS += \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
     src/misc/settings.h \
-    src/indexviewer.h
+    src/indexviewer.h \
+    src/spriteviewer.h \
+    src/comp/renderer/netlizardspriterenderer.h \
+    src/comp/scene/spritescene.h
 
 SOURCES += \
     main.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
-    src/indexviewer.cpp
+    src/indexviewer.cpp \
+    src/gl/nl_gl_sprite.c \
+    src/spriteviewer.cpp \
+    src/comp/renderer/netlizardspriterenderer.cpp \
+    src/comp/scene/spritescene.cpp
 
 # Widget
 HEADERS += \

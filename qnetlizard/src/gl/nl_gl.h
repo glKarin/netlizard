@@ -172,30 +172,27 @@ GLvoid delete_GL_NETLizard_Font(GL_NETLizard_Font *fnt);
 GLvoid NETLizard_RenderFontChar(const GL_NETLizard_Font *fnt, GLuint i);
 GLint NETLizard_GetFontIndex(const GL_NETLizard_Font *fnt, int ch);
 
-#if 0
-typedef struct _GL_NETLizard_Spirit_Cell
+typedef struct _GL_NETLizard_Sprite_Cell
 {
-	GLuint buffers[total_buffer_type];
+    GL_NETLizard_3D_Vertex_Data vertex_data;
 	GLfloat width;
 	GLfloat height;
 	GLfloat private_4;
 	GLfloat private_5;
-} GL_NETLizard_Spirit_Cell;
+} GL_NETLizard_Sprite_Cell;
 
-typedef struct _GL_NETLizard_Spirit
+typedef struct _GL_NETLizard_Sprite
 {
-	texture *tex;
-	GL_NETLizard_Spirit_Cell *spirits;
-	GLuint spirit_count;
-} GL_NETLizard_Spirit;
+    GL_NETLizard_Sprite_Cell *sprites;
+    GLuint sprite_count;
+    texture_s tex;
+} GL_NETLizard_Sprite;
 
-GL_NETLizard_Spirit * NETLizard_ReadSpirit(const char *map_file, const char *tex_file);
-GLvoid delete_GL_NETLizard_Spirit(GL_NETLizard_Spirit *s);
-GLvoid NETLizard_RenderSpirit(const GL_NETLizard_Spirit *s, GLuint i);
+GLboolean NETLizard_ReadSpirit(GL_NETLizard_Sprite *sprite, const char *map_file, const char *tex_file);
+GLvoid delete_GL_NETLizard_Sprite(GL_NETLizard_Sprite *s);
+GLvoid NETLizard_RenderSpirit(const GL_NETLizard_Sprite *s, GLuint i);
 
 GLvoid NETLizard_MoveItemModel(GL_NETLizard_3D_Item_Mesh *dst, GL_NETLizard_3D_Item_Mesh *src);
-
-#endif
 
 #ifdef __cplusplus
 }

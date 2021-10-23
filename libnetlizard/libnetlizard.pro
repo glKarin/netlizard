@@ -45,7 +45,7 @@ SOURCES += \
     soil/stb_image_aug.c \
     texture_v2_file.c \
     media_util.c \
-    spirit.c \
+    sprite.c \
     font.c \
     texture_v3_file.c \
     png_file.c \
@@ -54,7 +54,8 @@ SOURCES += \
     egypt3d.c \
     ct3dep3.c \
     re3d.c \
-    clone3d.c
+    clone3d.c \
+    sprite.c
 
 #libnetlizard.files = $$DESTDIR/libnetlizard*
 #libnetlizard.path = /usr/lib

@@ -6,8 +6,12 @@
 #include <QAction>
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QVBoxLayout>
+#include <QColor>
 
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
 
 #include "utils/ioutility.h"
 
@@ -48,7 +52,9 @@ void HomeCell::TriggerAction()
 
 IndexViewer::IndexViewer(QWidget *parent) :
     BaseViewer(parent),
-    m_layout(0)
+    m_layout(0),
+    m_tools(0),
+    m_inited(false)
 {
     setObjectName("IndexViewer");
     Init();
@@ -75,7 +81,9 @@ void IndexViewer::Init()
                                  << HomeCellItem("&Sprite viewer", "sprite_viewer")
                 ;
 
-    container->setTitle("Operation");
+    //container->setMinimumWidth(CELL_SIZE);
+    container->setTitle("NETLizard");
+    m_layout->setSpacing(10);
     container->setLayout(m_layout);
 
     root->setWidget(container);
@@ -97,38 +105,101 @@ void IndexViewer::resizeEvent(QResizeEvent *event)
 
 void IndexViewer::Layout()
 {
-    int w = CentralWidget()->width();
-    const int Col = qMax(w / CELL_SIZE, 1);
-    const int Row = (int)std::ceil((float)m_list.size() / (float)Col);
+    QScrollArea *container = static_cast<QScrollArea *>(CentralWidget());
+    int w = container->width();
+    const int Col = qMax((w - 80) / (CELL_SIZE + m_layout->spacing()), 1);
     int r = 0;
     int c = 0;
-    while(!m_layout->isEmpty())
+    if(!m_inited)
     {
-        QLayoutItem *item = m_layout->takeAt(0);
-        delete item->widget();
-        delete item;
-    }
-
-    Q_FOREACH(const HomeCellItem &item, m_list)
-    {
-        HomeCell *cell = new HomeCell(item.label, item.data);
-        connect(cell, SIGNAL(actionTrigger(QAction*)), this, SIGNAL(openViewer(QAction*)));
-        m_layout->addWidget(cell, r, c++);
-        if(c >= Col)
+        m_inited = true;
+        const QString buttonStyle("QPushButton { border: 1px solid #8f8f91; font-size: 16px; font-weight: bold; color: #FFFFFF; background-color: %1 }");
+        Q_FOREACH(const HomeCellItem &item, m_list)
         {
-            r++;
-            c = 0;
+            HomeCell *cell = new HomeCell(item.label, item.data);
+            connect(cell, SIGNAL(actionTrigger(QAction*)), this, SIGNAL(openViewer(QAction*)));
+            cell->setStyleSheet(buttonStyle.arg(RandomColor()));
+            m_layout->addWidget(cell, r, c++);
+            if(c >= Col)
+            {
+                r++;
+                c = 0;
+            }
+        }
+
+        for(int i = 0; i < m_layout->columnCount(); i++)
+        {
+            m_layout->setColumnStretch(i, 0);
+            m_layout->setColumnMinimumWidth(i, CELL_SIZE);
+        }
+        for(int i = 0; i < m_layout->rowCount(); i++)
+        {
+            m_layout->setRowStretch(i, 0);
+            m_layout->setRowMinimumHeight(i, CELL_SIZE);
+        }
+
+        const QString toolsButtonStyle("QPushButton { border: 1px solid #8f8f91; border-radius: 24px }");
+        HomeCell *cell;
+        QVBoxLayout *vLayout = new QVBoxLayout;
+        HomeCellItemList list;
+        list << HomeCellItem("&Setting", "setting")
+                   << HomeCellItem("&Help", "help")
+                      << HomeCellItem("&About", "about")
+                         << HomeCellItem("&Exit", "exit")
+                    ;
+        Q_FOREACH(const HomeCellItem &item, list)
+        {
+            cell = new HomeCell(item.label, item.data);
+            cell->setFixedSize(48, 48);
+            cell->setStyleSheet(toolsButtonStyle);
+            connect(cell, SIGNAL(actionTrigger(QAction*)), this, SIGNAL(openViewer(QAction*)));
+            vLayout->addWidget(cell);
+        }
+        vLayout->addStretch();
+        m_tools = new QWidget(container);
+        m_tools->setFixedWidth(64);
+        m_tools->setLayout(vLayout);
+    }
+    else
+    {
+        QList<QLayoutItem *> list;
+        while(!m_layout->isEmpty())
+        {
+            QLayoutItem *item = m_layout->takeAt(0);
+            list.push_back(item);
+        }
+        Q_FOREACH(QLayoutItem *item, list)
+        {
+            m_layout->addItem(item, r, c++);
+            if(c >= Col)
+            {
+                r++;
+                c = 0;
+            }
         }
     }
+    m_tools->move(container->width() - 80, 0);
+    m_tools->setFixedHeight(container->height());
+}
 
-    for(int i = 0; i < m_layout->columnCount(); i++)
+#define CRAND (qrand() % 255)
+QString IndexViewer::RandomColor() const
+{
+    const int Limit = std::sqrt(250 * 250 * 3);
+    uint r = 0;
+    uint g = 0;
+    uint b = 0;
+    static bool first = true;
+    do
     {
-        //m_layout->setColumnStretch(i, CELL_SPACING);
-        m_layout->setColumnMinimumWidth(i, CELL_SIZE);
-    }
-    for(int i = 0; i < m_layout->rowCount(); i++)
-    {
-        //m_layout->setRowStretch(i, CELL_SPACING);
-        m_layout->setRowMinimumHeight(i, CELL_SIZE);
-    }
+        qsrand(first ? std::time(0) : qrand() * qMax(1u, b));
+        r = CRAND;
+        qsrand(qrand() * qMax(1u, r));
+        g = CRAND;
+        qsrand(qrand() * qMax(1u, g));
+        b = CRAND;
+        QColor color(r, g, b);
+        first = false;
+        return color.name();
+    } while(std::sqrt(r * r + g * g + b * b) >= Limit);
 }

@@ -17,6 +17,8 @@
 
 #define UNPARSED 0
 
-#define UNUSED(ptr) free(ptr); ptr = NULL;
+#define DELETE(ptr) free(ptr); ptr = NULL;
+
+#define UNUSED(x) (void)(x);
 
 #endif // _KARIN_PRIV_LOCAL_H

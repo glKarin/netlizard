@@ -35,7 +35,7 @@ GLboolean new_texture_from_nl_v2_3d_file(texture_s *g_tex, const char *name)
         free(data);
     }
     delete_NETLizard_Texture(&png);
-    return GL_FALSE;
+    return ok;
 }
 
 GLboolean new_texture_from_nl_v3_3d_file(texture_s *g_tex, const char *name)
@@ -56,7 +56,7 @@ GLboolean new_texture_from_nl_v3_3d_file(texture_s *g_tex, const char *name)
         free(data);
     }
     delete_NETLizard_Texture(&png);
-    return GL_FALSE;
+    return ok;
 }
 
 GLboolean new_texture_from_nl_v3_3d_compress_file(texture_s *g_tex, const char *name)
@@ -80,6 +80,6 @@ GLboolean new_texture_from_nl_v3_3d_compress_file(texture_s *g_tex, const char *
     }
 
     delete_NETLizard_Texture(&png);
-    return GL_FALSE;
+    return ok;
 }
 

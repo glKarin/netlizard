@@ -1045,7 +1045,7 @@ class__t__lvl class_t__function_b_1int_2bool__scene(const byte arrayOfByte[], bo
 		i1++;
 	}
 	dprintfs(str);
-	UNUSED(str)
+    DELETE(str);
 #if UNPARSED
 	cv = str;
 	for (int i35 = gC - 1; i35 >= 0; i35--)

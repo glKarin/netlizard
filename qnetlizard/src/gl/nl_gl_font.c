@@ -120,7 +120,8 @@ GLvoid NETLizard_RenderFontChar(const GL_NETLizard_Font *fnt, GLuint i)
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    glBindTexture(GL_TEXTURE_2D, fnt->tex.texid);
+    if(fnt->tex.texid)
+        glBindTexture(GL_TEXTURE_2D, fnt->tex.texid);
     const GL_NETLizard_Font_Char *c = fnt->char_map + i;
     glVertexPointer(3, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), c->vertex_data.vertex[0].position);
     glTexCoordPointer(2, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), c->vertex_data.vertex[0].texcoord);

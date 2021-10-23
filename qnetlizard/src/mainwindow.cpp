@@ -16,6 +16,7 @@
 #include "itemviewer.h"
 #include "animationviewer.h"
 #include "indexviewer.h"
+#include "spriteviewer.h"
 #include "helpdialog.h"
 #include "aboutdialog.h"
 #include "logdialog.h"
@@ -162,7 +163,7 @@ BaseViewer * MainWindow::GenViewer(const QString &type)
     else if(type == "animation_viewer")
         viewer = new AnimationViewer;
     else if(type == "sprite_viewer")
-        ;
+        viewer = new SpriteViewer;
 
 #ifdef _DEV_TEST
     else if(type == "test")

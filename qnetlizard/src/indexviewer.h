@@ -9,6 +9,7 @@
 
 class QAction;
 class QGridLayout;
+class QColor;
 
 struct HomeCellItem
 {
@@ -60,9 +61,12 @@ protected:
 private:
     void Init();
     void Layout();
+    QString RandomColor() const;
     
 private:
     QGridLayout *m_layout;
+    QWidget *m_tools;
+    bool m_inited;
     HomeCellItemList m_list;
     
     Q_DISABLE_COPY(IndexViewer)

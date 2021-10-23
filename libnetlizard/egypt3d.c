@@ -163,7 +163,7 @@ NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, NLint index
 	ZERO(model, NETLizard_3D_Model);
 
 	class__r__role obj;
-    class_e__function_aa_void__role(&obj, data);
+    class_e__function_aa_void__role(&obj, (const byte *)data);
     const int item_mesh_count = obj.short_2_array_3__a__vertex.length;
     NETLizard_3D_Item_Mesh *item_meshes = NEW_II(NETLizard_3D_Item_Mesh, obj.short_2_array_3__a__vertex.length);
 	int i;
@@ -321,7 +321,7 @@ NLboolean nlLoadEgypt3DItemModelData(const char* data, NLsizei size, NLint index
 	model->has_sky = 0;
     model->type = NL_EGYPT_3D_ITEM_MODEL;
     model->game = NL_SHADOW_OF_EGYPT_3D;
-	return model;
+    return NL_TRUE;
 }
 
 NLboolean nlReadEgypt3DModelFile(const char* name, const char *resc_path, NETLizard_3D_Model *model)

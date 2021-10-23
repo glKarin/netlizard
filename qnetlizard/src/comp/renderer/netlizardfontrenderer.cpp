@@ -121,8 +121,10 @@ void NETLizardFontRenderer::RenderText()
         h += char_height;
         glTranslatef(0.0, char_height, 0.0);
         glPushMatrix();
-        glRotatef(180, 1, 0, 0);
-        Font_RenderString(m_font, 0, 0, 1, 1, 1, 1, str);
+        {
+            glRotatef(180, 1, 0, 0);
+            Font_RenderString(m_font, 0, 0, 1, 1, 1, 1, str);
+        }
         glPopMatrix();
         h += m_lineSpacing;
         glTranslatef(0.0, m_lineSpacing, 0.0);

@@ -1,7 +1,7 @@
-#include "netlizard.h"
-
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
+
+#include "netlizard.h"
 
 #include "mainwindow.h"
 #include "logoutput.h"
@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
 
     qRegisterMetaType<NLVector3>("NLVector3");
 
+#ifdef _DEV_TEST
     int test = Test(argc, argv);
     if(test != 0)
         return test;
@@ -35,6 +36,7 @@ int main(int argc, char *argv[])
 
     //TestWidget w;
     //w.show();
+#endif
 
     MainWindow viewer;
     QWidget *win = &viewer;
@@ -43,8 +45,14 @@ int main(int argc, char *argv[])
     return app.exec();
 }
 
+#ifdef _DEV_TEST
 int Test(int argc, char **argv)
 {
+    //NETLizard_Sprite sp;
+    //nlReadSpiritMapFile("E:\\qobject\\netlizard-game\\resource\\cu.png", &sp);
+    //qDebug() << sp.count;
+
+    return 0;
     NLVector3 nor = VECTOR3(0, 1, 0);
     NLVector3 nor2 = VECTOR3(0, 0, 0);
     NLMatrix4 mat;
@@ -59,3 +67,4 @@ int Test(int argc, char **argv)
     Mesa_FreeGLMatrix(&idmat);
     return 0;
 }
+#endif
