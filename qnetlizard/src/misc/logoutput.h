@@ -25,7 +25,7 @@ class LogOutput : public QObject
 public:
     virtual ~LogOutput();
     static LogOutput * Instance();
-    LogOutputList LogList() const;
+    const LogOutputList & LogList() const;
     QString LogText() const;
     uint Count() const;
     
@@ -34,6 +34,8 @@ signals:
     
 public slots:
     void Clear();
+    void Start();
+    void Finish();
     void Push(int type, const QString &msg);
 
 private:
@@ -44,6 +46,7 @@ private:
 private:
     LogOutputList m_logList;
     QString m_logText;
+    bool m_inited;
 
     Q_DISABLE_COPY(LogOutput)
 };

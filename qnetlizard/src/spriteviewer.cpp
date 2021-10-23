@@ -19,10 +19,10 @@ SpriteViewer::SpriteViewer(QWidget *parent) :
     m_spriteScene(0),
     m_indexList(0),
     m_cuFileChooser(0),
-    m_cFileChooser(0),
+    m_uFileChooser(0),
     m_colorChooser(0),
-    m_openCfButton(0),
-    m_openFntButton(0)
+    m_openCuButton(0),
+    m_openUButton(0)
 {
     setObjectName("SpriteViewer");
     Init();
@@ -42,17 +42,18 @@ void SpriteViewer::Init()
     m_indexList = new QListWidget;
     layout->addWidget(m_indexList);
     m_spriteScene = new SpriteScene;
-    //m_spriteScene->setMinimumWidth(320);
     layout->addWidget(m_spriteScene, 1);
 
-    m_openCfButton = new QPushButton;
-    m_openCfButton->setText("config file(cu.png)");
-    toolLayout->addWidget(m_openCfButton);
-    connect(m_openCfButton, SIGNAL(clicked()), this, SLOT(OpenCfFileChooser()));
-    m_openFntButton = new QPushButton(this);
-    m_openFntButton->setText("image file(cxx.png)");
-    connect(m_openFntButton, SIGNAL(clicked()), this, SLOT(OpenFntFileChooser()));
-    toolLayout->addWidget(m_openFntButton);
+    // cu - u0
+    // ccc - ccu
+    m_openCuButton = new QPushButton;
+    m_openCuButton->setText("config file(cu|ccc.png)");
+    toolLayout->addWidget(m_openCuButton);
+    connect(m_openCuButton, SIGNAL(clicked()), this, SLOT(openCuFileChooser()));
+    m_openUButton = new QPushButton(this);
+    m_openUButton->setText("image file(u0|ccu.png)");
+    connect(m_openUButton, SIGNAL(clicked()), this, SLOT(OpenUFileChooser()));
+    toolLayout->addWidget(m_openUButton);
     toolLayout->addStretch();
     button = new QPushButton;
     button->setText("background color");
@@ -80,7 +81,7 @@ void SpriteViewer::OpenBackgroundColorChooser()
     m_colorChooser->exec();
 }
 
-void SpriteViewer::OpenCfFileChooser()
+void SpriteViewer::openCuFileChooser()
 {
     if(!m_cuFileChooser)
     {
@@ -92,16 +93,16 @@ void SpriteViewer::OpenCfFileChooser()
     m_cuFileChooser->exec();
 }
 
-void SpriteViewer::OpenFntFileChooser()
+void SpriteViewer::OpenUFileChooser()
 {
-    if(!m_cFileChooser)
+    if(!m_uFileChooser)
     {
-        m_cFileChooser = new QFileDialog(this);
-        m_cFileChooser->setFileMode(QFileDialog::ExistingFile);
-        connect(m_cFileChooser, SIGNAL(fileSelected(const QString &)), this, SLOT(SetCFile(const QString &)));
+        m_uFileChooser = new QFileDialog(this);
+        m_uFileChooser->setFileMode(QFileDialog::ExistingFile);
+        connect(m_uFileChooser, SIGNAL(fileSelected(const QString &)), this, SLOT(SetCFile(const QString &)));
     }
 
-    m_cFileChooser->exec();
+    m_uFileChooser->exec();
 }
 
 void SpriteViewer::SetBackgroundColor(const QColor &color)
@@ -114,16 +115,16 @@ void SpriteViewer::SetCuFile(const QString &file)
     if(m_cuFile != file)
     {
         m_cuFile = file;
-        m_openCfButton->setToolTip(m_cuFile);
+        m_openCuButton->setToolTip(m_cuFile);
     }
 }
 
 void SpriteViewer::SetCFile(const QString &file)
 {
-    if(m_cFile != file)
+    if(m_uFile != file)
     {
-        m_cFile = file;
-        m_openFntButton->setToolTip(m_cFile);
+        m_uFile = file;
+        m_openUButton->setToolTip(m_uFile);
     }
 }
 
@@ -135,19 +136,18 @@ bool SpriteViewer::LoadSprite()
         return false;
     }
     Reset();
-    if(m_cFile.isEmpty())
+    if(m_uFile.isEmpty())
     {
         QFileInfo info(m_cuFile);
         SetCFile(info.absolutePath() + "/cuu.png");
     }
-    bool res = m_spriteScene->LoadFile(m_cuFile, m_cFile);
+    bool res = m_spriteScene->LoadFile(m_cuFile, m_uFile);
     if(res)
     {
         const int Co = m_spriteScene->Count();
         for(int i = 0; i < Co; i++)
             m_indexList->addItem(QString::number(i));
-        SetTitleLabel(QString("config file: %1, texture file: %2").arg(m_cuFile).arg(m_cFile));
-        QMessageBox::warning(this, "Success", "Load sprite success!");
+        SetTitleLabel(QString("config file: %1, texture file: %2").arg(m_cuFile).arg(m_uFile));
     }
     else
     {

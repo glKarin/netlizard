@@ -3,7 +3,6 @@
 
 #include <QPushButton>
 #include <QVariant>
-#include <QList>
 
 #include "baseviewer.h"
 
@@ -24,6 +23,7 @@ struct HomeCellItem
 };
 
 typedef QList<HomeCellItem> HomeCellItemList;
+typedef QMap<QString, HomeCellItemList> HomeCellItemMap;
 
 class HomeCell : public QPushButton
 {
@@ -49,6 +49,7 @@ class IndexViewer : public BaseViewer
 public:
     explicit IndexViewer(QWidget *parent = 0);
     virtual ~IndexViewer();
+    static const HomeCellItemMap & ActionMap();
     
 signals:
     void openViewer(QAction *action);
@@ -67,7 +68,6 @@ private:
     QGridLayout *m_layout;
     QWidget *m_tools;
     bool m_inited;
-    HomeCellItemList m_list;
     
     Q_DISABLE_COPY(IndexViewer)
 };

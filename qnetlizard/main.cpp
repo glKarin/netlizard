@@ -32,8 +32,6 @@ int main(int argc, char *argv[])
     if(test != 0)
         return test;
 
-    //qInstallMsgHandler(log_output_msg_handler);
-
     //TestWidget w;
     //w.show();
 #endif

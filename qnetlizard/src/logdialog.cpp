@@ -45,6 +45,8 @@ void LogDialog::Init()
 
     setLayout(layout);
 
+    m_textViewer->setHtml(m_log->LogText().replace("\n", "<br/>"));
+
     setWindowTitle("Log output");
 }
 
@@ -56,8 +58,8 @@ void LogDialog::PushLog(int type, const QString &str)
     else if(type != 0)
         color = "#ff0000";
 
-    QString text = QString("<span color='%1'>%2</span>").arg(color).arg(str);
-    m_textViewer->append("<br/>" + text);
+    QString text = QString("<font color='%1'>%2</font>").arg(color).arg(str);
+    m_textViewer->append(text);
     m_textViewer->verticalScrollBar()->setValue(m_textViewer->verticalScrollBar()->maximum());
     m_textViewer->horizontalScrollBar()->setValue(0);
 }

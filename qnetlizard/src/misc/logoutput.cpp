@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QDateTime>
+#include <QApplication>
 
 #include <stdio.h>
 
@@ -21,9 +22,12 @@ QString LogOutputItem::Format() const
 }
 
 LogOutput::LogOutput(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    m_inited(false)
 {
     setObjectName("LogOutput");
+    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(Finish()));
+    Start();
 }
 
 LogOutput::~LogOutput()
@@ -31,7 +35,7 @@ LogOutput::~LogOutput()
     DEBUG_DESTROY_Q
 }
 
-LogOutputList LogOutput::LogList() const
+const LogOutputList & LogOutput::LogList() const
 {
     return m_logList;
 }
@@ -54,6 +58,8 @@ void LogOutput::Clear()
 
 void LogOutput::Push(int type, const QString &msg)
 {
+    if(!m_inited)
+        return;
     LogOutputItem item(CurrentDatetime(), type, msg);
     AddItem(item);
 }
@@ -66,10 +72,28 @@ QString LogOutput::CurrentDatetime() const
 
 void LogOutput::AddItem(const LogOutputItem &item)
 {
+    if(!m_inited)
+        return;
     m_logList.push_back(item);
     QString str = item.Format();
     m_logText += str + "\n";
     emit outputLog(item.type, str);
+}
+
+void LogOutput::Finish()
+{
+    if(!m_inited)
+        return;
+    m_inited = false;
+    qInstallMsgHandler(0);
+}
+
+void LogOutput::Start()
+{
+    if(m_inited)
+        return;
+    m_inited = true;
+    qInstallMsgHandler(log_output_msg_handler);
 }
 
 LogOutput * LogOutput::Instance()

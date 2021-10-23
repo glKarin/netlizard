@@ -64,22 +64,61 @@ IndexViewer::~IndexViewer()
 {
 }
 
+const HomeCellItemMap & IndexViewer::ActionMap()
+{
+     static HomeCellItemMap _map;
+     if(_map.isEmpty())
+     {
+        HomeCellItemList list;
+        list
+            << HomeCellItem("&Image viewer", "image_viewer")
+            << HomeCellItem("&Font viewer", "font_viewer")
+            << HomeCellItem("&Sprite viewer", "sprite_viewer")
+            << HomeCellItem("&Text viewer", "text_viewer")
+            << HomeCellItem("&String viewer", "string_viewer")
+               ;
+        _map.insert("&Resource", list);
+
+        list.clear();
+        list
+                << HomeCellItem("&Map viewer", "map_viewer")
+                << HomeCellItem("&Item viewer", "item_viewer")
+                << HomeCellItem("&Animation viewer", "animation_viewer")
+                ;
+        _map.insert("&3D", list);
+
+        list.clear();
+        list
+                << HomeCellItem("&Log", "log")
+#ifdef _DEV_TEST
+                << HomeCellItem("&Test", "test")
+#endif
+             << HomeCellItem("&Close", "close")
+                ;
+        _map.insert("&Viewer", list);
+
+        list.clear();
+        list
+                << HomeCellItem("&Setting", "setting")
+                           << HomeCellItem("&Help", "help")
+                              << HomeCellItem("&About", "about")
+                                 ;
+        _map.insert("&Others", list);
+
+        list.clear();
+        list
+                << HomeCellItem("&Exit", "exit")
+                   ;
+        _map.insert("&Exit", list);
+     }
+     return _map;
+}
+
 void IndexViewer::Init()
 {
     QScrollArea *root = new QScrollArea;
     m_layout = new QGridLayout;
     QGroupBox *container = new QGroupBox;
-
-    m_list
-            << HomeCellItem("&Text viewer", "text_viewer")
-               << HomeCellItem("&String viewer", "string_viewer")
-                  << HomeCellItem("&Image viewer", "image_viewer")
-                     << HomeCellItem("&Font viewer", "font_viewer")
-                        << HomeCellItem("&Map viewer", "map_viewer")
-                           << HomeCellItem("&Item viewer", "item_viewer")
-                              << HomeCellItem("&Animation viewer", "animation_viewer")
-                                 << HomeCellItem("&Sprite viewer", "sprite_viewer")
-                ;
 
     //container->setMinimumWidth(CELL_SIZE);
     container->setTitle("NETLizard");
@@ -113,17 +152,27 @@ void IndexViewer::Layout()
     if(!m_inited)
     {
         m_inited = true;
+        QStringList actions;
+        actions << "&Resource"
+                   << "&3D"
+                      ;
+
         const QString buttonStyle("QPushButton { border: 1px solid #8f8f91; font-size: 16px; font-weight: bold; color: #FFFFFF; background-color: %1 }");
-        Q_FOREACH(const HomeCellItem &item, m_list)
+        const HomeCellItemMap &Map = ActionMap();
+        Q_FOREACH(const QString &name, actions)
         {
-            HomeCell *cell = new HomeCell(item.label, item.data);
-            connect(cell, SIGNAL(actionTrigger(QAction*)), this, SIGNAL(openViewer(QAction*)));
-            cell->setStyleSheet(buttonStyle.arg(RandomColor()));
-            m_layout->addWidget(cell, r, c++);
-            if(c >= Col)
+            const HomeCellItemList &list = Map[name];
+            Q_FOREACH(const HomeCellItem &item, list)
             {
-                r++;
-                c = 0;
+                HomeCell *cell = new HomeCell(item.label, item.data);
+                connect(cell, SIGNAL(actionTrigger(QAction*)), this, SIGNAL(openViewer(QAction*)));
+                cell->setStyleSheet(buttonStyle.arg(RandomColor()));
+                m_layout->addWidget(cell, r, c++);
+                if(c >= Col)
+                {
+                    r++;
+                    c = 0;
+                }
             }
         }
 
@@ -138,22 +187,24 @@ void IndexViewer::Layout()
             m_layout->setRowMinimumHeight(i, CELL_SIZE);
         }
 
+        actions.clear();
+        actions << "&Others"
+                   << "&Exit"
+                      ;
         const QString toolsButtonStyle("QPushButton { border: 1px solid #8f8f91; border-radius: 24px }");
         HomeCell *cell;
         QVBoxLayout *vLayout = new QVBoxLayout;
-        HomeCellItemList list;
-        list << HomeCellItem("&Setting", "setting")
-                   << HomeCellItem("&Help", "help")
-                      << HomeCellItem("&About", "about")
-                         << HomeCellItem("&Exit", "exit")
-                    ;
-        Q_FOREACH(const HomeCellItem &item, list)
+        Q_FOREACH(const QString &name, actions)
         {
-            cell = new HomeCell(item.label, item.data);
-            cell->setFixedSize(48, 48);
-            cell->setStyleSheet(toolsButtonStyle);
-            connect(cell, SIGNAL(actionTrigger(QAction*)), this, SIGNAL(openViewer(QAction*)));
-            vLayout->addWidget(cell);
+            const HomeCellItemList &list = Map[name];
+            Q_FOREACH(const HomeCellItem &item, list)
+            {
+                cell = new HomeCell(item.label, item.data);
+                cell->setFixedSize(48, 48);
+                cell->setStyleSheet(toolsButtonStyle);
+                connect(cell, SIGNAL(actionTrigger(QAction*)), this, SIGNAL(openViewer(QAction*)));
+                vLayout->addWidget(cell);
+            }
         }
         vLayout->addStretch();
         m_tools = new QWidget(container);

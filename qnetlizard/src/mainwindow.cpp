@@ -49,49 +49,33 @@ void MainWindow::Init()
 
     menuBar = new QMenuBar(this);
 
-    menu = menuBar->addMenu("&Viewer");
-    menuItem = menu->addAction("&Text viewer");
-    menuItem->setData("text_viewer");
-    menuItem = menu->addAction("&String viewer");
-    menuItem->setData("string_viewer");
-    menuItem = menu->addAction("&Image viewer");
-    menuItem->setData("image_viewer");
-    menuItem = menu->addAction("&Font viewer");
-    menuItem->setData("font_viewer");
-
-    menu = menuBar->addMenu("&3D");
-    menuItem = menu->addAction("&Map viewer");
-    menuItem->setData("map_viewer");
-    menuItem = menu->addAction("&Item viewer");
-    menuItem->setData("item_viewer");
-    menuItem = menu->addAction("&Animation viewer");
-    menuItem->setData("animation_viewer");
-    menuItem = menu->addAction("&Sprite viewer");
-    menuItem->setData("sprite_viewer");
-
-    menu = menuBar->addMenu("&View");
-
-#ifdef _DEV_TEST
-    menuItem = menu->addAction("&Test");
-    menuItem->setData("test");
-#endif
-
-    menuItem = menu->addAction("&Log");
-    menuItem->setData("log");
-    menuItem = menu->addAction("&Close");
-    menuItem->setData("close");
-    menuItem->setData("close_viewer");
-
-    menu = menuBar->addMenu("&Other");
-    menuItem = menu->addAction("&Setting");
-    menuItem->setData("setting");
-    menuItem = menu->addAction("&About");
-    menuItem->setData("about");
-    menuItem = menu->addAction("&Help");
-    menuItem->setData("help");
-
-    menuItem = menuBar->addAction("&Exit");
-    menuItem->setData("exit");
+    const HomeCellItemMap &Map = IndexViewer::ActionMap();
+    QStringList actions;
+        actions << "&Resource"
+        << "&3D"
+        << "&Viewer"
+        << "&Others"
+        << "&Exit"
+           ;
+    Q_FOREACH(const QString &name, actions)
+    {
+        const HomeCellItemList &list = Map[name];
+        if(list.size() == 1)
+        {
+            const HomeCellItem &item = list[0];
+            menuItem = menuBar->addAction(item.label);
+            menuItem->setData(item.data);
+        }
+        else
+        {
+            menu = menuBar->addMenu(name);
+            Q_FOREACH(const HomeCellItem &item, list)
+            {
+                menuItem = menu->addAction(item.label);
+                menuItem->setData(item.data);
+            }
+        }
+    }
 
     connect(menuBar, SIGNAL(triggered(QAction *)), this, SLOT(MenuActionSlot(QAction *)));
 

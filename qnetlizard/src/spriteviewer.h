@@ -24,8 +24,8 @@ public slots:
 private Q_SLOTS:
     bool RenderIndex(QListWidgetItem *item);
     bool LoadSprite();
-    void OpenCfFileChooser();
-    void OpenFntFileChooser();
+    void openCuFileChooser();
+    void OpenUFileChooser();
     void OpenBackgroundColorChooser();
     void SetCuFile(const QString &file);
     void SetCFile(const QString &file);
@@ -39,12 +39,12 @@ private:
     SpriteScene *m_spriteScene;
     QListWidget *m_indexList;
     QFileDialog *m_cuFileChooser;
-    QFileDialog *m_cFileChooser;
+    QFileDialog *m_uFileChooser;
     QColorDialog *m_colorChooser;
-    QPushButton *m_openCfButton;
-    QPushButton *m_openFntButton;
+    QPushButton *m_openCuButton;
+    QPushButton *m_openUButton;
     QString m_cuFile;
-    QString m_cFile;
+    QString m_uFile;
 
     Q_DISABLE_COPY(SpriteViewer)
 };

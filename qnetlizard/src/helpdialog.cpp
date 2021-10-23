@@ -48,13 +48,17 @@ HelpDialog::HelpDialog(QWidget *parent) :
             << "4. " _B(_F("3D frame animation model", "#FF0000")) " file name(* is a digit): "
             << _B("un*.png") " - Egypt 3D, Clone 3D."
             << ""
-            << "5. " _B(_F("Font", "#FF0000")) " file name: "
+            << "5. " _B(_F("Font", "#FF0000")) " file name(a config file and a texture file combination): "
             << _B("cf.png") " - Config of font"
             << _B("fnt.png") " - Font texture image"
             << ""
             << "6. " _B(_F("Text", "#FF0000")) " file name(need `Russian` language environment): "
             << _B("ab.png") " - `About` menu text"
             << _B("hl.png") " - `Help` menu text"
+            << ""
+            << "7. " _B(_F("Sprite", "#FF0000")) " file name(a layout config file and a texture file combination): "
+            << _B("cu.png + u0.png") " - Bullet trace sprite"
+            << _B("ccc.png + ccu.png") " - Weapon fire lighting sprite"
                ;
     m_contentText.push_back(list);
 
