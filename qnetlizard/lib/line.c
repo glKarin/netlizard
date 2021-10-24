@@ -14,6 +14,26 @@ void line_make(line_s *obj, const vector3_s *a, const vector3_s *b)
     LINEV_B_Z(obj) = VECTOR3V_Z(b);
 }
 
+int line_equals(const line_s *a, const line_s *b)
+{
+    if(!a || !b)
+        return 0;
+    return vector3_equals(&(LINEV_A(a)), &(LINEV_A(b)))
+            && vector3_equals(&(LINEV_B(a)), &(LINEV_B(b)))
+            ;
+}
+
+int line_equals_ignore_seq(const line_s *a, const line_s *b)
+{
+    if(!a || !b)
+        return 0;
+    return (vector3_equals(&(LINEV_A(a)), &(LINEV_A(b)))
+            && vector3_equals(&(LINEV_B(a)), &(LINEV_B(b))))
+            || (vector3_equals(&(LINEV_A(a)), &(LINEV_B(b)))
+                && vector3_equals(&(LINEV_B(a)), &(LINEV_A(b))))
+            ;
+}
+
 void ray_make(ray_s *obj, const vector3_s *a, const vector3_s *b)
 {
     if(!obj)

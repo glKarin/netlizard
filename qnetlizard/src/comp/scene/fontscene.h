@@ -32,6 +32,9 @@ signals:
     
 public slots:
 
+    private Q_SLOTS:
+    void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
+
 private:
     NETLizardFontRenderer *m_renderer;
     font_s *m_font;

@@ -28,7 +28,11 @@ HEADERS += \
     lib/ortho.h \
     lib/frustum.h \
     lib/matrix.h \
-    src/gl/nl_util.h
+    src/gl/nl_util.h \
+    src/comp/component/simplelightsourcecomponent.h \
+    src/comp/simplelightsourceactor.h \
+    src/gl/shadow.h \
+    src/gl/nl_shadow.h
 
 SOURCES += \
     main.cpp \
@@ -43,7 +47,11 @@ SOURCES += \
     lib/ortho.c \
     lib/frustum.c \
     lib/matrix.c \
-    src/gl/nl_util.c
+    src/gl/nl_util.c \
+    src/comp/component/simplelightsourcecomponent.cpp \
+    src/comp/simplelightsourceactor.cpp \
+    src/gl/shadow.cpp \
+    src/gl/nl_shadow.c
 
 # Widget
 HEADERS += \

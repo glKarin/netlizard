@@ -21,8 +21,8 @@ FontScene::FontScene(QWidget *parent) :
     m_lineSpacing(1)
 {
     setObjectName("FontScene");
-
-    SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
+    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+    SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
 
     NLPropperties prop;
     prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
@@ -38,6 +38,7 @@ FontScene::FontScene(QWidget *parent) :
     NLSceneOrthoCamera *orthoCam = static_cast<NLSceneOrthoCamera *>(camera->Camera());
     orthoCam->SetAlignment(align);
     SetCurrentCamera(orthoCam);
+    connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
 
 FontScene::~FontScene()
@@ -132,4 +133,10 @@ void FontScene::resizeEvent(QResizeEvent *event)
 {
     NLScene::resizeEvent(event);
     m_renderer->UpdateLayout();
+}
+
+void FontScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)
+{
+    if(name == "RENDER/fps")
+        SetFPS(value.toInt());
 }

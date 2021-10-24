@@ -20,10 +20,13 @@ ImageScene::ImageScene(QWidget *parent)
     : NLScene(parent),
       m_tex(0),
       m_renderer(0),
-      m_align(Qt::AlignCenter)
+      m_align(Qt::AlignCenter),
+      m_control(0),
+      m_imageControl(0)
 {
     setObjectName("ImageScene");
-    SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
+    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+    SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
 
     memset(&m_data.data, 0, sizeof(m_data.data));
     m_data.type = NL_TEXTURE_UNKNOWN;
@@ -34,13 +37,16 @@ ImageScene::ImageScene(QWidget *parent)
     AddActor(actor);
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
     AddActor(camera);
-    SimpleImageControlComponent *control = new SimpleImageControlComponent(NLPropperties(), actor);
-    actor->AddComponent(control);
+    m_control = static_cast<SimpleControl2DComponent *>(camera->Control());
+    m_imageControl = new SimpleImageControlComponent(NLPropperties(), actor);
+    actor->AddComponent(m_imageControl);
     m_renderer = new NETLizardTextureRenderer;
     actor->SetRenderable(m_renderer);
     NLSceneOrthoCamera *orthoCam = static_cast<NLSceneOrthoCamera *>(camera->Camera());
     orthoCam->SetAlignment(m_align);
     SetCurrentCamera(orthoCam);
+
+    connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
 
 ImageScene::~ImageScene()
@@ -86,8 +92,8 @@ void ImageScene::SetAlignment(Qt::Alignment align)
         m_renderer->SetAlignment(align);
 
         bool invertY = align & Qt::AlignTop;
-        (actor->GetComponent_T<SimpleImageControlComponent>(0))->SetInvertY(invertY);
-        (camera->GetComponent_T<SimpleControl2DComponent>(1))->SetInvertY(invertY);
+        m_imageControl->SetInvertY(invertY);
+        m_control->SetInvertY(invertY);
     }
 }
 
@@ -365,4 +371,16 @@ void ImageScene::SetData(int type, void *data, int len, const QString &ext)
 const texture_s * ImageScene::Texture() const
 {
     return m_tex;
+}
+
+void ImageScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)
+{
+    if(name == "RENDER/fps")
+        SetFPS(value.toInt());
+    else if(name == "CONTROL_2D/trans_sens")
+        m_imageControl->SetTransSens(value.toFloat());
+    else if(name == "CONTROL_2D/rot_sens")
+        m_imageControl->SetRotSens(value.toFloat());
+    else if(name == "CONTROL_2D/trans_sens")
+        m_control->SetMoveSens(value.toFloat());
 }

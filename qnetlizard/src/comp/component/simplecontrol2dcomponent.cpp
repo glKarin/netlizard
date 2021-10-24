@@ -40,7 +40,7 @@ void SimpleControl2DComponent::Reset()
 {
     memset(m_action, 0, sizeof(bool) * NLAction_Total);
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
-    m_moveSens = settings->GetSetting<double>("CONTROL_2D/trans_sens", M_Move_Sens);
+    SetMoveSens(settings->GetSetting<double>("CONTROL_2D/trans_sens", M_Move_Sens));
     NLComponent::Reset();
 }
 

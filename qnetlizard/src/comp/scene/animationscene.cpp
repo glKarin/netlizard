@@ -22,22 +22,26 @@ AnimationScene::AnimationScene(QWidget *parent)
       m_animFPS(0),
       m_playSequence(false),
       m_frameInterval(0),
-      m_lastFrameTime(0)
+      m_lastFrameTime(0),
+      m_control(0)
 {
-    SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
-    SetAnimFPS(10);
-
     setObjectName("AnimationScene");
+    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+    SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
+    SetAnimFPS(10);
 
     NLPropperties prop;
     prop.insert("z_is_up", true);
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
     AddActor(camera);
+    m_control = static_cast<SimpleControlComponent *>(camera->Control());
     NLActor *actor = new NLActor;
     AddActor(actor);
     m_renderer = new NETLizardAnimationModelRenderer;
     actor->SetRenderable(m_renderer);
     SetCurrentCamera(camera->Camera());
+
+    connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
 
 AnimationScene::~AnimationScene()
@@ -330,4 +334,18 @@ void AnimationScene::SetPlaySequence(bool invert)
 {
     if(m_playSequence != invert)
         m_playSequence = invert;
+}
+
+void AnimationScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)
+{
+    if(name == "RENDER/fps")
+        SetFPS(value.toInt());
+    else if(name == "CONTROL_3D/move_sens")
+        m_control->SetMoveSens(value.toInt());
+    else if(name == "CONTROL_3D/turn_sens")
+        m_control->SetTurnSens(value.toInt());
+    else if(name == "CONTROL_3D/freelook_sens")
+        m_control->SetFreelookSens(value.toFloat());
+    else if(name == "CONTROL_3D/fovy_sens")
+        m_control->SetFovySens(value.toFloat());
 }

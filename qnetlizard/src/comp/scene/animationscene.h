@@ -5,13 +5,14 @@
 #include "gl/nl_gl.h"
 
 class NETLizardAnimationModelRenderer;
+class SimpleControlComponent;
 
 NLSCENE(AnimationScene)
 class AnimationScene : public NLScene
 {
     Q_OBJECT
 public:
-    AnimationScene(QWidget *parent = 0);
+    explicit AnimationScene(QWidget *parent = 0);
     virtual ~AnimationScene();
     bool IsValid() const;
     const GL_NETLizard_3D_Model * Model() const;
@@ -53,6 +54,9 @@ protected:
 private:
     void LoadAnimFrame(int index);
 
+    private Q_SLOTS:
+    void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
+
 private:
     GL_NETLizard_3D_Model *m_model;
     NETLizardAnimationModelRenderer *m_renderer;
@@ -64,6 +68,7 @@ private:
     bool m_playSequence;
     int m_frameInterval;
     qint64 m_lastFrameTime;
+    SimpleControlComponent *m_control;
 
     Q_DISABLE_COPY(AnimationScene)
 };

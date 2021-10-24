@@ -65,6 +65,8 @@ typedef struct _ray_s
 
 void line_make(line_s *line, const vector3_s *a, const vector3_s *b);
 void line_direction(const line_s *line, vector3_s *dir);
+int line_equals(const line_s *a, const line_s *b);
+int line_equals_ignore_seq(const line_s *a, const line_s *b);
 
 void ray_make(ray_s *line, const vector3_s *pos, const vector3_s *dir);
 void ray_line_to_ray(ray_s *r, const line_s *l);

@@ -9,13 +9,14 @@ class NETLizardTextureRenderer;
 class NETLizardItemModelRenderer;
 class NLSceneOrthoCamera;
 class NLScenePerspectiveCamera;
+class SimpleControlComponent;
 
 NLSCENE(MapScene)
 class MapScene : public NLScene
 {
     Q_OBJECT
 public:
-    MapScene(QWidget *parent = 0);
+    explicit MapScene(QWidget *parent = 0);
     virtual ~MapScene();
     bool IsValid() const;
     const GL_NETLizard_3D_Model * Model() const;
@@ -30,6 +31,9 @@ protected:
     virtual void Update(float f);
     virtual void Deinit();
 
+    private Q_SLOTS:
+    void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
+
 private:
     GL_NETLizard_3D_Model *m_model;
     NLActor *m_mapActor;
@@ -40,6 +44,7 @@ private:
     NETLizardItemModelRenderer *m_sky3DRenderer;
     NLSceneOrthoCamera *m_skyCamera;
     NLScenePerspectiveCamera *m_sky3DCamera;
+    SimpleControlComponent *m_control;
 
     Q_DISABLE_COPY(MapScene)
 };

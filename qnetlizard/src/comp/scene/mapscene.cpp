@@ -26,17 +26,19 @@ MapScene::MapScene(QWidget *parent)
       m_skyRenderer(0),
       m_sky3DRenderer(0),
       m_skyCamera(0),
-      m_sky3DCamera(0)
+      m_sky3DCamera(0),
+      m_control(0)
 {
+    setObjectName("MapScene");
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
     SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
-    setObjectName("MapScene");
 
     NLPropperties prop;
     // 3D camera + 3D control
     prop.insert("z_is_up", true);
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
     AddActor(camera);
+    m_control = static_cast<SimpleControlComponent *>(camera->Control());
 
     // render model
     m_mapActor = new NLActor;
@@ -74,6 +76,8 @@ MapScene::MapScene(QWidget *parent)
     AddActor(m_sky3DActor);
     m_sky3DRenderer = new NETLizardItemModelRenderer;
     m_sky3DActor->SetRenderable(m_sky3DRenderer);
+
+    connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
 
 MapScene::~MapScene()
@@ -267,4 +271,20 @@ bool MapScene::IsValid() const
 const GL_NETLizard_3D_Model * MapScene::Model() const
 {
     return m_model;
+}
+
+void MapScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)
+{
+    if(name == "RENDER/fps")
+        SetFPS(value.toInt());
+    else if(name == "RENDER/scene_cull")
+        m_renderer->SetCull(value.toBool());
+    else if(name == "CONTROL_3D/move_sens")
+        m_control->SetMoveSens(value.toInt());
+    else if(name == "CONTROL_3D/turn_sens")
+        m_control->SetTurnSens(value.toInt());
+    else if(name == "CONTROL_3D/freelook_sens")
+        m_control->SetFreelookSens(value.toFloat());
+    else if(name == "CONTROL_3D/fovy_sens")
+        m_control->SetFovySens(value.toFloat());
 }

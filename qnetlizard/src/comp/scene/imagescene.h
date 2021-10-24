@@ -5,6 +5,8 @@
 #include "netlizard.h"
 
 class NETLizardTextureRenderer;
+class SimpleControl2DComponent;
+class SimpleImageControlComponent;
 
 typedef struct _texture_s texture_s;
 
@@ -13,7 +15,7 @@ class ImageScene : public NLScene
 {
     Q_OBJECT
 public:
-    ImageScene(QWidget *parent = 0);
+    explicit ImageScene(QWidget *parent = 0);
     virtual ~ImageScene();
     bool IsValid() const;
     const texture_s * Texture() const;
@@ -36,6 +38,9 @@ private:
     bool GenTexture(const NETLizard_Texture *tex);
     bool GenTexture(const char *data, int length);
 
+    private Q_SLOTS:
+    void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
+
 private:
     texture_s *m_tex;
     NETLizardTextureRenderer *m_renderer;
@@ -49,6 +54,8 @@ private:
         int len;
         QString ext;
     } m_data;
+    SimpleControl2DComponent *m_control;
+    SimpleImageControlComponent *m_imageControl;
 
     Q_DISABLE_COPY(ImageScene)
 };

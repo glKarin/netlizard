@@ -16,6 +16,7 @@ public:
     explicit SimpleCameraActor(const NLPropperties &prop = QVariantHash(), NLActor *parent = 0);
     virtual ~SimpleCameraActor();
     NLSceneCamera * Camera();
+    NLComponent * Control();
     NLINTERFACE void SetEnableControl(bool b);
 
 protected:

@@ -5,13 +5,14 @@
 #include "gl/nl_gl.h"
 
 class NETLizardMapModelRenderer;
+class SimpleControlComponent;
 
 NLSCENE(ItemScene)
 class ItemScene : public NLScene
 {
     Q_OBJECT
 public:
-    ItemScene(QWidget *parent = 0);
+    explicit ItemScene(QWidget *parent = 0);
     virtual ~ItemScene();
     bool IsValid() const;
     const GL_NETLizard_3D_Model * Model() const;
@@ -26,9 +27,13 @@ protected:
     virtual void Update(float f);
     virtual void Deinit();
 
+    private Q_SLOTS:
+    void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
+
 private:
     GL_NETLizard_3D_Model *m_model;
     NETLizardMapModelRenderer *m_renderer;
+    SimpleControlComponent *m_control;
 
     Q_DISABLE_COPY(ItemScene)
 };

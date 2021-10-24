@@ -16,11 +16,13 @@
 SpriteScene::SpriteScene(QWidget *parent) :
     NLScene(parent),
     m_renderer(0),
-    m_sprite(0)
+    m_sprite(0),
+    m_control(0)
 {
     setObjectName("SpriteScene");
 
-    SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
+    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+    SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
 
     NLPropperties prop;
     prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
@@ -33,11 +35,12 @@ SpriteScene::SpriteScene(QWidget *parent) :
     AddActor(actor);
     m_renderer = new NETLizardSpriteRenderer;
     actor->SetRenderable(m_renderer);
-    SimpleImageControlComponent *control = new SimpleImageControlComponent(NLPropperties(), actor);
-    actor->AddComponent(control);
+    m_control = new SimpleImageControlComponent(NLPropperties(), actor);
+    actor->AddComponent(m_control);
     NLSceneOrthoCamera *orthoCam = static_cast<NLSceneOrthoCamera *>(camera->Camera());
     orthoCam->SetAlignment(align);
     SetCurrentCamera(orthoCam);
+    connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
 
 SpriteScene::~SpriteScene()
@@ -134,4 +137,14 @@ void SpriteScene::SetIndex(int i)
         NLScene::Reset();
         m_renderer->SetIndex(i);
     }
+}
+
+void SpriteScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)
+{
+    if(name == "RENDER/fps")
+        SetFPS(value.toInt());
+    else if(name == "CONTROL_2D/trans_sens")
+        m_control->SetTransSens(value.toFloat());
+    else if(name == "CONTROL_2D/rot_sens")
+        m_control->SetRotSens(value.toFloat());
 }

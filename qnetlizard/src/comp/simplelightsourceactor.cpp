@@ -1,0 +1,56 @@
+#include "simplelightsourceactor.h"
+
+#include <QDebug>
+
+#include "lib/vector3.h"
+#include "simplelightsourcecomponent.h"
+
+SimpleLightSourceActor::SimpleLightSourceActor(const NLPropperties &prop, NLActor *parent) :
+    NLActor(prop, parent),
+    m_lightSource(0)
+{
+    setObjectName("SimpleLightSourceActor");
+}
+
+SimpleLightSourceActor::~SimpleLightSourceActor()
+{
+}
+
+void SimpleLightSourceActor::Init()
+{
+    if(IsInited())
+        return;
+    NLPropperties prop;
+    QVariant type = GetProperty("type");
+    if(type.isValid())
+        prop.insert("type", type);
+    m_lightSource = new SimpleLightSourceComponent(prop, this);
+    m_lightSource->SetScene(Scene());
+    AddComponent(m_lightSource);
+
+    NLActor::Init();
+}
+
+void SimpleLightSourceActor::Destroy()
+{
+    NLActor::Destroy();
+}
+
+void SimpleLightSourceActor::Update(float delta)
+{
+    if(!IsInited())
+        return;
+    NLActor::Update(delta);
+}
+
+SimpleLightSourceComponent * SimpleLightSourceActor::LightSource()
+{
+    return m_lightSource;
+}
+
+NLVector3 SimpleLightSourceActor::LightDirection() const
+{
+    if(!m_lightSource)
+        return Direction();
+    return m_lightSource->Type() == SimpleLightSourceComponent::LightSourceType_Direction ? Position() : Direction();
+}

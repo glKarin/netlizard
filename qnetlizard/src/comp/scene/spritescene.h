@@ -6,6 +6,7 @@
 
 class QColor;
 class NETLizardSpriteRenderer;
+class SimpleImageControlComponent;
 
 NLSCENE(SpriteScene)
 class SpriteScene : public NLScene
@@ -32,10 +33,14 @@ signals:
     
 public slots:
 
+    private Q_SLOTS:
+    void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
+
 private:
     NETLizardSpriteRenderer *m_renderer;
     GL_NETLizard_Sprite *m_sprite;
     int m_index;
+    SimpleImageControlComponent *m_control;
 
     Q_DISABLE_COPY(SpriteScene)
     
