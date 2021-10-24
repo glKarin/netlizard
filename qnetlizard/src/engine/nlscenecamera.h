@@ -57,7 +57,7 @@ public:
     void SetZIsUp(bool b);
 
 protected:
-    virtual void Projection() = 0;
+    virtual void Projection();
     virtual void View();
     virtual void UpdateProjectionMatrix(NLMatrix4 *mat);
     void UpdateMatrix();

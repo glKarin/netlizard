@@ -6,6 +6,7 @@
 #include <GL/glu.h>
 
 #include "nlscenecamera.h"
+#include "nlsceneperspectivecamera.h"
 #include "simplecontrol2dcomponent.h"
 #include "simplecontrolcomponent.h"
 #include "simplecameracomponent.h"
@@ -41,8 +42,16 @@ void SimpleCameraActor::Init()
     else
         m_control = new SimpleControlComponent(NLPropperties(), this);
     m_control->SetScene(Scene());
+    SetEnableControl(GetProperty("enable_control", true));
     AddComponent(m_camera);
     AddComponent(m_control);
+
+    if(type != NLSceneCamera::Type_Ortho)
+    {
+        SimpleControlComponent *control = static_cast<SimpleControlComponent *>(m_control);
+        connect(control, SIGNAL(fovyChanged(float)), this, SLOT(OnFovyChanged(float)));
+    }
+
     NLActor::Init();
 }
 
@@ -61,4 +70,21 @@ void SimpleCameraActor::Update(float delta)
 NLSceneCamera * SimpleCameraActor::Camera()
 {
     return m_camera ? m_camera->Camera() : 0;
+}
+
+void SimpleCameraActor::SetEnableControl(bool b)
+{
+    if(m_control)
+        m_control->SetEnabled(b);
+}
+
+void SimpleCameraActor::OnFovyChanged(float f)
+{
+    NLScenePerspectiveCamera *camera = dynamic_cast<NLScenePerspectiveCamera *>(Camera());
+    if(!camera)
+        return;
+    if(f == 0)
+        camera->ResetFovy();
+    else
+        camera->SetFovy(camera->Fovy() + f);
 }

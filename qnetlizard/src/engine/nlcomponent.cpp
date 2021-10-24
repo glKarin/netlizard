@@ -101,10 +101,11 @@ bool NLComponent::motionev(int mouse, bool pressed, int x, int y, int oldx, int 
     return false;
 }
 
-bool NLComponent::wheelev(int orientation, int delta, int x, int y, int modifier)
+bool NLComponent::wheelev(int mouse, int orientation, int delta, int x, int y, int modifier)
 {
     if(!IsActived())
         return false;
+    Q_UNUSED(mouse);
     Q_UNUSED(orientation);
     Q_UNUSED(delta);
     Q_UNUSED(x);

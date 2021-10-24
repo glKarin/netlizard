@@ -10,12 +10,14 @@
 const int SimpleControlComponent::M_Move_Sens = 1500;
 const int SimpleControlComponent::M_Turn_Sens = 180;
 const float SimpleControlComponent::M_Freelook_Sens = 0.35;
+const float SimpleControlComponent::M_Fovy_Sens = 0.01;
 
 SimpleControlComponent::SimpleControlComponent(const NLPropperties &prop, NLActor *parent) :
     NLComponent(prop, parent),
       m_moveSens(M_Move_Sens),
       m_turnSens(M_Turn_Sens),
-        m_freelookSens(M_Freelook_Sens)
+        m_freelookSens(M_Freelook_Sens),
+    m_fovySens(M_Fovy_Sens)
 {
     setObjectName("SimpleControlComponent");
     Reset();
@@ -45,6 +47,7 @@ void SimpleControlComponent::Reset()
     SetMoveSens(settings->GetSetting<int>("CONTROL_3D/move_sens", M_Move_Sens));
     SetTurnSens(settings->GetSetting<int>("CONTROL_3D/turn_sens", M_Turn_Sens));
     SetFreelookSens(settings->GetSetting<double>("CONTROL_3D/freelook_sens", M_Freelook_Sens));
+    SetFovySens(settings->GetSetting<double>("CONTROL_3D/fovy_sens", M_Fovy_Sens));
     NLComponent::Reset();
 }
 
@@ -160,6 +163,19 @@ __Exit:
     return r;
 }
 
+bool SimpleControlComponent::mouseev(int mouse, bool pressed, int x, int y, int modifier)
+{
+    if(pressed)
+    {
+        if(mouse == Qt::MidButton)
+        {
+            emit fovyChanged(0);
+            return true;
+        }
+    }
+    return false;
+}
+
 bool SimpleControlComponent::motionev(int button, bool pressed, int x, int y, int oldx, int oldy, int modifier)
 {
     NLScene *scene = Scene();
@@ -263,6 +279,12 @@ void SimpleControlComponent::SetFreelookSens(float freelookSens)
         m_freelookSens = freelookSens;
 }
 
+void SimpleControlComponent::SetFovySens(float fovySens)
+{
+    if(m_fovySens != fovySens)
+        m_fovySens = fovySens;
+}
+
 int SimpleControlComponent::MoveSens() const
 {
     return m_moveSens;
@@ -276,4 +298,31 @@ int SimpleControlComponent::TurnSens() const
 float SimpleControlComponent::FreelookSens() const
 {
     return m_freelookSens;
+}
+
+float SimpleControlComponent::FovySens() const
+{
+    return m_fovySens;
+}
+
+bool SimpleControlComponent::wheelev(int mouse, int orientation, int delta, int x, int y, int modifier)
+{
+    NLActor *actor = Actor();
+    if(!actor)
+        return false;
+
+    if(orientation == Qt::Vertical)
+    {
+        float d = -delta * m_fovySens;
+        emit fovyChanged(d);
+        return true;
+    }
+//    else
+//    {
+//        if(mouse == Qt::MidButton)
+//        {
+//            emit fovyChanged(0);
+//        }
+//    }
+    return false;
 }

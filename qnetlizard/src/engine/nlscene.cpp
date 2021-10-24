@@ -163,7 +163,7 @@ void NLScene::keyReleaseEvent(QKeyEvent *event)
 
 void NLScene::wheelEvent(QWheelEvent *event)
 {
-    bool res = m_actors.WheelEventHandler(event->orientation(), event->delta(), event->x(), event->y(), event->modifiers());
+    bool res = m_actors.WheelEventHandler(event->buttons(), event->orientation(), event->delta(), event->x(), event->y(), event->modifiers());
     if(res)
         event->accept();
    QGLWidget::wheelEvent(event);

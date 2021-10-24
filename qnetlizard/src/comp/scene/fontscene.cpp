@@ -26,6 +26,7 @@ FontScene::FontScene(QWidget *parent) :
 
     NLPropperties prop;
     prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
+    prop.insert("enable_control", false);
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
     Qt::Alignment align = Qt::AlignLeft | Qt::AlignTop;
     //align = Qt::AlignCenter;

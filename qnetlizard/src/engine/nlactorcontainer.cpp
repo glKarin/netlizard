@@ -32,8 +32,10 @@ bool NLActorContainer::KeyEventHandler(int key, bool pressed, int modifier)
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        if((static_cast<NLActor *>(obj))->keyev(key, pressed, modifier))
-            i++;
+        NLActor *actor = static_cast<NLActor *>(obj);
+        if(actor->IsActived())
+            if(actor->keyev(key, pressed, modifier))
+                i++;
     }
     return i > 0;
 }
@@ -44,8 +46,10 @@ bool NLActorContainer::MouseEventHandler(int button, bool pressed, int x, int y,
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        if((static_cast<NLActor *>(obj))->mouseev(button, pressed, x, y, modifier))
-            i++;
+        NLActor *actor = static_cast<NLActor *>(obj);
+        if(actor->IsActived())
+            if(actor->mouseev(button, pressed, x, y, modifier))
+                i++;
     }
     return i > 0;
 }
@@ -56,20 +60,24 @@ bool NLActorContainer::MouseMotionHandler(int button, bool pressed, int x, int y
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        if((static_cast<NLActor *>(obj))->motionev(button, pressed, x, y, oldx, oldy, modifier))
-            i++;
+        NLActor *actor = static_cast<NLActor *>(obj);
+        if(actor->IsActived())
+            if(actor->motionev(button, pressed, x, y, oldx, oldy, modifier))
+                i++;
     }
     return i > 0;
 }
 
-bool NLActorContainer::WheelEventHandler(int orientation, int delta, int x, int y, int modifier)
+bool NLActorContainer::WheelEventHandler(int mouse, int orientation, int delta, int x, int y, int modifier)
 {
     int i = 0;
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        if((static_cast<NLActor *>(obj))->wheelev(orientation, delta, x, y, modifier))
-            i++;
+        NLActor *actor = static_cast<NLActor *>(obj);
+        if(actor->IsActived())
+            if(actor->wheelev(mouse, orientation, delta, x, y, modifier))
+                i++;
     }
     return i > 0;
 }
@@ -148,7 +156,9 @@ void NLActorContainer::Render()
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        (static_cast<NLActor *>(obj))->Render();
+        NLActor *actor = static_cast<NLActor *>(obj);
+        if(actor->IsActived())
+            actor->Render();
     }
 }
 

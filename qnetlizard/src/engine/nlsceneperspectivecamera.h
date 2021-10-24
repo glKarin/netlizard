@@ -21,6 +21,7 @@ public:
     float ZNear() const;
     float ZFar() const;
     float ZDistance() const;
+    void ResetFovy();
 
 protected:
     virtual void Projection();

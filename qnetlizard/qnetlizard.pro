@@ -24,7 +24,11 @@ HEADERS += \
     src/indexviewer.h \
     src/spriteviewer.h \
     src/comp/renderer/netlizardspriterenderer.h \
-    src/comp/scene/spritescene.h
+    src/comp/scene/spritescene.h \
+    lib/ortho.h \
+    lib/frustum.h \
+    lib/matrix.h \
+    src/gl/nl_util.h
 
 SOURCES += \
     main.cpp \
@@ -35,7 +39,11 @@ SOURCES += \
     src/gl/nl_gl_sprite.c \
     src/spriteviewer.cpp \
     src/comp/renderer/netlizardspriterenderer.cpp \
-    src/comp/scene/spritescene.cpp
+    src/comp/scene/spritescene.cpp \
+    lib/ortho.c \
+    lib/frustum.c \
+    lib/matrix.c \
+    src/gl/nl_util.c
 
 # Widget
 HEADERS += \

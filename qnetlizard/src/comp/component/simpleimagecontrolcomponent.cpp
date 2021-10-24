@@ -166,7 +166,7 @@ bool SimpleImageControlComponent::motionev(int button, bool pressed, int x, int 
     return false;
 }
 
-bool SimpleImageControlComponent::wheelev(int orientation, int delta, int x, int y, int modifier)
+bool SimpleImageControlComponent::wheelev(int mouse, int orientation, int delta, int x, int y, int modifier)
 {
     NLActor *actor = Actor();
     if(!actor)

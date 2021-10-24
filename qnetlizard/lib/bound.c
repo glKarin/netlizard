@@ -55,3 +55,49 @@ void bound_get_box_plane(const bound_s *ab, plane_s r[])
     COPY_NORMAL(PLANE_NORMAL(r[5]), 0.0, -1.0, 0.0)
 #undef COPY_NORMAL
 }
+
+int bound_in_frustum(const bound_s *b, float frustum[][4])
+{
+    if(!b || !frustum)
+        return 0;
+
+    //printf("in %d: %f %f %f  | %f %f %f\n", 1, BOUNDV_MIN_X(b), BOUNDV_MIN_Y(b), BOUNDV_MIN_Z(b), BOUNDV_MAX_X(b), BOUNDV_MAX_Y(b), BOUNDV_MAX_Z(b));
+    float x = BOUNDV_MIN_X(b);
+    float y = BOUNDV_MIN_Y(b);
+    float z = BOUNDV_MIN_Z(b);
+    float x2 = BOUNDV_MAX_X(b);
+    float y2 = BOUNDV_MAX_Y(b);
+    float z2 = BOUNDV_MAX_Z(b);
+    int p;
+    for( p = 0; p < 6; p++ )
+    {
+        if( frustum[p][0] * x + frustum[p][1] * y + frustum[p][2]    * z + frustum[p][3] > 0 )
+            continue;
+        if( frustum[p][0] * x2 + frustum[p][1] * y + frustum[p][2]    * z + frustum[p][3] > 0 )
+            continue;
+        if( frustum[p][0] * x + frustum[p][1] * y2 + frustum[p][2]    * z + frustum[p][3] > 0 )
+            continue;
+        if( frustum[p][0] * x2 + frustum[p][1] * y2 + frustum[p][2]    * z + frustum[p][3] > 0 )
+            continue;
+        if( frustum[p][0] * x + frustum[p][1] * y + frustum[p][2]    * z2 + frustum[p][3] > 0 )
+            continue;
+        if( frustum[p][0] * x2 + frustum[p][1] * y + frustum[p][2]    * z2 + frustum[p][3] > 0 )
+            continue;
+        if( frustum[p][0] * x + frustum[p][1] * y2 + frustum[p][2]    * z2 + frustum[p][3] > 0 )
+            continue;
+        if( frustum[p][0] * x2 + frustum[p][1] * y2 + frustum[p][2]    * z2 + frustum[p][3] > 0 )
+            continue;
+        return 0;
+    }
+    return 1;
+}
+
+int bound_in_frustum_with_matrix(const bound_s *b, const GLmatrix *proj_mat, const GLmatrix *view_mat)
+{
+    if(!b || !proj_mat || !view_mat)
+        return 0;
+
+    float frustum[6][4];
+    matrix_cale_frustum(proj_mat, view_mat, frustum);
+    return bound_in_frustum(b, frustum);
+}

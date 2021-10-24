@@ -176,7 +176,7 @@ bool NLActor::mouseev(int mouse, bool pressed, int x, int y, int modifier)
         return false;
     bool res = false;
     if(m_components)
-        res =  m_components->MouseEventHandler(mouse, pressed, x, y, modifier);
+        res = m_components->MouseEventHandler(mouse, pressed, x, y, modifier);
     if(m_children)
         res = m_children->MouseEventHandler(mouse, pressed, x, y, modifier) || res;
     return res;
@@ -194,15 +194,15 @@ bool NLActor::motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy
     return res;
 }
 
-bool NLActor::wheelev(int orientation, int delta, int x, int y, int modifier)
+bool NLActor::wheelev(int mouse, int orientation, int delta, int x, int y, int modifier)
 {
     if(!IsActived())
         return false;
     bool res = false;
     if(m_components)
-        res = m_components->WheelEventHandler(orientation, delta, x, y, modifier);
+        res = m_components->WheelEventHandler(mouse,  orientation, delta, x, y, modifier);
     if(m_children)
-        res = m_children->WheelEventHandler(orientation, delta, x, y, modifier) || res;
+        res = m_children->WheelEventHandler(mouse, orientation, delta, x, y, modifier) || res;
     return res;
 }
 

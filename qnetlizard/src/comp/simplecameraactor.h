@@ -16,6 +16,7 @@ public:
     explicit SimpleCameraActor(const NLPropperties &prop = QVariantHash(), NLActor *parent = 0);
     virtual ~SimpleCameraActor();
     NLSceneCamera * Camera();
+    NLINTERFACE void SetEnableControl(bool b);
 
 protected:
     virtual void Init();
@@ -25,6 +26,9 @@ protected:
 signals:
     
 public slots:
+
+private Q_SLOTS:
+    void OnFovyChanged(float f);
 
 private:
     SimpleCameraComponent *m_camera;

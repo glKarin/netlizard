@@ -5,12 +5,19 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include "nlfuncs.h"
+
+#define NLSCENEPERSPECTIVECAMERA_DEFAULT_FOVY 45
+#define NLSCENEPERSPECTIVECAMERA_DEFAULT_ASPECT 1
+#define NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_NEAR 0.01
+#define NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_FAR 99999
+
 NLScenePerspectiveCamera::NLScenePerspectiveCamera(NLScene *scene)
     : NLSceneCamera(scene),
-      m_fovy(45),
-      m_aspect(1),
-      m_zNear(0.01),
-      m_zFar(999999)
+      m_fovy(NLSCENEPERSPECTIVECAMERA_DEFAULT_FOVY),
+      m_aspect(NLSCENEPERSPECTIVECAMERA_DEFAULT_ASPECT),
+      m_zNear(NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_NEAR),
+      m_zFar(NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_FAR)
 {
 }
 
@@ -24,13 +31,21 @@ void NLScenePerspectiveCamera::Update(float width, float height)
     SetWidthAndHeight(width, height);
 }
 
+#define FOVY_P 0.1
 void NLScenePerspectiveCamera::SetFovy(float fovy)
 {
-    if(m_fovy != fovy)
+    float f = NL::clamp<float>(fovy, 0.0 + FOVY_P, 180.0 - FOVY_P);
+    if(m_fovy != f)
     {
-        m_fovy = fovy;
+        m_fovy = f;
         UpdateMatrix();
     }
+}
+#undef FOVY_P
+
+void NLScenePerspectiveCamera::ResetFovy()
+{
+    SetFovy(45);
 }
 
 float NLScenePerspectiveCamera::CaleAspect(float width, float height)
@@ -129,7 +144,9 @@ void NLScenePerspectiveCamera::Set(float fovy, float aspect, float near, float f
 
 void NLScenePerspectiveCamera::Projection()
 {
-    gluPerspective(m_fovy, m_aspect, m_zNear, m_zFar);
+    //gluPerspective(m_fovy, m_aspect, m_zNear, m_zFar);
+    //glMultMatrixf(GL_MATRIXV_M(ProjectionMatrix()));
+    NLSceneCamera::Projection();
 }
 
 void NLScenePerspectiveCamera::UpdateProjectionMatrix(NLMatrix4 *mat)

@@ -1,12 +1,12 @@
-#ifndef _KARIN_AABB_H
-#define _KARIN_AABB_H
+#ifndef _KARIN_BOUND_H
+#define _KARIN_BOUND_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "vector3.h"
-
+#include "matrix.h"
 #include "plane.h"
 
 #define BOUND_MIN(b) (b).min
@@ -40,9 +40,11 @@ typedef struct _bound_s
 void bound_make(bound_s *bo, const vector3_s *a, const vector3_s *b);
 int bound_point_in_box(const bound_s *b, const vector3_s *p);
 void bound_get_box_plane(const bound_s *ab, plane_s r[]);
+int bound_in_frustum(const bound_s *b, float frustum[][4]);
+int bound_in_frustum_with_matrix(const bound_s *b, const GLmatrix *proj_mat, const GLmatrix *view_mat);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // _KARIN_AABB_H
+#endif // _KARIN_BOUND_H

@@ -10,6 +10,7 @@
 #include "simplecameraactor.h"
 #include "nlsceneorthocamera.h"
 #include "netlizardspriterenderer.h"
+#include "simpleimagecontrolcomponent.h"
 #include "settings.h"
 
 SpriteScene::SpriteScene(QWidget *parent) :
@@ -23,6 +24,7 @@ SpriteScene::SpriteScene(QWidget *parent) :
 
     NLPropperties prop;
     prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
+    prop.insert("enable_control", false);
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
     Qt::Alignment align = Qt::AlignLeft | Qt::AlignTop;
     align = Qt::AlignCenter;
@@ -31,6 +33,8 @@ SpriteScene::SpriteScene(QWidget *parent) :
     AddActor(actor);
     m_renderer = new NETLizardSpriteRenderer;
     actor->SetRenderable(m_renderer);
+    SimpleImageControlComponent *control = new SimpleImageControlComponent(NLPropperties(), actor);
+    actor->AddComponent(control);
     NLSceneOrthoCamera *orthoCam = static_cast<NLSceneOrthoCamera *>(camera->Camera());
     orthoCam->SetAlignment(align);
     SetCurrentCamera(orthoCam);
@@ -127,6 +131,7 @@ void SpriteScene::SetIndex(int i)
     if(m_index != i)
     {
         m_index = i;
+        NLScene::Reset();
         m_renderer->SetIndex(i);
     }
 }

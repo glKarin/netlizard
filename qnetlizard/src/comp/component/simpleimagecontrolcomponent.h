@@ -31,7 +31,7 @@ protected:
     virtual void Update(float delta);
     virtual bool keyev(int key, bool pressed, int modifier);
     virtual bool motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modifier);
-    virtual bool wheelev(int orientation, int delta, int x, int y, int modifier);
+    virtual bool wheelev(int mouse, int orientation, int delta, int x, int y, int modifier);
     virtual void Transform(float delta);
     virtual void InitProperty();
 

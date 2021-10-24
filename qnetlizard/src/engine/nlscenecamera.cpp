@@ -71,6 +71,11 @@ void NLSceneCamera::UpdateMvpMatrix()
 #endif
 }
 
+void NLSceneCamera::Projection()
+{
+    glMultMatrixf(GL_MATRIX_M(m_projectionMatrix));
+}
+
 void NLSceneCamera::SetPosition(const vector3_s &v)
 {
     if(vector3_equals(&m_position, &v))

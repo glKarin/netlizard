@@ -33,8 +33,10 @@ bool NLComponentContainer::KeyEventHandler(int key, bool pressed, int modifier)
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        if((static_cast<NLComponent *>(obj))->keyev(key, pressed, modifier))
-            i++;
+        NLComponent *comp = static_cast<NLComponent *>(obj);
+        if(comp->IsActived())
+            if(comp->keyev(key, pressed, modifier))
+                i++;
     }
     return i > 0;
 }
@@ -45,8 +47,10 @@ bool NLComponentContainer::MouseEventHandler(int button, bool pressed, int x, in
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        if((static_cast<NLComponent *>(obj))->mouseev(button, pressed, x, y, modifier))
-            i++;
+        NLComponent *comp = static_cast<NLComponent *>(obj);
+        if(comp->IsActived())
+            if(comp->mouseev(button, pressed, x, y, modifier))
+                i++;
     }
     return i > 0;
 }
@@ -57,20 +61,24 @@ bool NLComponentContainer::MouseMotionHandler(int button, bool pressed, int x, i
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        if((static_cast<NLComponent *>(obj))->motionev(button, pressed, x, y, oldx, oldy, modifier))
-            i++;
+        NLComponent *comp = static_cast<NLComponent *>(obj);
+        if(comp->IsActived())
+            if(comp->motionev(button, pressed, x, y, oldx, oldy, modifier))
+                i++;
     }
     return i > 0;
 }
 
-bool NLComponentContainer::WheelEventHandler(int orientation, int delta, int x, int y, int modifier)
+bool NLComponentContainer::WheelEventHandler(int mouse, int orientation, int delta, int x, int y, int modifier)
 {
     int i = 0;
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        if((static_cast<NLComponent *>(obj))->wheelev(orientation, delta, x, y, modifier))
-            i++;
+        NLComponent *comp = static_cast<NLComponent *>(obj);
+        if(comp->IsActived())
+            if(comp->wheelev(mouse, orientation, delta, x, y, modifier))
+                i++;
     }
     return i > 0;
 }

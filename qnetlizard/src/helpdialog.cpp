@@ -83,6 +83,11 @@ HelpDialog::HelpDialog(QWidget *parent) :
          << _B("C") " - Roll right"
          << _B("X") " - Roll to 0"
          << ""
+         << _I("Fovy action: ")
+         << _B("Wheel up") " - Fovy increment"
+         << _B("Wheel down") " - Fovy decrement"
+         << _B("Wheel") " - Click for setting fovy to 45(initial)"
+         << ""
          << _I("Other action: ")
          << _B("M") " - Grab mouse pointer(If pointer is hidden, moving mouse for turning)"
          << _B("Esc") " - Ungrab mouse pointer"

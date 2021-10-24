@@ -5,6 +5,7 @@
 #include <QDoubleSpinBox>
 #include <QFormLayout>
 #include <QLabel>
+#include <QCheckBox>
 
 #include "settings.h"
 #include "qdef.h"
@@ -77,6 +78,15 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
             connect(w, SIGNAL(valueChanged(const QString &)), this, SLOT(OnValueChanged(const QString &)));
             widget = w;
         }
+        else if(item.type == "bool")
+        {
+            QCheckBox *w = new QCheckBox;
+            w->setObjectName(item.name);
+            w->setChecked(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<bool>(item.name, item.value.toBool()));
+            connect(w, SIGNAL(clicked(bool)), this, SLOT(OnBoolChanged(bool)));
+            widget = w;
+        }
+
         if(widget)
         {
             m_layout->addRow(item.title, widget);
@@ -97,4 +107,12 @@ void SettingGroup::OnValueChanged(const QString &val)
     {
         settings->SetSetting(name, val.toFloat());
     }
+}
+
+void SettingGroup::OnBoolChanged(bool b)
+{
+    QObject *obj = sender();
+    QString name = obj->objectName();
+    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+    settings->SetSetting(name, b);
 }

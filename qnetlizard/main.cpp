@@ -27,6 +27,8 @@ int main(int argc, char *argv[])
 
     qRegisterMetaType<NLVector3>("NLVector3");
 
+    LogOutput::Instance();
+
 #ifdef _DEV_TEST
     int test = Test(argc, argv);
     if(test != 0)

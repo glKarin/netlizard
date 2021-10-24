@@ -164,7 +164,9 @@ void NLSceneOrthoCamera::Set(float left, float right, float bottom, float top, f
 
 void NLSceneOrthoCamera::Projection()
 {
-    glOrtho(m_left, m_right, m_bottom, m_top, m_zNear, m_zFar);
+    //glOrtho(m_left, m_right, m_bottom, m_top, m_zNear, m_zFar);
+    //glMultMatrixf(GL_MATRIXV_M(ProjectionMatrix()));
+    NLSceneCamera::Projection();
 }
 
 void NLSceneOrthoCamera::UpdateProjectionMatrix(NLMatrix4 *mat)

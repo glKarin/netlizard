@@ -106,7 +106,13 @@ void log_output_msg_handler(QtMsgType type, const char *msg)
 {
     LogOutput *lo = LogOutput::Instance();
     FILE *f = type == 0 ? stdout : stderr;
-    fprintf(f, msg);
-    fprintf(f, "\n");
+    static const char *_console_color[] = {
+        "",
+        "\033[32m", // green
+        "\033[33m", // yellow
+        "\033[31m", // red
+        "\033[35m", // pur
+    };
+    fprintf(f, "%s %s\n\033[0m", _console_color[type], msg);
     lo->Push(type, msg);
 }

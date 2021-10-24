@@ -13,6 +13,8 @@
 #include "nlsceneperspectivecamera.h"
 #include "netlizardtexturerenderer.h"
 #include "settings.h"
+#include "matrix.h"
+#include "nl_util.h"
 
 MapScene::MapScene(QWidget *parent)
     : NLScene(parent),
@@ -26,9 +28,9 @@ MapScene::MapScene(QWidget *parent)
       m_skyCamera(0),
       m_sky3DCamera(0)
 {
-    SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
+    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+    SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
     setObjectName("MapScene");
-    NLActor *actor;
 
     NLPropperties prop;
     // 3D camera + 3D control
@@ -42,14 +44,14 @@ MapScene::MapScene(QWidget *parent)
     m_renderer = new NETLizardMapModelRenderer;
     m_mapActor->SetRenderable(m_renderer);
     SetCurrentCamera(camera->Camera());
+    m_renderer->SetCull(settings->GetSetting<bool>("RENDER/scene_cull"));
 
     // 2D background camera
-    actor = new NLActor;
-    AddActor(actor);
     prop.clear();
     prop.insert("type", NLSceneCamera::Type_Ortho);
-    SimpleCameraComponent *camera_2d = new SimpleCameraComponent(prop, actor);
-    actor->AddComponent(camera_2d);
+    prop.insert("enable_control", false);
+    SimpleCameraActor *camera_2d = new SimpleCameraActor(prop);
+    AddActor(camera_2d);
     m_skyCamera = static_cast<NLSceneOrthoCamera *>(camera_2d->Camera());
     m_skyCamera->SetAlignment(Qt::AlignCenter);
 
@@ -60,12 +62,11 @@ MapScene::MapScene(QWidget *parent)
     m_skyActor->SetRenderable(m_skyRenderer);
 
     // 3D background camera
-    actor = new NLActor;
-    AddActor(actor);
     prop.clear();
     prop.insert("z_is_up", true);
-    SimpleCameraComponent *camera_3d = new SimpleCameraComponent(prop, actor);
-    actor->AddComponent(camera_3d);
+    prop.insert("enable_control", false);
+    SimpleCameraActor *camera_3d = new SimpleCameraActor(prop);
+    AddActor(camera_3d);
     m_sky3DCamera = static_cast<NLScenePerspectiveCamera *>(camera_3d->Camera());
 
     // 3D background render
@@ -87,6 +88,20 @@ void MapScene::Init()
 void MapScene::Update(float delta)
 {
     NLScene::Update(delta);
+    if(m_model)
+    {
+        int *scenes = m_renderer->Scenes();
+        if(scenes)
+        {
+            float frustum[6][4];
+            NLSceneCamera *camera = CurrentCamera();
+            const GLmatrix *projMat = camera->ProjectionMatrix();
+            const GLmatrix *viewMat = camera->ViewMatrix();
+            matrix_cale_frustum(projMat, viewMat, frustum);
+            int count = NETLizard_GetMapRenderScenes(m_model, scenes, frustum);
+            m_renderer->SetSceneCount(count);
+        }
+    }
 }
 
 void MapScene::paintGL()
