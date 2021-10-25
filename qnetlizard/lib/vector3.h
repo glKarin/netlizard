@@ -66,6 +66,15 @@ int vector3_valid(const vector3_s *a);
 int vector3_equals(const vector3_s *a, const vector3_s *b);
 int vector3_iszero(const vector3_s *a);
 
+vector3_s vector3_identity(void);
+void vector3_identityv(vector3_s *vec);
+void vector3_assignv(vector3_s *r, const vector3_s *a);
+
+void vector3_makev(vector3_s *vec, float x, float y, float z);
+vector3_s vector3_make(float x, float y, float z);
+void vector3_makeptrv(vector3_s *vec, const float arr[]);
+vector3_s vector3_makeptr(const float arr[]);
+
 #ifdef __cplusplus
 }
 #endif

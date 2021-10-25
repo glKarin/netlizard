@@ -22,6 +22,9 @@ extern "C" {
 #define GL_MATRIX_M_I(matrix, i) (GL_MATRIX_M(matrix))[i]
 #define GL_MATRIXV_M_I(matrix, i) (GL_MATRIXV_M(matrix))[i]
 
+#define Mesa_glTransform_column(t, o, m) Mesa_glTransform(t, 0, m)
+#define Mesa_glTransform4_column(t, o, m) Mesa_glTransform4(t, 0, m)
+
 void Mesa_glTranslate(GLmatrix *mat, float x, float y, float z);
 void Mesa_glRotate(GLmatrix *mat, float angle, float x, float y, float z);
 void Mesa_glScale(GLmatrix *mat, float x, float y, float z);
@@ -37,6 +40,10 @@ void Mesa_gluLookAt(GLmatrix *r, GLfloat eyex, GLfloat eyey, GLfloat eyez, GLflo
 void Mesa_gluPerspective(GLmatrix *r, GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
 void Mesa_gluOrtho2D(GLmatrix *mat, float left, float right, float bottom, float top);
 
+// Row vector: P = vector * matrix; exam: cale normal transform: varying normal = gl_Normal * vNormalMatrix;
+void Mesa_glTransform_row(float r[3], const float p[3], const GLmatrix *mat);
+void Mesa_glTransform4_row(float r[4], const float p[4], const GLmatrix *mat);
+// Column vector: P = matrix * vector; exam: cale vextex transform: gl_position = vMVPMatrix * gl_Vertex;
 void Mesa_glTransform(float r[3], const float p[3], const GLmatrix *mat);
 void Mesa_glTransform4(float r[4], const float p[4], const GLmatrix *mat);
 void Mesa_glTranspose(GLmatrix *mat);

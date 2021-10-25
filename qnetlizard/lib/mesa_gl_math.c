@@ -118,7 +118,7 @@ void Mesa_glOrtho(GLmatrix *mat, float left, float right, float bottom, float to
             nearval, farval );
 }
 
-void Mesa_glTransform(float r[3], const float p[3], const GLmatrix *mat)
+void Mesa_glTransform_row(float r[3], const float p[3], const GLmatrix *mat)
 {
     float v[4] = {p[0], p[1], p[2], 1};
     float u[4];
@@ -129,10 +129,27 @@ void Mesa_glTransform(float r[3], const float p[3], const GLmatrix *mat)
     r[2] = u[2] / u[3];
 }
 
-void Mesa_glTransform4(float r[4], const float p[4], const GLmatrix *mat)
+void Mesa_glTransform4_row(float r[4], const float p[4], const GLmatrix *mat)
 {
     IF_NULL_RETURN(mat)
     _mesa_transform_vector(r, p, mat->m);
+}
+
+// column vector
+void Mesa_glTransform(float r[3], const float p[3], const GLmatrix *mat)
+{
+    float u[4];
+    TRANSFORM_POINT3(u, mat->m, p);
+    r[0] = u[0] / u[3];
+    r[1] = u[1] / u[3];
+    r[2] = u[2] / u[3];
+}
+
+// column vector
+void Mesa_glTransform4(float r[4], const float p[4], const GLmatrix *mat)
+{
+    IF_NULL_RETURN(mat)
+    TRANSFORM_POINT(r, mat->m, p);
 }
 
 void Mesa_glTranspose(GLmatrix *mat)

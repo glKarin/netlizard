@@ -74,6 +74,7 @@ private Q_SLOTS:
 private:
     void ExecLoop();
     void UpdateCurrentFPS(qint64 delta);
+    void SetupOpenGL();
 
 private:
     QColor m_clearColor;

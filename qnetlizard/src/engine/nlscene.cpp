@@ -38,6 +38,7 @@ NLScene::NLScene(QWidget *parent) :
     m_currentFps(0)
 {
     setObjectName("NLScene");
+    SetupOpenGL();
     m_actors.SetScene(this);
     m_actors.setObjectName("SceneRootActorContainer");
     m_clearColor = QColor::fromRgbF(
@@ -50,6 +51,16 @@ NLScene::~NLScene()
 {
     DEBUG_DESTROY_Q;
     Deinit();
+}
+
+void NLScene::SetupOpenGL()
+{
+    return;
+    QGLFormat qglFormat = format();
+    qglFormat.setVersion(2, 1);
+    qglFormat.setStencil(true);
+    qglFormat.setProfile(QGLFormat::CompatibilityProfile);
+    setFormat(qglFormat);
 }
 
 void NLScene::Deinit()

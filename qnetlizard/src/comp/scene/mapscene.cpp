@@ -6,6 +6,7 @@
 #include "qdef.h"
 #include "simplecameraactor.h"
 #include "netlizardmapmodelrenderer.h"
+#include "netlizardshadowmodelrenderer.h"
 #include "netlizarditemmodelrenderer.h"
 #include "simplecameracomponent.h"
 #include "simplecontrolcomponent.h"
@@ -21,8 +22,10 @@ MapScene::MapScene(QWidget *parent)
       m_model(0),
       m_mapActor(0),
       m_skyActor(0),
+      m_shadowActor(0),
       m_sky3DActor(0),
       m_renderer(0),
+      m_shadowRenderer(0),
       m_skyRenderer(0),
       m_sky3DRenderer(0),
       m_skyCamera(0),
@@ -77,6 +80,18 @@ MapScene::MapScene(QWidget *parent)
     m_sky3DRenderer = new NETLizardItemModelRenderer;
     m_sky3DActor->SetRenderable(m_sky3DRenderer);
 
+    // render shadow model
+    m_shadowActor = new NLActor;
+    AddActor(m_shadowActor);
+    m_shadowRenderer = new NETLizardShadowModelRenderer;
+    m_shadowActor->SetRenderable(m_shadowRenderer);
+    m_shadowRenderer->SetCull(settings->GetSetting<bool>("RENDER/scene_cull"));
+    m_shadowActor->SetEnabled(settings->GetSetting<bool>("m_shadowActor"));
+    m_shadowActor->SetEnabled(settings->GetSetting<bool>("RENDER/shadow"));
+
+    NLVector3 lp = VECTOR3(5000, 5000, 5000);
+    m_shadowRenderer->SetLightSource(&lp, false);
+
     connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
 
@@ -104,6 +119,7 @@ void MapScene::Update(float delta)
             matrix_cale_frustum(projMat, viewMat, frustum);
             int count = NETLizard_GetMapRenderScenes(m_model, scenes, frustum);
             m_renderer->SetSceneCount(count);
+            m_shadowRenderer->SetRenderScenes(scenes, count);
         }
     }
 }
@@ -134,6 +150,7 @@ void MapScene::paintGL()
     }
 
     CurrentCamera()->Render(m_mapActor);
+    CurrentCamera()->Render(m_shadowActor);
 
     glFlush();
 }
@@ -191,6 +208,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     }
 
     m_renderer->SetModel(m_model);
+    m_shadowRenderer->SetModel(m_model);
     if(m_model->bg_tex && m_model->bg_tex)
         m_skyRenderer->SetTexture(m_model->bg_tex);
 
@@ -250,6 +268,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
 void MapScene::Reset()
 {
     m_renderer->SetModel(0);
+    m_shadowRenderer->SetModel(0);
     m_skyRenderer->SetTexture(0);
     m_sky3DRenderer->SetModel(0, 0);
     if(m_model)
@@ -278,7 +297,10 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
     if(name == "RENDER/fps")
         SetFPS(value.toInt());
     else if(name == "RENDER/scene_cull")
+    {
         m_renderer->SetCull(value.toBool());
+        m_shadowRenderer->SetCull(m_renderer->Cull());
+    }
     else if(name == "CONTROL_3D/move_sens")
         m_control->SetMoveSens(value.toInt());
     else if(name == "CONTROL_3D/turn_sens")
@@ -287,4 +309,6 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
         m_control->SetFreelookSens(value.toFloat());
     else if(name == "CONTROL_3D/fovy_sens")
         m_control->SetFovySens(value.toFloat());
+    else if(name == "RENDER/shadow")
+        m_shadowActor->SetEnabled(value.toBool());
 }

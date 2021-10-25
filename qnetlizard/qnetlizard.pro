@@ -31,8 +31,9 @@ HEADERS += \
     src/gl/nl_util.h \
     src/comp/component/simplelightsourcecomponent.h \
     src/comp/simplelightsourceactor.h \
+    src/gl/nl_shadow.h \
     src/gl/shadow.h \
-    src/gl/nl_shadow.h
+    src/comp/renderer/netlizardshadowmodelrenderer.h
 
 SOURCES += \
     main.cpp \
@@ -50,8 +51,9 @@ SOURCES += \
     src/gl/nl_util.c \
     src/comp/component/simplelightsourcecomponent.cpp \
     src/comp/simplelightsourceactor.cpp \
+    src/gl/nl_shadow.cpp \
     src/gl/shadow.cpp \
-    src/gl/nl_shadow.c
+    src/comp/renderer/netlizardshadowmodelrenderer.cpp
 
 # Widget
 HEADERS += \

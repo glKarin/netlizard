@@ -594,7 +594,7 @@ void NLActor::UpdateChildrenMatrix()
 void NLActor::UpdateDirection()
 {
     float v[] = {0, 0, -1};
-    Mesa_glTransform(VECTOR3_V(m_direction), v, &m_normalMatrix);
+    Mesa_glTransform_row(VECTOR3_V(m_direction), v, &m_normalMatrix);
 
     vector3_crossv(&m_right, &m_direction, &m_up);
 }

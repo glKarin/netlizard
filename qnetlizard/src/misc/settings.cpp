@@ -38,6 +38,7 @@ const SettingItemMap & Settings::SettingsConfig()
 
         _settingsConfig.insert("render", SettingItem("RENDER/fps", 0, "FPS(0 to not limit)", "int").AddProp("min", 0).AddProp("max", 300));
         _settingsConfig.insert("render", SettingItem("RENDER/scene_cull", true, "Cull scene when rendering map", "bool"));
+        _settingsConfig.insert("render", SettingItem("RENDER/shadow", true, "Render simple stencil shadow when rendering map", "bool"));
     }
     return _settingsConfig;
 }

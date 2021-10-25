@@ -25,9 +25,6 @@ int main(int argc, char *argv[])
     app.setApplicationVersion(APP_VER);
     app.setOrganizationName(APP_DEV);
 
-    qRegisterMetaType<NLVector3>("NLVector3");
-
-    LogOutput::Instance();
 
 #ifdef _DEV_TEST
     int test = Test(argc, argv);
@@ -37,6 +34,9 @@ int main(int argc, char *argv[])
     //TestWidget w;
     //w.show();
 #endif
+    qRegisterMetaType<NLVector3>("NLVector3");
+
+    LogOutput::Instance();
 
     MainWindow viewer;
     QWidget *win = &viewer;
@@ -51,7 +51,6 @@ int Test(int argc, char **argv)
     //NETLizard_Sprite sp;
     //nlReadSpiritMapFile("E:\\qobject\\netlizard-game\\resource\\cu.png", &sp);
     //qDebug() << sp.count;
-
     return 0;
     NLVector3 nor = VECTOR3(0, 1, 0);
     NLVector3 nor2 = VECTOR3(0, 0, 0);
@@ -61,7 +60,7 @@ int Test(int argc, char **argv)
     Mesa_AllocGLMatrix(&idmat);
     Mesa_glRotate(&idmat, 90, 1, 0, 0);
     Mesa_NormalMatrix(&mat, idmat.m);
-    Mesa_glTransform(nor2.v, nor.v, &mat);
+    Mesa_glTransform_row(nor2.v, nor.v, &mat);
     qDebug() << QString().setNum(nor2.v[0]) << QString().setNum(nor2.v[1]) << QString().setNum(nor2.v[2]);
     Mesa_FreeGLMatrix(&mat);
     Mesa_FreeGLMatrix(&idmat);

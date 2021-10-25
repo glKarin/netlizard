@@ -33,6 +33,7 @@ void NETLizardMapModelRenderer::Render()
     {
         if(m_cull)
         {
+#if 0
             if(m_scenes)
             {
                 qDebug() << "Render scene count: " << m_sceneCount;
@@ -43,7 +44,12 @@ void NETLizardMapModelRenderer::Render()
                 }
                 qDebug() << str;
             }
-            NETLizard_RenderGL3DMapModelScene(m_model, m_scenes, m_sceneCount);
+#endif
+
+            if(m_scenes && m_sceneCount > 0)
+            {
+                NETLizard_RenderGL3DMapModelScene(m_model, m_scenes, m_sceneCount);
+            }
         }
         else
         {

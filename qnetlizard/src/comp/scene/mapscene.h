@@ -10,6 +10,7 @@ class NETLizardItemModelRenderer;
 class NLSceneOrthoCamera;
 class NLScenePerspectiveCamera;
 class SimpleControlComponent;
+class NETLizardShadowModelRenderer;
 
 NLSCENE(MapScene)
 class MapScene : public NLScene
@@ -37,9 +38,11 @@ protected:
 private:
     GL_NETLizard_3D_Model *m_model;
     NLActor *m_mapActor;
+    NLActor *m_shadowActor;
     NLActor *m_skyActor;
     NLActor *m_sky3DActor;
     NETLizardMapModelRenderer *m_renderer;
+    NETLizardShadowModelRenderer *m_shadowRenderer;
     NETLizardTextureRenderer *m_skyRenderer;
     NETLizardItemModelRenderer *m_sky3DRenderer;
     NLSceneOrthoCamera *m_skyCamera;

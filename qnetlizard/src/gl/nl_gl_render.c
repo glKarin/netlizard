@@ -127,7 +127,7 @@ GLvoid NETLizard_RenderGL3DModelFrameAnimation(const GL_NETLizard_3D_Model *m, c
 
 GLvoid NETLizard_RenderGL3DMesh(const GL_NETLizard_3D_Mesh *m, texture_s **const texes)
 {
-	if(!m || !texes)
+    if(!m)
 		return;
 
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -146,7 +146,7 @@ GLvoid NETLizard_RenderGL3DMesh(const GL_NETLizard_3D_Mesh *m, texture_s **const
         GLuint j;
         for(j = 0; j < m->count; j++)
         {
-            if(m->materials[j].tex_index >= 0 && texes[m->materials[j].tex_index])
+            if(texes && m->materials[j].tex_index >= 0 && texes[m->materials[j].tex_index])
                 glBindTexture(GL_TEXTURE_2D, texes[m->materials[j].tex_index]->texid);
             glDrawElements(/*GL_TRIANGLES*/m->materials[j].mode, m->materials[j].index_count, GL_UNSIGNED_SHORT, m->vertex_data.index + m->materials[j].index_start);
             glBindTexture(GL_TEXTURE_2D, 0);

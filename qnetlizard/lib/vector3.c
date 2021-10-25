@@ -211,6 +211,7 @@ void vector3_directionv(vector3_s *r,const vector3_s *a, const vector3_s *b)
 
 int vector3_iszero(const vector3_s *a)
 {
+    IF_NULL_RETURNV(a, 0)
     return VECTOR3V_X(a) == 0 && VECTOR3V_Y(a) == 0 && VECTOR3V_Z(a) == 0;
 }
 
@@ -251,4 +252,55 @@ void vector3_dividev_self(vector3_s *r, const vector3_s *a)
     VECTOR3V_X(r) /= VECTOR3V_X(a);
     VECTOR3V_Y(r) /= VECTOR3V_Y(a);
     VECTOR3V_Z(r) /= VECTOR3V_Z(a);
+}
+
+vector3_s vector3_identity(void)
+{
+    vector3_s vec = VECTOR3(0, 0, 0);
+    return vec;
+}
+
+void vector3_identityv(vector3_s *vec)
+{
+    IF_NULL_RETURN(vec)
+
+    VECTOR3V_X(vec) = 0;
+    VECTOR3V_Y(vec) = 0;
+    VECTOR3V_Z(vec) = 0;
+}
+
+void vector3_assignv(vector3_s *r, const vector3_s *a)
+{
+    IF_NULL_RETURN2(a, r)
+    VECTOR3V_X(r) = VECTOR3V_X(a);
+    VECTOR3V_Y(r) = VECTOR3V_Y(a);
+    VECTOR3V_Z(r) = VECTOR3V_Z(a);
+}
+
+void vector3_makev(vector3_s *vec, float x, float y, float z)
+{
+    IF_NULL_RETURN(vec)
+    VECTOR3V_X(vec) = x;
+    VECTOR3V_Y(vec) = y;
+    VECTOR3V_Z(vec) = z;
+}
+
+vector3_s vector3_make(float x, float y, float z)
+{
+    vector3_s vec = VECTOR3(x, y, z);
+    return vec;
+}
+
+void vector3_makeptrv(vector3_s *vec, const float arr[])
+{
+    IF_NULL_RETURN(vec)
+            VECTOR3V_X(vec) = arr[0];
+    VECTOR3V_Y(vec) = arr[1];
+    VECTOR3V_Z(vec) = arr[2];
+}
+
+vector3_s vector3_makeptr(const float arr[])
+{
+    vector3_s vec = VECTOR3V(arr);
+    return vec;
 }
