@@ -40,14 +40,12 @@ void NETLizardShadowModelRenderer::Render()
         {
             if(m_scenes && m_sceneCount > 0)
             {
-                Shadow_RenderNETLizardModelScene(m_model, m_scenes, m_sceneCount, &m_lightPosition, m_directionLighting, SHADOW_Z_PASS);
-                Shadow_RenderMask();
+                NETLizard_RenderNETLizardModelSceneShadow(m_model, m_scenes, m_sceneCount, &m_lightPosition, m_directionLighting, SHADOW_Z_PASS);
             }
         }
         else
         {
-            Shadow_RenderNETLizardModel(m_model, &m_lightPosition, m_directionLighting, SHADOW_Z_PASS);
-            Shadow_RenderMask();
+            NETLizard_RenderNETLizardModelShadow(m_model, &m_lightPosition, m_directionLighting, SHADOW_Z_PASS);
         }
     }
     glPopMatrix();

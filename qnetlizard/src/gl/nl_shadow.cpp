@@ -8,7 +8,10 @@
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); \
 	glDepthMask(GL_FALSE); \
 	glEnable(GL_STENCIL_TEST); \
-	glStencilFunc(GL_ALWAYS, 0, ~0);
+    glStencilFunc(GL_ALWAYS, 0, ~0U); \
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); \
+    glDisable(GL_BLEND); \
+    glDisable(GL_ALPHA_TEST);
 
 
 #define SHADOW_END \
@@ -16,9 +19,58 @@
 	glDepthMask(GL_TRUE); \
 	glDisable(GL_STENCIL_TEST); \
 	glCullFace(GL_BACK); \
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); \
+    glEnable(GL_BLEND); \
+    glStencilFunc(GL_ALWAYS, 0, ~0U); \
+    glEnable(GL_ALPHA_TEST);
 
-void Shadow_RenderNETLizardModelScene(const GL_NETLizard_3D_Model *map_model, const int *scenes, unsigned int count, const vector3_s *light_position, int dirlight, int method)
+#define SHADOW_MASK_Z 1
+#define SHADOW_MASK_W 5000
+static void render_shadow_mask(void)
+{
+    const GLfloat mask_color[] = {
+#if SHADOW_MASK_LIGHT
+        1.0, 1.0, 1.0, 0.1
+#else
+            0.0, 0.0, 0.0, 1 - 0.618
+    };
+#endif
+    GLfloat mask[] = {
+        -SHADOW_MASK_W, -SHADOW_MASK_W, -SHADOW_MASK_Z,
+        SHADOW_MASK_W, -SHADOW_MASK_W, -SHADOW_MASK_Z,
+        -SHADOW_MASK_W, SHADOW_MASK_W, -SHADOW_MASK_Z,
+        SHADOW_MASK_W, SHADOW_MASK_W, -SHADOW_MASK_Z
+    };
+
+    GLfloat cur_color[4];
+    glGetFloatv(GL_CURRENT_COLOR, cur_color);
+    //glDisable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);
+    glDepthMask(GL_FALSE);
+#if SHADOW_MASK_LIGHT
+    glStencilFunc(GL_EQUAL, 0, ~0U);
+#else
+    glStencilFunc(GL_NOTEQUAL, 0, ~0U);
+#endif
+
+
+    glPushMatrix();
+    glLoadIdentity();
+    glColor4fv(mask_color);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, mask);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glColor4fv(cur_color);
+
+    glPopMatrix();
+    glDisable(GL_STENCIL_TEST);
+    glStencilFunc(GL_ALWAYS, 0, ~0U);
+    glDepthMask(GL_TRUE);
+    //glEnable(GL_DEPTH_TEST);
+}
+
+void NETLizard_RenderNETLizardModelSceneShadow(const GL_NETLizard_3D_Model *map_model, const int *scenes, unsigned int count, const vector3_s *light_position, int dirlight, int method)
 {
 	GLuint i;
 	GLint c;
@@ -37,7 +89,7 @@ void Shadow_RenderNETLizardModelScene(const GL_NETLizard_3D_Model *map_model, co
 
     if(all)
     {
-        Shadow_RenderNETLizardModel(map_model, light_position, dirlight, method);
+        NETLizard_RenderNETLizardModelShadow(map_model, light_position, dirlight, method);
     }
     else
     {
@@ -47,7 +99,7 @@ void Shadow_RenderNETLizardModelScene(const GL_NETLizard_3D_Model *map_model, co
             if(scenes[i] < 0 && scenes[i] >= c)
                 continue;
             m = map_model->meshes + scenes[i];
-            //Shadow_RenderShadow(m, light);
+            //NETLizard_RenderMeshShadow(m, light);
             for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
             {
                 im = map_model->item_meshes + j;
@@ -55,15 +107,16 @@ void Shadow_RenderNETLizardModelScene(const GL_NETLizard_3D_Model *map_model, co
                     continue;
                 if(im->item_type == Item_Box_Type)
                     continue;
-                Shadow_RenderShadow(im, light_position, dirlight, method);
+                NETLizard_RenderMeshShadow(im, light_position, dirlight, method);
             }
         }
     }
 
-	SHADOW_END
+    SHADOW_END
+            render_shadow_mask();
 }
 
-void Shadow_RenderNETLizardModel(const GL_NETLizard_3D_Model *map_model, const vector3_s *light_position, int dirlight, int method)
+void NETLizard_RenderNETLizardModelShadow(const GL_NETLizard_3D_Model *map_model, const vector3_s *light_position, int dirlight, int method)
 {
 	GLuint i;
 	GLuint j;
@@ -87,57 +140,13 @@ void Shadow_RenderNETLizardModel(const GL_NETLizard_3D_Model *map_model, const v
 					continue;
 				if(im->item_type == Item_Box_Type)
                     continue;
-                Shadow_RenderShadow(im, light_position, dirlight, method);
+                NETLizard_RenderMeshShadow(im, light_position, dirlight, method);
 			}
 		}
 
     SHADOW_END
+            render_shadow_mask();
 }
-
-#define SHADOW_MASK_Z 10
-#define SHADOW_MASK_W 5000
-void Shadow_RenderMask(void)
-{
-	const GLfloat mask_color[] = {
-#if SHADOW_MASK_LIGHT
-		1.0, 1.0, 1.0, 0.1
-#else
-			0.0, 0.0, 0.0, 1 - 0.618
-	};
-#endif
-	GLfloat mask[] = {
-		-SHADOW_MASK_W, -SHADOW_MASK_W, -SHADOW_MASK_Z,
-		SHADOW_MASK_W, -SHADOW_MASK_W, -SHADOW_MASK_Z,
-		-SHADOW_MASK_W, SHADOW_MASK_W, -SHADOW_MASK_Z,
-		SHADOW_MASK_W, SHADOW_MASK_W, -SHADOW_MASK_Z
-	};
-
-	//glDisable(GL_DEPTH_TEST);
-	glEnable(GL_STENCIL_TEST);
-	glDepthMask(GL_FALSE);
-#if SHADOW_MASK_LIGHT
-	glStencilFunc(GL_EQUAL, 0, ~0U);
-#else
-	glStencilFunc(GL_NOTEQUAL, 0, ~0U);
-#endif
-
-
-	glPushMatrix();
-	glLoadIdentity();
-	glColor4fv(mask_color);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, mask);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glColor4f(1, 1, 1, 1);
-
-	glPopMatrix();
-	glDisable(GL_STENCIL_TEST);
-	glStencilFunc(GL_ALWAYS, 0, ~0U);
-	glDepthMask(GL_TRUE);
-	//glEnable(GL_DEPTH_TEST);
-}
-
 #if 0
 void Shadow_RenderNETLizard3DAnimationModel(const GL_NETLizard_3D_Animation_Model *m, int a, int f, const float pos[3], float xangle, float yangle, const Light_Source_s *light, int method)
 {
@@ -192,14 +201,15 @@ void Shadow_RenderNETLizard3DItemMesh(const GL_NETLizard_3D_Item_Mesh *m, const 
 }
 #endif
 
-void Shadow_RenderNETLizard3DMesh(const GL_NETLizard_3D_Mesh *m, const vector3_s *light_position, int dirlight, int method)
+void NETLizard_RenderNETLizard3DMeshShadow(const GL_NETLizard_3D_Mesh *m, const vector3_s *light_position, int dirlight, int method)
 {
     if(!m || !light_position)
 		return;
 
     SHADOW_BEGIN
 
-    Shadow_RenderShadow(m, light_position, dirlight, method);
+    NETLizard_RenderMeshShadow(m, light_position, dirlight, method);
 
     SHADOW_END
+            render_shadow_mask();
 }

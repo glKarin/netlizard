@@ -14,6 +14,7 @@ PRE_TARGETDEPS += ../libnetlizard/debug/libnetlizard.a
 LIBS += ../libnetlizard/debug/libnetlizard.a
 
 CONFIG          += debug #_and_release
+DEFINES += _WINDOWS
 
 # Input
 HEADERS += \
@@ -33,7 +34,8 @@ HEADERS += \
     src/comp/simplelightsourceactor.h \
     src/gl/nl_shadow.h \
     src/gl/shadow.h \
-    src/comp/renderer/netlizardshadowmodelrenderer.h
+    src/comp/renderer/netlizardshadowmodelrenderer.h \
+    src/gl/glk.h
 
 SOURCES += \
     main.cpp \
@@ -53,7 +55,8 @@ SOURCES += \
     src/comp/simplelightsourceactor.cpp \
     src/gl/nl_shadow.cpp \
     src/gl/shadow.cpp \
-    src/comp/renderer/netlizardshadowmodelrenderer.cpp
+    src/comp/renderer/netlizardshadowmodelrenderer.cpp \
+    src/gl/glk.c
 
 # Widget
 HEADERS += \

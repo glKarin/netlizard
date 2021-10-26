@@ -106,6 +106,8 @@ void MapScene::Init()
 
 void MapScene::Update(float delta)
 {
+    NLActor *camera_3d = GetActor(4);
+    camera_3d->SetRotation(CurrentCamera()->Rotation());
     NLScene::Update(delta);
     if(m_model)
     {
@@ -145,8 +147,11 @@ void MapScene::paintGL()
     }
     else if(m_sky3DRenderer->Model())
     {
-        m_sky3DCamera->SetRotation(CurrentCamera()->Rotation());
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
         m_sky3DCamera->Render(m_sky3DActor);
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
     }
 
     CurrentCamera()->Render(m_mapActor);
@@ -243,20 +248,21 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
                     GL_NETLizard_3D_Item_Mesh *mesh = m_model->item_meshes + i;
                     if(mesh->item_type == Item_Box_Type)
                     {
-                        GLfloat xs = mesh->box.max[0] - mesh->box.min[0];
-                        GLfloat ys = mesh->box.max[1] - mesh->box.min[1];
-                        GLfloat zs = mesh->box.max[2] - mesh->box.min[2];
-                        float d = m_sky3DCamera->ZDistance();
-                        NLVector3 scale = VECTOR3(d / xs, d / ys, d / zs);
-                        NLDEBUG_VECTOR3(scale);
-                        m_sky3DActor->SetScale(scale);
+//                        GLfloat xs = mesh->box.max[0] - mesh->box.min[0];
+//                        GLfloat ys = mesh->box.max[1] - mesh->box.min[1];
+//                        GLfloat zs = mesh->box.max[2] - mesh->box.min[2];
+//                        float d = m_sky3DCamera->ZDistance();
+//                        NLVector3 scale = VECTOR3(d / xs, d / ys, d / zs);
+//                        NLDEBUG_VECTOR3(scale);
+//                        m_sky3DActor->SetScale(scale);
+                        NLVector3 skyPos = VECTOR3(mesh->position[0], mesh->position[2], -mesh->position[1]);
+                        NLActor *camera_3d = GetActor(4);
+                        camera_3d->SetPosition(skyPos);
                         m_sky3DRenderer->SetModel(mesh, m_model->texes);
-                        break;
+                        break; // only set 1, some level has many sky box
                     }
                 }
             }
-            CurrentCamera()->SetZIsUp(true);
-            m_sky3DCamera->SetZIsUp(true);
         }
     }
 

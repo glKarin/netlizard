@@ -2,11 +2,12 @@
 
 #include <QList>
 #include <QDebug>
+#include <QGLContext>
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <GL/glext.h>
+#include "glk.h"
 
 #include "lib/line.h"
 #include "lib/mesa_gl_math.h"
@@ -14,11 +15,8 @@
 
 #define F_ZERO 0.1
 
-#define GL_INCR_WRAP GL_INCR_WRAP_EXT
-#define GL_DECR_WRAP GL_DECR_WRAP_EXT
-
-#define Shadow_Vec3cmp Vector3_EqualsVector3
-#define Shadow_Linecmp Line_EqualsLine
+#define VEC3CMP vector3_equals // compare_vector3
+#define LINECMP line_equals_ignore_seq // compare_line_segment
 
 typedef QList<line_s> LineList;
 typedef QList<vector3_s> Vector3List;
@@ -55,10 +53,7 @@ static int push_edge_line(LineList &list, const line_s *lp)
     for(o = 0; o < list.size(); o++) // find in lines list
     {
         const line_s &line = list[o];
-        if(
-                //compare_line_segment
-                line_equals_ignore_seq
-                (lp, &line)) // if exists, remove this line, then continue
+        if(LINECMP(lp, &line)) // if exists, remove this line, then continue
         {
             //printf("%d exist\n", i);
             has = 1;
@@ -136,7 +131,7 @@ vector3_s cale_light_direction(const vector3_s *v, const vector3_s *lightpos, in
 	return r;
 }
 
-void Shadow_CaleTrans(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_Mesh *nl_mesh, int invert)
+void NETLizard_CaleMeshTransform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_Mesh *nl_mesh, int invert)
 {
     GLmatrix nor_mat;
     GLmatrix mat;
@@ -247,7 +242,7 @@ void Shadow_CaleTrans(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_Mesh *nl_me
 }
 
 // cale shadow volume
-void Shadow_MakeVolume(GL_NETLizard_3D_Mesh *r, const vector3_s *light_position, const int dirlight, const GL_NETLizard_3D_Mesh *mat, int method)
+void NETLizard_MakeShadowVolumeMesh(GL_NETLizard_3D_Mesh *r, const vector3_s *light_position, const int dirlight, const GL_NETLizard_3D_Mesh *mat, int method)
 {
 	int has;
     line_s lp;
@@ -646,13 +641,16 @@ void Shadow_MakeVolume(GL_NETLizard_3D_Mesh *r, const vector3_s *light_position,
 #endif
 }
 
-void Shadow_RenderVolume(const GL_NETLizard_3D_Mesh *nl_mesh, const vector3_s *light_position, const int dirlight, int m)
+void NETLizard_RenderShadowVolumeMesh(const GL_NETLizard_3D_Mesh *nl_mesh, const vector3_s *light_position, const int dirlight, int m)
 {
     if(!nl_mesh || !light_position)
         return;
 
+    glStencilOpSeparateProc glStencilOpSeparate = NULL;
+    //glStencilOpSeparate = (glStencilOpSeparateProc)QGLContext::currentContext()->getProcAddress("glStencilOpSeparate");
+
     GL_NETLizard_3D_Mesh vol;
-    Shadow_MakeVolume(&vol, light_position, dirlight, nl_mesh, m);
+    NETLizard_MakeShadowVolumeMesh(&vol, light_position, dirlight, nl_mesh, m);
 
 	// render
 	// 1: get depth buffer of scene
@@ -669,7 +667,7 @@ void Shadow_RenderVolume(const GL_NETLizard_3D_Mesh *nl_mesh, const vector3_s *l
 #endif
 	//goto __Exit;
 
-	glEnableClientState(GL_VERTEX_ARRAY);
+    //glEnableClientState(GL_VERTEX_ARRAY);
 	//glDepthFunc(GL_LEQUAL);
 
 	if(m == SHADOW_Z_FAIL)
@@ -685,23 +683,26 @@ void Shadow_RenderVolume(const GL_NETLizard_3D_Mesh *nl_mesh, const vector3_s *l
 		glStencilFunc(GL_ALWAYS, 0, ~0U);
 #endif
 
-		// 2-1: cale front faces of shadow volume
-#ifdef _HARMATTAN_OPENGLES
-		glStencilOp(GL_KEEP, GL_INCR_WRAP, GL_KEEP);
-		glCullFace(GL_FRONT);
-        NETLizard_RenderGL3DMesh(&vol, 0);
+        if(glStencilOpSeparate)
+        {
+            glDisable(GL_CULL_FACE);
+            glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+            glStencilOpSeparate(GL_BACK, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
+            NETLizard_RenderGL3DMesh(&vol, 0);
+            glEnable(GL_CULL_FACE);
+        }
+        else
+        {
+            // 2-1: cale front faces of shadow volume
+            glStencilOp(GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+            glCullFace(GL_FRONT);
+            NETLizard_RenderGL3DMesh(&vol, 0);
 
-		// 2-1: cale back faces of shadow volume
-		glStencilOp(GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-		glCullFace(GL_BACK);
-        NETLizard_RenderGL3DMesh(&vol, 0);
-#else
-		glDisable(GL_CULL_FACE);
-		glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
-		glStencilOpSeparate(GL_BACK, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-		rendermesh(vol);
-		glEnable(GL_CULL_FACE);
-#endif
+            // 2-1: cale back faces of shadow volume
+            glStencilOp(GL_KEEP, GL_DECR_WRAP, GL_KEEP);
+            glCullFace(GL_BACK);
+            NETLizard_RenderGL3DMesh(&vol, 0);
+        }
 
 #ifdef GL_ARB_depth_clamp
 		glDisable(GL_DEPTH_CLAMP);
@@ -717,33 +718,29 @@ void Shadow_RenderVolume(const GL_NETLizard_3D_Mesh *nl_mesh, const vector3_s *l
 		glStencilFunc(GL_ALWAYS, 0, ~0U);
 #endif
 
-#if 0
-		vol->materials->use_color = 1;
-		vol->materials->color[0] = 
-			vol->materials->color[1] = 
-			vol->materials->color[2] = 0.0;
-		vol->materials->color[3] = 0.2;
-#endif
-		// 2-1: cale front faces of shadow volume
-#ifdef _HARMATTAN_OPENGLES
-		glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP);
-		glCullFace(GL_BACK);
-        NETLizard_RenderGL3DMesh(&vol, 0);
+        if(glStencilOpSeparate)
+        {
+            glDisable(GL_CULL_FACE);
+            glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_KEEP, GL_INCR_WRAP);
+            glStencilOpSeparate(GL_BACK, GL_KEEP, GL_KEEP, GL_DECR_WRAP);
+            NETLizard_RenderGL3DMesh(&vol, 0);
+            glEnable(GL_CULL_FACE);
+        }
+        else
+        {
+            // 2-1: cale front faces of shadow volume
+            glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP);
+            glCullFace(GL_BACK);
+            NETLizard_RenderGL3DMesh(&vol, 0);
 
-		// 2-1: cale back faces of shadow volume
-		glStencilOp(GL_KEEP, GL_KEEP, GL_DECR_WRAP);
-        glCullFace(GL_FRONT);
-        NETLizard_RenderGL3DMesh(&vol, 0);
-#else
-		glDisable(GL_CULL_FACE);
-		glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_KEEP, GL_INCR_WRAP);
-        glStencilOpSeparate(GL_BACK, GL_KEEP, GL_KEEP, GL_DECR_WRAP);
-        NETLizard_RenderGL3DMesh(&vol, 0);
-		glEnable(GL_CULL_FACE);
-#endif
+            // 2-1: cale back faces of shadow volume
+            glStencilOp(GL_KEEP, GL_KEEP, GL_DECR_WRAP);
+            glCullFace(GL_FRONT);
+            NETLizard_RenderGL3DMesh(&vol, 0);
+        }
 	}
 	//glDepthFunc(GL_LESS);
-	glDisableClientState(GL_VERTEX_ARRAY);
+    //glDisableClientState(GL_VERTEX_ARRAY);
 
 #if 0
 #if SHADOW_MASK
@@ -803,16 +800,16 @@ __Exit:
     delete_GL_NETLizard_3D_Mesh(&vol);
 }
 
-void Shadow_RenderShadow(const GL_NETLizard_3D_Mesh *mesh, const vector3_s *light_position, int dirlight, int method)
+void NETLizard_RenderMeshShadow(const GL_NETLizard_3D_Mesh *mesh, const vector3_s *light_position, int dirlight, int method)
 {
     if(!mesh || !light_position)
 		return;
 
     GL_NETLizard_3D_Mesh m;
 
-    Shadow_CaleTrans(&m, mesh, 0);
+    NETLizard_CaleMeshTransform(&m, mesh, 0);
 
-    Shadow_RenderVolume(&m, light_position, dirlight, method);
+    NETLizard_RenderShadowVolumeMesh(&m, light_position, dirlight, method);
 
     delete_GL_NETLizard_3D_Mesh(&m);
 }

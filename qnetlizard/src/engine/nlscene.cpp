@@ -81,12 +81,14 @@ void NLScene::initializeGL()
 {
     printfgl();
 
-    //glClearColor(1, 1, 1, 1);
+    glColor4f(0, 0, 0, 1); // black
     qglClearColor(m_clearColor);
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_STENCIL_TEST);
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
+    glClearStencil(0);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
@@ -96,6 +98,7 @@ void NLScene::initializeGL()
     glEnable(GL_ALPHA_TEST);
 
     glEnable(GL_TEXTURE_2D);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
     Init();
 }
