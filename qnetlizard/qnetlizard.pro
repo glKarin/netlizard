@@ -14,7 +14,6 @@ PRE_TARGETDEPS += ../libnetlizard/debug/libnetlizard.a
 LIBS += ../libnetlizard/debug/libnetlizard.a
 
 CONFIG          += debug #_and_release
-DEFINES += _WINDOWS
 
 # Input
 HEADERS += \
@@ -22,41 +21,16 @@ HEADERS += \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
     src/misc/settings.h \
-    src/indexviewer.h \
-    src/spriteviewer.h \
-    src/comp/renderer/netlizardspriterenderer.h \
-    src/comp/scene/spritescene.h \
-    lib/ortho.h \
-    lib/frustum.h \
-    lib/matrix.h \
-    src/gl/nl_util.h \
     src/comp/component/simplelightsourcecomponent.h \
-    src/comp/simplelightsourceactor.h \
-    src/gl/nl_shadow.h \
-    src/gl/shadow.h \
-    src/comp/renderer/netlizardshadowmodelrenderer.h \
-    src/gl/glk.h
+    src/comp/simplelightsourceactor.h
 
 SOURCES += \
     main.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
-    src/indexviewer.cpp \
-    src/gl/nl_gl_sprite.c \
-    src/spriteviewer.cpp \
-    src/comp/renderer/netlizardspriterenderer.cpp \
-    src/comp/scene/spritescene.cpp \
-    lib/ortho.c \
-    lib/frustum.c \
-    lib/matrix.c \
-    src/gl/nl_util.c \
     src/comp/component/simplelightsourcecomponent.cpp \
-    src/comp/simplelightsourceactor.cpp \
-    src/gl/nl_shadow.cpp \
-    src/gl/shadow.cpp \
-    src/comp/renderer/netlizardshadowmodelrenderer.cpp \
-    src/gl/glk.c
+    src/comp/simplelightsourceactor.cpp
 
 # Widget
 HEADERS += \
@@ -73,7 +47,9 @@ HEADERS += \
     src/aboutdialog.h \
     src/logdialog.h \
     src/animationviewer.h \
-    src/settingdialog.h
+    src/settingdialog.h \
+    src/indexviewer.h \
+    src/spriteviewer.h
 
 SOURCES += \
     src/widget/baseviewer.cpp \
@@ -89,7 +65,9 @@ SOURCES += \
     src/aboutdialog.cpp \
     src/logdialog.cpp \
     src/animationviewer.cpp \
-    src/settingdialog.cpp
+    src/settingdialog.cpp \
+    src/indexviewer.cpp \
+    src/spriteviewer.cpp
 
 # Component
 DEPENDPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer
@@ -116,26 +94,32 @@ HEADERS += \
     src/comp/renderer/netlizarditemmodelrenderer.h \
     src/comp/renderer/netlizardtexturerenderer.h \
     src/comp/renderer/netlizardfontrenderer.h \
-    src/comp/renderer/netlizardanimationmodelrenderer.h
+    src/comp/renderer/netlizardanimationmodelrenderer.h \
+    src/comp/renderer/netlizardshadowmodelrenderer.h \
+    src/comp/renderer/netlizardspriterenderer.h
 SOURCES += \
     src/comp/renderer/netlizardmapmodelrenderer.cpp \
     src/comp/renderer/netlizarditemmodelrenderer.cpp \
     src/comp/renderer/netlizardtexturerenderer.cpp \
     src/comp/renderer/netlizardfontrenderer.cpp \
-    src/comp/renderer/netlizardanimationmodelrenderer.cpp
+    src/comp/renderer/netlizardanimationmodelrenderer.cpp \
+    src/comp/renderer/netlizardshadowmodelrenderer.cpp \
+    src/comp/renderer/netlizardspriterenderer.cpp
 
 HEADERS += \
     src/comp/scene/imagescene.h \
     src/comp/scene/mapscene.h \
     src/comp/scene/fontscene.h \
     src/comp/scene/animationscene.h \
-    src/comp/scene/itemscene.h
+    src/comp/scene/itemscene.h \
+    src/comp/scene/spritescene.h
 SOURCES += \
     src/comp/scene/imagescene.cpp \
     src/comp/scene/mapscene.cpp \
     src/comp/scene/fontscene.cpp \
     src/comp/scene/animationscene.cpp \
-    src/comp/scene/itemscene.cpp
+    src/comp/scene/itemscene.cpp \
+    src/comp/scene/spritescene.cpp
 
 # Engine
 DEPENDPATH += ./src/engine
@@ -185,7 +169,10 @@ HEADERS += \
     lib/bound.h \
     lib/plane.h \
     lib/triangle.h \
-    lib/line.h
+    lib/line.h \
+    lib/ortho.h \
+    lib/frustum.h \
+    lib/matrix.h
 
 SOURCES += \
     lib/mesa_gl_math.c \
@@ -194,7 +181,10 @@ SOURCES += \
     lib/bound.c \
     lib/plane.c \
     lib/triangle.c \
-    lib/line.c
+    lib/line.c \
+    lib/ortho.c \
+    lib/frustum.c \
+    lib/matrix.c
 
 # NL-GL
 DEPENDPATH += ./src/gl
@@ -204,7 +194,11 @@ HEADERS += \
     src/gl/nl_font.h \
     src/gl/gl_texture.h \
     src/gl/nl_texture.h \
-    src/gl/nl_gl.h
+    src/gl/nl_gl.h \
+    src/gl/nl_shadow_render.h \
+    src/gl/stencil_shadow.h \
+    src/gl/glk.h \
+    src/gl/nl_util.h
 
 SOURCES += \
     src/gl/gl_texture.c \
@@ -214,7 +208,12 @@ SOURCES += \
     src/gl/nl_gl_reader.c \
     src/gl/nl_gl_render.c \
     src/gl/nl_gl.c \
-    src/gl/nl_gl_re3d.c
+    src/gl/nl_gl_re3d.c \
+    src/gl/nl_gl_sprite.c \
+    src/gl/nl_shadow_render.cpp \
+    src/gl/stencil_shadow.cpp \
+    src/gl/glk.c \
+    src/gl/nl_util.c
 
 # Mesa GL math
 DEPENDPATH += ./lib/mesa_math

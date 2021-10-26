@@ -2,16 +2,17 @@
 
 #include <QDebug>
 
+#include "nl_shadow_render.h"
 #include "qdef.h"
-#include "nl_shadow.h"
 
-NETLizardShadowModelRenderer::NETLizardShadowModelRenderer(NLActor *actor) :
+NETLizardShadowModelRenderer::NETLizardShadowModelRenderer(int method, NLActor *actor) :
     NLRenderable(actor),
     m_model(0),
     m_cull(false),
     m_scenes(0),
     m_sceneCount(0),
-    m_directionLighting(false)
+    m_directionLighting(false),
+    m_stencilShadowMethod(method)
 {
     SetLightSource();
 }
@@ -32,6 +33,8 @@ void NETLizardShadowModelRenderer::Render()
 {
     if(!m_model)
         return;
+    if(m_stencilShadowMethod == 0)
+        return;
     if(vector3_iszero(&m_lightPosition))
         return;
     glPushMatrix();
@@ -40,12 +43,12 @@ void NETLizardShadowModelRenderer::Render()
         {
             if(m_scenes && m_sceneCount > 0)
             {
-                NETLizard_RenderNETLizardModelSceneShadow(m_model, m_scenes, m_sceneCount, &m_lightPosition, m_directionLighting, SHADOW_Z_PASS);
+                NETLizard_RenderNETLizardModelSceneShadow(m_model, m_scenes, m_sceneCount, &m_lightPosition, m_directionLighting, m_stencilShadowMethod);
             }
         }
         else
         {
-            NETLizard_RenderNETLizardModelShadow(m_model, &m_lightPosition, m_directionLighting, SHADOW_Z_PASS);
+            NETLizard_RenderNETLizardModelShadow(m_model, &m_lightPosition, m_directionLighting, m_stencilShadowMethod);
         }
     }
     glPopMatrix();
@@ -145,4 +148,15 @@ void NETLizardShadowModelRenderer::SetRenderScenes(int scenes[], int count)
     m_sceneCount = count;
     if(count > 0)
         memcpy(m_scenes, scenes, count * sizeof(int));
+}
+
+int NETLizardShadowModelRenderer::StencilShadowMethod() const
+{
+    return m_stencilShadowMethod;
+}
+
+void NETLizardShadowModelRenderer::SetStencilShadowMethod(int method)
+{
+    if(m_stencilShadowMethod != method)
+        m_stencilShadowMethod = method;
 }

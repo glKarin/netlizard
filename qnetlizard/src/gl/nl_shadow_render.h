@@ -2,7 +2,7 @@
 #define _KARIN_NL_SHADOW_H
 
 #include "nl_gl.h"
-#include "shadow.h"
+#include "lib/vector3.h"
 
 void NETLizard_RenderNETLizardModelSceneShadow(const GL_NETLizard_3D_Model *map_model, const int *scenes, unsigned int count, const vector3_s *light_position, int dirlight, int method);
 void NETLizard_RenderNETLizardModelShadow(const GL_NETLizard_3D_Model *map_model,  const vector3_s *light_position, int dirlight, int method);

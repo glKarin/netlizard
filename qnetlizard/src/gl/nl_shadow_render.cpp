@@ -1,8 +1,10 @@
-#include "nl_shadow.h"
+#include "nl_shadow_render.h"
 
 #include <QDebug>
 #include <string.h>
 #include <stdio.h>
+
+#include "stencil_shadow.h"
 
 #define SHADOW_BEGIN \
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); \

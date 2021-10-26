@@ -21,8 +21,8 @@ MapScene::MapScene(QWidget *parent)
     : NLScene(parent),
       m_model(0),
       m_mapActor(0),
-      m_skyActor(0),
       m_shadowActor(0),
+      m_skyActor(0),
       m_sky3DActor(0),
       m_renderer(0),
       m_shadowRenderer(0),
@@ -86,8 +86,9 @@ MapScene::MapScene(QWidget *parent)
     m_shadowRenderer = new NETLizardShadowModelRenderer;
     m_shadowActor->SetRenderable(m_shadowRenderer);
     m_shadowRenderer->SetCull(settings->GetSetting<bool>("RENDER/scene_cull"));
-    m_shadowActor->SetEnabled(settings->GetSetting<bool>("m_shadowActor"));
-    m_shadowActor->SetEnabled(settings->GetSetting<bool>("RENDER/shadow"));
+    int method = settings->GetSetting<int>("RENDER/shadow");
+    m_shadowActor->SetEnabled(method > 0);
+    m_shadowRenderer->SetStencilShadowMethod(method);
 
     NLVector3 lp = VECTOR3(5000, 5000, 5000);
     m_shadowRenderer->SetLightSource(&lp, false);
@@ -316,5 +317,9 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
     else if(name == "CONTROL_3D/fovy_sens")
         m_control->SetFovySens(value.toFloat());
     else if(name == "RENDER/shadow")
-        m_shadowActor->SetEnabled(value.toBool());
+    {
+        int m = value.toInt();
+        m_shadowActor->SetEnabled(m > 0);
+        m_shadowRenderer->SetStencilShadowMethod(m);
+    }
 }

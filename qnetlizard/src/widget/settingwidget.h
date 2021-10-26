@@ -24,6 +24,7 @@ Q_SIGNALS:
 private Q_SLOTS:
     void OnValueChanged(const QString &val);
     void OnBoolChanged(bool b);
+    void OnIntChanged(int i);
 
 private:
     QString m_name;

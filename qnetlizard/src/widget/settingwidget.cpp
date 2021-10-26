@@ -6,6 +6,7 @@
 #include <QFormLayout>
 #include <QLabel>
 #include <QCheckBox>
+#include <QComboBox>
 
 #include "settings.h"
 #include "qdef.h"
@@ -51,6 +52,7 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
     if(!_settingsConfig.contains(name))
         return;
     QList<SettingItem> items = _settingsConfig.values(name);
+    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
 
     Q_FOREACH(const SettingItem &item, items)
     {
@@ -62,7 +64,7 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
             w->setSingleStep(1);
             w->setMinimum(item.prop.value("min").toInt());
             w->setMaximum(item.prop.value("max").toInt());
-            w->setValue(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>(item.name, item.value.toInt()));
+            w->setValue(settings->GetSetting<int>(item.name, item.value.toInt()));
             connect(w, SIGNAL(valueChanged(const QString &)), this, SLOT(OnValueChanged(const QString &)));
             widget = w;
         }
@@ -74,7 +76,7 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
             w->setSingleStep(0.01);
             w->setMinimum(item.prop.value("min").toFloat());
             w->setMaximum(item.prop.value("max").toFloat());
-            w->setValue(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<double>(item.name, item.value.toFloat()));
+            w->setValue(settings->GetSetting<double>(item.name, item.value.toFloat()));
             connect(w, SIGNAL(valueChanged(const QString &)), this, SLOT(OnValueChanged(const QString &)));
             widget = w;
         }
@@ -82,10 +84,30 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
         {
             QCheckBox *w = new QCheckBox;
             w->setObjectName(item.name);
-            w->setChecked(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<bool>(item.name, item.value.toBool()));
+            w->setChecked(settings->GetSetting<bool>(item.name, item.value.toBool()));
             connect(w, SIGNAL(clicked(bool)), this, SLOT(OnBoolChanged(bool)));
             widget = w;
         }
+        else if(item.type == "enum")
+        {
+            QComboBox *w = new QComboBox;
+            w->setObjectName(item.name);
+            const QVariantList & items = item.prop.value("items").toList();
+            int cur = 0;
+            int target = settings->GetSetting<int>(item.name, item.value.toInt());
+            for(int i = 0; i < items.size(); i++)
+            {
+                const QVariantMap p = items[i].toMap();
+                const QVariant v = p.value("value");
+                w->addItem(p.value("name").toString(), v);
+                if(v.toInt() == target)
+                    cur = i;
+            }
+            w->setCurrentIndex(cur);
+            connect(w, SIGNAL(currentIndexChanged(int)), this, SLOT(OnIntChanged(int)));
+            widget = w;
+        }
+
 
         if(widget)
         {
@@ -101,11 +123,11 @@ void SettingGroup::OnValueChanged(const QString &val)
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
     if(instanceofv(obj, QSpinBox))
     {
-        settings->SetSetting(name, val.toInt());
+        settings->SetSetting<int>(name, val.toInt());
     }
     else if(instanceofv(obj, QDoubleSpinBox))
     {
-        settings->SetSetting(name, val.toFloat());
+        settings->SetSetting<double>(name, val.toDouble());
     }
 }
 
@@ -114,5 +136,17 @@ void SettingGroup::OnBoolChanged(bool b)
     QObject *obj = sender();
     QString name = obj->objectName();
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
-    settings->SetSetting(name, b);
+    settings->SetSetting<bool>(name, b);
+}
+
+void SettingGroup::OnIntChanged(int i)
+{
+    QObject *obj = sender();
+    QString name = obj->objectName();
+    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+    if(instanceofv(obj, QComboBox))
+    {
+        QComboBox *cb = static_cast<QComboBox *>(obj);
+        settings->SetSetting<int>(name, cb->itemData(i).toInt());
+    }
 }

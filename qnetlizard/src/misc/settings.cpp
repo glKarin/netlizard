@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <QStringList>
 
+#include "stencil_shadow.h"
+
 Settings::Settings(QObject *parent) :
     QObject(parent),
     m_settings(new QSettings(APP_NAME ".ini", QSettings::IniFormat, this))
@@ -37,8 +39,19 @@ const SettingItemMap & Settings::SettingsConfig()
         _settingsConfig.insert("2d_control", SettingItem("CONTROL_2D/rot_sens", 100, "Rotation sensitive", "int").AddProp("min", 1).AddProp("max", 10000));
 
         _settingsConfig.insert("render", SettingItem("RENDER/fps", 0, "FPS(0 to not limit)", "int").AddProp("min", 0).AddProp("max", 300));
-        _settingsConfig.insert("render", SettingItem("RENDER/scene_cull", true, "Cull scene when rendering map", "bool"));
-        _settingsConfig.insert("render", SettingItem("RENDER/shadow", true, "Render simple stencil shadow when rendering map", "bool"));
+        _settingsConfig.insert("render", SettingItem("RENDER/scene_cull", true, "Cull map scene", "bool"));
+        QVariantList list;
+        QVariantMap map;
+        map.insert("name", "No shadow");
+        map.insert("value", 0);
+        list << map;
+        map.insert("name", "Stencil shadow: Z-FAIL");
+        map.insert("value", 2);
+        list << map;
+        map.insert("name", "Stencil shadow: Z-PASS");
+        map.insert("value", 1);
+        list << map;
+        _settingsConfig.insert("render", SettingItem("RENDER/shadow", SHADOW_Z_FAIL, "Render simple shadow", "enum").AddProp("items", list));
     }
     return _settingsConfig;
 }

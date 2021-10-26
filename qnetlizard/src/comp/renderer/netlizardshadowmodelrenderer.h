@@ -3,12 +3,13 @@
 
 #include "nlrenderable.h"
 #include "gl/nl_gl.h"
+#include "stencil_shadow.h"
 
 NLRENDERER(NETLizardShadowModelRenderer)
 class NETLizardShadowModelRenderer : public NLRenderable
 {
 public:
-    explicit NETLizardShadowModelRenderer(NLActor *actor = 0);
+    explicit NETLizardShadowModelRenderer(int method = SHADOW_Z_FAIL, NLActor *actor = 0);
     virtual ~NETLizardShadowModelRenderer();
     GL_NETLizard_3D_Model * Model();
     void SetModel(GL_NETLizard_3D_Model *model);
@@ -19,6 +20,8 @@ public:
     int SceneCount() const;
     void SetLightSource(const NLVector3 *pos = 0, bool dirlight = false);
     void SetRenderScenes(int scenes[], int count);
+    int StencilShadowMethod() const;
+    void SetStencilShadowMethod(int method);
 
 protected:
     virtual void InitRender();
@@ -35,6 +38,7 @@ private:
     int m_sceneCount;
     NLVector3 m_lightPosition;
     bool m_directionLighting;
+    int m_stencilShadowMethod; // SHADOW_Z_FAIL | SHADOW_Z_PASS
 
     Q_DISABLE_COPY(NETLizardShadowModelRenderer)
     

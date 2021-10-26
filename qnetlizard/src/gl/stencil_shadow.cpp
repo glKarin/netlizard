@@ -1,4 +1,4 @@
-#include "shadow.h"
+#include "stencil_shadow.h"
 
 #include <QList>
 #include <QDebug>
@@ -10,16 +10,23 @@
 #include "glk.h"
 
 #include "lib/line.h"
+#include "lib/triangle.h"
 #include "lib/mesa_gl_math.h"
 #include "nlmath.h"
 
 #define F_ZERO 0.1
+#define SHADOW_VOLUME_LENGTH 5000
+#define SHADOW_CAP_OFFSET 0.1
+#define SHADOW_VOLUME_FAR_W 1
+#define SHADOW_MASK 1 //
+#define SHADOW_MASK_LIGHT 0 //
 
 #define VEC3CMP vector3_equals // compare_vector3
 #define LINECMP line_equals_ignore_seq // compare_line_segment
 
 typedef QList<line_s> LineList;
 typedef QList<vector3_s> Vector3List;
+typedef QList<triangle_s> TriangleList;
 
 static int compare_vector3(const vector3_s *a, const vector3_s *b)
 {
@@ -255,12 +262,12 @@ void NETLizard_MakeShadowVolumeMesh(GL_NETLizard_3D_Mesh *r, const vector3_s *li
     if(!r || !light_position || !mat || !mat->count)
 		return;
 
-    QList<line_s> lines;
-    QList<vector3_s> tops;
-    QList<vector3_s> bottoms;
+    LineList lines;
+    TriangleList tops;
+    const int Cap = method == SHADOW_Z_FAIL || 1 ? 1 : 0;
 
     memset(r, 0, sizeof(GL_NETLizard_3D_Mesh));
-    r->count = method == SHADOW_Z_FAIL ? 3 : 1; // top[1] bottom[2] caps, and side[0]
+    r->count = Cap ? 3 : 1; // top[1] bottom[2] caps, and side[0]
     r->materials = (GL_NETLizard_3D_Material *)calloc(r->count, sizeof(GL_NETLizard_3D_Material));
 
     for(i = 0; i < mat->vertex_data.vertex_count / 3; i++) // cale triangle
@@ -287,36 +294,23 @@ void NETLizard_MakeShadowVolumeMesh(GL_NETLizard_3D_Mesh *r, const vector3_s *li
                 has = push_edge_line(lines, &lp);
             }
 			// top cap triangle
-			if(method == SHADOW_Z_FAIL)
-			{
-                vector3_s vec = VECTOR3V(pa[0].position);
-                tops.push_back(vec);
-                VECTOR3_X(vec) = pa[1].position[0];
-                VECTOR3_Y(vec) = pa[1].position[1];
-                VECTOR3_Z(vec) = pa[1].position[2];
-                tops.push_back(vec);
-                VECTOR3_X(vec) = pa[2].position[0];
-                VECTOR3_Y(vec) = pa[2].position[1];
-                VECTOR3_Z(vec) = pa[2].position[2];
-                tops.push_back(vec);
+            if(Cap)
+            {
+                triangle_s tri = TRIANGLEV(pa[0].position, pa[1].position, pa[2].position);
+                tops.push_back(tri);
 			}
 		}
 		else
 		{
 			// bottom cap triangle
-			if(method == SHADOW_Z_FAIL)
-			{
-                vector3_s vec = VECTOR3V(pa[0].position);
-                bottoms.push_back(vec);
-                VECTOR3_X(vec) = pa[1].position[0];
-                VECTOR3_Y(vec) = pa[1].position[1];
-                VECTOR3_Z(vec) = pa[1].position[2];
-                bottoms.push_back(vec);
-                VECTOR3_X(vec) = pa[2].position[0];
-                VECTOR3_Y(vec) = pa[2].position[1];
-                VECTOR3_Z(vec) = pa[2].position[2];
-                bottoms.push_back(vec);
+            // because some model not cap, so using face light vertex
+#if 0
+            if(Cap)
+            {
+                triangle_s tri = TRIANGLEV(pa[0].position, pa[1].position, pa[2].position);
+                bottoms.push_back(tri);
 			}
+#endif
 		}
 	}
 //#define _TEST_RENDER_EDGE_LINES
@@ -324,12 +318,13 @@ void NETLizard_MakeShadowVolumeMesh(GL_NETLizard_3D_Mesh *r, const vector3_s *li
     render_edge_lines(lines);
 #endif
 
+    const TriangleList &bottoms = tops;
 	// cale sides of shadow volume
     int vcount = lines.size() * 6; // 2 triangles(6 points) every a line
-    if(method == SHADOW_Z_FAIL)
+    if(Cap)
     {
-        vcount += tops.size();
-        vcount += bottoms.size();
+        vcount += tops.size() * 3;
+        vcount += bottoms.size() * 3;
     }
     r->vertex_data.vertex_count = vcount;
     r->vertex_data.vertex = (GL_NETLizard_3D_Vertex *)calloc(r->vertex_data.vertex_count, sizeof(GL_NETLizard_3D_Vertex));
@@ -345,62 +340,33 @@ void NETLizard_MakeShadowVolumeMesh(GL_NETLizard_3D_Mesh *r, const vector3_s *li
 	// TODO: cale clock wise, now the lighting source must be above all cubes
     for(i = 0; i < lines.size(); i++)
     {
-        const line_s &lpptr = lines[i];
+        line_s lpptr = lines[i];
 		// point lighting
         vector3_s dir_a = cale_light_direction(&(LINE_A(lpptr)), light_position, dirlight);
-        vector3_scalev(&dir_a, SHADOW_VOLUME_LENGTH);
+        vector3_scalev(&dir_a, SHADOW_VOLUME_LENGTH + SHADOW_CAP_OFFSET);
         dir_a = vector3_add(&(LINE_A(lpptr)), &dir_a);
+
         vector3_s dir_b = cale_light_direction(&(LINE_B(lpptr)), light_position, dirlight);
-        vector3_scalev(&dir_b, SHADOW_VOLUME_LENGTH);
+        vector3_scalev(&dir_b, SHADOW_VOLUME_LENGTH + SHADOW_CAP_OFFSET);
         dir_b = vector3_add(&(LINE_B(lpptr)), &dir_b);
 
-#if 0
-	glDisable(GL_DEPTH_TEST);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glColor4f(0.0, 0.0, 1.0, 1.0);
-	glDepthFunc(GL_LEQUAL);
-	glLineWidth(4.0);
-	glPushMatrix();
-	{
-		GLfloat vs[6];
-			//printf("%d %d\n", o, lines.count);
-			vs[0] = VECTOR_X(lpptr->a);
-			vs[1] = VECTOR_Y(lpptr->a);
-			vs[2] = VECTOR_Z(lpptr->a);
+        if(SHADOW_CAP_OFFSET)
+        {
+            vector3_s dir_offset_a = cale_light_direction(&(LINE_A(lpptr)), light_position, dirlight);
+            vector3_scalev(&dir_offset_a, SHADOW_CAP_OFFSET);
+            LINE_A(lpptr) = vector3_add(&(LINE_A(lpptr)), &dir_offset_a);
 
-			vs[3] = VECTOR_X(dir_a);
-			vs[4] = VECTOR_Y(dir_a);
-			vs[5] = VECTOR_Z(dir_a);
-			glVertexPointer(3, GL_FLOAT, 0, vs);
-			glDrawArrays(GL_LINES, 0, 2);
+            vector3_s dir_offset_b = cale_light_direction(&(LINE_B(lpptr)), light_position, dirlight);
+            vector3_scalev(&dir_offset_b, SHADOW_CAP_OFFSET);
+            LINE_B(lpptr) = vector3_add(&(LINE_B(lpptr)), &dir_offset_b);
+        }
 
-			vs[0] = VECTOR_X(lpptr->b);
-			vs[1] = VECTOR_Y(lpptr->b);
-			vs[2] = VECTOR_Z(lpptr->b);
-
-			vs[3] = VECTOR_X(dir_b);
-			vs[4] = VECTOR_Y(dir_b);
-			vs[5] = VECTOR_Z(dir_b);
-			glVertexPointer(3, GL_FLOAT, 0, vs);
-			glDrawArrays(GL_LINES, 0, 2);
-	}
-	glPopMatrix();
-	glLineWidth(1.0);
-	glDepthFunc(GL_LESS);
-	glEnable(GL_DEPTH_TEST);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glDisableClientState(GL_VERTEX_ARRAY);
-#endif
 //#define _TEST_RENDER_SHADOW_VOLUME
 #ifdef _TEST_RENDER_SHADOW_VOLUME
-	//glDisable(GL_DEPTH_TEST);
 	glEnableClientState(GL_VERTEX_ARRAY);
-    glColor4f(1.0, 0.0, 0.0, 0.3);
+    glColor4f(1.0, 1.0, 0.0, 0.8);
     glDepthMask(GL_FALSE);
-	glDepthFunc(GL_LEQUAL);
-    glDisable(GL_DEPTH_TEST);
-	glLineWidth(4.0);
-    glDisable(GL_CULL_FACE);
+    glDepthFunc(GL_LEQUAL);
 	glPushMatrix();
     {
 		GLfloat vs[18];
@@ -428,20 +394,14 @@ void NETLizard_MakeShadowVolumeMesh(GL_NETLizard_3D_Mesh *r, const vector3_s *li
             vs[15] = VECTOR3_X(lpptr.b);
             vs[16] = VECTOR3_Y(lpptr.b);
             vs[17] = VECTOR3_Z(lpptr.b);
-//            for(int t = 0; t < 18; t++)
-//                printf("%f  ", vs[t]);
-//            printf("\n");
 
 			glVertexPointer(3, GL_FLOAT, 0, vs);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
-	glPopMatrix();
-	glLineWidth(1.0);
+    glPopMatrix();
 	glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
-	glEnable(GL_DEPTH_TEST);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-    glEnable(GL_CULL_FACE);
+    glColor4f(1.0, 1.0, 1.0, 1.0);
 	glDisableClientState(GL_VERTEX_ARRAY);
 #endif
 		// triangle 1
@@ -480,80 +440,104 @@ void NETLizard_MakeShadowVolumeMesh(GL_NETLizard_3D_Mesh *r, const vector3_s *li
         {
             r->vertex_data.index[o] = o;
         }
-
-#if 0
-	//glDisable(GL_DEPTH_TEST);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glColor4f(0.0, 1.0, 1.0, 0.2);
-	glDepthFunc(GL_LEQUAL);
-	glLineWidth(4.0);
-	glPushMatrix();
-	{
-		GLfloat vs[18];
-		// triangle 1
-		pa = m->points + k * 6;
-		memcpy(vs, pa->vertex, sizeof(GLfloat) * 3);
-		pa = m->points + k * 6 + 1;
-		memcpy(vs + 3, pa->vertex, sizeof(GLfloat) * 3);
-		pa = m->points + k * 6 + 2;
-		memcpy(vs + 6, pa->vertex, sizeof(GLfloat) * 3);
-
-		// triangle 2
-		pa = m->points + k * 6 + 3;
-		memcpy(vs + 9, pa->vertex, sizeof(GLfloat) * 3);
-		pa = m->points + k * 6 + 4;
-		memcpy(vs + 12, pa->vertex, sizeof(GLfloat) * 3);
-		pa = m->points + k * 6 + 5;
-		memcpy(vs + 15, pa->vertex, sizeof(GLfloat) * 3);
-
-			glVertexPointer(3, GL_FLOAT, 0, vs);
-			glDrawArrays(GL_TRIANGLES, 0, 6);
-	}
-	glPopMatrix();
-	glLineWidth(1.0);
-	glDepthFunc(GL_LESS);
-	glEnable(GL_DEPTH_TEST);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glDisableClientState(GL_VERTEX_ARRAY);
-#endif
 		k++;
 	}
 
-	if(method == SHADOW_Z_FAIL)
+    if(Cap)
 	{
         // cale top cap of shadow volume
         // using triangles of the mesh faces to lighting source
-
         vd = r->vertex_data.vertex + o;
         m = r->materials + 1;
         m->mode = GL_TRIANGLES;
-        m->index_count = tops.size();
+        m->index_count = tops.size() * 3;
         m->index_start = o;
 
         m = r->materials + 1;
-        for(k = 0; k < tops.size(); k += 3)
+        for(k = 0; k < tops.size(); k++)
 		{
-            const vector3_s &first = tops[k];
-            const vector3_s &sec = tops[k + 1];
-            const vector3_s &third = tops[k + 2];
-            pa = vd + k;
-            pa->position[0] = VECTOR3_X(first);
-            pa->position[1] = VECTOR3_Y(first);
-            pa->position[2] = VECTOR3_Z(first);
-            pa = vd + k + 1;
-            pa->position[0] = VECTOR3_X(sec);
-            pa->position[1] = VECTOR3_Y(sec);
-            pa->position[2] = VECTOR3_Z(sec);
-            pa = vd + k + 2;
-            pa->position[0] = VECTOR3_X(third);
-            pa->position[1] = VECTOR3_Y(third);
-            pa->position[2] = VECTOR3_Z(third);
+            const triangle_s &tri = tops[k];
+
+            if(SHADOW_CAP_OFFSET)
+            {
+                vector3_s dir_a = cale_light_direction(&(TRIANGLE_A(tri)), light_position, dirlight);
+                vector3_scalev(&dir_a, SHADOW_CAP_OFFSET);
+                dir_a = vector3_add(&(TRIANGLE_A(tri)), &dir_a);
+
+                vector3_s dir_b = cale_light_direction(&(TRIANGLE_B(tri)), light_position, dirlight);
+                vector3_scalev(&dir_b, SHADOW_CAP_OFFSET);
+                dir_b = vector3_add(&(TRIANGLE_B(tri)), &dir_b);
+
+                vector3_s dir_c = cale_light_direction(&(TRIANGLE_C(tri)), light_position, dirlight);
+                vector3_scalev(&dir_c, SHADOW_CAP_OFFSET);
+                dir_c = vector3_add(&(TRIANGLE_C(tri)), &dir_c);
+
+                pa = vd + k * 3;
+                pa->position[0] = VECTOR3_X(dir_a);
+                pa->position[1] = VECTOR3_Y(dir_a);
+                pa->position[2] = VECTOR3_Z(dir_a);
+                //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
+                pa = vd + k * 3 + 1;
+                pa->position[0] = VECTOR3_X(dir_b);
+                pa->position[1] = VECTOR3_Y(dir_b);
+                pa->position[2] = VECTOR3_Z(dir_b);
+                //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
+                pa = vd + k * 3 + 2;
+                pa->position[0] = VECTOR3_X(dir_c);
+                pa->position[1] = VECTOR3_Y(dir_c);
+                pa->position[2] = VECTOR3_Z(dir_c);
+            }
+            else
+            {
+                pa = vd + k * 3;
+                pa->position[0] = TRIANGLE_A_X(tri);
+                pa->position[1] = TRIANGLE_A_Y(tri);
+                pa->position[2] = TRIANGLE_A_Z(tri);
+                pa = vd + k * 3 + 1;
+                pa->position[0] = TRIANGLE_B_X(tri);
+                pa->position[1] = TRIANGLE_B_Y(tri);
+                pa->position[2] = TRIANGLE_B_Z(tri);
+                pa = vd + k * 3 + 2;
+                pa->position[0] = TRIANGLE_C_X(tri);
+                pa->position[1] = TRIANGLE_C_Y(tri);
+                pa->position[2] = TRIANGLE_C_Z(tri);
+            }
 
             int three = 3 + o;
             for(; o < three; o++)
             {
                 r->vertex_data.index[o] = o;
             }
+//#define _TEST_RENDER_SHADOW_VOLUME_TOP
+#ifdef _TEST_RENDER_SHADOW_VOLUME_TOP
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glColor4f(1.0, 0.0, 0.0, 0.5);
+            glDepthMask(GL_FALSE);
+            glDepthFunc(GL_LEQUAL);
+            glPushMatrix();
+            {
+                GLfloat vs[9];
+                vs[0] = TRIANGLE_A_X(tri);
+                vs[1] = TRIANGLE_A_Y(tri);
+                vs[2] = TRIANGLE_A_Z(tri);
+
+                vs[3] = TRIANGLE_B_X(tri);
+                vs[4] = TRIANGLE_B_Y(tri);
+                vs[5] = TRIANGLE_B_Z(tri);
+
+                vs[6] = TRIANGLE_C_X(tri);
+                vs[7] = TRIANGLE_C_Y(tri);
+                vs[8] = TRIANGLE_C_Z(tri);
+
+                glVertexPointer(3, GL_FLOAT, 0, vs);
+                glDrawArrays(GL_TRIANGLES, 0, 3);
+            }
+            glPopMatrix();
+            glDepthFunc(GL_LESS);
+            glDepthMask(GL_TRUE);
+            glColor4f(1.0, 1.0, 1.0, 1.0);
+            glDisableClientState(GL_VERTEX_ARRAY);
+#endif
 		}
 
         // cale bottom cap of shadow volume
@@ -562,34 +546,38 @@ void NETLizard_MakeShadowVolumeMesh(GL_NETLizard_3D_Mesh *r, const vector3_s *li
         vd = r->vertex_data.vertex + o;
         m = r->materials + 2;
         m->mode = GL_TRIANGLES;
-        m->index_count = bottoms.size();
+        m->index_count = bottoms.size() * 3;
         m->index_start = o;
 
-        for(k = 0; k < bottoms.size(); k += 3)
-		{
-            const vector3_s &first = bottoms[k];
-            const vector3_s &sec = bottoms[k + 1];
-            const vector3_s &third = bottoms[k + 2];
+        for(k = 0; k < bottoms.size(); k++)
+        {
+            const triangle_s &tri = bottoms[k];
 
-			// point lighting
-            vector3_s dir_a = cale_light_direction(&first, light_position, dirlight);
-            vector3_scalev(&dir_a, SHADOW_VOLUME_LENGTH);
-            vector3_s dir_b = cale_light_direction(&sec, light_position, dirlight);
-            vector3_scalev(&dir_b, SHADOW_VOLUME_LENGTH);
-            vector3_s dir_c = cale_light_direction(&third, light_position, dirlight);
-            vector3_scalev(&dir_c, SHADOW_VOLUME_LENGTH);
+            vector3_s dir_a = cale_light_direction(&(TRIANGLE_A(tri)), light_position, dirlight);
+            vector3_scalev(&dir_a, SHADOW_VOLUME_LENGTH + SHADOW_CAP_OFFSET);
+            dir_a = vector3_add(&(TRIANGLE_A(tri)), &dir_a);
 
-            pa = vd + k;
+            vector3_s dir_b = cale_light_direction(&(TRIANGLE_B(tri)), light_position, dirlight);
+            vector3_scalev(&dir_b, SHADOW_VOLUME_LENGTH + SHADOW_CAP_OFFSET);
+            dir_b = vector3_add(&(TRIANGLE_B(tri)), &dir_b);
+
+            vector3_s dir_c = cale_light_direction(&(TRIANGLE_C(tri)), light_position, dirlight);
+            vector3_scalev(&dir_c, SHADOW_VOLUME_LENGTH + SHADOW_CAP_OFFSET);
+            dir_c = vector3_add(&(TRIANGLE_C(tri)), &dir_c);
+
+            qSwap(dir_a, dir_b);
+
+            pa = vd + k * 3;
             pa->position[0] = VECTOR3_X(dir_a);
             pa->position[1] = VECTOR3_Y(dir_a);
             pa->position[2] = VECTOR3_Z(dir_a);
             //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
-            pa = vd + k + 1;
+            pa = vd + k * 3 + 1;
             pa->position[0] = VECTOR3_X(dir_b);
             pa->position[1] = VECTOR3_Y(dir_b);
             pa->position[2] = VECTOR3_Z(dir_b);
             //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
-            pa = vd + k + 2;
+            pa = vd + k * 3 + 2;
             pa->position[0] = VECTOR3_X(dir_c);
             pa->position[1] = VECTOR3_Y(dir_c);
             pa->position[2] = VECTOR3_Z(dir_c);
@@ -600,6 +588,36 @@ void NETLizard_MakeShadowVolumeMesh(GL_NETLizard_3D_Mesh *r, const vector3_s *li
             {
                 r->vertex_data.index[o] = o;
             }
+//#define _TEST_RENDER_SHADOW_VOLUME_BOTTOM
+#ifdef _TEST_RENDER_SHADOW_VOLUME_BOTTOM
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glColor4f(0.0, 0.0, 1.0, 1);
+            glDepthMask(GL_FALSE);
+            glDepthFunc(GL_LEQUAL);
+            glPushMatrix();
+            {
+                GLfloat vs[9];
+                vs[0] = VECTOR3_X(dir_a);
+                vs[1] = VECTOR3_Y(dir_a);
+                vs[2] = VECTOR3_Z(dir_a);
+
+                vs[3] = VECTOR3_X(dir_b);
+                vs[4] = VECTOR3_Y(dir_b);
+                vs[5] = VECTOR3_Z(dir_b);
+
+                vs[6] = VECTOR3_X(dir_c);
+                vs[7] = VECTOR3_Y(dir_c);
+                vs[8] = VECTOR3_Z(dir_c);
+
+                glVertexPointer(3, GL_FLOAT, 0, vs);
+                glDrawArrays(GL_TRIANGLES, 0, 3);
+            }
+            glPopMatrix();
+            glDepthFunc(GL_LESS);
+            glDepthMask(GL_TRUE);
+            glColor4f(1.0, 1.0, 1.0, 1.0);
+            glDisableClientState(GL_VERTEX_ARRAY);
+#endif
 		}
 	}
 
