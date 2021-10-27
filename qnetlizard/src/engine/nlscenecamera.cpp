@@ -374,6 +374,7 @@ void NLSceneCamera::UpdateDirection()
     Mesa_glTransform_row(VECTOR3_V(m_direction), v, &m_normalMatrix);
 
     vector3_crossv(&m_right, &m_direction, &m_up);
+    vector3_normalizev(&m_right);
 }
 
 void NLSceneCamera::SetZIsUp(bool b)

@@ -31,6 +31,7 @@ public:
     NLGETTER(scale) NLVector3 Scale() const;
     NLGETTER(direction) NLVector3 Direction() const;
     NLGETTER(up) NLVector3 Up() const;
+    NLGETTER(right) NLVector3 Right() const;
     NLGETTER(matrix) const NLMatrix4 * LocalMatrix() const;
     NLGETTER(globalMatrix) const NLMatrix4 * GlobalMatrix() const;
     NLGETTER(normalMatrix) const NLMatrix4 * NormalMatrix() const;
@@ -75,6 +76,7 @@ protected:
     virtual void Update(float delta);
     void SetContainer(NLActorContainer *container);
     void SetZIsUp(bool b);
+    void SetFixedUp(bool b);
     virtual void InitProperty();
     
 signals:
@@ -98,6 +100,7 @@ private:
     NLComponentContainer *m_components;
     NLActorContainer *m_children;
     bool m_zIsUp;
+    bool m_fixedUp;
     NLVector3 m_position;
     NLVector3 m_rotation;
     NLVector3 m_scale;

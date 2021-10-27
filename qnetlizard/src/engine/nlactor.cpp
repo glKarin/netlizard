@@ -25,7 +25,8 @@ NLActor::NLActor(NLActor *parent) :
     m_renderable(0),
     m_components(0),
     m_children(0),
-    m_zIsUp(false)
+    m_zIsUp(false),
+    m_fixedUp(true)
 {
     Construct();
 }
@@ -35,7 +36,8 @@ NLActor::NLActor(const NLPropperties &prop, NLActor *parent) :
     m_renderable(0),
     m_components(0),
     m_children(0),
-    m_zIsUp(false)
+    m_zIsUp(false),
+    m_fixedUp(true)
 {
     Construct();
 }
@@ -45,7 +47,8 @@ NLActor::NLActor(NLScene *scene, NLActor *parent) :
     m_renderable(0),
     m_components(0),
     m_children(0),
-    m_zIsUp(false)
+    m_zIsUp(false),
+    m_fixedUp(true)
 {
     Construct();
 }
@@ -55,7 +58,8 @@ NLActor::NLActor(NLScene *scene, const NLPropperties &prop, NLActor *parent) :
     m_renderable(0),
     m_components(0),
     m_children(0),
-    m_zIsUp(false)
+    m_zIsUp(false),
+    m_fixedUp(true)
 {
     Construct();
 }
@@ -463,6 +467,11 @@ NLVector3 NLActor::Up() const
     return m_up;
 }
 
+NLVector3 NLActor::Right() const
+{
+    return m_right;
+}
+
 NLActor * NLActor::Move(const NLVector3 &unit)
 {
     if(vector3_iszero(&unit))
@@ -593,10 +602,17 @@ void NLActor::UpdateChildrenMatrix()
 
 void NLActor::UpdateDirection()
 {
+    if(!m_fixedUp)
+    {
+        NLVector3 up = m_zIsUp ? InitUp_z : InitUp_y;
+        Mesa_glTransform_row(VECTOR3_V(m_up), VECTOR3_V(up), &m_normalMatrix);
+    }
+
     float v[] = {0, 0, -1};
     Mesa_glTransform_row(VECTOR3_V(m_direction), v, &m_normalMatrix);
 
     vector3_crossv(&m_right, &m_direction, &m_up);
+    vector3_normalizev(&m_right);
 }
 
 void NLActor::SetZIsUp(bool b)
@@ -605,7 +621,21 @@ void NLActor::SetZIsUp(bool b)
     {
         m_zIsUp = b;
         m_up = m_zIsUp ? InitUp_z : InitUp_y;
-        UpdateMatrix();
+        //UpdateMatrix();
+        UpdateDirection();
+    }
+}
+
+void NLActor::SetFixedUp(bool b)
+{
+    if(m_fixedUp != b)
+    {
+        m_fixedUp = b;
+        if(m_fixedUp)
+        {
+            m_up = m_zIsUp ? InitUp_z : InitUp_y;
+        }
+        //UpdateMatrix();
         UpdateDirection();
     }
 }
@@ -628,5 +658,6 @@ void NLActor::InitProperty()
     VECTOR3_Z(v) = GetProperty<float>("roll", 0);
     SetRotation(v);
     //SetZIsUp(GetProperty<bool>("z_is_up", false));
+    //SetFixedUp(GetProperty<bool>("fixed_up", true));
 }
 
