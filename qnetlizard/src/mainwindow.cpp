@@ -23,6 +23,7 @@
 #include "qdef.h"
 #include "settings.h"
 #include "settingdialog.h"
+#include "changelogdialog.h"
 
 #ifdef _DEV_TEST
 #include "testviewer.h"
@@ -120,6 +121,10 @@ void MainWindow::MenuActionSlot(QAction *action)
     else if(type == "setting")
     {
         SettingDialog::Show(this);
+    }
+    else if(type == "changelog")
+    {
+        ChangelogDialog::Show(this);
     }
     else
     {

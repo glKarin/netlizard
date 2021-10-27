@@ -10,6 +10,7 @@
 #define APP_VER "2.0.0harmattan9"
 #define APP_CODE "ct3d"
 #define APP_RELEASE 1
+#define APP_EMAIL "beyondk2000@gmail.com"
 
 #define APP_GITHUB "https://github.com/glKarin/netlizard"
 
@@ -37,5 +38,8 @@
 #define _I(x) "<i>"x"</i>"
 #define _F(x, color) "<font color=\""color"\">"x"</font>"
 #define _S(x, size) "<font size=\""size"\">"x"</font>"
+
+#define BUILD_TIME QLocale(QLocale::English).toDateTime(__DATE__ " " __TIME__, "MMM dd yyyy hh:mm:ss")
+#define BUILD_TIMEZONE "+0800" // zh_cn
 
 #endif // _KARIN_QDEF_H

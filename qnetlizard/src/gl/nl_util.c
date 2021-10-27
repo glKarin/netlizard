@@ -13,6 +13,9 @@ int NETLizard_GetMapRenderScenes(const GL_NETLizard_3D_Model *model, int scenes[
     {
         const GL_NETLizard_3D_Mesh *mesh = model->meshes + i;
         bound_s bound = BOUNDV(mesh->box.min, mesh->box.max);
+        vector3_s pos = VECTOR3V(mesh->position);
+        vector3_addv_self(&BOUND_MIN(bound), &pos);
+        vector3_addv_self(&BOUND_MAX(bound), &pos);
         int r = bound_in_frustum(&bound, frustum);
         if(r)
         {
@@ -38,6 +41,7 @@ void NETLizard_GetNETLizard3DMapBound(const GL_NETLizard_3D_Model *model, int *s
     float max_z = 0.0;
     unsigned int i;
     unsigned int c;
+    GLboolean inited = GL_FALSE;
 
     if(scenes)
         c = count;
@@ -51,7 +55,23 @@ void NETLizard_GetNETLizard3DMapBound(const GL_NETLizard_3D_Model *model, int *s
         else
             s = i;
         const GL_NETLizard_3D_Mesh *mesh = model->meshes + s;
-        if(i == 0)
+        if(inited)
+        {
+            if(mesh->box.min[0] < min_x)
+                min_x = mesh->box.min[0];
+            if(mesh->box.min[1] < min_y)
+                min_y = mesh->box.min[1];
+            if(mesh->box.min[2] < min_z)
+                min_z = mesh->box.min[2];
+
+            if(mesh->box.max[0] > max_x)
+                max_x = mesh->box.max[0];
+            if(mesh->box.max[1] > max_y)
+                max_y = mesh->box.max[1];
+            if(mesh->box.max[2] > max_z)
+                max_z = mesh->box.max[2];
+        }
+        else
         {
             min_x = mesh->box.min[0];
             min_y = mesh->box.min[1];
@@ -59,21 +79,78 @@ void NETLizard_GetNETLizard3DMapBound(const GL_NETLizard_3D_Model *model, int *s
             max_x = mesh->box.max[0];
             max_y = mesh->box.max[1];
             max_z = mesh->box.max[2];
+            inited = GL_TRUE;
             continue;
         }
-        if(mesh->box.min[0] < min_x)
-            min_x = mesh->box.min[0];
-        if(mesh->box.min[1] < min_y)
-            min_y = mesh->box.min[1];
-        if(mesh->box.min[2] < min_z)
-            min_z = mesh->box.min[2];
+    }
 
-        if(mesh->box.max[0] > max_x)
-            max_x = mesh->box.max[0];
-        if(mesh->box.max[1] > max_y)
-            max_y = mesh->box.max[1];
-        if(mesh->box.max[2] > max_z)
-            max_z = mesh->box.max[2];
+    BOUNDV_MIN_X(box) = min_x;
+    BOUNDV_MIN_Y(box) = min_y;
+    BOUNDV_MIN_Z(box) = min_z;
+    BOUNDV_MAX_X(box) = max_x;
+    BOUNDV_MAX_Y(box) = max_y;
+    BOUNDV_MAX_Z(box) = max_z;
+}
+
+void NETLizard_GetNETLizard3DMeshBound(const GL_NETLizard_3D_Mesh *meshs, unsigned int count, bound_s *box)
+{
+    if(!meshs || !count)
+        return;
+
+    float min_x = 0.0;
+    float min_y = 0.0;
+    float min_z = 0.0;
+    float max_x = 0.0;
+    float max_y = 0.0;
+    float max_z = 0.0;
+    unsigned int i;
+    unsigned int c;
+    unsigned int k;
+    GL_NETLizard_3D_Material *m;
+    GL_NETLizard_3D_Vertex *v;
+    GLushort index;
+    GLboolean inited = GL_FALSE;
+
+    for(i = 0; i < count; i++)
+    {
+        const GL_NETLizard_3D_Mesh *mesh = meshs + i;
+        for(c = 0; c < mesh->count; c++)
+        {
+            m = mesh->materials + c;
+            for(k = 0; k < m->index_count; k++)
+            {
+                index = mesh->vertex_data.index[m->index_start + k];
+                v = mesh->vertex_data.vertex + index;
+                if(inited)
+                {
+                    if(v->position[0] < min_x)
+                        min_x = v->position[0];
+                    else if(v->position[0] > max_x)
+                        max_x = v->position[0];
+
+                    if(v->position[1] < min_y)
+                        min_y = v->position[1];
+                    else if(v->position[1] > max_y)
+                        max_y = v->position[1];
+
+                    if(v->position[2] < min_z)
+                        min_z = v->position[2];
+                    else if(v->position[2] > max_z)
+                        max_z = v->position[2];
+                }
+                else
+                {
+                    min_x = v->position[0];
+                    min_y = v->position[1];
+                    min_z = v->position[2];
+                    max_x = v->position[0];
+                    max_y = v->position[1];
+                    max_z = v->position[2];
+                    inited = GL_TRUE;
+                    continue;
+                }
+            }
+        }
     }
 
     BOUNDV_MIN_X(box) = min_x;

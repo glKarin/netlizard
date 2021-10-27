@@ -101,6 +101,7 @@ const HomeCellItemMap & IndexViewer::ActionMap()
         list
                 << HomeCellItem("&Setting", "setting")
                            << HomeCellItem("&Help", "help")
+                           << HomeCellItem("&Changelog", "changelog")
                               << HomeCellItem("&About", "about")
                                  ;
         _map.insert("&Others", list);

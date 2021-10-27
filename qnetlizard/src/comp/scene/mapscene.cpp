@@ -165,7 +165,9 @@ void MapScene::paintGL()
         glDepthMask(GL_TRUE);
     }
 
+    //glDisable(GL_CULL_FACE);
     CurrentCamera()->Render(m_mapActor);
+    //glEnable(GL_CULL_FACE);
     CurrentCamera()->Render(m_shadowActor);
 
     glFlush();

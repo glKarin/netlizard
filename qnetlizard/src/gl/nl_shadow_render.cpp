@@ -13,7 +13,8 @@
     glStencilFunc(GL_ALWAYS, 0, ~0U); \
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); \
     glDisable(GL_BLEND); \
-    glDisable(GL_ALPHA_TEST);
+    glDisable(GL_ALPHA_TEST); \
+    glClear(GL_STENCIL_BUFFER_BIT);
 
 
 #define SHADOW_END \
@@ -87,14 +88,13 @@ void NETLizard_RenderNETLizardModelSceneShadow(const GL_NETLizard_3D_Model *map_
 
     GLboolean all = !scenes || count == 0;
 
-	SHADOW_BEGIN
-
     if(all)
     {
         NETLizard_RenderNETLizardModelShadow(map_model, light_position, dirlight, method);
     }
     else
     {
+        SHADOW_BEGIN
         c = map_model->count;
         for(i = 0; i < count; i++)
         {
@@ -109,13 +109,13 @@ void NETLizard_RenderNETLizardModelSceneShadow(const GL_NETLizard_3D_Model *map_
                     continue;
                 if(im->item_type == Item_Box_Type)
                     continue;
-                NETLizard_RenderMeshShadow(im, light_position, dirlight, method);
+                NETLizard_RenderMeshShadow(im, light_position, dirlight, method, 0);
             }
+            //NETLizard_RenderMeshShadow(m, light_position, dirlight, method, 1);
         }
+        SHADOW_END
+                render_shadow_mask();
     }
-
-    SHADOW_END
-            render_shadow_mask();
 }
 
 void NETLizard_RenderNETLizardModelShadow(const GL_NETLizard_3D_Model *map_model, const vector3_s *light_position, int dirlight, int method)
@@ -128,23 +128,24 @@ void NETLizard_RenderNETLizardModelShadow(const GL_NETLizard_3D_Model *map_model
     if(!map_model || !light_position)
 		return;
 	if(!map_model->item_meshes)
-		return;
+        return;
 
     SHADOW_BEGIN
 
-		for(i = 0; i < map_model->count; i++)
-		{
-			m = map_model->meshes + i;
-			for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++) 
-			{
-				im = map_model->item_meshes + j;
+        for(i = 0; i < map_model->count; i++)
+        {
+            m = map_model->meshes + i;
+            for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
+            {
+                im = map_model->item_meshes + j;
                 if(!im->materials) // REDO
-					continue;
-				if(im->item_type == Item_Box_Type)
                     continue;
-                NETLizard_RenderMeshShadow(im, light_position, dirlight, method);
-			}
-		}
+                if(im->item_type == Item_Box_Type)
+                    continue;
+                NETLizard_RenderMeshShadow(im, light_position, dirlight, method, 0);
+            }
+            //NETLizard_RenderMeshShadow(m, light_position, dirlight, method, 1);
+        }
 
     SHADOW_END
             render_shadow_mask();
@@ -210,7 +211,7 @@ void NETLizard_RenderNETLizard3DMeshShadow(const GL_NETLizard_3D_Mesh *m, const 
 
     SHADOW_BEGIN
 
-    NETLizard_RenderMeshShadow(m, light_position, dirlight, method);
+    NETLizard_RenderMeshShadow(m, light_position, dirlight, method, 0);
 
     SHADOW_END
             render_shadow_mask();

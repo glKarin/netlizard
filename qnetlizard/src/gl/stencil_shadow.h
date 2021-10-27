@@ -7,6 +7,6 @@
 #define SHADOW_Z_PASS 1
 #define SHADOW_Z_FAIL 2
 
-void NETLizard_RenderMeshShadow(const GL_NETLizard_3D_Mesh *mesh, const vector3_s *light_position, int dirlight, int method);
+void NETLizard_RenderMeshShadow(const GL_NETLizard_3D_Mesh *mesh, const vector3_s *light_position, int dirlight, int method, int invert);
 
 #endif

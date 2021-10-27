@@ -198,22 +198,28 @@ static void cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_M
             Mesa_glTransform(point->position, nl_vertex->position, &mat);
             Mesa_glTransform_row(point->normal, nl_vertex->normal, &nor_mat);
             //memcpy(point->texcoord, nl_vertex->texcoord, sizeof(GLfloat) * 2);
-//            if(invert)
-//            {
-//                point->normal[0] = -point->normal[0];
-//                point->normal[1] = -point->normal[1];
-//                point->normal[2] = -point->normal[2];
-//            }
+            if(invert)
+            {
+                point->normal[0] = -point->normal[0];
+                point->normal[1] = -point->normal[1];
+                point->normal[2] = -point->normal[2];
+            }
 		}
     }
 
-//	if(invert)
-//	{
-//		for(i = 0; i < (unsigned int)r->count; i += 3)
-//		{
-//			NL_SWAP(r->points[i + 1], r->points[i + 2], point_s);
-//		}
-//	}
+    if(invert)
+    {
+        for(i = 0; i < r->count; i++)
+        {
+            nl_mat = r->materials + i;
+            for(j = 0; j < nl_mat->index_count; j += 3)
+            {
+                m = nl_indexs[nl_mat->index_start + j];
+                nl_indexs[nl_mat->index_start + j] = nl_indexs[nl_mat->index_start + j + 1];
+                nl_indexs[nl_mat->index_start + j + 1] = m;
+            }
+        }
+    }
 
     Mesa_FreeGLMatrix(&mat);
     Mesa_FreeGLMatrix(&nor_mat);
@@ -808,14 +814,14 @@ __Exit:
     delete_GL_NETLizard_3D_Mesh(&vol);
 }
 
-void NETLizard_RenderMeshShadow(const GL_NETLizard_3D_Mesh *mesh, const vector3_s *light_position, int dirlight, int method)
+void NETLizard_RenderMeshShadow(const GL_NETLizard_3D_Mesh *mesh, const vector3_s *light_position, int dirlight, int method, int invert)
 {
     if(!mesh || !light_position)
 		return;
 
     GL_NETLizard_3D_Mesh m;
 
-    cale_mesh_transform(&m, mesh, 0);
+    cale_mesh_transform(&m, mesh, invert);
 
     render_shadow_volume_mesh(&m, light_position, dirlight, method);
 

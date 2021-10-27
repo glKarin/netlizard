@@ -33,7 +33,7 @@ void NETLizardMapModelRenderer::Render()
     {
         if(m_cull)
         {
-#if 0
+#if 1
             if(m_scenes)
             {
                 qDebug() << "Render scene count: " << m_sceneCount;

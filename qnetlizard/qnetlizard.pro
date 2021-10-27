@@ -22,7 +22,8 @@ HEADERS += \
     src/misc/logoutput.h \
     src/misc/settings.h \
     src/comp/component/simplelightsourcecomponent.h \
-    src/comp/simplelightsourceactor.h
+    src/comp/simplelightsourceactor.h \
+    src/changelogdialog.h
 
 SOURCES += \
     main.cpp \
@@ -30,7 +31,8 @@ SOURCES += \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
     src/comp/component/simplelightsourcecomponent.cpp \
-    src/comp/simplelightsourceactor.cpp
+    src/comp/simplelightsourceactor.cpp \
+    src/changelogdialog.cpp
 
 # Widget
 HEADERS += \

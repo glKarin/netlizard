@@ -7,7 +7,9 @@
 #include "netlizard.h"
 #include "netlizard_3d.h"
 #include "lib/vector3.h"
+#include "lib/bound.h"
 #include "nl_texture.h"
+#include "nl_util.h"
 
 GLboolean NETLizard_MakeGLRE3DModel(const NETLizard_RE3D_Model *model, const char *resource_path, GL_NETLizard_3D_Model *glmodel)
 {
@@ -86,17 +88,15 @@ GLboolean NETLizard_MakeGLRE3DModel(const NETLizard_RE3D_Model *model, const cha
         m->position[1] = mesh->translation[1];
         m->position[2] = mesh->translation[2];
 
+        bound_s bound;
 
-//		vector3_s min = {0.0, 0.0, 0.0};
-//		vector3_s max = {0.0, 0.0, 0.0};
-//		Algo_ComputeAABBFromOriginalPointSet(mesh->vertex, &min, &max);
-//		//nlCastAABB(mesh->vertex, &min.x, &min.y, &min.z, &max.x, &max.y, &max.z);
-//		m->ortho[0] = max.x + m->translations[0];
-//		m->ortho[1] = max.y + m->translations[1];
-//		m->ortho[2] = max.z + m->translations[2];
-//		m->ortho[3] = min.x + m->translations[0];
-//		m->ortho[4] = min.y + m->translations[1];
-//		m->ortho[5] = min.z + m->translations[2];
+        NETLizard_GetNETLizard3DMeshBound(m, 1, &bound);
+        m->box.min[0] = BOUND_MIN_X(bound)/* + mesh->translation[0]*/;
+        m->box.min[1] = BOUND_MIN_Y(bound)/* + mesh->translation[1]*/;
+        m->box.min[2] = BOUND_MIN_Z(bound)/* + mesh->translation[2]*/;
+        m->box.max[0] = BOUND_MAX_X(bound)/* + mesh->translation[0]*/;
+        m->box.max[1] = BOUND_MAX_Y(bound)/* + mesh->translation[1]*/;
+        m->box.max[2] = BOUND_MAX_Z(bound)/* + mesh->translation[2]*/;
 	}
 
     const int texes_count = model->texes.count;
