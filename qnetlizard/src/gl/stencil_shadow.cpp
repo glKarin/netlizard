@@ -27,6 +27,12 @@
 typedef QList<line_s> LineList;
 typedef QList<vector3_s> Vector3List;
 typedef QList<triangle_s> TriangleList;
+typedef struct _Shadow_Volume_s
+{
+    LineList lines;
+    TriangleList tops;
+    TriangleList bottoms;
+} Shadow_Volume_s;
 
 static int compare_vector3(const vector3_s *a, const vector3_s *b)
 {
@@ -49,7 +55,7 @@ static int compare_line_segment(const line_s *l1, const line_s *l2)
 {
     if(!l1 || !l2)
         return 0;
-    return(((compare_vector3(&l1->a, &l2->a) && compare_vector3(&l1->b, &l2->b)) || (compare_vector3(&l1->a, &l2->b) && compare_vector3(&l1->b, &l2->a))) ? 1 : 0);
+    return(((compare_vector3(&LINEV_A(l1), &LINEV_A(l2)) && compare_vector3(&LINEV_B(l1), &LINEV_B(l1))) || (compare_vector3(&LINEV_A(l1), &LINEV_B(l2)) && compare_vector3(&LINEV_B(l1), &LINEV_A(l2)))) ? 1 : 0);
 }
 
 static int push_edge_line(LineList &list, const line_s *lp)
@@ -60,7 +66,7 @@ static int push_edge_line(LineList &list, const line_s *lp)
     for(o = 0; o < list.size(); o++) // find in lines list
     {
         const line_s &line = list[o];
-        if(LINECMP(lp, &line)) // if exists, remove this line, then continue
+        if(LINECMP(lp, &line))
         {
             //printf("%d exist\n", i);
             has = 1;
@@ -68,7 +74,7 @@ static int push_edge_line(LineList &list, const line_s *lp)
         }
     }
 
-    if(has)
+    if(has) // if exists, remove this line
     {
         list.removeAt(o);
     }
@@ -84,6 +90,8 @@ static void render_edge_lines(const LineList &lines)
     glDisable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
     glEnableClientState(GL_VERTEX_ARRAY);
+    GLfloat color[4];
+    glGetFloatv(GL_CURRENT_COLOR, color);
     glColor4f(0.0, 0.0, 1.0, 1.0);
     glDepthFunc(GL_LEQUAL);
     glLineWidth(2);
@@ -110,11 +118,11 @@ static void render_edge_lines(const LineList &lines)
     glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
-    glColor4f(1.0, 1.0, 1.0, 1.0);
+    glColor4fv(color);
     glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-vector3_s cale_light_direction(const vector3_s *v, const vector3_s *lightpos, int dirlight)
+static vector3_s cale_light_direction(const vector3_s *v, const vector3_s *lightpos, int dirlight)
 {
 	int d;
 	vector3_s r = VECTOR3(0, 0, 0);
@@ -138,13 +146,12 @@ vector3_s cale_light_direction(const vector3_s *v, const vector3_s *lightpos, in
 	return r;
 }
 
-void NETLizard_CaleMeshTransform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_Mesh *nl_mesh, int invert)
+static void cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_Mesh *nl_mesh, int invert)
 {
     GLmatrix nor_mat;
     GLmatrix mat;
-	int count;
 	unsigned int i, j;
-	int m, n;
+    int m;
     GL_NETLizard_3D_Vertex *point;
 	const GL_NETLizard_3D_Vertex *nl_vertex;
 	GLushort *nl_indexs;
@@ -156,31 +163,30 @@ void NETLizard_CaleMeshTransform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_
     Mesa_AllocGLMatrix(&mat);
     Mesa_AllocGLMatrix(&nor_mat);
     memset(r, 0, sizeof(GL_NETLizard_3D_Mesh));
-	count = 0;
-	for(i = 0; i < nl_mesh->count; i++)
-	{
-		count += nl_mesh->materials[i].index_count;
-	}
-    r->count = 1;
-    r->materials = (GL_NETLizard_3D_Material *)calloc(1, sizeof(GL_NETLizard_3D_Material));
-    r->materials[0].mode = GL_TRIANGLES;
-    r->materials[0].index_start = 0;
-    r->materials[0].index_count = count;
-    r->vertex_data.index_count = count;
-    r->vertex_data.index = (GLushort *)calloc(count, sizeof(GLushort));
-    r->vertex_data.vertex_count = count;
-    r->vertex_data.vertex = (GL_NETLizard_3D_Vertex *)calloc(count, sizeof(GL_NETLizard_3D_Vertex));
+    r->count =  nl_mesh->count;
+    r->materials = (GL_NETLizard_3D_Material *)calloc( nl_mesh->count, sizeof(GL_NETLizard_3D_Material));
+    for(i = 0; i < nl_mesh->count; i++) // must GL_TRIANGLE
+    {
+        r->materials[i].index_start = nl_mesh->materials[i].index_start;
+        r->materials[i].index_count = nl_mesh->materials[i].index_count;
+        r->materials[i].mode = GL_TRIANGLES;
+        r->materials[i].tex_index = 0;
+    }
+    r->vertex_data.index_count = nl_mesh->vertex_data.index_count;
+    r->vertex_data.index = (GLushort *)calloc(nl_mesh->vertex_data.index_count, sizeof(GLushort));
+    memcpy(r->vertex_data.index, nl_mesh->vertex_data.index, sizeof(GLushort) * nl_mesh->vertex_data.index_count);
+    r->vertex_data.vertex_count = nl_mesh->vertex_data.vertex_count;
+    r->vertex_data.vertex = (GL_NETLizard_3D_Vertex *)calloc(nl_mesh->vertex_data.vertex_count, sizeof(GL_NETLizard_3D_Vertex));
 
-	n = 0;
     nl_indexs = nl_mesh->vertex_data.index;
 	for(i = 0; i < nl_mesh->count; i++)
 	{
 		nl_mat = nl_mesh->materials + i;
         for(j = 0; j < nl_mat->index_count; j++)
-		{
-            point = r->vertex_data.vertex + n;
+        {
             m = nl_indexs[nl_mat->index_start + j];
             nl_vertex = nl_mesh->vertex_data.vertex + m;
+            point = r->vertex_data.vertex + m;
 
             Mesa_glLoadIdentity(&mat);
             Mesa_glTranslate(&mat, nl_mesh->position[0], nl_mesh->position[1], nl_mesh->position[2]);
@@ -191,16 +197,13 @@ void NETLizard_CaleMeshTransform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_
 
             Mesa_glTransform(point->position, nl_vertex->position, &mat);
             Mesa_glTransform_row(point->normal, nl_vertex->normal, &nor_mat);
-            memcpy(point->texcoord, nl_vertex->texcoord, sizeof(GLfloat) * 2);
+            //memcpy(point->texcoord, nl_vertex->texcoord, sizeof(GLfloat) * 2);
 //            if(invert)
 //            {
 //                point->normal[0] = -point->normal[0];
 //                point->normal[1] = -point->normal[1];
 //                point->normal[2] = -point->normal[2];
 //            }
-
-            r->vertex_data.index[n] = n;
-			n++;
 		}
     }
 
@@ -221,7 +224,7 @@ void NETLizard_CaleMeshTransform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_
     glLineWidth(1);
     glPointSize(2);
 	GLfloat nv[6];
-    for(i = 0; i < r->materials->index_count; i++)
+    for(i = 0; i < r->vertex_data.vertex_count; i++)
     {
         vector3_s rv = VECTOR3V(r->vertex_data.vertex[i].position);
         nv[0] = VECTOR3_X(rv);
@@ -249,76 +252,100 @@ void NETLizard_CaleMeshTransform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_
 }
 
 // cale shadow volume
-void NETLizard_MakeShadowVolumeMesh(GL_NETLizard_3D_Mesh *r, const vector3_s *light_position, const int dirlight, const GL_NETLizard_3D_Mesh *mat, int method)
+static void cale_mesh_volume_data(Shadow_Volume_s *r, const vector3_s *light_position, const int dirlight, const GL_NETLizard_3D_Mesh *mat, int method)
 {
-	int has;
-    line_s lp;
-    int i, k, n, o;
-    GL_NETLizard_3D_Vertex *pa;
-    GL_NETLizard_3D_Vertex *vd;
+    int has;
+    int i, j, n;
+    const GL_NETLizard_3D_Vertex *point;
     GL_NETLizard_3D_Material *m;
-    GLfloat *v;
+    const GLfloat *v;
+    GLushort index1, index2, index3;
 
     if(!r || !light_position || !mat || !mat->count)
 		return;
 
-    LineList lines;
-    TriangleList tops;
-    const int Cap = method == SHADOW_Z_FAIL || 1 ? 1 : 0;
+    const GLboolean Cap = method == SHADOW_Z_FAIL || 1 ? GL_TRUE : GL_FALSE;
 
-    memset(r, 0, sizeof(GL_NETLizard_3D_Mesh));
-    r->count = Cap ? 3 : 1; // top[1] bottom[2] caps, and side[0]
-    r->materials = (GL_NETLizard_3D_Material *)calloc(r->count, sizeof(GL_NETLizard_3D_Material));
+    for(i = 0; i < mat->count; i++)
+    {
+        m = mat->materials + i;
+        for(j = 0; j < m->index_count; j += 3)
+        {
+            index1 = mat->vertex_data.index[m->index_start + j];
+            index2 = mat->vertex_data.index[m->index_start + j + 1];
+            index3 = mat->vertex_data.index[m->index_start + j + 2];
+            const GL_NETLizard_3D_Vertex *pa[] = {
+                mat->vertex_data.vertex + index1,
+                mat->vertex_data.vertex + index2,
+                mat->vertex_data.vertex + index3,
+            };
 
-    for(i = 0; i < mat->vertex_data.vertex_count / 3; i++) // cale triangle
-	{
-        pa = mat->vertex_data.vertex + (i * 3);
-        v = pa->position;
-		vector3_s nor = VECTOR3V(pa->normal);
-		vector3_s p = VECTOR3V(v);
-        vector3_s p2l = cale_light_direction(&p, light_position, dirlight);
-        vector3_invertv(&p2l);
-        float dot_p = vector3_dot(&p2l, &nor);
-		//qDebug()<<i<<nor<<p<<dot_p;
-		if(dot_p > 0.0) // face to light source
-		{
-			for(n = 0; n < 3; n++) // 3 points of triangle
+            point = pa[0];
+            v = point->position;
+            vector3_s nor = VECTOR3V(point->normal);
+            vector3_s p = VECTOR3V(v);
+            vector3_s p2l = cale_light_direction(&p, light_position, dirlight);
+            vector3_invertv(&p2l);
+            float dot_p = vector3_dot(&p2l, &nor);
+
+            if(dot_p > 0.0) // face to light source
             {
-                int next_index = (n + 1) % 3;
-                LINE_A_X(lp) = pa[n].position[0];
-                LINE_A_Y(lp) = pa[n].position[1];
-                LINE_A_Z(lp) = pa[n].position[2];
-                LINE_B_X(lp) = pa[next_index].position[0];
-                LINE_B_Y(lp) = pa[next_index].position[1];
-                LINE_B_Z(lp) = pa[next_index].position[2];
-                has = push_edge_line(lines, &lp);
+                for(n = 0; n < 3; n++) // 3 points of triangle
+                {
+                    int next_index = (n + 1) % 3;
+
+                    line_s lp = LINEV(pa[n]->position, pa[next_index]->position);
+                    has = push_edge_line(r->lines, &lp);
+                }
+                // top cap triangle
+                if(Cap)
+                {
+                    triangle_s tri = TRIANGLEV(pa[0]->position, pa[1]->position, pa[2]->position);
+                    r->tops.push_back(tri);
+                }
             }
-			// top cap triangle
-            if(Cap)
+            else
             {
-                triangle_s tri = TRIANGLEV(pa[0].position, pa[1].position, pa[2].position);
-                tops.push_back(tri);
-			}
-		}
-		else
-		{
-			// bottom cap triangle
-            // because some model not cap, so using face light vertex
+                // bottom cap triangle
+                // because some model not cap, so using face light vertex
 #if 0
-            if(Cap)
-            {
-                triangle_s tri = TRIANGLEV(pa[0].position, pa[1].position, pa[2].position);
-                bottoms.push_back(tri);
-			}
+                if(Cap)
+                {
+                    triangle_s tri = TRIANGLEV(pa[0]->position, pa[1]->position, pa[2]->position);
+                    r->bottoms.push_back(tri);
+                }
 #endif
-		}
-	}
+            }
+        }
+    }
+
 //#define _TEST_RENDER_EDGE_LINES
 #ifdef _TEST_RENDER_EDGE_LINES
     render_edge_lines(lines);
 #endif
+}
 
-    const TriangleList &bottoms = tops;
+static void make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_s *light_position, const int dirlight, const GL_NETLizard_3D_Mesh *mat, int method)
+{
+    int i, k, o;
+    GL_NETLizard_3D_Material *m;
+    GL_NETLizard_3D_Vertex *vd, *pa;
+
+    if(!r || !light_position || !mat || !mat->count)
+        return;
+
+    Shadow_Volume_s volume;
+    cale_mesh_volume_data(&volume, light_position, dirlight, mat, method);
+
+    const LineList &lines = volume.lines;
+    const TriangleList &tops = volume.tops;
+    const TriangleList &bottoms = volume.tops; // using top caps
+
+    const GLboolean Cap = method == SHADOW_Z_FAIL || 1 ? GL_TRUE : GL_FALSE;
+
+    memset(r, 0, sizeof(GL_NETLizard_3D_Mesh));
+    r->count = Cap ? 3 : 1; // top[1] bottom[2] caps, and side[0]
+    r->materials = (GL_NETLizard_3D_Material *)calloc(r->count, sizeof(GL_NETLizard_3D_Material));
 	// cale sides of shadow volume
     int vcount = lines.size() * 6; // 2 triangles(6 points) every a line
     if(Cap)
@@ -620,46 +647,9 @@ void NETLizard_MakeShadowVolumeMesh(GL_NETLizard_3D_Mesh *r, const vector3_s *li
 #endif
 		}
 	}
-
-#if 0
-	//glDisable(GL_DEPTH_TEST);
-	glDepthMask(GL_FALSE);
-	//glDisable(GL_CULL_FACE);
-	//glDepthFunc(GL_LEQUAL);
-	//glDisable(GL_BLEND);
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-
-//printf("%d %d %d\n", lines.count, r->count, r->materials->count);
-	r->materials->use_color = 1;
-	r->materials->color[0] = 
-	r->materials->color[1] = 
-	r->materials->color[2] = 0.0;
-	r->materials->color[3] = 0.2;
-	glColor4f(1,0,0,1);
-	rendermesh(r);
-	//rendermat(r->materials);
-
-#if ZFAIL_SHADOW
-	glColor4f(0,1,0,1);
-	rendermat(r->materials + 1);
-	glColor4f(0,0,1,1);
-	rendermat(r->materials + 2);
-#endif
-
-	glColor4f(1,1,1,1);
-
-	glDepthFunc(GL_LESS);
-	glLineWidth(1.0);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glEnable(GL_CULL_FACE);
-	glDepthMask(GL_TRUE);
-	glDisableClientState(GL_VERTEX_ARRAY);
-#endif
 }
 
-void NETLizard_RenderShadowVolumeMesh(const GL_NETLizard_3D_Mesh *nl_mesh, const vector3_s *light_position, const int dirlight, int m)
+static void render_shadow_volume_mesh(const GL_NETLizard_3D_Mesh *nl_mesh, const vector3_s *light_position, const int dirlight, int m)
 {
     if(!nl_mesh || !light_position)
         return;
@@ -668,7 +658,7 @@ void NETLizard_RenderShadowVolumeMesh(const GL_NETLizard_3D_Mesh *nl_mesh, const
     //glStencilOpSeparate = (glStencilOpSeparateProc)QGLContext::currentContext()->getProcAddress("glStencilOpSeparate");
 
     GL_NETLizard_3D_Mesh vol;
-    NETLizard_MakeShadowVolumeMesh(&vol, light_position, dirlight, nl_mesh, m);
+    make_shadow_volume_mesh(&vol, light_position, dirlight, nl_mesh, m);
 
 	// render
 	// 1: get depth buffer of scene
@@ -825,9 +815,9 @@ void NETLizard_RenderMeshShadow(const GL_NETLizard_3D_Mesh *mesh, const vector3_
 
     GL_NETLizard_3D_Mesh m;
 
-    NETLizard_CaleMeshTransform(&m, mesh, 0);
+    cale_mesh_transform(&m, mesh, 0);
 
-    NETLizard_RenderShadowVolumeMesh(&m, light_position, dirlight, method);
+    render_shadow_volume_mesh(&m, light_position, dirlight, method);
 
     delete_GL_NETLizard_3D_Mesh(&m);
 }

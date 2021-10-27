@@ -1,9 +1,9 @@
 #include "bound.h"
 
+#include <math.h>
+
 void bound_make(bound_s *bo, const vector3_s *a, const vector3_s *b)
 {
-    if(!bo)
-        return;
     BOUNDV_MIN_X(bo) = VECTOR3V_X(a);
     BOUNDV_MIN_Y(bo) = VECTOR3V_Y(a);
     BOUNDV_MIN_Z(bo) = VECTOR3V_Z(a);
@@ -14,8 +14,6 @@ void bound_make(bound_s *bo, const vector3_s *a, const vector3_s *b)
 
 int bound_point_in_box(const bound_s *b, const vector3_s *p)
 {
-    if(!b || !p)
-        return 0;
     const vector3_s *v1 = &(BOUNDV_MIN(b));
     const vector3_s *v2 = &(BOUNDV_MAX(b));
     return(
@@ -33,8 +31,6 @@ void bound_get_box_plane(const bound_s *ab, plane_s r[])
         VECTOR3_Y(n) = yy; \
         VECTOR3_Z(n) = zz; \
     }
-    if(!ab || !r)
-        return;
     // bottom
     PLANE_POSITION(r[0]) = BOUNDV_MIN(ab);
     COPY_NORMAL(PLANE_NORMAL(r[0]), 0.0, 0.0, 1.0)
@@ -58,9 +54,6 @@ void bound_get_box_plane(const bound_s *ab, plane_s r[])
 
 int bound_in_frustum(const bound_s *b, float frustum[][4])
 {
-    if(!b || !frustum)
-        return 0;
-
     //printf("in %d: %f %f %f  | %f %f %f\n", 1, BOUNDV_MIN_X(b), BOUNDV_MIN_Y(b), BOUNDV_MIN_Z(b), BOUNDV_MAX_X(b), BOUNDV_MAX_Y(b), BOUNDV_MAX_Z(b));
     float x = BOUNDV_MIN_X(b);
     float y = BOUNDV_MIN_Y(b);
@@ -94,10 +87,27 @@ int bound_in_frustum(const bound_s *b, float frustum[][4])
 
 int bound_in_frustum_with_matrix(const bound_s *b, const GLmatrix *proj_mat, const GLmatrix *view_mat)
 {
-    if(!b || !proj_mat || !view_mat)
-        return 0;
-
     float frustum[6][4];
     matrix_cale_frustum(proj_mat, view_mat, frustum);
     return bound_in_frustum(b, frustum);
+}
+
+void bound_diff(const bound_s *a, vector3_s *r)
+{
+    VECTOR3V_X(r) = BOUNDV_MAX_X(a) - BOUNDV_MIN_X(a);
+    VECTOR3V_Y(r) = BOUNDV_MAX_Y(a) - BOUNDV_MIN_Y(a);
+    VECTOR3V_Z(r) = BOUNDV_MAX_Z(a) - BOUNDV_MIN_Z(a);
+}
+
+void bound_center(const bound_s *a, vector3_s *r)
+{
+    bound_diff(a, r);
+    vector3_scalev(r, 0.5);
+}
+
+float bound_sqrt(const bound_s *b)
+{
+    vector3_s v;
+    bound_diff(b, &v);
+    return vector3_length(&v);
 }

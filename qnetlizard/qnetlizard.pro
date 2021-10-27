@@ -267,4 +267,6 @@ SOURCES += \
 } else {
 }
 
+OTHER_FILES += README.md
+
 INSTALLS += qnetlizard

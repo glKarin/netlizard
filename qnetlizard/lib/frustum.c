@@ -2,8 +2,6 @@
 
 void frustum_make(frustum_s *bo, float left, float right, float bottom, float top, float z_near, float z_far)
 {
-    if(!bo)
-        return;
     FRUSTUMV_LEFT(bo) = left;
     FRUSTUMV_RIGHT(bo) = right;
     FRUSTUMV_BOTTOM(bo) = bottom;
@@ -14,16 +12,12 @@ void frustum_make(frustum_s *bo, float left, float right, float bottom, float to
 
 void frustum_matrix(const frustum_s *bo, GLmatrix *mat)
 {
-    if(!bo || !mat)
-        return;
     Mesa_glLoadIdentity(mat);
     Mesa_glFrustum(mat, FRUSTUMV_LEFT(bo), FRUSTUMV_RIGHT(bo), FRUSTUMV_BOTTOM(bo), FRUSTUMV_TOP(bo), FRUSTUMV_ZNEAR(bo), FRUSTUMV_ZFAR(bo));
 }
 
 void perspective_make(perspective_s *bo, float fovy, float aspect, float z_near, float z_far)
 {
-    if(!bo)
-        return;
     PERSPECTIVEV_FOVY(bo) = fovy;
     PERSPECTIVEV_ASPECT(bo) = aspect;
     PERSPECTIVEV_FOVY(bo) = z_near;
@@ -39,8 +33,6 @@ void perspective_make_with_wh(perspective_s *bo, float fovy, float width, float 
 
 void perspective_matrix(const perspective_s *bo, GLmatrix *mat)
 {
-    if(!bo || !mat)
-        return;
     Mesa_glLoadIdentity(mat);
     Mesa_gluPerspective(mat, PERSPECTIVEV_FOVY(bo), PERSPECTIVEV_ASPECT(bo), PERSPECTIVEV_ZNEAR(bo), PERSPECTIVEV_ZFAR(bo));
 }

@@ -41,6 +41,8 @@ void SimpleLightSourceActor::Update(float delta)
     if(!IsInited())
         return;
     NLActor::Update(delta);
+    if(m_lightSource)
+        m_lightSource->SetPosition(Position());
 }
 
 SimpleLightSourceComponent * SimpleLightSourceActor::LightSource()
@@ -48,9 +50,16 @@ SimpleLightSourceComponent * SimpleLightSourceActor::LightSource()
     return m_lightSource;
 }
 
-NLVector3 SimpleLightSourceActor::LightDirection() const
+NLVector3 SimpleLightSourceActor::LightSourceDirection() const
 {
     if(!m_lightSource)
         return Direction();
-    return m_lightSource->Type() == SimpleLightSourceComponent::LightSourceType_Direction ? Position() : Direction();
+    return m_lightSource->Direction();
+}
+
+NLVector3 SimpleLightSourceActor::LightSourcePosition() const
+{
+    if(!m_lightSource)
+        return Position();
+    return m_lightSource->Position();
 }

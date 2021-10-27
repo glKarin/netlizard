@@ -13,7 +13,8 @@ public:
     explicit SimpleLightSourceActor(const NLPropperties &prop = QVariantHash(), NLActor *parent = 0);
     virtual ~SimpleLightSourceActor();
     SimpleLightSourceComponent * LightSource();
-    NLVector3 LightDirection() const;
+    NLVector3 LightSourceDirection() const;
+    NLVector3 LightSourcePosition() const;
 
 protected:
     virtual void Init();

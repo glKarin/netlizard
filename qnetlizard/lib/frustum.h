@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include "matrix.h"
+#include "mesa_gl_math.h"
 
 #define FRUSTUM_LEFT(b) ((b).left)
 #define FRUSTUM_RIGHT(b) ((b).right)

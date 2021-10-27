@@ -4,8 +4,6 @@
 
 void line_make(line_s *obj, const vector3_s *a, const vector3_s *b)
 {
-    if(!obj)
-        return;
     LINEV_A_X(obj) = VECTOR3V_X(a);
     LINEV_A_Y(obj) = VECTOR3V_Y(a);
     LINEV_A_Z(obj) = VECTOR3V_Z(a);
@@ -16,8 +14,6 @@ void line_make(line_s *obj, const vector3_s *a, const vector3_s *b)
 
 int line_equals(const line_s *a, const line_s *b)
 {
-    if(!a || !b)
-        return 0;
     return vector3_equals(&(LINEV_A(a)), &(LINEV_A(b)))
             && vector3_equals(&(LINEV_B(a)), &(LINEV_B(b)))
             ;
@@ -25,8 +21,6 @@ int line_equals(const line_s *a, const line_s *b)
 
 int line_equals_ignore_seq(const line_s *a, const line_s *b)
 {
-    if(!a || !b)
-        return 0;
     return (vector3_equals(&(LINEV_A(a)), &(LINEV_A(b)))
             && vector3_equals(&(LINEV_B(a)), &(LINEV_B(b))))
             || (vector3_equals(&(LINEV_A(a)), &(LINEV_B(b)))
@@ -36,8 +30,6 @@ int line_equals_ignore_seq(const line_s *a, const line_s *b)
 
 void ray_make(ray_s *obj, const vector3_s *a, const vector3_s *b)
 {
-    if(!obj)
-        return;
     RAYV_POSITION_X(obj) = VECTOR3V_X(a);
     RAYV_POSITION_Y(obj) = VECTOR3V_Y(a);
     RAYV_POSITION_Z(obj) = VECTOR3V_Z(a);
@@ -98,16 +90,12 @@ int ray_line_to_plane_collision(const ray_s *line, const plane_s *plane, float *
 
 void line_direction(const line_s *line, vector3_s *dir)
 {
-    if(!line || !dir)
-        return;
     vector3_subtractv(dir, &(LINEV_B(line)), &(LINEV_A(line)));
     vector3_normalizev(dir);
 }
 
 void ray_line_to_ray(ray_s *r, const line_s *l)
 {
-    if(!r || !l)
-        return;
     RAYV_POSITION_X(r) = LINEV_A_X(l);
     RAYV_POSITION_Y(r) = LINEV_A_Y(l);
     RAYV_POSITION_Z(r) = LINEV_A_Z(l);

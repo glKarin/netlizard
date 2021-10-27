@@ -38,6 +38,9 @@ typedef struct _bound_s
 } bound_s;
 
 void bound_make(bound_s *bo, const vector3_s *a, const vector3_s *b);
+float bound_sqrt(const bound_s *b);
+void bound_diff(const bound_s *a, vector3_s *r);
+void bound_center(const bound_s *a, vector3_s *r);
 int bound_point_in_box(const bound_s *b, const vector3_s *p);
 void bound_get_box_plane(const bound_s *ab, plane_s r[]);
 int bound_in_frustum(const bound_s *b, float frustum[][4]);

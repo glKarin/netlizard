@@ -269,6 +269,13 @@ void NLSceneCamera::Render(NLActorContainer *actors)
     CAMERA_RENDER(actors->Render())
 }
 
+void NLSceneCamera::Render(NLSceneCameraRenderFunc func)
+{
+    if(!func)
+        return;
+    CAMERA_RENDER(func())
+}
+
 NLScene * NLSceneCamera::Scene()
 {
     return m_scene;

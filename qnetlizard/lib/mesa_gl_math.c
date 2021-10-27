@@ -22,7 +22,7 @@
 }
 
 
-#define IF_NULL_RETURN(p) if(!p) return;
+#define IF_NULL_RETURN(p) // if(!p) return;
 
 void Mesa_glTranslate(GLmatrix *mat, float x, float y, float z)
 {
@@ -163,17 +163,20 @@ void Mesa_glTranspose(GLmatrix *mat)
 
 void Mesa_AllocGLMatrix(GLmatrix *mat)
 {
-    if(!mat)
-        return;
+    IF_NULL_RETURN(mat)
     _math_matrix_ctr(mat);
-    _math_matrix_alloc_inv(mat);
+    _math_matrix_alloc_inv(mat); // alloc inverse matrix
 }
 
 void Mesa_FreeGLMatrix(GLmatrix *mat)
 {
-    if(!mat)
-        return;
+    IF_NULL_RETURN(mat)
     _math_matrix_dtr(mat);
+}
+
+int Mesa_GLMatrixIsAlloc(GLmatrix *mat)
+{
+    return GL_MATRIXV_M(mat) ? 1 : 0;
 }
 
 void Mesa_NormalMatrix(GLmatrix *mat, const GLfloat mv[16])
@@ -181,10 +184,6 @@ void Mesa_NormalMatrix(GLmatrix *mat, const GLfloat mv[16])
     GLmatrix nor;
     GLfloat tmp[16];
     GLfloat dst[16];
-    if(!mat || !mv)
-    {
-        return;
-    }
 
     Mesa_AllocGLMatrix(&nor);
     Mesa_glLoadIdentity(&nor);
@@ -195,6 +194,11 @@ void Mesa_NormalMatrix(GLmatrix *mat, const GLfloat mv[16])
     Mesa_FreeGLMatrix(&nor);
 
     _math_matrix_loadf(mat, dst);
+}
+
+void Mesa_InverseMatrix(GLmatrix *mat)
+{
+    _math_matrix_analyse(mat);
 }
 
 

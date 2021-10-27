@@ -22,6 +22,8 @@ public:
     void SetRenderScenes(int scenes[], int count);
     int StencilShadowMethod() const;
     void SetStencilShadowMethod(int method);
+    void SetLightSourcePosition(const NLVector3 &pos);
+    void SetLightSourceType(bool dirlight);
 
 protected:
     virtual void InitRender();

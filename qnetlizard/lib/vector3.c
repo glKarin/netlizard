@@ -5,11 +5,11 @@
 #define K_ZERO 0.00001
 #define IS_ZERO(n) ((n) < K_ZERO && (n) > -K_ZERO)
 
-#define IF_NULL_RETURN(a) if(!a) return;
-#define IF_NULL_RETURN2(a, b) if(!a || !b) return;
-#define IF_NULL_RETURN3(a, b, c) if(!a || !b || !c) return;
-#define IF_NULL_RETURNV(a, v) if(!a) return v;
-#define IF_NULL_RETURNV2(a, b, v) if(!a || !b) return v;
+#define IF_NULL_RETURN(a) //if(!a) return;
+#define IF_NULL_RETURN2(a, b) //if(!a || !b) return;
+#define IF_NULL_RETURN3(a, b, c) //if(!a || !b || !c) return;
+#define IF_NULL_RETURNV(a, v) //if(!a) return v;
+#define IF_NULL_RETURNV2(a, b, v) //if(!a || !b) return v;
 
 static const vector3_s Identity_Vector3 = { { 0, 0, 0 } };
 

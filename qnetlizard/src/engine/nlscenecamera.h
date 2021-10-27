@@ -17,6 +17,8 @@ enum GL_matrix_e
     TotalMatrix
 };
 
+typedef void (*NLSceneCameraRenderFunc)(void);
+
 class NLSceneCamera
 {
 public:
@@ -35,6 +37,7 @@ public:
     void Render(NLScene *scene);
     void Render(NLActor *actor);
     void Render(NLActorContainer *actors);
+    void Render(NLSceneCameraRenderFunc func);
     void SetGlobalMatrix(const NLMatrix4 *mat);
     void Reset();
     virtual void Update(float width, float height) = 0;

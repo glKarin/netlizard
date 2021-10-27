@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include "vector3.h"
-#include "matrix.h"
+#include "mesa_gl_math.h"
 
 #define ORTHO_LEFT(b) ((b).left)
 #define ORTHO_RIGHT(b) ((b).right)

@@ -141,6 +141,32 @@ void NETLizardShadowModelRenderer::SetLightSource(const NLVector3 *pos, bool dir
     m_directionLighting = dirlight;
 }
 
+void NETLizardShadowModelRenderer::SetLightSourcePosition(const NLVector3 &pos)
+{
+    if(!vector3_equals(&m_lightPosition, &pos))
+    {
+        vector3_assignv(&m_lightPosition, &pos);
+        if(!vector3_iszero(&m_lightPosition))
+        {
+            if(m_directionLighting)
+                vector3_normalizev(&m_lightPosition);
+        }
+    }
+}
+
+void NETLizardShadowModelRenderer::SetLightSourceType(bool dirlight)
+{
+    if(m_directionLighting != dirlight)
+    {
+        m_directionLighting = dirlight;
+        if(!vector3_iszero(&m_lightPosition))
+        {
+            if(m_directionLighting)
+                vector3_normalizev(&m_lightPosition);
+        }
+    }
+}
+
 void NETLizardShadowModelRenderer::SetRenderScenes(int scenes[], int count)
 {
     if(!m_scenes)

@@ -341,13 +341,13 @@ typedef struct NETLizard_Font_s
 {
   struct {
       NETLizard_Font_Char_Raster *data;
-      NLsizei count;
+      NLuint count;
   } char_raster_map; // char table
   struct {
       NLchar *data;
-      NLsizei count;
+      NLuint count;
   } offset;
-  NLsizei char_count; // char count
+  NLuint char_count; // char count
 
   NLuchar private_e; // byte unknown
   NLuchar private_l; // byte unknown

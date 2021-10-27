@@ -2,8 +2,6 @@
 
 void plane_make(plane_s *bo, const vector3_s *a, const vector3_s *b)
 {
-    if(!bo)
-        return;
     PLANEV_POSITION_X(bo) = VECTOR3V_X(a);
     PLANEV_POSITION_Y(bo) = VECTOR3V_Y(a);
     PLANEV_POSITION_Z(bo) = VECTOR3V_Z(a);

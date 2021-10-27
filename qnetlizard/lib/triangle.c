@@ -2,8 +2,6 @@
 
 void triangle_make(triangle_s *obj, const vector3_s *a, const vector3_s *b, const vector3_s *c)
 {
-    if(!obj)
-        return;
     TRIANGLEV_A_X(obj) = VECTOR3V_X(a);
     TRIANGLEV_A_Y(obj) = VECTOR3V_Y(a);
     TRIANGLEV_A_Z(obj) = VECTOR3V_Z(a);
@@ -17,9 +15,6 @@ void triangle_make(triangle_s *obj, const vector3_s *a, const vector3_s *b, cons
 
 void triangle_cale_normal(const triangle_s *tri, vector3_s *normal)
 {
-    if(!tri || !normal)
-        return;
-
     vector3_s first, second;
     vector3_subtractv(&first, &(TRIANGLEV_B(tri)), &(TRIANGLEV_A(tri)));
     vector3_subtractv(&second, &(TRIANGLEV_C(tri)), &(TRIANGLEV_A(tri)));

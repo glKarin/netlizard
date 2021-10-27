@@ -102,3 +102,119 @@ void matrix_cale_frustum(const matrix4_s *proj_mat, const matrix4_s *view_mat, f
     frustum[5][2] /= t;
     frustum[5][3] /= t;
 }
+
+void matrix_translate(matrix4_s *mat, const vector3_s *v)
+{
+    Mesa_glTranslate(mat, VECTOR3V_X(v), VECTOR3V_Y(v), VECTOR3V_Z(v));
+}
+
+void matrix_rotate(matrix4_s *mat, float angle, const vector3_s *v)
+{
+    Mesa_glRotate(mat, angle, VECTOR3V_X(v), VECTOR3V_Y(v), VECTOR3V_Z(v));
+}
+
+void matrix_scale(matrix4_s *mat, const vector3_s *v)
+{
+    Mesa_glScale(mat, VECTOR3V_X(v), VECTOR3V_Y(v), VECTOR3V_Z(v));
+}
+
+void matrix_lookat(matrix4_s *mat, const vector3_s *eye, const vector3_s *center, const vector3_s *up)
+{
+    Mesa_gluLookAt(mat,
+                   VECTOR3V_X(eye), VECTOR3V_Y(eye), VECTOR3V_Z(eye),
+                   VECTOR3V_X(center), VECTOR3V_Y(center), VECTOR3V_Z(center),
+                   VECTOR3V_X(up), VECTOR3V_Y(up), VECTOR3V_Z(up)
+                   );
+}
+
+void matrix_ortho(matrix4_s *mat, const ortho_s *v)
+{
+    Mesa_glOrtho(mat, ORTHOV_LEFT(v), ORTHOV_RIGHT(v), ORTHOV_BOTTOM(v), ORTHOV_TOP(v), ORTHOV_ZNEAR(v), ORTHOV_ZFAR(v));
+}
+
+void matrix_ortho2d(matrix4_s *mat, const ortho_s *v)
+{
+    Mesa_gluOrtho2D(mat, ORTHOV_LEFT(v), ORTHOV_RIGHT(v), ORTHOV_BOTTOM(v), ORTHOV_TOP(v));
+}
+
+void matrix_frustum(matrix4_s *mat, const frustum_s *v)
+{
+    Mesa_glFrustum(mat, FRUSTUMV_LEFT(v), FRUSTUMV_RIGHT(v), FRUSTUMV_BOTTOM(v), FRUSTUMV_TOP(v), FRUSTUMV_ZNEAR(v), FRUSTUMV_ZFAR(v));
+}
+
+void matrix_perspective(matrix4_s *mat, const perspective_s *v)
+{
+    Mesa_gluPerspective(mat, PERSPECTIVEV_FOVY(v), PERSPECTIVEV_ASPECT(v), PERSPECTIVEV_ZNEAR(v), PERSPECTIVEV_ZFAR(v));
+}
+
+void matrix_normal_matrix(const matrix4_s *mat, matrix4_s *v)
+{
+    Mesa_NormalMatrix(v, GL_MATRIXV_M(mat));
+}
+
+void matrix_identity(matrix4_s *mat)
+{
+    Mesa_glLoadIdentity(mat);
+}
+
+void matrix_transpose(matrix4_s *mat)
+{
+    Mesa_glTranspose(mat);
+}
+
+void matrix_inverse(matrix4_s *mat)
+{
+    Mesa_InverseMatrix(mat);
+}
+
+void matrix_load(matrix4_s *mat, const matrix4_s *v)
+{
+    Mesa_glLoadMatrix(mat, GL_MATRIXV_M(v));
+}
+
+void matrix_multi_matrix(matrix4_s *mat, const matrix4_s *v)
+{
+    Mesa_glMultMatrix(mat, GL_MATRIXV_M(v));
+}
+
+vector3_s matrix_transform_row(const matrix4_s *mat, const vector3_s *v)
+{
+    vector3_s r;
+    matrix_transformv_row(mat, v, &r);
+    return r;
+}
+
+void matrix_transformv_row(const matrix4_s *mat, const vector3_s *v, vector3_s *t)
+{
+    Mesa_glTransform_row(VECTOR3V_V(t), VECTOR3V_V(v), mat);
+}
+
+void matrix_transformv_self_row(const matrix4_s *mat, vector3_s *v)
+{
+    float u[3];
+    Mesa_glTransform_row(u, VECTOR3V_V(v), mat);
+    VECTOR3V_X(v) = u[0];
+    VECTOR3V_Y(v) = u[1];
+    VECTOR3V_Z(v) = u[2];
+}
+
+vector3_s matrix_transform(const matrix4_s *mat, const vector3_s *v)
+{
+    vector3_s r;
+    matrix_transformv(mat, v, &r);
+    return r;
+}
+
+void matrix_transformv(const matrix4_s *mat, const vector3_s *v, vector3_s *t)
+{
+    Mesa_glTransform(VECTOR3V_V(t), VECTOR3V_V(v), mat);
+}
+
+void matrix_transformv_self(const matrix4_s *mat, vector3_s *v)
+{
+    float u[3];
+    Mesa_glTransform(u, VECTOR3V_V(v), mat);
+    VECTOR3V_X(v) = u[0];
+    VECTOR3V_Y(v) = u[1];
+    VECTOR3V_Z(v) = u[2];
+}

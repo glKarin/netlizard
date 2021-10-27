@@ -7,6 +7,9 @@ extern "C" {
 
 #include "mesa_math/m_matrix.h"
 
+#define float3(n) float n[3]
+#define float4(n) float n[4]
+
 #define GL_MATRIX_M(matrix) (matrix).m
 #define GL_MATRIXV_M(matrix) (matrix)->m
 
@@ -21,9 +24,12 @@ extern "C" {
 
 #define GL_MATRIX_M_I(matrix, i) (GL_MATRIX_M(matrix))[i]
 #define GL_MATRIXV_M_I(matrix, i) (GL_MATRIXV_M(matrix))[i]
+#define Mesa_NewGLMatrix(m) Mesa_AllocGLMatrix(m)
+#define Mesa_DeleteGLMatrix(m) Mesa_FreeGLMatrix(m)
 
 #define Mesa_glTransform_column(t, o, m) Mesa_glTransform(t, 0, m)
 #define Mesa_glTransform4_column(t, o, m) Mesa_glTransform4(t, 0, m)
+#define Mesa_InverseTranspose(m, v) Mesa_NormalMatrix(m, v)
 
 void Mesa_glTranslate(GLmatrix *mat, float x, float y, float z);
 void Mesa_glRotate(GLmatrix *mat, float angle, float x, float y, float z);
@@ -46,10 +52,14 @@ void Mesa_glTransform4_row(float r[4], const float p[4], const GLmatrix *mat);
 // Column vector: P = matrix * vector; exam: cale vextex transform: gl_position = vMVPMatrix * gl_Vertex;
 void Mesa_glTransform(float r[3], const float p[3], const GLmatrix *mat);
 void Mesa_glTransform4(float r[4], const float p[4], const GLmatrix *mat);
-void Mesa_glTranspose(GLmatrix *mat);
+
 void Mesa_FreeGLMatrix(GLmatrix *mat);
 void Mesa_AllocGLMatrix(GLmatrix *mat);
+int Mesa_GLMatrixIsAlloc(GLmatrix *mat);
+
+void Mesa_glTranspose(GLmatrix *mat);
 void Mesa_NormalMatrix(GLmatrix *mat, const GLfloat mv[16]);
+void Mesa_InverseMatrix(GLmatrix *mat);
 
 
 #ifdef __cplusplus

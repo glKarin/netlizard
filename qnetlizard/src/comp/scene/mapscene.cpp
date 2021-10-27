@@ -10,6 +10,8 @@
 #include "netlizarditemmodelrenderer.h"
 #include "simplecameracomponent.h"
 #include "simplecontrolcomponent.h"
+#include "simplelightsourceactor.h"
+#include "simplelightsourcecomponent.h"
 #include "nlsceneorthocamera.h"
 #include "nlsceneperspectivecamera.h"
 #include "netlizardtexturerenderer.h"
@@ -37,6 +39,7 @@ MapScene::MapScene(QWidget *parent)
     SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
 
     NLPropperties prop;
+
     // 3D camera + 3D control
     prop.insert("z_is_up", true);
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
@@ -90,8 +93,13 @@ MapScene::MapScene(QWidget *parent)
     m_shadowActor->SetEnabled(method > 0);
     m_shadowRenderer->SetStencilShadowMethod(method);
 
-    NLVector3 lp = VECTOR3(5000, 5000, 5000);
-    m_shadowRenderer->SetLightSource(&lp, false);
+    // light source
+    prop.clear();
+    prop.insert("type", static_cast<int>(SimpleLightSourceComponent::LightSourceType_Point));
+    SimpleLightSourceActor *lightSource = new SimpleLightSourceActor(prop);
+    AddActor(lightSource);
+
+    m_shadowRenderer->SetLightSourceType(lightSource->LightSource()->IsDirectionLighting());
 
     connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
@@ -107,9 +115,11 @@ void MapScene::Init()
 
 void MapScene::Update(float delta)
 {
+    NLScene::Update(delta);
     NLActor *camera_3d = GetActor(4);
     camera_3d->SetRotation(CurrentCamera()->Rotation());
-    NLScene::Update(delta);
+    m_shadowRenderer->SetLightSourcePosition(GetActor(7)->Position());
+
     if(m_model)
     {
         int *scenes = m_renderer->Scenes();
@@ -266,6 +276,14 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
             }
         }
     }
+
+    bound_s bound = BOUND(0, 0, 0, 0, 0, 0);
+    NETLizard_GetNETLizard3DMapBound(m_model, 0, 0, &bound);
+    NLVector3 lp;
+    bound_center(&bound, &lp);
+    //VECTOR3_Y(lp) = (BOUND_MAX_Y(bound) - BOUND_MIN_Y(bound)) * 2;
+    NLVector3 pos = VECTOR3(VECTOR3_X(lp), VECTOR3_Z(lp), VECTOR3_Y(lp));
+    GetActor(7)->SetPosition(pos);
 
     GrabMouseCursor(true);
 
