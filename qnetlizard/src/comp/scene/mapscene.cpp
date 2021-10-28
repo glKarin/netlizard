@@ -238,6 +238,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     NLVector3 lp;
     bound_center(&bound, &lp);
 
+    glColor4f(1, 1, 1, 1);
     // RE3D using java MSG 3D, like OpenGL, y is up
     if(game == NL_RACING_EVOLUTION_3D)
     {
@@ -266,6 +267,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
         // Egypt 3D level 0(main menu) 8 9 10 12 has a cube sky model
         if(game == NL_SHADOW_OF_EGYPT_3D)
         {
+            glColor4f(0, 0, 0, 1);
             if(level == 0 || level == 8 || level == 9 || level == 10 || level == 12)
             {
                 for(int i = 0; i < m_model->item_count; i++)

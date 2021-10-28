@@ -81,7 +81,7 @@ void NLScene::initializeGL()
 {
     printfgl();
 
-    glColor4f(0, 0, 0, 1); // black
+    //glColor4f(0, 0, 0, 1); // black
     qglClearColor(m_clearColor);
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_STENCIL_TEST);
