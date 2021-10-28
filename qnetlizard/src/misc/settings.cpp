@@ -2,6 +2,12 @@
 
 #include <QDebug>
 #include <QStringList>
+#include <QFile>
+#include <QXmlSimpleReader>
+#include <QXmlInputSource>
+#include <QDomDocument>
+#include <QDomNode>
+#include <QDomNodeList>
 
 #include "stencil_shadow.h"
 #include "nl_shadow_render.h"
@@ -26,67 +32,124 @@ QVariant Settings::operator[](const QString &name)
 
 SINGLE_INSTANCE_DECL(Settings)
 
-const SettingItemMap & Settings::SettingsConfig()
+const Settings::SettingItemMap & Settings::SettingsConfig()
 {
-    static SettingItemMap _settingsConfig;
+    static Settings::SettingItemMap _settingsConfig;
     if(_settingsConfig.isEmpty())
     {
-        _settingsConfig.insert("3d_control", SettingItem("CONTROL_3D/move_sens", 1800, "Move sensitive", "int").AddProp("min", 1).AddProp("max", 10000));
-        _settingsConfig.insert("3d_control", SettingItem("CONTROL_3D/turn_sens", 180, "Turn sensitive", "int").AddProp("min", 1).AddProp("max", 1000));
-        _settingsConfig.insert("3d_control", SettingItem("CONTROL_3D/freelook_sens", 0.5, "Freelook sensitive", "float").AddProp("min", 0.01).AddProp("max", 10));
-        _settingsConfig.insert("3d_control", SettingItem("CONTROL_3D/fovy_sens", 0.01, "Fovy sensitive", "float").AddProp("min", 0.01).AddProp("max", 0.1));
-
-        _settingsConfig.insert("2d_control", SettingItem("CONTROL_2D/trans_sens", 1000, "Translate sensitive", "int").AddProp("min", 1).AddProp("max", 10000));
-        _settingsConfig.insert("2d_control", SettingItem("CONTROL_2D/rot_sens", 100, "Rotation sensitive", "int").AddProp("min", 1).AddProp("max", 10000));
-
-        _settingsConfig.insert("render", SettingItem("RENDER/fps", 0, "FPS(0 to not limit)", "int").AddProp("min", 0).AddProp("max", 300));
-        _settingsConfig.insert("render", SettingItem("RENDER/scene_cull", true, "Cull map scene", "bool"));
-        QVariantList list;
-        QVariantMap map;
-        map.insert("name", "No shadow");
-        map.insert("value", 0);
-        list << map;
-        map.insert("name", "Stencil shadow: Z-FAIL");
-        map.insert("value", 2);
-        list << map;
-        map.insert("name", "Stencil shadow: Z-PASS");
-        map.insert("value", 1);
-        list << map;
-        _settingsConfig.insert("render", SettingItem("RENDER/shadow", SHADOW_Z_FAIL, "Render simple shadow", "option").AddProp("items", list));
-
-        list.clear();
-        map.clear();
-//        map.insert("name", "No render shadow");
-//        map.insert("value", NETLIZARD_SHADOW_RENDER_NONE);
-//        list << map;
-        map.insert("name", "Only render item shadow");
-        map.insert("value", NETLIZARD_SHADOW_RENDER_ITEM);
-        list << map;
-        map.insert("name", "Only render scene wall shadow");
-        map.insert("value", NETLIZARD_SHADOW_RENDER_SCENE_WALL);
-        list << map;
-        map.insert("name", "Only render scene shadow");
-        map.insert("value", NETLIZARD_SHADOW_RENDER_SCENE);
-        list << map;
-        map.insert("name", "Only render item and scene wall shadow");
-        map.insert("value", NETLIZARD_SHADOW_RENDER_ITEM | NETLIZARD_SHADOW_RENDER_SCENE_WALL);
-        list << map;
-        map.insert("name", "Render all shadow");
-        map.insert("value", NETLIZARD_SHADOW_RENDER_ALL);
-        list << map;
-        _settingsConfig.insert("render", SettingItem("RENDER/shadow_object", NETLIZARD_SHADOW_RENDER_ITEM, "Render shadow object", "option").AddProp("items", list));
+        LoadSettings(_settingsConfig);
     }
     return _settingsConfig;
 }
 
 QVariant Settings::GetDefaultSetting(const QString &name)
 {
-    const SettingItemMap &_settingsConfig = SettingsConfig();
-    QList<SettingItem> values = _settingsConfig.values();
-    Q_FOREACH(const SettingItem &item, values)
+    const Settings::SettingItemMap &_settingsConfig = SettingsConfig();
+    Q_FOREACH(const Settings::SettingItemCategory &c, _settingsConfig)
     {
-        if(item.name == name)
-            return item.value;
+        Q_FOREACH(const Settings::SettingItem &item, c.settings)
+        {
+            if(item.name == name)
+                return item.value;
+        }
     }
     return QVariant();
+}
+
+bool Settings::LoadSettings(Settings::SettingItemMap &map)
+{
+    const QString Help(":/SETTING");
+
+    QFile f(Help);
+    QXmlSimpleReader reader;
+    QXmlInputSource source(&f);
+    QDomDocument doc;
+    if(!doc.setContent(&source, &reader))
+        return false;
+
+    QDomElement help = doc.documentElement();
+    if (help.tagName() != "setting")
+        return false;
+
+    QDomNodeList categorys = help.childNodes();
+    for(int i = 0; i < categorys.size(); i++)
+    {
+        QDomNode node = categorys.at(i);
+        if(!node.isElement())
+            continue;
+        QDomElement category = node.toElement();
+        if(category.tagName() != "category")
+            continue;
+        QString categoryTitle = category.attribute("name");
+        QString categoryName = category.attribute("alias");
+        QString categoryDesc = category.attribute("description");
+        QString categoryCate = category.attribute("category");
+        SettingItemCategory sc(categoryName, categoryTitle, categoryDesc);
+        QDomNodeList items = category.childNodes();
+        for(int j = 0; j < items.size(); j++)
+        {
+            QDomNode node = items.at(j);
+            if(!node.isElement())
+                continue;
+            QDomElement item = node.toElement();
+            if(item.tagName() != "item")
+                continue;
+            QString title = item.attribute("name");
+            QString name = item.attribute("alias");
+            QString type = item.attribute("type");
+            QString value = item.attribute("default-value");
+            QString widget = item.attribute("widget");
+            QString description = item.attribute("description");
+            Settings::SettingItem si(name, value, title, type, widget, description);
+
+            QDomNodeList options = item.childNodes();
+            QMap<QString, QList<QVariantHash> > op;
+            for(int k = 0; k < options.size(); k++)
+            {
+                QDomNode node = options.at(k);
+                if(!node.isElement())
+                    continue;
+                QDomElement item = node.toElement();
+                if(item.tagName() != "option")
+                    continue;
+
+                QString o = item.attribute("name");
+                QDomNamedNodeMap nm = item.attributes();
+                QVariantHash l;
+                for(int m = 0; m < nm.size(); m++)
+                {
+                    QDomNode node = nm.item(m);
+                    if(!node.isAttr())
+                        continue;
+                    QDomAttr attr = node.toAttr();
+                    l.insert(attr.name(), attr.value());
+                }
+                op[o].push_back(l);
+            }
+
+            Q_FOREACH(const QString &nn, op.keys())
+            {
+                const QList<QVariantHash> &oo = op.value(nn);
+                if(oo.size() == 1)
+                {
+                    const QVariantHash &vh = oo[0];
+                    si.AddProp(vh.value("name").toString(), vh.value("value"));
+                }
+                else if(oo.size() > 1)
+                {
+                    const QVariantHash &vh = oo[0];
+                    QVariantList vl;
+                    Q_FOREACH(const QVariantHash &h, oo)
+                    {
+                        vl.push_back(QVariant::fromValue(h));
+                    }
+
+                    si.AddProp(vh.value("name").toString(), QVariant::fromValue(vl));
+                }
+            }
+            sc << si;
+        }
+        map.push_back(sc);
+    }
+    return true;
 }

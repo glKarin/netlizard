@@ -17,8 +17,10 @@ public slots:
 
 private:
     void Init();
+    bool LoadChangelog();
 
 private:
+    QString m_text;
     
     Q_DISABLE_COPY(ChangelogDialog)
 };

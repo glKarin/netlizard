@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="CHANGELOG">debian/changelog</file>
+        <file alias="HELP">resource/help.xml</file>
+        <file alias="SETTING">resource/setting.xml</file>
+    </qresource>
+</RCC>

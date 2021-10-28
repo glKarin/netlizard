@@ -40,15 +40,15 @@ void SettingDialog::Init()
     item->setText(0, "Viewer");
     subItem = new QTreeWidgetItem;
     subItem->setText(0, "3D control");
-    subItem->setData(0, Qt::UserRole, "3d_control");
+    subItem->setData(0, Qt::UserRole, "CONTROL_3D");
     item->addChild(subItem);
     subItem = new QTreeWidgetItem;
     subItem->setText(0, "2D control");
-    subItem->setData(0, Qt::UserRole, "2d_control");
+    subItem->setData(0, Qt::UserRole, "CONTROL_3D");
     item->addChild(subItem);
     subItem = new QTreeWidgetItem;
     subItem->setText(0, "Render");
-    subItem->setData(0, Qt::UserRole, "render");
+    subItem->setData(0, Qt::UserRole, "RENDER");
     item->addChild(subItem);
     tree->addTopLevelItem(item);
 

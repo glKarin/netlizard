@@ -25,10 +25,24 @@ private Q_SLOTS:
 
 private:
     void Init();
+    bool LoadHelp();
 
 private:
-    QStringList m_menuText;
-    QVector<QStringList> m_contentText;
+    struct HelpItem
+    {
+        QString category;
+        QStringList items;
+        HelpItem(const QString &category, const QStringList &items = QStringList())
+            : category(category),
+              items(items)
+        {
+        }
+    };
+
+    typedef QList<HelpItem> HelpItemList;
+
+private:
+    HelpItemList m_helpList;
     QTextBrowser *m_textViewer;
     
     Q_DISABLE_COPY(HelpDialog)

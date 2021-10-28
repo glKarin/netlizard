@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
     app.setApplicationVersion(APP_VER);
     app.setOrganizationName(APP_DEV);
 
+    Q_INIT_RESOURCE(qnetlizard);
 
 #ifdef _DEV_TEST
     int test = Test(argc, argv);

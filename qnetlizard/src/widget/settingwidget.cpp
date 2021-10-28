@@ -48,47 +48,60 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
         return;
     Clear();
     setTitle(title);
-    const SettingItemMap &_settingsConfig = Settings::SettingsConfig();
-    if(!_settingsConfig.contains(name))
+    const Settings::SettingItemMap &_settingsConfig = Settings::SettingsConfig();
+    int i = 0;
+    for(; i < _settingsConfig.size(); i++)
+    {
+        if(_settingsConfig[i].name == name)
+            break;
+    }
+    if(i >= _settingsConfig.size())
         return;
-    QList<SettingItem> items = _settingsConfig.values(name);
+
+    const Settings::SettingItemCategory &c = _settingsConfig[i];
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
 
-    Q_FOREACH(const SettingItem &item, items)
+    Q_FOREACH(const Settings::SettingItem &item, c.settings)
     {
         QWidget *widget = 0;
-        if(item.type == "int")
+        if(item.widget == "spinbox")
         {
-            QSpinBox *w = new QSpinBox;
-            w->setObjectName(item.name);
-            w->setSingleStep(1);
-            w->setMinimum(item.prop.value("min").toInt());
-            w->setMaximum(item.prop.value("max").toInt());
-            w->setValue(settings->GetSetting<int>(item.name, item.value.toInt()));
-            connect(w, SIGNAL(valueChanged(const QString &)), this, SLOT(OnValueChanged(const QString &)));
-            widget = w;
+            if(item.type == "int")
+            {
+                QSpinBox *w = new QSpinBox;
+                w->setObjectName(item.name);
+                w->setSingleStep(1);
+                w->setMinimum(item.prop.value("min").toInt());
+                w->setMaximum(item.prop.value("max").toInt());
+                w->setValue(settings->GetSetting<int>(item.name, item.value.toInt()));
+                connect(w, SIGNAL(valueChanged(const QString &)), this, SLOT(OnValueChanged(const QString &)));
+                widget = w;
+            }
+            else
+            {
+                QDoubleSpinBox *w = new QDoubleSpinBox;
+                w->setObjectName(item.name);
+                w->setSingleStep(0.01);
+                w->setDecimals(2);
+                w->setMinimum(item.prop.value("min").toFloat());
+                w->setMaximum(item.prop.value("max").toFloat());
+                w->setValue(settings->GetSetting<double>(item.name, item.value.toFloat()));
+                connect(w, SIGNAL(valueChanged(const QString &)), this, SLOT(OnValueChanged(const QString &)));
+                widget = w;
+            }
         }
-        else if(item.type == "float")
+        else if(item.widget == "checkbox")
         {
-            QDoubleSpinBox *w = new QDoubleSpinBox;
-            w->setObjectName(item.name);
-            w->setDecimals(2);
-            w->setSingleStep(0.01);
-            w->setMinimum(item.prop.value("min").toFloat());
-            w->setMaximum(item.prop.value("max").toFloat());
-            w->setValue(settings->GetSetting<double>(item.name, item.value.toFloat()));
-            connect(w, SIGNAL(valueChanged(const QString &)), this, SLOT(OnValueChanged(const QString &)));
-            widget = w;
+            if(item.type == "bool")
+            {
+                QCheckBox *w = new QCheckBox;
+                w->setObjectName(item.name);
+                w->setChecked(settings->GetSetting<bool>(item.name, item.value.toBool()));
+                connect(w, SIGNAL(clicked(bool)), this, SLOT(OnBoolChanged(bool)));
+                widget = w;
+            }
         }
-        else if(item.type == "bool")
-        {
-            QCheckBox *w = new QCheckBox;
-            w->setObjectName(item.name);
-            w->setChecked(settings->GetSetting<bool>(item.name, item.value.toBool()));
-            connect(w, SIGNAL(clicked(bool)), this, SLOT(OnBoolChanged(bool)));
-            widget = w;
-        }
-        else if(item.type == "option")
+        else if(item.type == "combobox")
         {
             QComboBox *w = new QComboBox;
             w->setObjectName(item.name);
@@ -99,7 +112,7 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
             {
                 const QVariantMap p = items[i].toMap();
                 const QVariant v = p.value("value");
-                w->addItem(p.value("name").toString(), v);
+                w->addItem(p.value("label").toString(), v);
                 if(v.toInt() == target)
                     cur = i;
             }

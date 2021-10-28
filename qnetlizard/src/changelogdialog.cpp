@@ -7,6 +7,8 @@
 #include <QVBoxLayout>
 #include <QTextBrowser>
 #include <QDateTime>
+#include <QTextStream>
+#include <QFile>
 
 #include "qdef.h"
 
@@ -82,6 +84,14 @@ ChangelogDialog::ChangelogDialog(QWidget *parent) :
 {
     setObjectName("ChangelogDialog");
 
+    if(!LoadChangelog())
+    {
+        ChangelogList list = get_changelog_list();
+        QStringList strList;
+        Q_FOREACH(const Changelog &cl, list)
+            strList.push_back(cl.toString());
+        m_text = strList.join("\n\n");
+    }
     Init();
 }
 
@@ -96,11 +106,7 @@ void ChangelogDialog::Init()
     QTextBrowser *textViewer = new QTextBrowser;
     QLabel *label = new QLabel;
 
-    ChangelogList list = get_changelog_list();
-    QStringList strList;
-    Q_FOREACH(const Changelog &cl, list)
-        strList.push_back(cl.toString());
-    textViewer->setText(strList.join("\n\n"));
+    textViewer->setText(m_text);
 
     label->setAlignment(Qt::AlignCenter);
     label->setText(QString("%1 (%2) - %3").arg(APP_NAME).arg(APP_VER).arg(APP_DEV));
@@ -117,4 +123,19 @@ int ChangelogDialog::Show(QWidget *parent)
 {
     ChangelogDialog dialog(parent);
     return dialog.exec();
+}
+
+bool ChangelogDialog::LoadChangelog()
+{
+    const QString ChangelogFile(":/CHANGELOG");
+
+    QFile f(ChangelogFile);
+    if(!f.exists())
+        return false;
+    if(!f.open(QIODevice::ReadOnly))
+        return false;
+    QTextStream is(&f);
+    m_text = is.readAll();
+    f.close();
+    return true;
 }

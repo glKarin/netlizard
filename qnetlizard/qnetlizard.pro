@@ -5,7 +5,7 @@
 TEMPLATE = app
 TARGET = ../qnetlizard
 
-QT += opengl
+QT += opengl xml
 
 DEPENDPATH += . .. ../libnetlizard ./src ./src/utils ./src/widget ./src/misc
 INCLUDEPATH += . .. ../libnetlizard ./src ./src/utils ./src/widget ./src/misc
@@ -268,6 +268,16 @@ SOURCES += \
     src/test/testscene.cpp
 } else {
 }
+
+RESOURCES += \
+    qnetlizard.qrc
+
+#i18n.files = \
+#    i18n/$${TARGET}.zh_CN.ts \
+#    i18n/$${TARGET}.zh_CN.qm
+#i18n.path = ./i18n
+
+#INSTALLS        += i18n
 
 OTHER_FILES += README.md
 

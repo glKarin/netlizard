@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<help>
+    <category name="General">
+        <item>
+            <![CDATA[1. This application is not support open/read jar/zip archive file directly, so please extract jar/zip archive first.]]>
+        </item>
+        <item>
+            <![CDATA[2. The `<b><i>Resource path</i></b>` file choose is root of jar/zip archive extracted(has a named `META-INF` folder) in all viewer.]]>
+        </item>
+    </category>
+
+    <category name="Game file">
+        <item color="#FF0000" font-weight="bold">
+            <![CDATA[1. 3D scene map model file name(* is a digit): ]]>
+        </item>
+        <item>
+            <![CDATA[<b>lv*.png</b> - CT 3D, Spacnaz 3D, CT-Ep2 3D, Egypt 3D(main menu scene is lv0.png), Clone 3D, CT-Ep3 3D.]]>
+        </item>
+        <item>
+            <![CDATA[<b>dm.png</b> - Egypt 3D(servive mode).]]>
+        </item>
+        <item>
+            <![CDATA[<b>track*.png</b> - Racing 3D.]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item color="#FF0000" font-weight="bold">
+            <![CDATA[2. 3D item model file name(* is a digit): ]]>
+        </item>
+        <item>
+            <![CDATA[<b>obj/obj*.png</b> - CT 3D.]]>
+        </item>
+        <item>
+            <![CDATA[<b>o/o*.png</b> - Spacnaz 3D, CT-Ep2 3D, Egypt 3D, Clone 3D, CT-Ep3 3D.]]>
+        </item>
+        <item>
+            <![CDATA[<b>car*.png</b> - Racing 3D(car), Set `index` to a number for changing car skin texture image(file name is `car*_tex.png`) in `Item viewer`.]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item color="#FF0000" font-weight="bold">
+            <![CDATA[3. 3D model texture file name(* is a digit): ]]>
+        </item>
+        <item>
+            <![CDATA[<b>tex/l*.png</b> - CT 3D(texture v2).]]>
+        </item>
+        <item>
+            <![CDATA[<b>w/l*.png</b> - CT-Ep2 3D(texture v2), CT-Ep3 3D(texture v3).]]>
+        </item>
+        <item>
+            <![CDATA[<b>w/w*.png</b> - Spacnaz 3D(texture v2), Egypt 3D(texture v3), Clone 3D(texture v3).]]>
+        </item>
+        <item>
+            <![CDATA[<b>map*.png</b> - Racing 3D map scene(encode PNG).]]>
+        </item>
+        <item>
+            <![CDATA[<b>car*_tex.png</b> - Racing 3D car(encode PNG). Set `index` to a number for changing car skin texture image in `Item viewer`.]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item color="#FF0000" font-weight="bold">
+            <![CDATA[4. 3D frame animation model file name(* is a digit): ]]>
+        </item>
+        <item>
+            <![CDATA[<b>un*.png</b> - Egypt 3D, Clone 3D.]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item color="#FF0000" font-weight="bold">
+            <![CDATA[5. Font file name(a config file and a texture file combination): ]]>
+        </item>
+        <item>
+            <![CDATA[<b>cf.png</b> - Config of font.]]>
+        </item>
+        <item>
+            <![CDATA[<b>fnt.png</b> - Font texture image.]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item color="#FF0000" font-weight="bold">
+            <![CDATA[6. Text file name(need `Russian` language environment): ]]>
+        </item>
+        <item>
+            <![CDATA[<b>ab.png</b> - `About` menu text.]]>
+        </item>
+        <item>
+            <![CDATA[<b>hl.png</b> - `Help` menu text.]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item color="#FF0000" font-weight="bold">
+            <![CDATA[7. Sprite file name(a layout config file and a texture file combination): ]]>
+        </item>
+        <item>
+            <![CDATA[<b>cu.png + u0.png</b> - Bullet trace sprite.]]>
+        </item>
+        <item>
+            <![CDATA[<b>ccc.png + ccu.png</b> - Weapon fire lighting sprite.]]>
+        </item>
+    </category>
+
+    <category name="3D viewer">
+        <item color="#FF0000" font-weight="bold">
+            <![CDATA[Key map: ]]>
+        </item>
+        <item font-style="italic">
+            <![CDATA[1. Move action: ]]>
+        </item>
+        <item>
+            <![CDATA[<b>W</b> - Move forward]]>
+        </item>
+        <item>
+            <![CDATA[<b>S</b> - Move backward]]>
+        </item>
+        <item>
+            <![CDATA[<b>A</b> - Move left]]>
+        </item>
+        <item>
+            <![CDATA[<b>D</b> - Move right]]>
+        </item>
+        <item>
+            <![CDATA[<b>Q / Control</b> - Move down]]>
+        </item>
+        <item>
+            <![CDATA[<b>E / Space</b> - Move up]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item font-style="italic">
+            <![CDATA[2. Turn action: ]]>
+        </item>
+        <item>
+            <![CDATA[<b>Up</b> - Turn up]]>
+        </item>
+        <item>
+            <![CDATA[<b>Down</b> - Turn down]]>
+        </item>
+        <item>
+            <![CDATA[<b>Left</b> - Turn left]]>
+        </item>
+        <item>
+            <![CDATA[<b>Right</b> - Turn right]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item font-style="italic">
+            <![CDATA[3. Roll action: ]]>
+        </item>
+        <item>
+            <![CDATA[<b>Z</b> - Roll left]]>
+        </item>
+        <item>
+            <![CDATA[<b>C</b> - Roll right]]>
+        </item>
+        <item>
+            <![CDATA[<b>X</b> - Roll to 0]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item font-style="italic">
+            <![CDATA[4. Fovy action: ]]>
+        </item>
+        <item>
+            <![CDATA[<b>Wheel up</b> - Fovy increment]]>
+        </item>
+        <item>
+            <![CDATA[<b>Wheel down</b> - Fovy decrement]]>
+        </item>
+        <item>
+            <![CDATA[<b>Wheel</b> - Click for setting fovy to 45(initial)]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item font-style="italic">
+            <![CDATA[5. Other action: ]]>
+        </item>
+        <item>
+            <![CDATA[<b>M</b> - Grab mouse pointer(If pointer is hidden, moving mouse for turning)]]>
+        </item>
+        <item>
+            <![CDATA[<b>Esc</b> - Ungrab mouse pointer]]>
+        </item>
+    </category>
+
+    <category name="Image viewer">
+        <item color="#FF0000" font-weight="bold">
+            <![CDATA[Key map: ]]>
+        </item>
+        <item font-style="italic">
+            <![CDATA[1. Translate action: ]]>
+        </item>
+        <item>
+            <![CDATA[<b>Up</b> - Move forward]]>
+        </item>
+        <item>
+            <![CDATA[<b>Down</b> - Move backward]]>
+        </item>
+        <item>
+            <![CDATA[<b>Left</b> - Move left]]>
+        </item>
+        <item>
+            <![CDATA[<b>Right</b> - Move right]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item font-style="italic">
+            <![CDATA[2. Rotate action: ]]>
+        </item>
+        <item>
+            <![CDATA[<b>,</b> - Rotate left]]>
+        </item>
+        <item>
+            <![CDATA[<b>.</b> - Rotate right]]>
+        </item>
+        <item>
+            <![CDATA[<b>/</b> - Rotate to 0]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item font-style="italic">
+            <![CDATA[3. Zoom action: ]]>
+        </item>
+        <item>
+            <![CDATA[<b>+ / Wheel up</b> - Zoom out]]>
+        </item>
+        <item>
+            <![CDATA[<b>- / Wheel down</b> - Zoom in]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item font-style="italic">
+            <![CDATA[4. Other action: ]]>
+        </item>
+        <item>
+            <![CDATA[<b>Esc</b> - All reset]]>
+        </item>
+    </category>
+
+    <category name="Coordinate">
+        <item color="#FF0000" font-weight="bold">
+            <![CDATA[All 3D coordinate system is base <i>Right-Hand</i>, like <i>OpenGL</i>.]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item>
+            <![CDATA[1. <b>CT 3D, Spacnaz 3D, CT-Ep2 3D, Egypt 3D, Clone 3D, CT-Ep3 3D</b>: (Z-axis is up-down direction. Roll clockwise 90 degree in OpenGL coordinate system (Rotate -90 degree with vector[1, 0, 0] in OpenGL))]]>
+        </item>
+        <item>
+            <![CDATA[<b>Right</b> - positive X]]>
+        </item>
+        <item>
+            <![CDATA[<b>Up</b> - positive Z]]>
+        </item>
+        <item>
+            <![CDATA[<b>Far</b> - positive Y]]>
+        </item>
+        <item>
+            <![CDATA[]]>
+        </item>
+        <item>
+            <![CDATA[<b>2. Racing 3D</b>: (Same as OpenGL)]]>
+        </item>
+        <item>
+            <![CDATA[<b>Right</b> - positive X]]>
+        </item>
+        <item>
+            <![CDATA[<b>Up</b> - positive Y]]>
+        </item>
+        <item>
+            <![CDATA[<b>Far</b> - nagative Z]]>
+        </item>
+    </category>
+
+</help>
+

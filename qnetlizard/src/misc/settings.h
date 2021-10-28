@@ -7,31 +7,54 @@
 
 #include "qdef.h"
 
-struct SettingItem {
-    QString name;
-    QVariant value;
-    QString title;
-    QString type;
-    QVariantHash prop;
-    SettingItem(const QString &n, const QVariant &val, const QString &t, const QString &c)
-        : name(n),
-          value(val),
-          title(t),
-          type(c)
-    {
-    }
-    SettingItem & AddProp(const QString &name, const QVariant &val)
-    {
-        prop.insert(name, val);
-        return *this;
-    }
-};
-
-typedef QMultiHash<QString, SettingItem> SettingItemMap;
-
 class Settings : public QObject
 {
     Q_OBJECT
+public:
+    struct SettingItem {
+        QString name;
+        QVariant value;
+        QString title;
+        QString type;
+        QString widget;
+        QString description;
+        QVariantHash prop;
+        SettingItem(const QString &n, const QVariant &val, const QString &t, const QString &c, const QString &w, const QString &d)
+            : name(n),
+              value(val),
+              title(t),
+              type(c),
+              widget(w),
+              description(d)
+        {
+        }
+        SettingItem & AddProp(const QString &name, const QVariant &val)
+        {
+            prop.insert(name, val);
+            return *this;
+        }
+    };
+    typedef QList<SettingItem> SettingItemList;
+    struct SettingItemCategory {
+        QString name;
+        QString title;
+        QString description;
+        SettingItemList settings;
+        SettingItemCategory(const QString &n, const QString &t, const QString &d)
+            : name(n),
+              title(t),
+              description(d)
+        {
+        }
+        SettingItemCategory & operator<<(const SettingItem &name)
+        {
+            settings.push_back(name);
+            return *this;
+        }
+    };
+
+    typedef QList<SettingItemCategory> SettingItemMap;
+
 public:
     virtual ~Settings();
     SINGLE_INSTANCE_DEF(Settings);
@@ -48,6 +71,7 @@ public slots:
 
 private:
     explicit Settings(QObject *parent = 0);
+    static bool LoadSettings(SettingItemMap &map);
 
 private:
     QSettings *m_settings;
