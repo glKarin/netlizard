@@ -233,6 +233,11 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     if(m_model->bg_tex && m_model->bg_tex)
         m_skyRenderer->SetTexture(m_model->bg_tex);
 
+    bound_s bound = BOUND(0, 0, 0, 0, 0, 0);
+    NETLizard_GetNETLizard3DMapBound(m_model, 0, 0, &bound);
+    NLVector3 lp;
+    bound_center(&bound, &lp);
+
     // RE3D using java MSG 3D, like OpenGL, y is up
     if(game == NL_RACING_EVOLUTION_3D)
     {
@@ -241,9 +246,13 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
         SimpleCameraActor *cameraActor = GetActor_T<SimpleCameraActor>(0);
         SimpleControlComponent *control = cameraActor->GetComponent_T<SimpleControlComponent>(1);
         control->SetMoveSens(control->MoveSens() / 20);
+        NLVector3 pos = VECTOR3(VECTOR3_X(lp), VECTOR3_Y(lp), BOUND_MAX_Z(bound));
+        GetActor(7)->SetPosition(pos);
     }
     else
     {
+        NLVector3 pos = VECTOR3(VECTOR3_X(lp), BOUND_MAX_Z(bound), VECTOR3_Y(lp));
+        GetActor(7)->SetPosition(pos);
         CurrentCamera()->SetZIsUp(true);
         m_sky3DCamera->SetZIsUp(true);
         NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]);
@@ -264,13 +273,6 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
                     GL_NETLizard_3D_Item_Mesh *mesh = m_model->item_meshes + i;
                     if(mesh->item_type == Item_Box_Type)
                     {
-//                        GLfloat xs = mesh->box.max[0] - mesh->box.min[0];
-//                        GLfloat ys = mesh->box.max[1] - mesh->box.min[1];
-//                        GLfloat zs = mesh->box.max[2] - mesh->box.min[2];
-//                        float d = m_sky3DCamera->ZDistance();
-//                        NLVector3 scale = VECTOR3(d / xs, d / ys, d / zs);
-//                        NLDEBUG_VECTOR3(scale);
-//                        m_sky3DActor->SetScale(scale);
                         NLVector3 skyPos = VECTOR3(mesh->position[0], mesh->position[2], -mesh->position[1]);
                         NLActor *camera_3d = GetActor(4);
                         camera_3d->SetPosition(skyPos);
@@ -281,14 +283,6 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
             }
         }
     }
-
-    bound_s bound = BOUND(0, 0, 0, 0, 0, 0);
-    NETLizard_GetNETLizard3DMapBound(m_model, 0, 0, &bound);
-    NLVector3 lp;
-    bound_center(&bound, &lp);
-    //VECTOR3_Y(lp) = (BOUND_MAX_Y(bound) - BOUND_MIN_Y(bound)) * 2;
-    NLVector3 pos = VECTOR3(VECTOR3_X(lp), VECTOR3_Z(lp), VECTOR3_Y(lp));
-    GetActor(7)->SetPosition(pos);
 
     GrabMouseCursor(true);
 

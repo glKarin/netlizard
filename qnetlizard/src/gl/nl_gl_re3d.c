@@ -8,8 +8,85 @@
 #include "netlizard_3d.h"
 #include "lib/vector3.h"
 #include "lib/bound.h"
+#include "lib/triangle.h"
 #include "nl_texture.h"
 #include "nl_util.h"
+
+static void NETLizard_TriangleStripToTriangles(GL_NETLizard_3D_Mesh *mesh)
+{
+    int count = 0;
+    int i, j, n, c, s;
+    GLushort index, index_1, index_2;
+
+    for(i = 0; i < mesh->count; i++)
+    {
+        const GL_NETLizard_3D_Material *m = mesh->materials + i;
+        count += (m->index_count - 2) * 3;
+    }
+
+    GL_NETLizard_3D_Vertex *vertexes = calloc(count, sizeof(GL_NETLizard_3D_Vertex));
+    GLushort *indexes = calloc(count, sizeof(GLushort));
+
+    n = 0;
+    c = 0;
+    s = 0;
+    for(i = 0; i < mesh->count; i++)
+    {
+        GL_NETLizard_3D_Material *m = mesh->materials + i;
+        for(j = 2; j < m->index_count; j++)
+        {
+            // odd: n-1, n-2, n ÆæÊý
+            // even: n-2, n-1, n Å¼Êý
+            index = mesh->vertex_data.index[m->index_start + j];
+            index_1 = mesh->vertex_data.index[m->index_start + j - 1];
+            index_2 = mesh->vertex_data.index[m->index_start + j - 2];
+            if(j % 2) // odd
+            {
+                memcpy(vertexes + n, mesh->vertex_data.vertex + (index_1), sizeof(GL_NETLizard_3D_Vertex));
+                memcpy(vertexes + n + 1, mesh->vertex_data.vertex + (index_2), sizeof(GL_NETLizard_3D_Vertex));
+                memcpy(vertexes + n + 2, mesh->vertex_data.vertex + (index), sizeof(GL_NETLizard_3D_Vertex));
+            }
+            else // even
+            {
+                memcpy(vertexes + n, mesh->vertex_data.vertex + (index_2), sizeof(GL_NETLizard_3D_Vertex));
+                memcpy(vertexes + n + 1, mesh->vertex_data.vertex + (index_1), sizeof(GL_NETLizard_3D_Vertex));
+                memcpy(vertexes + n + 2, mesh->vertex_data.vertex + (index), sizeof(GL_NETLizard_3D_Vertex));
+            }
+            indexes[n] = n;
+            indexes[n + 1] = n + 1;
+            indexes[n + 2] = n + 2;
+
+            vector3_s v_normal;
+            triangle_s tri = TRIANGLEV(vertexes[n].position, vertexes[n + 1].position, vertexes[n + 2].position);
+            triangle_cale_normal(&tri, &v_normal);
+            vertexes[n].normal[0] = VECTOR3_X(v_normal);
+            vertexes[n].normal[1] = VECTOR3_Y(v_normal);
+            vertexes[n].normal[2] = VECTOR3_Z(v_normal);
+            vertexes[n + 1].normal[0] = VECTOR3_X(v_normal);
+            vertexes[n + 1].normal[1] = VECTOR3_Y(v_normal);
+            vertexes[n + 1].normal[2] = VECTOR3_Z(v_normal);
+            vertexes[n + 2].normal[0] = VECTOR3_X(v_normal);
+            vertexes[n + 2].normal[1] = VECTOR3_Y(v_normal);
+            vertexes[n + 2].normal[2] = VECTOR3_Z(v_normal);
+
+            n += 3;
+            c += 3;
+        }
+        m->mode = GL_TRIANGLES;
+        m->index_count = c;
+        m->index_start = s;
+
+        s += n;
+        c = 0;
+    }
+
+    free(mesh->vertex_data.index);
+    free(mesh->vertex_data.vertex);
+    mesh->vertex_data.index = indexes;
+    mesh->vertex_data.index_count = count;
+    mesh->vertex_data.vertex = vertexes;
+    mesh->vertex_data.vertex_count = count;
+}
 
 GLboolean NETLizard_MakeGLRE3DModel(const NETLizard_RE3D_Model *model, const char *resource_path, GL_NETLizard_3D_Model *glmodel)
 {
@@ -97,6 +174,8 @@ GLboolean NETLizard_MakeGLRE3DModel(const NETLizard_RE3D_Model *model, const cha
         m->box.max[0] = BOUND_MAX_X(bound)/* + mesh->translation[0]*/;
         m->box.max[1] = BOUND_MAX_Y(bound)/* + mesh->translation[1]*/;
         m->box.max[2] = BOUND_MAX_Z(bound)/* + mesh->translation[2]*/;
+
+        NETLizard_TriangleStripToTriangles(m);
 	}
 
     const int texes_count = model->texes.count;

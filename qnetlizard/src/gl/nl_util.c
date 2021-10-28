@@ -55,21 +55,27 @@ void NETLizard_GetNETLizard3DMapBound(const GL_NETLizard_3D_Model *model, int *s
         else
             s = i;
         const GL_NETLizard_3D_Mesh *mesh = model->meshes + s;
+        float box_min_x = mesh->box.min[0] + mesh->position[0];
+        float box_min_y = mesh->box.min[1] + mesh->position[1];
+        float box_min_z = mesh->box.min[2] + mesh->position[2];
+        float box_max_x = mesh->box.max[0] + mesh->position[0];
+        float box_max_y = mesh->box.max[1] + mesh->position[1];
+        float box_max_z = mesh->box.max[2] + mesh->position[2];
         if(inited)
         {
-            if(mesh->box.min[0] < min_x)
-                min_x = mesh->box.min[0];
-            if(mesh->box.min[1] < min_y)
-                min_y = mesh->box.min[1];
-            if(mesh->box.min[2] < min_z)
-                min_z = mesh->box.min[2];
+            if(box_min_x < min_x)
+                min_x = box_min_x;
+            if(box_min_y < min_y)
+                min_y = box_min_y;
+            if(box_min_z < min_z)
+                min_z = box_min_z;
 
-            if(mesh->box.max[0] > max_x)
-                max_x = mesh->box.max[0];
-            if(mesh->box.max[1] > max_y)
-                max_y = mesh->box.max[1];
-            if(mesh->box.max[2] > max_z)
-                max_z = mesh->box.max[2];
+            if(box_max_x > max_x)
+                max_x = box_max_x;
+            if(box_max_y > max_y)
+                max_y = box_max_y;
+            if(box_max_z > max_z)
+                max_z = box_max_z;
         }
         else
         {
