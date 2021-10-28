@@ -16,7 +16,7 @@
 
 #define F_ZERO 0.1
 #define SHADOW_VOLUME_LENGTH 5000
-#define SHADOW_CAP_OFFSET 0.1
+#define SHADOW_CAP_OFFSET 0
 #define SHADOW_VOLUME_FAR_W 1
 #define SHADOW_MASK 1 //
 #define SHADOW_MASK_LIGHT 0 //
@@ -56,6 +56,24 @@ static int compare_line_segment(const line_s *l1, const line_s *l2)
     if(!l1 || !l2)
         return 0;
     return(((compare_vector3(&LINEV_A(l1), &LINEV_A(l2)) && compare_vector3(&LINEV_B(l1), &LINEV_B(l1))) || (compare_vector3(&LINEV_A(l1), &LINEV_B(l2)) && compare_vector3(&LINEV_B(l1), &LINEV_A(l2)))) ? 1 : 0);
+}
+
+static GLboolean shadow_volume_is_empty(const Shadow_Volume_s *sv)
+{
+    return sv->lines.isEmpty()
+            //&& sv->tops.isEmpty() && sv->bottoms.isEmpty()
+            ;
+}
+
+static GLboolean shadow_volume_need_cap(int method)
+{
+    return method == SHADOW_Z_FAIL/* || 1*/ ? GL_TRUE : GL_FALSE;
+}
+
+#define UP_NORMAL_LIMIT 0.866025
+static GLboolean normal_is_up_down(const float normal[3])
+{
+    return normal[2] > UP_NORMAL_LIMIT || normal[2] < -UP_NORMAL_LIMIT;
 }
 
 static int push_edge_line(LineList &list, const line_s *lp)
@@ -146,7 +164,7 @@ static vector3_s cale_light_direction(const vector3_s *v, const vector3_s *light
 	return r;
 }
 
-static void cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_Mesh *nl_mesh, int invert)
+static GLboolean cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_Mesh *nl_mesh, int invert)
 {
     GLmatrix nor_mat;
     GLmatrix mat;
@@ -157,14 +175,14 @@ static void cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_M
 	GLushort *nl_indexs;
     const GL_NETLizard_3D_Material *nl_mat;
 
-	if(!r || !nl_mesh)
-		return;
+    if(!r || !nl_mesh || nl_mesh->count == 0)
+        return GL_FALSE;
 
     Mesa_AllocGLMatrix(&mat);
     Mesa_AllocGLMatrix(&nor_mat);
     memset(r, 0, sizeof(GL_NETLizard_3D_Mesh));
     r->count =  nl_mesh->count;
-    r->materials = (GL_NETLizard_3D_Material *)calloc( nl_mesh->count, sizeof(GL_NETLizard_3D_Material));
+    r->materials = (GL_NETLizard_3D_Material *)calloc(nl_mesh->count, sizeof(GL_NETLizard_3D_Material));
     for(i = 0; i < nl_mesh->count; i++) // must GL_TRIANGLE
     {
         r->materials[i].index_start = nl_mesh->materials[i].index_start;
@@ -209,6 +227,7 @@ static void cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_M
 
     if(invert)
     {
+        nl_indexs = r->vertex_data.index;
         for(i = 0; i < r->count; i++)
         {
             nl_mat = r->materials + i;
@@ -255,10 +274,11 @@ static void cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard_3D_M
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glDisableClientState(GL_VERTEX_ARRAY);
 #endif
+    return GL_TRUE;
 }
 
 // cale shadow volume
-static void cale_mesh_volume_data(Shadow_Volume_s *r, const vector3_s *light_position, const int dirlight, const GL_NETLizard_3D_Mesh *mat, int method)
+static GLboolean cale_mesh_volume_data(Shadow_Volume_s *r, const vector3_s *light_position, const int dirlight, const GL_NETLizard_3D_Mesh *mat, int method, int invert)
 {
     int has;
     int i, j, n;
@@ -268,9 +288,9 @@ static void cale_mesh_volume_data(Shadow_Volume_s *r, const vector3_s *light_pos
     GLushort index1, index2, index3;
 
     if(!r || !light_position || !mat || !mat->count)
-		return;
+        return GL_FALSE;
 
-    const GLboolean Cap = method == SHADOW_Z_FAIL || 1 ? GL_TRUE : GL_FALSE;
+    const GLboolean Cap = shadow_volume_need_cap(method);
 
     for(i = 0; i < mat->count; i++)
     {
@@ -287,6 +307,12 @@ static void cale_mesh_volume_data(Shadow_Volume_s *r, const vector3_s *light_pos
             };
 
             point = pa[0];
+            if(invert == SHADOW_INVERT_EXCLUDE_CEIL_AND_FLOOR) // when render scene, cull up and down plane face.
+            {
+                if(normal_is_up_down(point->normal))
+                    continue;
+            }
+
             v = point->position;
             vector3_s nor = VECTOR3V(point->normal);
             vector3_s p = VECTOR3V(v);
@@ -314,40 +340,42 @@ static void cale_mesh_volume_data(Shadow_Volume_s *r, const vector3_s *light_pos
             {
                 // bottom cap triangle
                 // because some model not cap, so using face light vertex
-#if 0
                 if(Cap)
                 {
                     triangle_s tri = TRIANGLEV(pa[0]->position, pa[1]->position, pa[2]->position);
                     r->bottoms.push_back(tri);
                 }
-#endif
             }
         }
     }
 
 //#define _TEST_RENDER_EDGE_LINES
 #ifdef _TEST_RENDER_EDGE_LINES
-    render_edge_lines(lines);
+    render_edge_lines(r->lines);
 #endif
+    return GL_TRUE;
 }
 
-static void make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_s *light_position, const int dirlight, const GL_NETLizard_3D_Mesh *mat, int method)
+static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_s *light_position, const int dirlight, const GL_NETLizard_3D_Mesh *mat, int method, int invert)
 {
     int i, k, o;
     GL_NETLizard_3D_Material *m;
     GL_NETLizard_3D_Vertex *vd, *pa;
 
     if(!r || !light_position || !mat || !mat->count)
-        return;
+        return GL_FALSE;
 
     Shadow_Volume_s volume;
-    cale_mesh_volume_data(&volume, light_position, dirlight, mat, method);
+    if(!cale_mesh_volume_data(&volume, light_position, dirlight, mat, method, invert))
+        return GL_FALSE;
+    if(shadow_volume_is_empty(&volume))
+        return GL_FALSE;
 
     const LineList &lines = volume.lines;
     const TriangleList &tops = volume.tops;
     const TriangleList &bottoms = volume.tops; // using top caps
 
-    const GLboolean Cap = method == SHADOW_Z_FAIL || 1 ? GL_TRUE : GL_FALSE;
+    const GLboolean Cap = shadow_volume_need_cap(method);
 
     memset(r, 0, sizeof(GL_NETLizard_3D_Mesh));
     r->count = Cap ? 3 : 1; // top[1] bottom[2] caps, and side[0]
@@ -653,31 +681,27 @@ static void make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_s *li
 #endif
 		}
 	}
+    return GL_TRUE;
 }
 
-static void render_shadow_volume_mesh(const GL_NETLizard_3D_Mesh *nl_mesh, const vector3_s *light_position, const int dirlight, int m)
+static GLboolean render_shadow_volume_mesh(const GL_NETLizard_3D_Mesh *nl_mesh, const vector3_s *light_position, const int dirlight, int m, int invert)
 {
     if(!nl_mesh || !light_position)
-        return;
+        return GL_FALSE;
 
     glStencilOpSeparateProc glStencilOpSeparate = NULL;
     //glStencilOpSeparate = (glStencilOpSeparateProc)QGLContext::currentContext()->getProcAddress("glStencilOpSeparate");
 
     GL_NETLizard_3D_Mesh vol;
-    make_shadow_volume_mesh(&vol, light_position, dirlight, nl_mesh, m);
+    memset(&vol, 0, sizeof(GL_NETLizard_3D_Mesh));
+    if(!make_shadow_volume_mesh(&vol, light_position, dirlight, nl_mesh, m, invert))
+        return GL_FALSE;
+    if(vol.count == 0)
+        return GL_TRUE;
 
 	// render
 	// 1: get depth buffer of scene
 #if 0
-	glClearStencil(0);
-	glClear(GL_STENCIL_BUFFER_BIT);
-	if(render_count == 0)
-	{
-		glDisable(GL_BLEND);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-		//rendermat(nl_mesh);
-	}
 #endif
 	//goto __Exit;
 
@@ -756,62 +780,14 @@ static void render_shadow_volume_mesh(const GL_NETLizard_3D_Mesh *nl_mesh, const
 	//glDepthFunc(GL_LESS);
     //glDisableClientState(GL_VERTEX_ARRAY);
 
-#if 0
-#if SHADOW_MASK
-#if 0	
-	if(render_count != -1)
-	{
-		// 3: final render scene again
-		glCullFace(GL_BACK);
-		glDepthFunc(GL_EQUAL); // GL_LESS will not pass depth-testing
-		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-		glStencilFunc(GL_NOTEQUAL, 0, ~0U);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-		glEnable(GL_BLEND);
-
-		glDisable(GL_DEPTH_TEST);
-		Shadow_RenderMask();
-
-		// 4: reset OpenGL state
-		glDisable(GL_STENCIL_TEST);
-		glDepthFunc(GL_LESS);
-		glEnable(GL_DEPTH_TEST);
-		glDepthMask(GL_TRUE);
-	}
-#else
-		glCullFace(GL_BACK);
-		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-		glDisable(GL_STENCIL_TEST);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-		glDepthMask(GL_TRUE);
-#endif
-#else
-	if(render_count != -1)
-	{
-		// 3: final render scene again
-		glCullFace(GL_BACK);
-		glDepthFunc(GL_EQUAL); // GL_LESS will not pass depth-testing
-		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-		glStencilFunc(GL_EQUAL, 0, ~0U);
-		glBlendFunc(GL_ONE, GL_ONE);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-		glEnable(GL_BLEND);
-
-		rendermat(nl_mesh);
-
-		// 4: reset OpenGL state
-		glDepthMask(GL_TRUE);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_COLOR);
-		glDisable(GL_STENCIL_TEST);
-		glDisable(GL_BLEND);
-		glDepthFunc(GL_LESS);
-	}
-#endif
+#ifndef SHADOW_MASK
+    // 3: final render scene again
 #endif
     //glCullFace(GL_BACK);
 
 __Exit:
     delete_GL_NETLizard_3D_Mesh(&vol);
+    return GL_TRUE;
 }
 
 void NETLizard_RenderMeshShadow(const GL_NETLizard_3D_Mesh *mesh, const vector3_s *light_position, int dirlight, int method, int invert)
@@ -820,10 +796,10 @@ void NETLizard_RenderMeshShadow(const GL_NETLizard_3D_Mesh *mesh, const vector3_
 		return;
 
     GL_NETLizard_3D_Mesh m;
+    memset(&m, 0, sizeof(GL_NETLizard_3D_Mesh));
 
-    cale_mesh_transform(&m, mesh, invert);
-
-    render_shadow_volume_mesh(&m, light_position, dirlight, method);
+    if(cale_mesh_transform(&m, mesh, invert))
+        render_shadow_volume_mesh(&m, light_position, dirlight, method, invert);
 
     delete_GL_NETLizard_3D_Mesh(&m);
 }

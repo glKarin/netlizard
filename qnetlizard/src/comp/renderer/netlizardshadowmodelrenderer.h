@@ -24,6 +24,8 @@ public:
     void SetStencilShadowMethod(int method);
     void SetLightSourcePosition(const NLVector3 &pos);
     void SetLightSourceType(bool dirlight);
+    int ShadowObject() const;
+    void SetShadowObject(int obj);
 
 protected:
     virtual void InitRender();
@@ -41,6 +43,7 @@ private:
     NLVector3 m_lightPosition;
     bool m_directionLighting;
     int m_stencilShadowMethod; // SHADOW_Z_FAIL | SHADOW_Z_PASS
+    int m_shadowObject; // 1, 2, 4
 
     Q_DISABLE_COPY(NETLizardShadowModelRenderer)
     

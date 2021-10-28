@@ -42,4 +42,6 @@
 #define BUILD_TIME QLocale(QLocale::English).toDateTime(__DATE__ " " __TIME__, "MMM dd yyyy hh:mm:ss")
 #define BUILD_TIMEZONE "+0800" // zh_cn
 
+#define BITS(x) (1 << (x))
+
 #endif // _KARIN_QDEF_H

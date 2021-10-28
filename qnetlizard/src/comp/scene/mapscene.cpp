@@ -18,6 +18,7 @@
 #include "settings.h"
 #include "matrix.h"
 #include "nl_util.h"
+#include "nl_shadow_render.h"
 
 MapScene::MapScene(QWidget *parent)
     : NLScene(parent),
@@ -89,9 +90,11 @@ MapScene::MapScene(QWidget *parent)
     m_shadowRenderer = new NETLizardShadowModelRenderer;
     m_shadowActor->SetRenderable(m_shadowRenderer);
     m_shadowRenderer->SetCull(settings->GetSetting<bool>("RENDER/scene_cull"));
-    int method = settings->GetSetting<int>("RENDER/shadow");
+    int method = settings->GetSetting<int>("RENDER/shadow", SHADOW_Z_FAIL);
     m_shadowActor->SetEnabled(method > 0);
     m_shadowRenderer->SetStencilShadowMethod(method);
+    int shadowObj = settings->GetSetting<int>("RENDER/shadow_object", NETLIZARD_SHADOW_RENDER_ITEM);
+    m_shadowRenderer->SetShadowObject(shadowObj);
 
     // light source
     prop.clear();
@@ -341,5 +344,10 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
         int m = value.toInt();
         m_shadowActor->SetEnabled(m > 0);
         m_shadowRenderer->SetStencilShadowMethod(m);
+    }
+    else if(name == "RENDER/shadow_object")
+    {
+        int shadowObj = value.toInt();
+        m_shadowRenderer->SetShadowObject(shadowObj);
     }
 }

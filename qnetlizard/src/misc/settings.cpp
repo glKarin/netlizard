@@ -4,6 +4,7 @@
 #include <QStringList>
 
 #include "stencil_shadow.h"
+#include "nl_shadow_render.h"
 
 Settings::Settings(QObject *parent) :
     QObject(parent),
@@ -51,7 +52,29 @@ const SettingItemMap & Settings::SettingsConfig()
         map.insert("name", "Stencil shadow: Z-PASS");
         map.insert("value", 1);
         list << map;
-        _settingsConfig.insert("render", SettingItem("RENDER/shadow", SHADOW_Z_FAIL, "Render simple shadow", "enum").AddProp("items", list));
+        _settingsConfig.insert("render", SettingItem("RENDER/shadow", SHADOW_Z_FAIL, "Render simple shadow", "option").AddProp("items", list));
+
+        list.clear();
+        map.clear();
+//        map.insert("name", "No render shadow");
+//        map.insert("value", NETLIZARD_SHADOW_RENDER_NONE);
+//        list << map;
+        map.insert("name", "Only render item shadow");
+        map.insert("value", NETLIZARD_SHADOW_RENDER_ITEM);
+        list << map;
+        map.insert("name", "Only render scene wall shadow");
+        map.insert("value", NETLIZARD_SHADOW_RENDER_SCENE_WALL);
+        list << map;
+        map.insert("name", "Only render scene shadow");
+        map.insert("value", NETLIZARD_SHADOW_RENDER_SCENE);
+        list << map;
+        map.insert("name", "Only render item and scene wall shadow");
+        map.insert("value", NETLIZARD_SHADOW_RENDER_ITEM | NETLIZARD_SHADOW_RENDER_SCENE_WALL);
+        list << map;
+        map.insert("name", "Render all shadow");
+        map.insert("value", NETLIZARD_SHADOW_RENDER_ALL);
+        list << map;
+        _settingsConfig.insert("render", SettingItem("RENDER/shadow_object", NETLIZARD_SHADOW_RENDER_ITEM, "Render shadow object", "option").AddProp("items", list));
     }
     return _settingsConfig;
 }

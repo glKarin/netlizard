@@ -88,7 +88,7 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
             connect(w, SIGNAL(clicked(bool)), this, SLOT(OnBoolChanged(bool)));
             widget = w;
         }
-        else if(item.type == "enum")
+        else if(item.type == "option")
         {
             QComboBox *w = new QComboBox;
             w->setObjectName(item.name);

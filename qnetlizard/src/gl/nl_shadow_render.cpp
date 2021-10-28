@@ -14,6 +14,8 @@
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); \
     glDisable(GL_BLEND); \
     glDisable(GL_ALPHA_TEST); \
+    glEnable(GL_POLYGON_OFFSET_FILL); \
+    glPolygonOffset(0.1, 0.1); \
     glClear(GL_STENCIL_BUFFER_BIT);
 
 
@@ -25,6 +27,8 @@
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); \
     glEnable(GL_BLEND); \
     glStencilFunc(GL_ALWAYS, 0, ~0U); \
+    glDisable(GL_POLYGON_OFFSET_FILL); \
+    glPolygonOffset(0, 0); \
     glEnable(GL_ALPHA_TEST);
 
 #define SHADOW_MASK_Z 1
@@ -73,7 +77,7 @@ static void render_shadow_mask(void)
     //glEnable(GL_DEPTH_TEST);
 }
 
-void NETLizard_RenderNETLizardModelSceneShadow(const GL_NETLizard_3D_Model *map_model, const int *scenes, unsigned int count, const vector3_s *light_position, int dirlight, int method)
+void NETLizard_RenderNETLizardModelSceneShadow(const GL_NETLizard_3D_Model *map_model, const int *scenes, unsigned int count, const vector3_s *light_position, int dirlight, int method, int render_mask)
 {
 	GLuint i;
 	GLint c;
@@ -82,43 +86,61 @@ void NETLizard_RenderNETLizardModelSceneShadow(const GL_NETLizard_3D_Model *map_
     GL_NETLizard_3D_Item_Mesh *im;
 
     if(!map_model || !light_position)
-		return;
-	if(!map_model->item_meshes)
-		return;
+        return;
 
     GLboolean all = !scenes || count == 0;
 
     if(all)
     {
-        NETLizard_RenderNETLizardModelShadow(map_model, light_position, dirlight, method);
+        NETLizard_RenderNETLizardModelShadow(map_model, light_position, dirlight, method, render_mask);
     }
     else
     {
-        SHADOW_BEGIN
-        c = map_model->count;
-        for(i = 0; i < count; i++)
+        if((render_mask & NETLIZARD_SHADOW_RENDER_SCENE_WALL) || (render_mask & NETLIZARD_SHADOW_RENDER_SCENE_CEIL_AND_FLOOR))
         {
-            if(scenes[i] < 0 && scenes[i] >= c)
-                continue;
-            m = map_model->meshes + scenes[i];
-            //NETLizard_RenderMeshShadow(m, light);
-            for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
+            int invert = (render_mask & NETLIZARD_SHADOW_RENDER_SCENE_CEIL_AND_FLOOR) ? SHADOW_INVERT_ALL : SHADOW_INVERT_EXCLUDE_CEIL_AND_FLOOR;
+            SHADOW_BEGIN
             {
-                im = map_model->item_meshes + j;
-                if(!im->materials) // REDO
-                    continue;
-                if(im->item_type == Item_Box_Type)
-                    continue;
-                NETLizard_RenderMeshShadow(im, light_position, dirlight, method, 0);
+                c = map_model->count;
+                for(i = 0; i < count; i++)
+                {
+                    if(scenes[i] < 0 && scenes[i] >= c)
+                        continue;
+                    m = map_model->meshes + scenes[i];
+                    NETLizard_RenderMeshShadow(m, light_position, dirlight, method, invert);
+                }
             }
-            //NETLizard_RenderMeshShadow(m, light_position, dirlight, method, 1);
+            SHADOW_END
+            render_shadow_mask();
         }
-        SHADOW_END
-                render_shadow_mask();
+        if(render_mask & NETLIZARD_SHADOW_RENDER_ITEM)
+        {
+            SHADOW_BEGIN
+            {
+                c = map_model->count;
+                for(i = 0; i < count; i++)
+                {
+                    if(scenes[i] < 0 && scenes[i] >= c)
+                        continue;
+                    m = map_model->meshes + scenes[i];
+                    for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
+                    {
+                        im = map_model->item_meshes + j;
+                        if(!im->materials) // REDO
+                            continue;
+                        if(im->item_type == Item_Box_Type)
+                            continue;
+                        NETLizard_RenderMeshShadow(im, light_position, dirlight, method, 0);
+                    }
+                }
+            }
+            SHADOW_END
+            render_shadow_mask();
+        }
     }
 }
 
-void NETLizard_RenderNETLizardModelShadow(const GL_NETLizard_3D_Model *map_model, const vector3_s *light_position, int dirlight, int method)
+void NETLizard_RenderNETLizardModelShadow(const GL_NETLizard_3D_Model *map_model, const vector3_s *light_position, int dirlight, int method, int render_mask)
 {
 	GLuint i;
 	GLuint j;
@@ -126,30 +148,45 @@ void NETLizard_RenderNETLizardModelShadow(const GL_NETLizard_3D_Model *map_model
 	GL_NETLizard_3D_Item_Mesh *im;
 
     if(!map_model || !light_position)
-		return;
-	if(!map_model->item_meshes)
         return;
 
-    SHADOW_BEGIN
-
-        for(i = 0; i < map_model->count; i++)
+    if((render_mask & NETLIZARD_SHADOW_RENDER_SCENE_WALL) || (render_mask & NETLIZARD_SHADOW_RENDER_SCENE_CEIL_AND_FLOOR))
+    {
+        SHADOW_BEGIN
         {
-            m = map_model->meshes + i;
-            for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
+            int invert = (render_mask & NETLIZARD_SHADOW_RENDER_SCENE_CEIL_AND_FLOOR) ? SHADOW_INVERT_ALL : SHADOW_INVERT_EXCLUDE_CEIL_AND_FLOOR;
+            for(i = 0; i < map_model->count; i++)
             {
-                im = map_model->item_meshes + j;
-                if(!im->materials) // REDO
-                    continue;
-                if(im->item_type == Item_Box_Type)
-                    continue;
-                NETLizard_RenderMeshShadow(im, light_position, dirlight, method, 0);
+                m = map_model->meshes + i;
+                NETLizard_RenderMeshShadow(m, light_position, dirlight, method, invert);
             }
-            //NETLizard_RenderMeshShadow(m, light_position, dirlight, method, 1);
         }
-
-    SHADOW_END
-            render_shadow_mask();
+        SHADOW_END
+        render_shadow_mask();
+    }
+    if(render_mask & NETLIZARD_SHADOW_RENDER_ITEM)
+    {
+        SHADOW_BEGIN
+        {
+            for(i = 0; i < map_model->count; i++)
+            {
+                m = map_model->meshes + i;
+                for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
+                {
+                    im = map_model->item_meshes + j;
+                    if(!im->materials) // REDO
+                        continue;
+                    if(im->item_type == Item_Box_Type)
+                        continue;
+                    NETLizard_RenderMeshShadow(im, light_position, dirlight, method, 0);
+                }
+            }
+        }
+        SHADOW_END
+        render_shadow_mask();
+    }
 }
+
 #if 0
 void Shadow_RenderNETLizard3DAnimationModel(const GL_NETLizard_3D_Animation_Model *m, int a, int f, const float pos[3], float xangle, float yangle, const Light_Source_s *light, int method)
 {

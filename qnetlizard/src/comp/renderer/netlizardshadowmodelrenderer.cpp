@@ -12,7 +12,8 @@ NETLizardShadowModelRenderer::NETLizardShadowModelRenderer(int method, NLActor *
     m_scenes(0),
     m_sceneCount(0),
     m_directionLighting(false),
-    m_stencilShadowMethod(method)
+    m_stencilShadowMethod(method),
+    m_shadowObject(NETLIZARD_SHADOW_RENDER_ITEM)
 {
     SetLightSource();
 }
@@ -43,12 +44,12 @@ void NETLizardShadowModelRenderer::Render()
         {
             if(m_scenes && m_sceneCount > 0)
             {
-                NETLizard_RenderNETLizardModelSceneShadow(m_model, m_scenes, m_sceneCount, &m_lightPosition, m_directionLighting, m_stencilShadowMethod);
+                NETLizard_RenderNETLizardModelSceneShadow(m_model, m_scenes, m_sceneCount, &m_lightPosition, m_directionLighting, m_stencilShadowMethod, m_shadowObject);
             }
         }
         else
         {
-            NETLizard_RenderNETLizardModelShadow(m_model, &m_lightPosition, m_directionLighting, m_stencilShadowMethod);
+            NETLizard_RenderNETLizardModelShadow(m_model, &m_lightPosition, m_directionLighting, m_stencilShadowMethod, m_shadowObject);
         }
     }
     glPopMatrix();
@@ -185,4 +186,15 @@ void NETLizardShadowModelRenderer::SetStencilShadowMethod(int method)
 {
     if(m_stencilShadowMethod != method)
         m_stencilShadowMethod = method;
+}
+
+int NETLizardShadowModelRenderer::ShadowObject() const
+{
+    return m_shadowObject;
+}
+
+void NETLizardShadowModelRenderer::SetShadowObject(int obj)
+{
+    if(m_shadowObject != obj)
+        m_shadowObject = obj;
 }
