@@ -174,7 +174,7 @@ GLboolean new_OpenGL_texture_2d_from_memory(const unsigned char *d, unsigned int
     }
 
     // SOIL_load_OGL_texture()
-    make_OpenGL_texture_2d(data, 0, width, height, format, g_tex);
+    make_OpenGL_texture_2d((char *)data, 0, width, height, format, g_tex);
 
     free(data);
 
@@ -249,7 +249,7 @@ GLboolean new_OpenGL_texture_2d(texture_s *g_tex, const char *dds)
         return GL_FALSE;
     }
 
-    make_OpenGL_texture_2d(data, 0, width, height, format, g_tex);
+    make_OpenGL_texture_2d((char *)data, 0, width, height, format, g_tex);
 
     free(data);
     return GL_TRUE;

@@ -17,7 +17,7 @@ int IOUtility::file_put_contents(const QString &file, const char *data, quint64 
         return false;
     QDataStream os(&f);
     int l = os.writeRawData(data, len);
-    if(l != -1 && l == len)
+    if(l != -1 && (uint)l == len)
         res = true;
     f.flush();
     f.close();

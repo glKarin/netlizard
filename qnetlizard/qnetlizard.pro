@@ -23,7 +23,8 @@ HEADERS += \
     src/misc/settings.h \
     src/comp/component/simplelightsourcecomponent.h \
     src/comp/simplelightsourceactor.h \
-    src/changelogdialog.h
+    src/changelogdialog.h \
+    src/gl/nl_gl_debug.h
 
 SOURCES += \
     main.cpp \
@@ -32,7 +33,8 @@ SOURCES += \
     src/misc/settings.cpp \
     src/comp/component/simplelightsourcecomponent.cpp \
     src/comp/simplelightsourceactor.cpp \
-    src/changelogdialog.cpp
+    src/changelogdialog.cpp \
+    src/gl/nl_gl_debug.c
 
 # Widget
 HEADERS += \
@@ -272,6 +274,11 @@ SOURCES += \
 RESOURCES += \
     qnetlizard.qrc
 
+MOC_DIR = ./moc
+OBJECTS_DIR = ./obj
+RCC_DIR = ./
+UI_DIR = ./ui
+
 #i18n.files = \
 #    i18n/$${TARGET}.zh_CN.ts \
 #    i18n/$${TARGET}.zh_CN.qm
@@ -279,6 +286,9 @@ RESOURCES += \
 
 #INSTALLS        += i18n
 
-OTHER_FILES += README.md
+OTHER_FILES += README.md \
+                debian/changelog \
+                resource/help.xml \
+                resource/setting.xml
 
 INSTALLS += qnetlizard

@@ -83,8 +83,9 @@ bool Settings::LoadSettings(Settings::SettingItemMap &map)
         QString categoryTitle = category.attribute("name");
         QString categoryName = category.attribute("alias");
         QString categoryDesc = category.attribute("description");
-        QString categoryCate = category.attribute("category");
-        SettingItemCategory sc(categoryName, categoryTitle, categoryDesc);
+        QString categoryGroup = category.attribute("group");
+        SettingItemCategory sc(categoryName, categoryTitle, categoryGroup, categoryDesc);
+
         QDomNodeList items = category.childNodes();
         for(int j = 0; j < items.size(); j++)
         {

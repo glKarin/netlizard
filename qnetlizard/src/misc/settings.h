@@ -38,11 +38,13 @@ public:
     struct SettingItemCategory {
         QString name;
         QString title;
+        QString group;
         QString description;
         SettingItemList settings;
-        SettingItemCategory(const QString &n, const QString &t, const QString &d)
+        SettingItemCategory(const QString &n, const QString &t, const QString &g, const QString &d)
             : name(n),
               title(t),
+              group(g),
               description(d)
         {
         }

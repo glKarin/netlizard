@@ -148,48 +148,11 @@ GLvoid NETLizard_RenderGL3DMesh(const GL_NETLizard_3D_Mesh *m, texture_s **const
         {
             if(texes && m->materials[j].tex_index >= 0 && texes[m->materials[j].tex_index])
                 glBindTexture(GL_TEXTURE_2D, texes[m->materials[j].tex_index]->texid);
-            glDrawElements(/*GL_TRIANGLES*/m->materials[j].mode, m->materials[j].index_count, GL_UNSIGNED_SHORT, m->vertex_data.index + m->materials[j].index_start);
+            glDrawElements(/*GL_TRIANGLES*/m->materials[j].mode, m->materials[j].index_count, GL_UNSIGNED_SHORT, m->materials[j].index);
             glBindTexture(GL_TEXTURE_2D, 0);
         }
     }
     glPopMatrix();
-
-#if 0 // render point and normal
-	glDisable(GL_DEPTH_TEST);
-	glLineWidth(4);
-	glPointSize(25);
-	GLfloat nv[6];
-	int i;
-	for(i = 0; i < m->count; i++)
-	{
-		int j;
-		int vcount = m->materials[i].index_count;
-		for(j = 0; j < vcount; j++)
-		{
-            int start = m->vertex_data.index[m->materials[i].index_start + j];
-            vector3_s rv = VECTOR3V(m->vertex_data.vertex[start].position);
-            nv[0] = VECTOR3_X(rv);
-            nv[1] = VECTOR3_Y(rv);
-            nv[2] = VECTOR3_Z(rv);
-
-            vector3_s rv2 = VECTOR3V(m->vertex_data.vertex[start].normal);
-            vector3_scalev(&rv2, 20);
-            rv2 = vector3_add(&rv, &rv2);
-            nv[3] = VECTOR3_X(rv2);
-            nv[4] = VECTOR3_Y(rv2);
-            nv[5] = VECTOR3_Z(rv2);
-			glVertexPointer(3, GL_FLOAT, 0, nv);
-			glColor4f(1.0, 0.0, 1.0, 1.0);
-			glDrawArrays(GL_LINES, 0, 2);
-			glColor4f(0.0, 0.0, 1.0, 1.0);
-			glDrawArrays(GL_POINTS, 0, 1);
-		}
-	}
-	glEnable(GL_DEPTH_TEST);
-	glLineWidth(1);
-	glPointSize(1);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-#endif
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
@@ -213,7 +176,7 @@ GLvoid NETLizard_RenderGL3DItemMesh(const GL_NETLizard_3D_Mesh *m, const texture
     GLuint j;
     for(j = 0; j < m->count; j++)
     {
-        glDrawElements(/*GL_TRIANGLES*/m->materials[j].mode, m->materials[j].index_count, GL_UNSIGNED_SHORT, m->vertex_data.index + m->materials[j].index_start);
+        glDrawElements(/*GL_TRIANGLES*/m->materials[j].mode, m->materials[j].index_count, GL_UNSIGNED_SHORT, m->materials[j].index);
     }
 
     if(tex)

@@ -4,6 +4,7 @@
 
 // clone 3d is cu.png.
 // sprite texture file is u0.png, other 3D game like this, u\d.png file.
+// ccc.png + ccu.png
 
 static T_array(jshort[6]) clone3d_class_g__function_M_void__read_sprite_map(const byte_array *arr);
 

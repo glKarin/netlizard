@@ -128,8 +128,8 @@ void TestScene::Init()
     NLActor *actor = new NLActor;
     actor->setObjectName("[[[ChildRenderActor");
     actor->SetRenderable(renderer);
-    NLVector3 v = VECTOR3(-800, 200, -200);
-    NLVector3 vr = VECTOR3(45,0,0);
+    //NLVector3 v = VECTOR3(-800, 200, -200);
+    //NLVector3 vr = VECTOR3(45,0,0);
     //actor->SetPosition(v);
     //actor->SetRotation(vr);
     //m_actors.Get(1)->SetRotation(vr);

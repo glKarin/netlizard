@@ -189,20 +189,21 @@ static GLboolean cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard
         r->materials[i].index_count = nl_mesh->materials[i].index_count;
         r->materials[i].mode = GL_TRIANGLES;
         r->materials[i].tex_index = 0;
+        r->materials[i].index = (GLushort *)calloc(nl_mesh->materials[i].index_count, sizeof(GLushort));
+        memcpy(r->materials[i].index, nl_mesh->materials[i].index, nl_mesh->materials[i].index_count * sizeof(GLushort));
     }
-    r->vertex_data.index_count = nl_mesh->vertex_data.index_count;
-    r->vertex_data.index = (GLushort *)calloc(nl_mesh->vertex_data.index_count, sizeof(GLushort));
-    memcpy(r->vertex_data.index, nl_mesh->vertex_data.index, sizeof(GLushort) * nl_mesh->vertex_data.index_count);
+//    r->vertex_data.index_count = nl_mesh->vertex_data.index_count;
+//    r->vertex_data.index = (GLushort *)calloc(nl_mesh->vertex_data.index_count, sizeof(GLushort));
+//    memcpy(r->vertex_data.index, nl_mesh->vertex_data.index, sizeof(GLushort) * nl_mesh->vertex_data.index_count);
     r->vertex_data.vertex_count = nl_mesh->vertex_data.vertex_count;
     r->vertex_data.vertex = (GL_NETLizard_3D_Vertex *)calloc(nl_mesh->vertex_data.vertex_count, sizeof(GL_NETLizard_3D_Vertex));
 
-    nl_indexs = nl_mesh->vertex_data.index;
 	for(i = 0; i < nl_mesh->count; i++)
 	{
 		nl_mat = nl_mesh->materials + i;
         for(j = 0; j < nl_mat->index_count; j++)
         {
-            m = nl_indexs[nl_mat->index_start + j];
+            m = nl_mat->index[j];
             nl_vertex = nl_mesh->vertex_data.vertex + m;
             point = r->vertex_data.vertex + m;
 
@@ -227,15 +228,15 @@ static GLboolean cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard
 
     if(invert)
     {
-        nl_indexs = r->vertex_data.index;
         for(i = 0; i < r->count; i++)
         {
             nl_mat = r->materials + i;
+            nl_indexs = nl_mat->index;
             for(j = 0; j < nl_mat->index_count; j += 3)
             {
-                m = nl_indexs[nl_mat->index_start + j];
-                nl_indexs[nl_mat->index_start + j] = nl_indexs[nl_mat->index_start + j + 1];
-                nl_indexs[nl_mat->index_start + j + 1] = m;
+                m = nl_indexs[j];
+                nl_indexs[j] = nl_indexs[j + 1];
+                nl_indexs[j + 1] = m;
             }
         }
     }
@@ -281,7 +282,7 @@ static GLboolean cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard
 static GLboolean cale_mesh_volume_data(Shadow_Volume_s *r, const vector3_s *light_position, const int dirlight, const GL_NETLizard_3D_Mesh *mat, int method, int invert)
 {
     int has;
-    int i, j, n;
+    unsigned int i, j, n;
     const GL_NETLizard_3D_Vertex *point;
     GL_NETLizard_3D_Material *m;
     const GLfloat *v;
@@ -297,9 +298,9 @@ static GLboolean cale_mesh_volume_data(Shadow_Volume_s *r, const vector3_s *ligh
         m = mat->materials + i;
         for(j = 0; j < m->index_count; j += 3)
         {
-            index1 = mat->vertex_data.index[m->index_start + j];
-            index2 = mat->vertex_data.index[m->index_start + j + 1];
-            index3 = mat->vertex_data.index[m->index_start + j + 2];
+            index1 = m->index[j];
+            index2 = m->index[j + 1];
+            index3 = m->index[j + 2];
             const GL_NETLizard_3D_Vertex *pa[] = {
                 mat->vertex_data.vertex + index1,
                 mat->vertex_data.vertex + index2,
@@ -358,7 +359,7 @@ static GLboolean cale_mesh_volume_data(Shadow_Volume_s *r, const vector3_s *ligh
 
 static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_s *light_position, const int dirlight, const GL_NETLizard_3D_Mesh *mat, int method, int invert)
 {
-    int i, k, o;
+    int i, o, q, n;
     GL_NETLizard_3D_Material *m;
     GL_NETLizard_3D_Vertex *vd, *pa;
 
@@ -389,13 +390,13 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
     }
     r->vertex_data.vertex_count = vcount;
     r->vertex_data.vertex = (GL_NETLizard_3D_Vertex *)calloc(r->vertex_data.vertex_count, sizeof(GL_NETLizard_3D_Vertex));
-    r->vertex_data.index_count = vcount;
-    r->vertex_data.index = (GLushort *)calloc(r->vertex_data.index_count, sizeof(GLushort));
+//    r->vertex_data.index_count = vcount;
+//    r->vertex_data.index = (GLushort *)calloc(r->vertex_data.index_count, sizeof(GLushort));
     m = r->materials;
     m->mode = GL_TRIANGLES;
     m->index_start = 0;
     m->index_count = lines.size() * 6;
-	k = 0;
+    m->index = (GLushort *)calloc(m->index_count, sizeof(GLushort));
     o = 0;
     vd = r->vertex_data.vertex;
 	// TODO: cale clock wise, now the lighting source must be above all cubes
@@ -466,42 +467,42 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
 	glDisableClientState(GL_VERTEX_ARRAY);
 #endif
 		// triangle 1
-        pa = vd + k * 6;
+        pa = vd + i * 6;
         pa->position[0] = LINE_A_X(lpptr);
         pa->position[1] = LINE_A_Y(lpptr);
         pa->position[2] = LINE_A_Z(lpptr);
-        pa = vd + k * 6 + 1;
+        pa = vd + i * 6 + 1;
         pa->position[0] = VECTOR3_X(dir_a);
         pa->position[1] = VECTOR3_Y(dir_a);
         pa->position[2] = VECTOR3_Z(dir_a);
         //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
-        pa = vd + k * 6 + 2;
+        pa = vd + i * 6 + 2;
         pa->position[0] = LINE_B_X(lpptr);
         pa->position[1] = LINE_B_Y(lpptr);
         pa->position[2] = LINE_B_Z(lpptr);
 
 		// triangle 2
-        pa = vd + k * 6 + 3;
+        pa = vd + i * 6 + 3;
         pa->position[0] = VECTOR3_X(dir_a);
         pa->position[1] = VECTOR3_Y(dir_a);
         pa->position[2] = VECTOR3_Z(dir_a);
         //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
-        pa = vd + k * 6 + 4;
+        pa = vd + i * 6 + 4;
         pa->position[0] = VECTOR3_X(dir_b);
         pa->position[1] = VECTOR3_Y(dir_b);
         pa->position[2] = VECTOR3_Z(dir_b);
         //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
-        pa = vd + k * 6 + 5;
+        pa = vd + i * 6 + 5;
         pa->position[0] = LINE_B_X(lpptr);
         pa->position[1] = LINE_B_Y(lpptr);
         pa->position[2] = LINE_B_Z(lpptr);
 
-        int six = 6 + o;
-        for(; o < six; o++)
+        for(q = 0; q < 6; q++)
         {
-            r->vertex_data.index[o] = o;
+            n = i * 6 + q;
+            m->index[n] = n;
         }
-		k++;
+        o += 6;
 	}
 
     if(Cap)
@@ -513,11 +514,11 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
         m->mode = GL_TRIANGLES;
         m->index_count = tops.size() * 3;
         m->index_start = o;
+        m->index = (GLushort *)calloc(m->index_count, sizeof(GLushort));
 
-        m = r->materials + 1;
-        for(k = 0; k < tops.size(); k++)
+        for(i = 0; i < tops.size(); i++)
 		{
-            const triangle_s &tri = tops[k];
+            const triangle_s &tri = tops[i];
 
             if(SHADOW_CAP_OFFSET)
             {
@@ -533,42 +534,42 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
                 vector3_scalev(&dir_c, SHADOW_CAP_OFFSET);
                 dir_c = vector3_add(&(TRIANGLE_C(tri)), &dir_c);
 
-                pa = vd + k * 3;
+                pa = vd + i * 3;
                 pa->position[0] = VECTOR3_X(dir_a);
                 pa->position[1] = VECTOR3_Y(dir_a);
                 pa->position[2] = VECTOR3_Z(dir_a);
                 //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
-                pa = vd + k * 3 + 1;
+                pa = vd + i * 3 + 1;
                 pa->position[0] = VECTOR3_X(dir_b);
                 pa->position[1] = VECTOR3_Y(dir_b);
                 pa->position[2] = VECTOR3_Z(dir_b);
                 //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
-                pa = vd + k * 3 + 2;
+                pa = vd + i * 3 + 2;
                 pa->position[0] = VECTOR3_X(dir_c);
                 pa->position[1] = VECTOR3_Y(dir_c);
                 pa->position[2] = VECTOR3_Z(dir_c);
             }
             else
             {
-                pa = vd + k * 3;
+                pa = vd + i * 3;
                 pa->position[0] = TRIANGLE_A_X(tri);
                 pa->position[1] = TRIANGLE_A_Y(tri);
                 pa->position[2] = TRIANGLE_A_Z(tri);
-                pa = vd + k * 3 + 1;
+                pa = vd + i * 3 + 1;
                 pa->position[0] = TRIANGLE_B_X(tri);
                 pa->position[1] = TRIANGLE_B_Y(tri);
                 pa->position[2] = TRIANGLE_B_Z(tri);
-                pa = vd + k * 3 + 2;
+                pa = vd + i * 3 + 2;
                 pa->position[0] = TRIANGLE_C_X(tri);
                 pa->position[1] = TRIANGLE_C_Y(tri);
                 pa->position[2] = TRIANGLE_C_Z(tri);
             }
 
-            int three = 3 + o;
-            for(; o < three; o++)
+            for(q = 0; q < 3; q++)
             {
-                r->vertex_data.index[o] = o;
+                m->index[i * 3 + q] = o + q;
             }
+            o += 3;
 //#define _TEST_RENDER_SHADOW_VOLUME_TOP
 #ifdef _TEST_RENDER_SHADOW_VOLUME_TOP
             glEnableClientState(GL_VERTEX_ARRAY);
@@ -609,10 +610,11 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
         m->mode = GL_TRIANGLES;
         m->index_count = bottoms.size() * 3;
         m->index_start = o;
+        m->index = (GLushort *)calloc(m->index_count, sizeof(GLushort));
 
-        for(k = 0; k < bottoms.size(); k++)
+        for(i = 0; i < bottoms.size(); i++)
         {
-            const triangle_s &tri = bottoms[k];
+            const triangle_s &tri = bottoms[i];
 
             vector3_s dir_a = cale_light_direction(&(TRIANGLE_A(tri)), light_position, dirlight);
             vector3_scalev(&dir_a, SHADOW_VOLUME_LENGTH + SHADOW_CAP_OFFSET);
@@ -628,27 +630,27 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
 
             qSwap(dir_a, dir_b);
 
-            pa = vd + k * 3;
+            pa = vd + i * 3;
             pa->position[0] = VECTOR3_X(dir_a);
             pa->position[1] = VECTOR3_Y(dir_a);
             pa->position[2] = VECTOR3_Z(dir_a);
             //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
-            pa = vd + k * 3 + 1;
+            pa = vd + i * 3 + 1;
             pa->position[0] = VECTOR3_X(dir_b);
             pa->position[1] = VECTOR3_Y(dir_b);
             pa->position[2] = VECTOR3_Z(dir_b);
             //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
-            pa = vd + k * 3 + 2;
+            pa = vd + i * 3 + 2;
             pa->position[0] = VECTOR3_X(dir_c);
             pa->position[1] = VECTOR3_Y(dir_c);
             pa->position[2] = VECTOR3_Z(dir_c);
             //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
 
-            int three = 3 + o;
-            for(; o < three; o++)
+            for(q = 0; q < 3; q++)
             {
-                r->vertex_data.index[o] = o;
+                m->index[i * 3 + q] = o + q;
             }
+            o += 3;
 //#define _TEST_RENDER_SHADOW_VOLUME_BOTTOM
 #ifdef _TEST_RENDER_SHADOW_VOLUME_BOTTOM
             glEnableClientState(GL_VERTEX_ARRAY);
@@ -785,7 +787,6 @@ static GLboolean render_shadow_volume_mesh(const GL_NETLizard_3D_Mesh *nl_mesh, 
 #endif
     //glCullFace(GL_BACK);
 
-__Exit:
     delete_GL_NETLizard_3D_Mesh(&vol);
     return GL_TRUE;
 }

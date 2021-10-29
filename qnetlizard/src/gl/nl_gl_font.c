@@ -83,8 +83,9 @@ GLboolean NETLizard_ReadFont(GL_NETLizard_Font *fnt, const char *map_file, const
 
         c->vertex_data.vertex = vertexs;
         c->vertex_data.vertex_count = 4;
-        c->vertex_data.index = indexes;
-        c->vertex_data.index_count = 6;
+        c->index_data.index = indexes;
+        c->index_data.index_count = 6;
+        c->index_data.mode = GL_TRIANGLES;
     }
     delete_NETLizard_Font(&o);
     return GL_TRUE;
@@ -106,8 +107,8 @@ GLvoid delete_GL_NETLizard_Font(GL_NETLizard_Font *fnt)
         GL_NETLizard_Font_Char *c = fnt->char_map + i;
         if(c->vertex_data.vertex)
             free(c->vertex_data.vertex);
-        if(c->vertex_data.index)
-            free(c->vertex_data.index);
+        if(c->index_data.index)
+            free(c->index_data.index);
     }
 }
 
@@ -128,7 +129,7 @@ GLvoid NETLizard_RenderFontChar(const GL_NETLizard_Font *fnt, GLuint i)
 	glPushMatrix();
     {
         glTranslatef(0.0, c->y_stride, 0.0);
-        glDrawElements(GL_TRIANGLES, c->vertex_data.index_count, GL_UNSIGNED_SHORT, c->vertex_data.index);
+        glDrawElements(c->index_data.mode, c->index_data.index_count, GL_UNSIGNED_SHORT, c->index_data.index);
         //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
     glPopMatrix();

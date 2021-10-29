@@ -18,6 +18,8 @@ public:
     bool Cull() const;
     void SetSceneCount(int i);
     int SceneCount() const;
+    void SetDebug(int i);
+    int Debug() const;
 
 protected:
     virtual void InitRender();
@@ -25,10 +27,14 @@ protected:
     virtual void DeinitRender();
 
 private:
+    void RenderDebug();
+
+private:
     GL_NETLizard_3D_Model *m_model;
     bool m_cull;
     int *m_scenes;
     int m_sceneCount;
+    int m_debug;
 
     Q_DISABLE_COPY(NETLizardMapModelRenderer)
     

@@ -12,7 +12,7 @@ GLboolean new_texture_from_nl_file(texture_s *tex, const char *name)
     if(!data)
         return GL_FALSE;
 
-    GLboolean res = new_OpenGL_texture_2d_from_memory(data, len, tex);
+    GLboolean res = new_OpenGL_texture_2d_from_memory((unsigned char *)data, len, tex);
     free(data);
     return res;
 }
@@ -31,7 +31,7 @@ GLboolean new_texture_from_nl_v2_3d_file(texture_s *g_tex, const char *name)
     if(data)
     {
         GLenum format = png.format != NL_RGB ? GL_RGBA : GL_RGB;
-        ok = make_OpenGL_texture_2d(data, len, png.width, png.height, format, g_tex);
+        ok = make_OpenGL_texture_2d((char *)data, len, png.width, png.height, format, g_tex);
         free(data);
     }
     delete_NETLizard_Texture(&png);
@@ -52,7 +52,7 @@ GLboolean new_texture_from_nl_v3_3d_file(texture_s *g_tex, const char *name)
     if(data)
     {
         GLenum format = png.format != NL_RGB ? GL_RGBA : GL_RGB;
-        ok = make_OpenGL_texture_2d(data, len, png.width, png.height, format, g_tex);
+        ok = make_OpenGL_texture_2d((char *)data, len, png.width, png.height, format, g_tex);
         free(data);
     }
     delete_NETLizard_Texture(&png);
@@ -74,7 +74,7 @@ GLboolean new_texture_from_nl_v3_3d_compress_file(texture_s *g_tex, const char *
         if(data)
         {
             GLenum format = png.format != NL_RGB ? GL_RGBA : GL_RGB;
-            ok = make_OpenGL_texture_2d(data, len, png.width, png.height, format, g_tex);
+            ok = make_OpenGL_texture_2d((char *)data, len, png.width, png.height, format, g_tex);
             free(data);
         }
     }

@@ -25,7 +25,6 @@ static void NETLizard_TriangleStripToTriangles(GL_NETLizard_3D_Mesh *mesh)
     }
 
     GL_NETLizard_3D_Vertex *vertexes = calloc(count, sizeof(GL_NETLizard_3D_Vertex));
-    GLushort *indexes = calloc(count, sizeof(GLushort));
 
     n = 0;
     c = 0;
@@ -33,13 +32,14 @@ static void NETLizard_TriangleStripToTriangles(GL_NETLizard_3D_Mesh *mesh)
     for(i = 0; i < mesh->count; i++)
     {
         GL_NETLizard_3D_Material *m = mesh->materials + i;
+        GLushort *indexes = calloc((m->index_count - 2) * 3, sizeof(GLushort));
         for(j = 2; j < m->index_count; j++)
         {
             // odd: n-1, n-2, n ÆæÊý
             // even: n-2, n-1, n Å¼Êý
-            index = mesh->vertex_data.index[m->index_start + j];
-            index_1 = mesh->vertex_data.index[m->index_start + j - 1];
-            index_2 = mesh->vertex_data.index[m->index_start + j - 2];
+            index = m->index[j];
+            index_1 = m->index[j - 1];
+            index_2 = m->index[j - 2];
             if(j % 2) // odd
             {
                 memcpy(vertexes + n, mesh->vertex_data.vertex + (index_1), sizeof(GL_NETLizard_3D_Vertex));
@@ -52,9 +52,9 @@ static void NETLizard_TriangleStripToTriangles(GL_NETLizard_3D_Mesh *mesh)
                 memcpy(vertexes + n + 1, mesh->vertex_data.vertex + (index_1), sizeof(GL_NETLizard_3D_Vertex));
                 memcpy(vertexes + n + 2, mesh->vertex_data.vertex + (index), sizeof(GL_NETLizard_3D_Vertex));
             }
-            indexes[n] = n;
-            indexes[n + 1] = n + 1;
-            indexes[n + 2] = n + 2;
+            indexes[c] = c;
+            indexes[c + 1] = c + 1;
+            indexes[c + 2] = c + 2;
 
             vector3_s v_normal;
             triangle_s tri = TRIANGLEV(vertexes[n].position, vertexes[n + 1].position, vertexes[n + 2].position);
@@ -78,12 +78,11 @@ static void NETLizard_TriangleStripToTriangles(GL_NETLizard_3D_Mesh *mesh)
 
         s += n;
         c = 0;
+        free(m->index);
+        m->index = indexes;
     }
 
-    free(mesh->vertex_data.index);
     free(mesh->vertex_data.vertex);
-    mesh->vertex_data.index = indexes;
-    mesh->vertex_data.index_count = count;
     mesh->vertex_data.vertex = vertexes;
     mesh->vertex_data.vertex_count = count;
 }
@@ -139,12 +138,12 @@ GLboolean NETLizard_MakeGLRE3DModel(const NETLizard_RE3D_Model *model, const cha
         }
 
         // index
-        m->vertex_data.index_count = mesh->index.count;
-        m->vertex_data.index = calloc(mesh->index.count, sizeof(GLushort));
-        for(j = 0; j < mesh->index.count; j++)
-        {
-            m->vertex_data.index[j] = (GLushort)(mesh->index.data[j]);
-        }
+//        m->vertex_data.index_count = mesh->index.count;
+//        m->vertex_data.index = calloc(mesh->index.count, sizeof(GLushort));
+//        for(j = 0; j < mesh->index.count; j++)
+//        {
+//            m->vertex_data.index[j] = (GLushort)(mesh->index.data[j]);
+//        }
 
         // primitive
         int l = 0;
@@ -157,6 +156,10 @@ GLboolean NETLizard_MakeGLRE3DModel(const NETLizard_RE3D_Model *model, const cha
             primitive->index_start = l;
             primitive->index_count = s;
             primitive->mode = GL_TRIANGLE_STRIP;
+            primitive->index = calloc(s, sizeof(GLushort));
+            int k;
+            for(k = 0; k < s; k++)
+                primitive->index[k] = mesh->index.data[l + k];
             l += s;
         }
 

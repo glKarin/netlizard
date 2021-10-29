@@ -27,8 +27,9 @@ typedef struct _GL_NETLizard_BSP_Tree_Node
 typedef struct _GL_NETLizard_3D_Material
 {
 	GLint tex_index;
-	GLuint index_start;
-	GLuint index_count;
+    GLuint index_start;
+    GLushort *index;
+    GLuint index_count;
     GLenum mode;
 } GL_NETLizard_3D_Material;
 
@@ -43,8 +44,8 @@ typedef struct _GL_NETLizard_3D_Vertex_Data
 {
     GL_NETLizard_3D_Vertex *vertex;
     GLuint vertex_count;
-	GLushort *index;
-    GLuint index_count;
+//	GLushort *index;
+//    GLuint index_count;
 } GL_NETLizard_3D_Vertex_Data;
 
 //typedef struct _GL_NETLizard_3D_Vertex_Array
@@ -110,6 +111,7 @@ GLvoid NETLizard_RenderGL3DItemModel(const GL_NETLizard_3D_Item_Model *m);
 GLvoid NETLizard_RenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint *scenes, GLuint count);
 GLvoid NETLizard_RenderGL3DModelFrameAnimation(const GL_NETLizard_3D_Model *m, const NETLizard_3D_Frame_Animation *config, GLuint anim, GLuint frame);
 
+GLvoid delete_GL_NETLizard_3D_Material(GL_NETLizard_3D_Material *mat);
 GLvoid delete_GL_NETLizard_3D_Mesh(GL_NETLizard_3D_Mesh *mesh);
 GLvoid delete_GL_NETLizard_3D_Model(GL_NETLizard_3D_Model *model);
 
@@ -146,6 +148,7 @@ GLvoid NETLizard_RenderGL3DItemMesh(const GL_NETLizard_3D_Mesh *m, const texture
 typedef struct _GL_NETLizard_Font_Char
 {
     GL_NETLizard_3D_Vertex_Data vertex_data;
+    GL_NETLizard_3D_Material index_data;
 	GLfloat width;
 	GLfloat height;
 	GLfloat x_stride;
@@ -175,6 +178,7 @@ GLint NETLizard_GetFontIndex(const GL_NETLizard_Font *fnt, int ch);
 typedef struct _GL_NETLizard_Sprite_Cell
 {
     GL_NETLizard_3D_Vertex_Data vertex_data;
+    GL_NETLizard_3D_Material index_data;
 	GLfloat width;
 	GLfloat height;
 	GLfloat private_4;

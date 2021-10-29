@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <setting>
-    <category name="3D control" alias="CONTROL_3D">
+    <category name="3D control" alias="CONTROL_3D" group="Viewer">
         <item alias="CONTROL_3D/move_sens" name="Move sensitive" widget="spinbox" type="int" default-value="1800">
             <option name="min" value="1"></option>
             <option name="max" value="10000"></option>
@@ -19,7 +19,7 @@
         </item>
     </category>
 
-    <category name="2D control" alias="CONTROL_2D">
+    <category name="2D control" alias="CONTROL_2D" group="Viewer">
         <item alias="CONTROL_2D/trans_sens" name="Translate sensitive" widget="spinbox" type="int" default-value="1000">
             <option name="min" value="1"></option>
             <option name="max" value="10000"></option>
@@ -30,10 +30,12 @@
         </item>
     </category>
 
-    <category name="Render" alias="RENDER">
-        <item alias="RENDER/fps" name="FPS" descaiption="0 to not limit" widget="spinbox" type="int" default-value="0">
+    <category name="Render" alias="RENDER" group="Viewer">
+        <item alias="RENDER/fps" name="FPS" description="0 to not limit" widget="spinbox" type="int" default-value="0">
             <option name="min" value="0"></option>
             <option name="max" value="300"></option>
+        </item>
+        <item alias="RENDER/scene_cull" name="Cull scenes by frustum" widget="checkbox" type="bool" default-value="true">
         </item>
         <item alias="RENDER/shadow" name="Render simple shadow" widget="combobox" type="int" default-value="2">
             <option name="option" label="No shadow" value="0"></option>
@@ -48,5 +50,14 @@
             <option name="option" label="Render all shadow" value="255"></option>
         </item>
     </category>
+
+    <category name="Debug" alias="DEBUG" group="Others">
+        <item alias="DEBUG/render" name="Render map model debug" widget="checkbox" type="int" default-value="0">
+            <option name="option" label="Render map bound" value="1"></option>
+            <option name="option" label="Render vertex and normal" value="2"></option>
+            <option name="option" label="Render scene and item bound" value="4"></option>
+        </item>
+    </category>
+
 </setting>
 

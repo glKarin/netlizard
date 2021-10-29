@@ -45,7 +45,6 @@ SOURCES += \
     soil/stb_image_aug.c \
     texture_v2_file.c \
     media_util.c \
-    sprite.c \
     font.c \
     texture_v3_file.c \
     png_file.c \

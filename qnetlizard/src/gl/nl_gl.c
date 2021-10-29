@@ -12,15 +12,24 @@
 #include "lib/plane.h"
 #include "lib/bound.h"
 
+GLvoid delete_GL_NETLizard_3D_Material(GL_NETLizard_3D_Material *mat)
+{
+    if(!mat)
+        return;
+    if(mat->index)
+        free(mat->index);
+}
+
 void delete_GL_NETLizard_3D_Mesh(GL_NETLizard_3D_Mesh *mesh)
 {
+    GLuint i;
 	if(!mesh)
         return;
 
     if(mesh->vertex_data.vertex)
         free(mesh->vertex_data.vertex);
-    if(mesh->vertex_data.index)
-        free(mesh->vertex_data.index);
+//    if(mesh->vertex_data.index)
+//        free(mesh->vertex_data.index);
 
 	if(mesh->plane)
 		free(mesh->plane);
@@ -28,8 +37,15 @@ void delete_GL_NETLizard_3D_Mesh(GL_NETLizard_3D_Mesh *mesh)
 		free(mesh->bsp);
 	if(mesh->tex_index)
 		free(mesh->tex_index);
-	if(mesh->materials)
-		free(mesh->materials);
+
+    if(mesh->materials)
+    {
+        for(i = 0; i < mesh->count; i++)
+        {
+            delete_GL_NETLizard_3D_Material(mesh->materials + i);
+        }
+        free(mesh->materials);
+    }
 }
 
 //void delete_GL_NETLizard_3D_Item_Mesh(GL_NETLizard_3D_Item_Mesh *mesh)
@@ -159,8 +175,8 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
             m->plane = NULL;
             m->vertex_data.vertex = NULL;
             m->vertex_data.vertex_count = 0;
-            m->vertex_data.index = NULL;
-            m->vertex_data.index_count = 0;
+//            m->vertex_data.index = NULL;
+//            m->vertex_data.index_count = 0;
 			m->bsp_count = 0;
 			m->bsp = NULL;
 
@@ -293,6 +309,10 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 					materials[o].index_start = c;
 					materials[o].index_count = a - c;
                     materials[o].mode = GL_TRIANGLES;
+                    materials[o].index = calloc(a - c, sizeof(GLushort));
+                    GLint q;
+                    for(q = 0; q < materials[o].index_count; q++)
+                        materials[o].index[q] = indexs[c + q];
 
 					c = a;
 				}
@@ -300,8 +320,9 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                 m->materials = materials;
                 m->vertex_data.vertex = vertex;
                 m->vertex_data.vertex_count = vertex_count;
-                m->vertex_data.index_count = index_count;
-                m->vertex_data.index = indexs;
+//                m->vertex_data.index_count = index_count;
+//                m->vertex_data.index = indexs;
+                free(indexs);
 			}
 
             if(mesh->plane.data)
@@ -428,8 +449,8 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
             m->tex_index = NULL;
             m->vertex_data.vertex = NULL;
             m->vertex_data.vertex_count = 0;
-            m->vertex_data.index = NULL;
-            m->vertex_data.index_count = 0;
+//            m->vertex_data.index = NULL;
+//            m->vertex_data.index_count = 0;
             m->plane_count = 0;
             m->plane = NULL;
 
@@ -581,6 +602,10 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 					materials[o].index_start = c;
 					materials[o].index_count = a - c;
                     materials[o].mode = GL_TRIANGLES;
+                    materials[o].index = calloc(a - c, sizeof(GLushort));
+                    GLint q;
+                    for(q = 0; q < materials[o].index_count; q++)
+                        materials[o].index[q] = indexs[c + q];
 
 					c = a;
 				}
@@ -588,10 +613,11 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                 m->materials = materials;
                 m->vertex_data.vertex_count = vertex_count;
                 m->vertex_data.vertex = vertex;
-                m->vertex_data.index_count = index_count;
-                m->vertex_data.index = indexs;
                 m->plane_count = plane_count;
                 m->plane = planes;
+//                m->vertex_data.index_count = index_count;
+//                m->vertex_data.index = indexs;
+                free(indexs);
 			}
             m->box.min[0] = (GLfloat)mesh->item_mesh.box.min[0];
             m->box.min[1] = (GLfloat)mesh->item_mesh.box.min[1];
@@ -670,222 +696,3 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 
     return GL_TRUE;
 }
-
-#if 0
-GL_NETLizard_3D_Animation_Model * NETLizard_MakeGL3DAnimationModel(const NETLizard_3D_Model *model)
-{
-	if(!model)
-		return NULL;
-
-	GLint tex_count; // 最大纹理数
-	NETLizard_Game game;
-	int item_invert_texcoord_y; // 纹理坐标y反转
-	int item_index_factory; // 物品顶点索引因子
-	new_netlizard_texture_from_file new_OpenGL_texture_2d = new_texture_from_nl_v3_3d_file;
-	char subfix_str[SUBFIX_LENGTH];
-	memset(subfix_str, '\0', sizeof(char) * SUBFIX_LENGTH);
-
-	switch(model->game)
-	{
-		case NL_EGYPT_3D_ROLE_MODEL:
-			tex_count = EGYPT3D_TEX_COUNT;
-			game = nl_shadow_of_egypt_3d;
-			strcpy(subfix_str, EGYPT3D_TEX_SUBFIX);
-			item_invert_texcoord_y = 1;
-			item_index_factory = 3;
-			break;
-		case NL_CLONE_3D_ROLE_MODEL:
-			tex_count = CLONE3D_TEX_COUNT;
-			game = nl_clone_3d;
-			strcpy(subfix_str, CLONE3D_TEX_SUBFIX);
-			item_invert_texcoord_y = 0;
-			item_index_factory = 3;
-			break;
-		default:
-			return NULL;
-	}
-
-	int obj_index = ((NETLizard_3D_Item_Mesh *)(model->item_data->array))->obj_index;
-	GLuint len = 0;
-	int anim[Animation_Total_Type * 2];
-	ZERO_II(anim, int, Animation_Total_Type * 2);
-	int anim_count = nlGet3DModelAnimationRange(game, obj_index, anim);
-	//printfi(obj_index);
-	if(anim_count > 0)
-		len = anim_count;
-	else
-		len = 1;
-	NETLizard_3D_Role_Animation *animations = NEW_II(NETLizard_3D_Role_Animation, len);
-	//printfi(anim_count);
-	if(anim_count > 0)
-	{
-		GLint k = 0;
-		GLint i;
-		for(i = 0; i < Animation_Total_Type * 2; i += 2)
-		{
-			if(anim[i] == -1 || anim[i + 1] == -1)
-				continue;
-			animations[k].begin = anim[i];
-			animations[k].end = anim[i + 1];
-			animations[k].type = (NETLizard_3D_Animation_Type)(i / 2);
-			k++;
-		}
-	}
-	else
-	{
-		animations[0].begin = 0;
-		animations[0].end = model->item_data->length - 1;
-		animations[0].type = Animation_Unknow_Type;
-	}
-
-	texture *tex = NULL;
-
-	GL_NETLizard_3D_Mesh *item_meshes = NEW_II(GL_NETLizard_3D_Mesh, model->item_data->length);
-	GLint i;
-	for(i = 0; i < model->item_data->length; i++)
-	{
-		NETLizard_3D_Item_Mesh *mesh = ((NETLizard_3D_Item_Mesh *)(model->item_data->array)) + i;
-		GL_NETLizard_3D_Mesh *m = item_meshes + i;
-		m->count = 0;
-		m->materials = NULL;
-        m->tex_index = NULL;
-        m->vertex_data.vertex = NULL;
-        m->vertex_data.vertex_count = 0;
-        m->vertex_data.index = NULL;
-        m->vertex_data.index_count = 0;
-		m->plane_count = 0;
-		m->plane = NULL;
-
-		if(mesh->item_mesh.vertex && mesh->item_mesh.primitive)
-		{
-			GLuint vertex_count = mesh->item_mesh.primitive->length * 3;
-			GLuint index_count = mesh->item_mesh.primitive->length * 3;
-			GL_NETLizard_3D_Vertex *vertex = NEW_II(GL_NETLizard_3D_Vertex, vertex_count);
-			GLushort *indexs = NEW_II(GLushort, index_count);
-			GLuint count = 1;
-			GL_NETLizard_3D_Material *materials = NEW_II(GL_NETLizard_3D_Material, count);
-			int *mesh_vertex = (int *)(mesh->item_mesh.vertex->array);
-
-			int tex_i = ((NETLizard_3D_Primitive *)(mesh->item_mesh.primitive->array))[0].tex_index;
-			if(!tex && tex_i > 0 && tex_i < tex_count)
-			{
-				char subfix[SUBFIX_LENGTH];
-				memset(subfix, '\0', SUBFIX_LENGTH);
-				sprintf(subfix, subfix_str, tex_i);
-				char *name = NULL;
-				if(game_resource_path[game])
-				{
-					name = NEW_II(char, strlen(subfix) + strlen(game_resource_path[game]) + 1 + 1);
-					memset(name, '\0', sizeof(char) * ((strlen(subfix) + strlen(game_resource_path[game]) + 1 + 1)));
-					sprintf(name, "%s/%s", game_resource_path[game], subfix);
-				}
-				else
-					name = strdup(subfix);
-				tex = new_OpenGL_texture_2d(name);
-				free(name);
-			}
-
-			NETLizard_3D_Primitive *p = (NETLizard_3D_Primitive *)(mesh->item_mesh.primitive->array);
-			GLint a = 0;
-			GLint n;
-			for(n = 0; n < mesh->item_mesh.primitive->length; n++)
-			{
-				int i0 = p[n].index[0] / item_index_factory;
-				int i1 = p[n].index[1] / item_index_factory;
-				int i2 = p[n].index[2] / item_index_factory;
-
-				vertex[a].position[0] = (GLfloat)mesh_vertex[i0 * 3];
-				vertex[a].position[1] = (GLfloat)mesh_vertex[i0 * 3 + 1];
-				vertex[a].position[2] = (GLfloat)mesh_vertex[i0 * 3 + 2];
-				vertex[a + 1].position[0] = (GLfloat)mesh_vertex[i1 * 3];
-				vertex[a + 1].position[1] = (GLfloat)mesh_vertex[i1 * 3 + 1];
-				vertex[a + 1].position[2] = (GLfloat)mesh_vertex[i1 * 3 + 2];
-				vertex[a + 2].position[0] = (GLfloat)mesh_vertex[i2 * 3];
-				vertex[a + 2].position[1] = (GLfloat)mesh_vertex[i2 * 3 + 1];
-                vertex[a + 2].position[2] = (GLfloat)mesh_vertex[i2 * 3 + 2];
-                vector3_s v_normal;
-                triangle_s tri = TRIANGLEV(vertex[a].position, vertex[a + 1].position, vertex[a + 2].position);
-                triangle_cale_normal(&tri, &v_normal);
-				vertex[a].normal[0] = v_normal.x;
-				vertex[a].normal[1] = v_normal.y;
-				vertex[a].normal[2] = v_normal.z;
-				vertex[a + 1].normal[0] = v_normal.x;
-				vertex[a + 1].normal[1] = v_normal.y;
-				vertex[a + 1].normal[2] = v_normal.z;
-				vertex[a + 2].normal[0] = v_normal.x;
-				vertex[a + 2].normal[1] = v_normal.y;
-				vertex[a + 2].normal[2] = v_normal.z;
-
-				GLfloat w = tex ? tex->width : 1.0;
-				vertex[a].texcoord[0] = (GLfloat)p[n].texcoord[0] / w; 
-				vertex[a].texcoord[1] = (GLfloat)p[n].texcoord[1] / w; 
-				vertex[a + 1].texcoord[0] = (GLfloat)p[n].texcoord[2] / w; 
-				vertex[a + 1].texcoord[1] = (GLfloat)p[n].texcoord[3] / w; 
-				vertex[a + 2].texcoord[0] = (GLfloat)p[n].texcoord[4] / w; 
-				vertex[a + 2].texcoord[1] = (GLfloat)p[n].texcoord[5] / w; 
-
-				if(item_invert_texcoord_y && tex)
-				{
-					vertex[a].texcoord[1] = 1.0 - vertex[a].texcoord[1];
-					vertex[a + 1].texcoord[1] = 1.0 - vertex[a + 1].texcoord[1];
-					vertex[a + 2].texcoord[1] = 1.0 - vertex[a + 2].texcoord[1];
-				}
-
-				indexs[a] = a;
-				indexs[a + 1] = a + 1;
-				indexs[a + 2] = a + 2;
-
-				a += 3;
-			}
-			materials[0].tex_index = 0;
-			materials[0].index_start = 0;
-			materials[0].index_count = a;
-
-			GLint *tex_index = NEW_II(GLuint, 1);
-			tex_index[0] = 0;
-
-			m->tex_index = tex_index;
-			m->materials = materials;
-            m->count = count;
-            m->vertex_data.vertex_count = vertex_count;
-            m->vertex_data.vertex = vertex;
-            m->vertex_data.index_count = index_count;
-            m->vertex_data.index = indexs;
-		}
-	}
-
-	GL_NETLizard_3D_Animation_Model *glmodel = NEW(GL_NETLizard_3D_Animation_Model);
-	ZERO(glmodel, GL_NETLizard_3D_Animation_Model);
-	glmodel->meshes = item_meshes;
-	glmodel->count = model->item_data ? model->item_data->length : 0;
-	glmodel->tex = tex;
-	glmodel->animations = animations;
-	glmodel->anim_count = len;
-	glmodel->item_type = Item_Role_Type;
-	return glmodel;
-}
-
-GLvoid NETLizard_MoveItemModel(GL_NETLizard_3D_Item_Mesh *dst, GL_NETLizard_3D_Item_Mesh *src)
-{
-	if(!dst || !src)
-		return;
-	dst->item_type = src->item_type;
-	memcpy(dst->pos, src->pos, sizeof(GLfloat) * 3);
-	memcpy(dst->angle, src->angle, sizeof(GLfloat) * 2);
-
-	dst->item_mesh.count = src->item_mesh.count;
-	dst->item_mesh.tex_index = src->item_mesh.tex_index;
-	src->item_mesh.tex_index = NULL;
-	dst->item_mesh.materials = src->item_mesh.materials;
-	src->item_mesh.materials = NULL;
-	dst->item_mesh.plane_count = src->item_mesh.plane_count;
-	dst->item_mesh.plane = src->item_mesh.plane;
-	src->item_mesh.plane = NULL;
-
-	memcpy(dst->item_mesh.ortho, src->item_mesh.ortho, sizeof(GLfloat) * 6);
-
-    memcpy(&dst->item_mesh.vertex_data, &src->item_mesh.vertex_data, sizeof(GL_NETLizard_3D_Vertex_Data));
-    src->item_mesh.vertex_data.vertex = NULL;
-    src->item_mesh.vertex_data.index = NULL;
-}
-#endif

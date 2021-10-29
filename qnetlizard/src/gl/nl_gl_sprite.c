@@ -97,8 +97,9 @@ GLboolean NETLizard_ReadSpirit(GL_NETLizard_Sprite *sprite, const char *map_file
 
         glcell->vertex_data.vertex = vertexs;
         glcell->vertex_data.vertex_count = 4;
-        glcell->vertex_data.index = indexes;
-        glcell->vertex_data.index_count = 6;
+        glcell->index_data.index = indexes;
+        glcell->index_data.index_count = 6;
+        glcell->index_data.mode = GL_TRIANGLES;
     }
     delete_NETLizard_Sprite(&s);
     return GL_TRUE;
@@ -119,8 +120,8 @@ GLvoid delete_GL_NETLizard_Sprite(GL_NETLizard_Sprite *s)
         GL_NETLizard_Sprite_Cell *c = s->sprites + i;
         if(c->vertex_data.vertex)
             free(c->vertex_data.vertex);
-        if(c->vertex_data.index)
-            free(c->vertex_data.index);
+        if(c->index_data.index)
+            free(c->index_data.index);
     }
 	free(s->sprites);
 }
@@ -141,7 +142,7 @@ GLvoid NETLizard_RenderSpirit(const GL_NETLizard_Sprite *s, GLuint i)
     glTexCoordPointer(2, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), c->vertex_data.vertex[0].texcoord);
     //glPushMatrix();
     {
-        glDrawElements(GL_TRIANGLES, c->vertex_data.index_count, GL_UNSIGNED_SHORT, c->vertex_data.index);
+        glDrawElements(c->index_data.mode, c->index_data.index_count, GL_UNSIGNED_SHORT, c->index_data.index);
 	}
     //glPopMatrix();
 

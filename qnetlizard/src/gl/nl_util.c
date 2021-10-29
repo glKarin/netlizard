@@ -125,7 +125,7 @@ void NETLizard_GetNETLizard3DMeshBound(const GL_NETLizard_3D_Mesh *meshs, unsign
             m = mesh->materials + c;
             for(k = 0; k < m->index_count; k++)
             {
-                index = mesh->vertex_data.index[m->index_start + k];
+                index = m->index[k];
                 v = mesh->vertex_data.vertex + index;
                 if(inited)
                 {

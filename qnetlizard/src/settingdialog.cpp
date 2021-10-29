@@ -36,25 +36,30 @@ void SettingDialog::Init()
     QTreeWidgetItem *subItem;
     QScrollArea *area = new QScrollArea;
 
-    item = new QTreeWidgetItem;
-    item->setText(0, "Viewer");
-    subItem = new QTreeWidgetItem;
-    subItem->setText(0, "3D control");
-    subItem->setData(0, Qt::UserRole, "CONTROL_3D");
-    item->addChild(subItem);
-    subItem = new QTreeWidgetItem;
-    subItem->setText(0, "2D control");
-    subItem->setData(0, Qt::UserRole, "CONTROL_3D");
-    item->addChild(subItem);
-    subItem = new QTreeWidgetItem;
-    subItem->setText(0, "Render");
-    subItem->setData(0, Qt::UserRole, "RENDER");
-    item->addChild(subItem);
-    tree->addTopLevelItem(item);
+    QStringList groups;
+    QHash<QString, QList<Settings::SettingItemCategory> > map;
+    const Settings::SettingItemMap &_settingsConfig = Settings::SettingsConfig();
+    for(int i = 0; i < _settingsConfig.size(); i++)
+    {
+        const Settings::SettingItemCategory &c = _settingsConfig[i];
+        if(!groups.contains(c.group))
+            groups.push_back(c.group);
+        map[c.group].push_back(c);
+    }
 
-    item = new QTreeWidgetItem;
-    item->setText(0, "Others");
-    tree->addTopLevelItem(item);
+    Q_FOREACH(const QString &g, groups)
+    {
+        item = new QTreeWidgetItem;
+        item->setText(0, g);
+        Q_FOREACH(const Settings::SettingItemCategory &sic, map[g])
+        {
+            subItem = new QTreeWidgetItem;
+            subItem->setText(0, sic.title);
+            subItem->setData(0, Qt::UserRole, sic.name);
+            item->addChild(subItem);
+        }
+        tree->addTopLevelItem(item);
+    }
 
     m_content = new SettingGroup;
     m_content->setCheckable(false);

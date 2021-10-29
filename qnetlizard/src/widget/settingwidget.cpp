@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QButtonGroup>
 
 #include "settings.h"
 #include "qdef.h"
@@ -64,6 +65,8 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
     Q_FOREACH(const Settings::SettingItem &item, c.settings)
     {
         QWidget *widget = 0;
+        QString tail = item.description.isEmpty() ? "" : QString("(%1)").arg(item.description);
+        QString label(item.title + tail);
         if(item.widget == "spinbox")
         {
             if(item.type == "int")
@@ -100,17 +103,48 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
                 connect(w, SIGNAL(clicked(bool)), this, SLOT(OnBoolChanged(bool)));
                 widget = w;
             }
+            else if(item.type == "int")
+            {
+                QGroupBox *w = new QGroupBox;
+                w->setObjectName(item.name);
+                QButtonGroup *g = new QButtonGroup(w);
+                g->setObjectName(item.name);
+                g->setExclusive(false);
+                QVBoxLayout *vbox = new QVBoxLayout;
+                const QVariantList & items = item.prop.value("option").toList();
+                int target = settings->GetSetting<int>(item.name, item.value.toInt());
+                for(int i = 0; i < items.size(); i++)
+                {
+                    const QVariantHash p = items[i].toHash();
+                    const QVariant v = p.value("value");
+                    int iv = v.toInt();
+                    QCheckBox *cb = new QCheckBox(p.value("label").toString());
+                    g->addButton(cb, iv);
+
+                    if(target & iv)
+                        cb->setChecked(true);
+                    vbox->addWidget(cb);
+                }
+                vbox->addStretch(1);
+
+                w->setLayout(vbox);
+                w->setTitle(item.title);
+                label.clear();
+                //w->setCheckable(true);
+                connect(g, SIGNAL(buttonClicked(int)), this, SLOT(OnIntChanged(int)));
+                widget = w;
+            }
         }
-        else if(item.type == "combobox")
+        else if(item.widget == "combobox")
         {
             QComboBox *w = new QComboBox;
             w->setObjectName(item.name);
-            const QVariantList & items = item.prop.value("items").toList();
+            const QVariantList & items = item.prop.value("option").toList();
             int cur = 0;
             int target = settings->GetSetting<int>(item.name, item.value.toInt());
             for(int i = 0; i < items.size(); i++)
             {
-                const QVariantMap p = items[i].toMap();
+                const QVariantHash p = items[i].toHash();
                 const QVariant v = p.value("value");
                 w->addItem(p.value("label").toString(), v);
                 if(v.toInt() == target)
@@ -124,7 +158,7 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
 
         if(widget)
         {
-            m_layout->addRow(item.title, widget);
+            m_layout->addRow(label, widget);
         }
     }
 }
@@ -161,5 +195,20 @@ void SettingGroup::OnIntChanged(int i)
     {
         QComboBox *cb = static_cast<QComboBox *>(obj);
         settings->SetSetting<int>(name, cb->itemData(i).toInt());
+    }
+    else if(instanceofv(obj, QButtonGroup))
+    {
+        QButtonGroup *bg = static_cast<QButtonGroup *>(obj);
+        QAbstractButton *btn = bg->button(i);
+        int cs = settings->GetSetting<int>(name);
+        if(btn->isChecked())
+        {
+            cs |= i;
+        }
+        else
+        {
+            cs &= ~i;
+        }
+        settings->SetSetting<int>(name, cs);
     }
 }

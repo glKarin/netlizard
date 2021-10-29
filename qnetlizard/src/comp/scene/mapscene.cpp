@@ -54,6 +54,7 @@ MapScene::MapScene(QWidget *parent)
     m_mapActor->SetRenderable(m_renderer);
     SetCurrentCamera(camera->Camera());
     m_renderer->SetCull(settings->GetSetting<bool>("RENDER/scene_cull"));
+    m_renderer->SetDebug(settings->GetSetting<int>("DEBUG/render"));
 
     // 2D background camera
     prop.clear();
@@ -168,9 +169,7 @@ void MapScene::paintGL()
         glDepthMask(GL_TRUE);
     }
 
-    //glDisable(GL_CULL_FACE);
     CurrentCamera()->Render(m_mapActor);
-    //glEnable(GL_CULL_FACE);
     CurrentCamera()->Render(m_shadowActor);
 
     glFlush();
@@ -270,7 +269,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
             glColor4f(0, 0, 0, 1);
             if(level == 0 || level == 8 || level == 9 || level == 10 || level == 12)
             {
-                for(int i = 0; i < m_model->item_count; i++)
+                for(uint i = 0; i < m_model->item_count; i++)
                 {
                     GL_NETLizard_3D_Item_Mesh *mesh = m_model->item_meshes + i;
                     if(mesh->item_type == Item_Box_Type)
@@ -345,5 +344,9 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
     {
         int shadowObj = value.toInt();
         m_shadowRenderer->SetShadowObject(shadowObj);
+    }
+    else if(name == "DEBUG/render")
+    {
+        m_renderer->SetDebug(value.toInt());
     }
 }

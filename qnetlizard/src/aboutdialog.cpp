@@ -1,6 +1,7 @@
 #include "aboutdialog.h"
 
 #include <QDebug>
+#include <QDateTime>
 
 #include "qdef.h"
 
@@ -19,14 +20,15 @@ AboutDialog::~AboutDialog()
 void AboutDialog::Init()
 {
 #define T_ENDL "<br/>"
-    QString text(
+    QString text = QString(
                  "<b>" APP_NAME "</b> is a tools for <i>`" LIB_NAME "`</i> using Qt4." T_ENDL
                  "<b>" LIB_NAME "</b> is a tools of NETLizard J2ME game resource." T_ENDL
                 T_ENDL
                 "Version: " APP_VER T_ENDL
-                "Dev: " APP_DEV T_ENDL
+                "Build: %1" T_ENDL
+                "Dev: <a href='mailto:" APP_EMAIL "'>" APP_DEV "</a>" T_ENDL
                 "Github: <a href='" APP_GITHUB "'>glKarin/netlizard</a>" T_ENDL
-                 );
+                ).arg(BUILD_TIME.toString("yyyy-MM-dd HH:mm:ss"));
     setText(APP_NAME);
     setInformativeText(text);
     addButton("Close", QMessageBox::AcceptRole);
