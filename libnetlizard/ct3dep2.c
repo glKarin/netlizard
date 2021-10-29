@@ -324,9 +324,9 @@ NLboolean nlLoadCT3DEp2ModelData(const char* data, NLsizei res, NLint level, con
 			int k;
 			for(k = 0; k < 4; k++)
 			{
-				bsp_data[j].plane[k][0] = bsp[k].int_array_4x3__b__plane[k][0] >> 16;
-				bsp_data[j].plane[k][1] = bsp[k].int_array_4x3__b__plane[k][1] >> 16;
-				bsp_data[j].plane[k][2] = bsp[k].int_array_4x3__b__plane[k][2] >> 16;
+                bsp_data[j].plane[k][0] = bsp[j].int_array_4x3__b__plane[k][0] >> 16;
+                bsp_data[j].plane[k][1] = bsp[j].int_array_4x3__b__plane[k][1] >> 16;
+                bsp_data[j].plane[k][2] = bsp[j].int_array_4x3__b__plane[k][2] >> 16;
 			}
 			bsp_data[j].direction = bsp[j].byte__a__direction;
 			bsp_data[j].prev_scene = bsp[j].int__c__prev_scene;

@@ -338,7 +338,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 					glplane->position[0] = (GLfloat)plane->position[0];
 					glplane->position[1] = (GLfloat)plane->position[1];
 					glplane->position[2] = (GLfloat)plane->position[2];
-                    vector3_normalize(&normal);
+                    vector3_normalizev(&normal);
                     glplane->normal[0] = (GLfloat)VECTOR3_X(normal);
                     glplane->normal[1] = (GLfloat)VECTOR3_Y(normal);
                     glplane->normal[2] = (GLfloat)VECTOR3_Z(normal);

@@ -14,9 +14,10 @@ void NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
 		GLuint i;
 		for(i = 0; i < model->count; i++)
 		{
-			GL_NETLizard_3D_Mesh *m = model->meshes + i;
+            const GL_NETLizard_3D_Mesh *m = model->meshes + i;
             NETLizard_RenderGL3DMesh(m, model->texes);
-            if(model->item_meshes && 0)
+#if 0
+            if(model->item_meshes)
 			{
 				GLuint j;
 				for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++) 
@@ -27,6 +28,7 @@ void NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
                     NETLizard_RenderGL3DMesh(im, model->texes);
 				}
 			}
+#endif
 		}
 	}
 
@@ -35,7 +37,7 @@ void NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
 		GLuint i;
 		for(i = 0; i < model->item_count; i++)
         {
-			GL_NETLizard_3D_Item_Mesh *m = model->item_meshes + i;
+            const GL_NETLizard_3D_Item_Mesh *m = model->item_meshes + i;
             if(!m->materials) // REDO
 				continue;
 			if(m->item_type == Item_Box_Type)
@@ -49,54 +51,29 @@ void NETLizard_RenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint
 {
     if(!model)
         return;
+    if(!model->meshes)
+        return;
 
-    GLboolean all = !scene || count == 0;
-
-    if(model->meshes)
+    GLuint c = scene ? count : model->count;
+    GLuint i;
+    for(i = 0; i < c; i++)
     {
-        if(all)
+        int s = scene ? scene[i] : i;
+        if(s >= 0 && s < model->count)
         {
-            GLuint i;
-            for(i = 0; i < model->count; i++)
+            const GL_NETLizard_3D_Mesh *m = model->meshes + s;
+            NETLizard_RenderGL3DMesh(m, model->texes);
+            if(model->item_meshes)
             {
-                GL_NETLizard_3D_Mesh *m = model->meshes + i;
-                NETLizard_RenderGL3DMesh(m, model->texes);
-                if(model->item_meshes)
+                GLuint j;
+                for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
                 {
-                    GLuint j;
-                    for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
-                    {
-                        GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
-                        if(!im->materials) // REDO
-                            continue;
-                        NETLizard_RenderGL3DMesh(im, model->texes);
-                    }
-                }
-            }
-        }
-        else
-        {
-            GLint c = model->count;
-            GLuint i;
-            for(i = 0; i < count; i++)
-            {
-                if(scene[i] >= 0 && scene[i] < c)
-                {
-                    GL_NETLizard_3D_Mesh *m = model->meshes + scene[i];
-                    NETLizard_RenderGL3DMesh(m, model->texes);
-                    if(model->item_meshes)
-                    {
-                        GLuint j;
-                        for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
-                        {
-                            GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
-                            if(!im->materials) // REDO
-                                continue;
-                            if(im->item_type == Item_Box_Type)
-                                continue;
-                            NETLizard_RenderGL3DMesh(im, model->texes);
-                        }
-                    }
+                    const GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
+                    if(!im->materials) // REDO
+                        continue;
+                    if(im->item_type == Item_Box_Type)
+                        continue;
+                    NETLizard_RenderGL3DMesh(im, model->texes);
                 }
             }
         }

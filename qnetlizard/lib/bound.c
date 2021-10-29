@@ -12,6 +12,57 @@ void bound_make(bound_s *bo, const vector3_s *a, const vector3_s *b)
     BOUNDV_MAX_Z(bo) = VECTOR3V_Z(b);
 }
 
+void bound_make_with_vertors(bound_s *bo, const vector3_s *arr, int count)
+{
+    int i;
+    float min_x = 0.0;
+    float min_y = 0.0;
+    float min_z = 0.0;
+    float max_x = 0.0;
+    float max_y = 0.0;
+    float max_z = 0.0;
+    int inited = 0;
+
+    for(i = 0; i < count; i++)
+    {
+        const vector3_s *v = arr + i;
+        if(inited)
+        {
+            if(VECTOR3V_X(v) < min_x)
+                min_x = VECTOR3V_X(v);
+            else if(VECTOR3V_X(v) > max_x)
+                max_x = VECTOR3V_X(v);
+
+            if(VECTOR3V_Y(v) < min_y)
+                min_y = VECTOR3V_Y(v);
+            else if(VECTOR3V_Y(v) > max_y)
+                max_y = VECTOR3V_Y(v);
+
+            if(VECTOR3V_Z(v) < min_z)
+                min_z = VECTOR3V_Z(v);
+            else if(VECTOR3V_Z(v) > max_z)
+                max_z = VECTOR3V_Z(v);
+        }
+        else
+        {
+            min_x = VECTOR3V_X(v);
+            min_y = VECTOR3V_Y(v);
+            min_z = VECTOR3V_Z(v);
+            max_x = VECTOR3V_X(v);
+            max_y = VECTOR3V_Y(v);
+            max_z = VECTOR3V_Z(v);
+            inited = 1;
+            continue;
+        }
+    }
+    BOUNDV_MIN_X(bo) = min_x;
+    BOUNDV_MIN_Y(bo) = min_y;
+    BOUNDV_MIN_Z(bo) = min_z;
+    BOUNDV_MAX_X(bo) = max_x;
+    BOUNDV_MAX_Y(bo) = max_y;
+    BOUNDV_MAX_Z(bo) = max_z;
+}
+
 int bound_point_in_box(const bound_s *b, const vector3_s *p)
 {
     const vector3_s *v1 = &(BOUNDV_MIN(b));
@@ -103,6 +154,7 @@ void bound_center(const bound_s *a, vector3_s *r)
 {
     bound_diff(a, r);
     vector3_scalev(r, 0.5);
+    vector3_addv_self(r, &BOUNDV_MIN(a));
 }
 
 float bound_sqrt(const bound_s *b)

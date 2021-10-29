@@ -45,6 +45,7 @@ int bound_point_in_box(const bound_s *b, const vector3_s *p);
 void bound_get_box_plane(const bound_s *ab, plane_s r[]);
 int bound_in_frustum(const bound_s *b, float frustum[][4]);
 int bound_in_frustum_with_matrix(const bound_s *b, const GLmatrix *proj_mat, const GLmatrix *view_mat);
+void bound_make_with_vertors(bound_s *bo, const vector3_s *arr, int count);
 
 #ifdef __cplusplus
 }

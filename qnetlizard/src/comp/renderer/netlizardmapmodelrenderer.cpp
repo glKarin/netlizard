@@ -38,15 +38,6 @@ void NETLizardMapModelRenderer::Render()
             if(m_scenes && m_sceneCount > 0)
             {
                 NETLizard_RenderGL3DMapModelScene(m_model, m_scenes, m_sceneCount);
-                if(m_debug)
-                {
-                    if(m_debug & NETLIZARD_DEBUG_RENDER_MAP_BOUND)
-                        NETLizard_DebugRenderGL3DMapModelBound(m_model);
-                    if(m_debug & NETLIZARD_DEBUG_RENDER_VERTEX_NORMAL)
-                        NETLizard_DebugRenderGL3DMapModelScene_VertexNormal(m_model, m_scenes, m_sceneCount);
-                    if(m_debug & NETLIZARD_DEBUG_RENDER_SCENE_BOUND)
-                        NETLizard_DebugRenderGL3DMapModelScene_Bound(m_model, m_scenes, m_sceneCount);
-                }
             }
         }
         else
@@ -91,20 +82,66 @@ void NETLizardMapModelRenderer::RenderDebug()
             {
                 if(m_debug & NETLIZARD_DEBUG_RENDER_MAP_BOUND)
                     NETLizard_DebugRenderGL3DMapModelBound(m_model);
-                if(m_debug & NETLIZARD_DEBUG_RENDER_VERTEX_NORMAL)
-                    NETLizard_DebugRenderGL3DMapModelScene_VertexNormal(m_model, m_scenes, m_sceneCount);
+
+                int m = 0;
+                if(m_debug & NETLIZARD_DEBUG_RENDER_ITEM_VERTEX_NORMAL)
+                    m |= NETLIZARD_DEBUG_TYPE_ITEM;
+                if(m_debug & NETLIZARD_DEBUG_RENDER_SCENE_VERTEX_NORMAL)
+                    m |= NETLIZARD_DEBUG_TYPE_SCENE;
+                if(m)
+                    NETLizard_DebugRenderGL3DMapModelScene_VertexNormal(m_model, m_scenes, m_sceneCount, m);
+
+                m = 0;
+                if(m_debug & NETLIZARD_DEBUG_RENDER_ITEM_BOUND)
+                    m |= NETLIZARD_DEBUG_TYPE_ITEM;
                 if(m_debug & NETLIZARD_DEBUG_RENDER_SCENE_BOUND)
-                    NETLizard_DebugRenderGL3DMapModelScene_Bound(m_model, m_scenes, m_sceneCount);
+                    m |= NETLIZARD_DEBUG_TYPE_SCENE;
+                if(m)
+                    NETLizard_DebugRenderGL3DMapModelScene_Bound(m_model, m_scenes, m_sceneCount, m);
+
+                m = 0;
+                if(m_debug & NETLIZARD_DEBUG_RENDER_ITEM_PLANE)
+                    m |= NETLIZARD_DEBUG_TYPE_ITEM;
+                if(m_debug & NETLIZARD_DEBUG_RENDER_SCENE_PLANE)
+                    m |= NETLIZARD_DEBUG_TYPE_SCENE;
+                if(m)
+                    NETLizard_DebugRenderGL3DMapModelScene_Plane(m_model, m_scenes, m_sceneCount, m);
+
+                if(m_debug & NETLIZARD_DEBUG_RENDER_MAP_BSP)
+                    NETLizard_DebugRenderGL3DMapModelBSP(m_model);
             }
         }
         else
         {
             if(m_debug & NETLIZARD_DEBUG_RENDER_MAP_BOUND)
                 NETLizard_DebugRenderGL3DMapModelBound(m_model);
-            if(m_debug & NETLIZARD_DEBUG_RENDER_VERTEX_NORMAL)
-                NETLizard_DebugRenderGL3DModel_VertexNormal(m_model);
+
+            int m = 0;
+            if(m_debug & NETLIZARD_DEBUG_RENDER_ITEM_VERTEX_NORMAL)
+                m |= NETLIZARD_DEBUG_TYPE_ITEM;
+            if(m_debug & NETLIZARD_DEBUG_RENDER_SCENE_VERTEX_NORMAL)
+                m |= NETLIZARD_DEBUG_TYPE_SCENE;
+            if(m)
+                NETLizard_DebugRenderGL3DModel_VertexNormal(m_model, m);
+
+            m = 0;
+            if(m_debug & NETLIZARD_DEBUG_RENDER_ITEM_BOUND)
+                m |= NETLIZARD_DEBUG_TYPE_ITEM;
             if(m_debug & NETLIZARD_DEBUG_RENDER_SCENE_BOUND)
-                NETLizard_DebugRenderGL3DModel_Bound(m_model);
+                m |= NETLIZARD_DEBUG_TYPE_SCENE;
+            if(m)
+                NETLizard_DebugRenderGL3DModel_Bound(m_model, m);
+
+            m = 0;
+            if(m_debug & NETLIZARD_DEBUG_RENDER_ITEM_PLANE)
+                m |= NETLIZARD_DEBUG_TYPE_ITEM;
+            if(m_debug & NETLIZARD_DEBUG_RENDER_SCENE_PLANE)
+                m |= NETLIZARD_DEBUG_TYPE_SCENE;
+            if(m)
+                NETLizard_DebugRenderGL3DModel_Plane(m_model, m);
+
+            if(m_debug & NETLIZARD_DEBUG_RENDER_MAP_BSP)
+                NETLizard_DebugRenderGL3DMapModelBSP(m_model);
         }
     }
     glPopMatrix();

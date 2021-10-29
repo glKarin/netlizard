@@ -54,8 +54,13 @@
     <category name="Debug" alias="DEBUG" group="Others">
         <item alias="DEBUG/render" name="Render map model debug" widget="checkbox" type="int" default-value="0">
             <option name="option" label="Render map bound" value="1"></option>
-            <option name="option" label="Render vertex and normal" value="2"></option>
-            <option name="option" label="Render scene and item bound" value="4"></option>
+            <option name="option" label="Render item vertex and normal" value="2"></option>
+            <option name="option" label="Render scene vertex and normal" value="4"></option>
+            <option name="option" label="Render item bound" value="8"></option>
+            <option name="option" label="Render scene bound" value="16"></option>
+            <option name="option" label="Render item plane" value="32"></option>
+            <option name="option" label="Render scene plane" value="64"></option>
+            <option name="option" label="Render scene BSP" value="128"></option>
         </item>
     </category>
 

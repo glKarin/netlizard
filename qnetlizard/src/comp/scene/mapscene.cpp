@@ -20,6 +20,19 @@
 #include "nl_util.h"
 #include "nl_shadow_render.h"
 
+//vector3_s lpos;
+//void rrrrr(void)
+//{
+//    glEnableClientState(GL_VERTEX_ARRAY);
+//    glPointSize(10);
+//    glColor4f(1,0,0,1);
+//    glVertexPointer(3, GL_FLOAT, 0, lpos.v);
+//    glDrawArrays(GL_POINTS, 0, 1);
+//    glColor4f(1,1,1,1);
+//    glDisableClientState(GL_VERTEX_ARRAY);
+//    glPointSize(1);
+//}
+
 MapScene::MapScene(QWidget *parent)
     : NLScene(parent),
       m_model(0),
@@ -171,6 +184,7 @@ void MapScene::paintGL()
 
     CurrentCamera()->Render(m_mapActor);
     CurrentCamera()->Render(m_shadowActor);
+    //CurrentCamera()->Render(rrrrr);
 
     glFlush();
 }
@@ -246,12 +260,14 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
         SimpleCameraActor *cameraActor = GetActor_T<SimpleCameraActor>(0);
         SimpleControlComponent *control = cameraActor->GetComponent_T<SimpleControlComponent>(1);
         control->SetMoveSens(control->MoveSens() / 20);
-        NLVector3 pos = VECTOR3(VECTOR3_X(lp), VECTOR3_Y(lp), BOUND_MAX_Z(bound));
+        NLVector3 pos = VECTOR3(VECTOR3_X(lp), BOUND_MAX_Y(bound) + (VECTOR3_Y(lp) - BOUND_MIN_Y(bound)) * 2, VECTOR3_Z(lp));
         GetActor(7)->SetPosition(pos);
+        //lpos = pos;
     }
     else
     {
-        NLVector3 pos = VECTOR3(VECTOR3_X(lp), BOUND_MAX_Z(bound), VECTOR3_Y(lp));
+        NLVector3 pos = VECTOR3(VECTOR3_X(lp), VECTOR3_Y(lp), BOUND_MAX_Z(bound) + (VECTOR3_Z(lp) - BOUND_MIN_Z(bound)) * 2);
+        //lpos = pos;
         GetActor(7)->SetPosition(pos);
         CurrentCamera()->SetZIsUp(true);
         m_sky3DCamera->SetZIsUp(true);

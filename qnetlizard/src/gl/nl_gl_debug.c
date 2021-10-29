@@ -40,19 +40,25 @@
 #define POINT_COLOR 0,0,1,1
 #define LINE_COLOR 1,0,0,1
 
-void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, GL_NETLizard_Debug_Render_Mesh_f func)
+#define BITS_FALSE(b, t) (((b) & (t)) == 0)
+#define BITS_TRUE(b, t) (((b) & (t)) != 0)
+
+void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, GLuint type, GL_NETLizard_Debug_Render_Mesh_f func)
 {
     if(!model || !func)
 		return;
+    if(BITS_FALSE(type, NETLIZARD_DEBUG_TYPE_ITEM) && BITS_FALSE(type, NETLIZARD_DEBUG_TYPE_SCENE))
+        return;
 
-	if(model->meshes)
+    if(model->meshes && BITS_TRUE(type, NETLIZARD_DEBUG_TYPE_SCENE))
 	{
 		GLuint i;
 		for(i = 0; i < model->count; i++)
 		{
-			GL_NETLizard_3D_Mesh *m = model->meshes + i;
+            const GL_NETLizard_3D_Mesh *m = model->meshes + i;
             func(m);
-            if(model->item_meshes && 0)
+#if 0
+            if(model->item_meshes)
 			{
 				GLuint j;
 				for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++) 
@@ -63,15 +69,16 @@ void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, GL_NETLi
                     func(im);
 				}
 			}
+#endif
 		}
 	}
 
-    if(model->item_meshes)
+    if(model->item_meshes && BITS_TRUE(type, NETLIZARD_DEBUG_TYPE_ITEM))
 	{
 		GLuint i;
 		for(i = 0; i < model->item_count; i++)
         {
-			GL_NETLizard_3D_Item_Mesh *m = model->item_meshes + i;
+            const GL_NETLizard_3D_Item_Mesh *m = model->item_meshes + i;
             if(!m->materials) // REDO
 				continue;
 			if(m->item_type == Item_Box_Type)
@@ -81,58 +88,38 @@ void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, GL_NETLi
 	}
 }
 
-void NETLizard_DebugRenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint *scene, GLuint count, GL_NETLizard_Debug_Render_Mesh_f func)
+void NETLizard_DebugRenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint *scene, GLuint count, GLuint type, GL_NETLizard_Debug_Render_Mesh_f func)
 {
     if(!model)
         return;
+    if(BITS_FALSE(type, NETLIZARD_DEBUG_TYPE_ITEM) && BITS_FALSE(type, NETLIZARD_DEBUG_TYPE_SCENE))
+        return;
 
-    GLboolean all = !scene || count == 0;
+    if(!model->meshes)
+        return;
 
-    if(model->meshes)
+    GLuint c = scene ? count : model->count;
+    GLuint i;
+    for(i = 0; i < c; i++)
     {
-        if(all)
+        int s = scene ? scene[i] : i;
+        if(s >= 0 && s < model->count)
         {
-            GLuint i;
-            for(i = 0; i < model->count; i++)
-            {
-                GL_NETLizard_3D_Mesh *m = model->meshes + i;
+            const GL_NETLizard_3D_Mesh *m = model->meshes + s;
+            if(BITS_TRUE(type, NETLIZARD_DEBUG_TYPE_SCENE))
                 func(m);
-                if(model->item_meshes)
-                {
-                    GLuint j;
-                    for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
-                    {
-                        GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
-                        if(!im->materials) // REDO
-                            continue;
-                        func(im);
-                    }
-                }
-            }
-        }
-        else
-        {
-            GLint c = model->count;
-            GLuint i;
-            for(i = 0; i < count; i++)
+
+            if(model->item_meshes && BITS_TRUE(type, NETLIZARD_DEBUG_TYPE_ITEM))
             {
-                if(scene[i] >= 0 && scene[i] < c)
+                GLuint j;
+                for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
                 {
-                    GL_NETLizard_3D_Mesh *m = model->meshes + scene[i];
-                    func(m);
-                    if(model->item_meshes)
-                    {
-                        GLuint j;
-                        for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
-                        {
-                            GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
-                            if(!im->materials) // REDO
-                                continue;
-                            if(im->item_type == Item_Box_Type)
-                                continue;
-                            func(im);
-                        }
-                    }
+                    const GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
+                    if(!im->materials) // REDO
+                        continue;
+                    if(im->item_type == Item_Box_Type)
+                        continue;
+                    func(im);
                 }
             }
         }
@@ -239,6 +226,112 @@ GLvoid NETLizard_DebugRenderGL3DMeshBound(const GL_NETLizard_3D_Mesh *m)
             glDrawArrays(GL_POINTS, 0, 8);
         }
         glPopMatrix();
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+    }
+    END_DEBUG_RENDER
+}
+
+GLvoid NETLizard_DebugRenderGL3DMeshPlane(const GL_NETLizard_3D_Mesh *m)
+{
+    if(!m)
+        return;
+    if(!m->plane)
+        return;
+
+    BEGIN_DEBUG_RENDER
+    {
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        glPushMatrix();
+        {
+            glTranslatef(m->position[0], m->position[1], m->position[2]);
+            glRotatef(m->rotation[0], 1.0f, 0.0f, 0.0f);
+            glRotatef(m->rotation[1], 0.0f, 0.0f, 1.0f);
+
+            GLuint j;
+
+            for(j = 0; j < m->plane_count; j++)
+            {
+                const GL_NETLizard_3D_Plane *plane = m->plane + j;
+
+                glColor4f(POINT_COLOR);
+                glVertexPointer(3, GL_FLOAT, 0, plane->position);
+                glDrawArrays(GL_POINTS, 0, 1);
+
+                vector3_s v = VECTOR3V(plane->normal);
+                vector3_scalev(&v, NORMAL_LENGTH);
+                vector3_s p = VECTOR3V(plane->position);
+                vector3_addv_self(&p, &v);
+                GLfloat vs[] = {
+                    plane->position[0], plane->position[1], plane->position[2],
+                    VECTOR3_X(p), VECTOR3_Y(p), VECTOR3_Z(p),
+                };
+                glColor4f(LINE_COLOR);
+                glVertexPointer(3, GL_FLOAT, 0, vs);
+                glDrawArrays(GL_LINES, 0, 2);
+            }
+        }
+        glPopMatrix();
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+    }
+    END_DEBUG_RENDER
+}
+
+GLvoid NETLizard_DebugRenderGL3DMapModelBSP(const GL_NETLizard_3D_Model *m)
+{
+    if(!m)
+        return;
+    if(!m->bsp_data)
+        return;
+
+
+    BEGIN_DEBUG_RENDER
+    {
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        GLuint i;
+        for(i = 0; i < m->bsp_count; i++)
+        {
+            const GL_NETLizard_BSP_Tree_Node *node = m->bsp_data + i;
+
+            GLushort index[] = {
+                0, 1,
+                3, 2,
+            };
+            glVertexPointer(3, GL_FLOAT, 0, node->plane);
+            glColor4f(LINE_COLOR);
+            glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, index);
+            glColor4f(POINT_COLOR);
+            glDrawArrays(GL_POINTS, 0, 4);
+
+            bound_s bound;
+            vector3_s vecs[] = {
+                VECTOR3V(node->plane[0]),
+                VECTOR3V(node->plane[1]),
+                VECTOR3V(node->plane[2]),
+                VECTOR3V(node->plane[3]),
+            };
+            bound_make_with_vertors(&bound, vecs, 4);
+            vector3_s center;
+            bound_center(&bound, &center);
+            glColor4f(POINT_COLOR);
+            glVertexPointer(3, GL_FLOAT, 0, VECTOR3_V(center));
+            glDrawArrays(GL_POINTS, 0, 1);
+
+            vector3_s v = VECTOR3V(node->normal);
+            vector3_scalev(&v, NORMAL_LENGTH);
+            vector3_s p = center;
+            vector3_addv_self(&p, &v);
+            GLfloat vs[] = {
+                VECTOR3_X(center), VECTOR3_Y(center), VECTOR3_Z(center),
+                VECTOR3_X(p), VECTOR3_Y(p), VECTOR3_Z(p),
+            };
+            glColor4f(LINE_COLOR);
+            glVertexPointer(3, GL_FLOAT, 0, vs);
+            glDrawArrays(GL_LINES, 0, 2);
+        }
 
         glDisableClientState(GL_VERTEX_ARRAY);
     }

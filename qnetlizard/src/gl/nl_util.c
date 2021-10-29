@@ -43,17 +43,10 @@ void NETLizard_GetNETLizard3DMapBound(const GL_NETLizard_3D_Model *model, int *s
     unsigned int c;
     GLboolean inited = GL_FALSE;
 
-    if(scenes)
-        c = count;
-    else
-        c = model->count;
+    c = scenes ? count : model->count;
     for(i = 0; i < c; i++)
     {
-        int s;
-        if(scenes)
-            s = scenes[i];
-        else
-            s = i;
+        int s = scenes ? scenes[i] : i;
         const GL_NETLizard_3D_Mesh *mesh = model->meshes + s;
         float box_min_x = mesh->box.min[0] + mesh->position[0];
         float box_min_y = mesh->box.min[1] + mesh->position[1];
