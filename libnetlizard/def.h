@@ -1,8 +1,6 @@
 #ifndef _KARIN_DEF_H
 #define _KARIN_DEF_H
 
-#include <stddef.h>
-
 #define NEW(T) malloc(sizeof(T))
 #define NEW_II(T, size) calloc(size, sizeof(T))
 #define ZERO(ptr, T) memset(ptr, 0, sizeof(T))
@@ -16,5 +14,21 @@
 #define ESIZE(type, size) (size)
 
 #define BOOL_VALUE(cond) ((cond) ? NL_TRUE : NL_FALSE)
+
+#define DELETE(ptr) { free(ptr); ptr = NULL; }
+
+#define UNUSED(x) (void)(x);
+
+#define BITS(x) (1 << (x))
+
+#define CLAMP(t, min, max) MAX(min, MIN(t, max))
+
+#define COUNTOF(arr) (sizeof(arr) / sizeof(arr[0]))
+#define LENGTHOF COUNTOF
+
+#define BITS_FALSE(b, t) (((b) & (t)) == 0)
+#define BITS_TRUE(b, t) (((b) & (t)) != 0)
+
+#define printfln(fmt, args...) printf(fmt"\n", ##args)
 
 #endif // _KARIN_DEF_H

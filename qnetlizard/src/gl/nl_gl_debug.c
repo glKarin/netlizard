@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "lib/vector3.h"
+#include "lib/line.h"
 #include "nl_util.h"
 
 #define BEGIN_DEBUG_RENDER \
@@ -156,13 +157,12 @@ GLvoid NETLizard_DebugRenderGL3DMeshVertexNormal(const GL_NETLizard_3D_Mesh *m)
                     glVertexPointer(3, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), vertex->position);
                     glDrawArrays(GL_POINTS, 0, 1);
 
-                    vector3_s v = VECTOR3V(vertex->normal);
-                    vector3_scalev(&v, NORMAL_LENGTH);
-                    vector3_s p = VECTOR3V(vertex->position);
-                    vector3_addv_self(&p, &v);
+                    line_s line;
+                    ray_s ray = RAYV(vertex->position, vertex->normal);
+                    line_ray_to_line(&line, &ray, NORMAL_LENGTH);
                     GLfloat vs[] = {
-                        vertex->position[0], vertex->position[1], vertex->position[2],
-                        VECTOR3_X(p), VECTOR3_Y(p), VECTOR3_Z(p),
+                        LINE_A_X(line), LINE_A_Y(line), LINE_A_Z(line),
+                        LINE_B_X(line), LINE_B_Y(line), LINE_B_Z(line),
                     };
                     glColor4f(LINE_COLOR);
                     glVertexPointer(3, GL_FLOAT, 0, vs);
@@ -259,13 +259,12 @@ GLvoid NETLizard_DebugRenderGL3DMeshPlane(const GL_NETLizard_3D_Mesh *m)
                 glVertexPointer(3, GL_FLOAT, 0, plane->position);
                 glDrawArrays(GL_POINTS, 0, 1);
 
-                vector3_s v = VECTOR3V(plane->normal);
-                vector3_scalev(&v, NORMAL_LENGTH);
-                vector3_s p = VECTOR3V(plane->position);
-                vector3_addv_self(&p, &v);
+                line_s line;
+                ray_s ray = RAYV(plane->position, plane->normal);
+                line_ray_to_line(&line, &ray, NORMAL_LENGTH);
                 GLfloat vs[] = {
-                    plane->position[0], plane->position[1], plane->position[2],
-                    VECTOR3_X(p), VECTOR3_Y(p), VECTOR3_Z(p),
+                    LINE_A_X(line), LINE_A_Y(line), LINE_A_Z(line),
+                    LINE_B_X(line), LINE_B_Y(line), LINE_B_Z(line),
                 };
                 glColor4f(LINE_COLOR);
                 glVertexPointer(3, GL_FLOAT, 0, vs);
@@ -320,13 +319,12 @@ GLvoid NETLizard_DebugRenderGL3DMapModelBSP(const GL_NETLizard_3D_Model *m)
             glVertexPointer(3, GL_FLOAT, 0, VECTOR3_V(center));
             glDrawArrays(GL_POINTS, 0, 1);
 
-            vector3_s v = VECTOR3V(node->normal);
-            vector3_scalev(&v, NORMAL_LENGTH);
-            vector3_s p = center;
-            vector3_addv_self(&p, &v);
+            line_s line;
+            ray_s ray = RAYV(VECTOR3_V(center), node->normal);
+            line_ray_to_line(&line, &ray, NORMAL_LENGTH);
             GLfloat vs[] = {
-                VECTOR3_X(center), VECTOR3_Y(center), VECTOR3_Z(center),
-                VECTOR3_X(p), VECTOR3_Y(p), VECTOR3_Z(p),
+                LINE_A_X(line), LINE_A_Y(line), LINE_A_Z(line),
+                LINE_B_X(line), LINE_B_Y(line), LINE_B_Z(line),
             };
             glColor4f(LINE_COLOR);
             glVertexPointer(3, GL_FLOAT, 0, vs);

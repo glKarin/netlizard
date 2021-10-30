@@ -1,8 +1,11 @@
 #include "stencil_shadow.h"
 
-#include <QList>
+// using cpp::std
+#include <list>
+#include <vector>
+
 #include <QDebug>
-#include <QGLContext>
+//#include <QGLContext>
 
 #include <string.h>
 #include <stdlib.h>
@@ -24,9 +27,9 @@
 #define VEC3CMP vector3_equals // compare_vector3
 #define LINECMP line_equals_ignore_seq // compare_line_segment
 
-typedef QList<line_s> LineList;
-typedef QList<vector3_s> Vector3List;
-typedef QList<triangle_s> TriangleList;
+typedef std::list<line_s> LineList;
+typedef std::vector<vector3_s> Vector3List;
+typedef std::vector<triangle_s> TriangleList;
 typedef struct _Shadow_Volume_s
 {
     LineList lines;
@@ -60,7 +63,7 @@ static int compare_line_segment(const line_s *l1, const line_s *l2)
 
 static GLboolean shadow_volume_is_empty(const Shadow_Volume_s *sv)
 {
-    return sv->lines.isEmpty()
+    return sv->lines.empty()
             //&& sv->tops.isEmpty() && sv->bottoms.isEmpty()
             ;
 }
@@ -79,11 +82,11 @@ static GLboolean normal_is_up_down(const float normal[3])
 static int push_edge_line(LineList &list, const line_s *lp)
 {
     int has = 0;
-    int o;
+    LineList::iterator itor;
 
-    for(o = 0; o < list.size(); o++) // find in lines list
+    for(itor = list.begin(); itor != list.end(); ++itor) // find in lines list
     {
-        const line_s &line = list[o];
+        const line_s &line = *itor;
         if(LINECMP(lp, &line))
         {
             //printf("%d exist\n", i);
@@ -94,7 +97,7 @@ static int push_edge_line(LineList &list, const line_s *lp)
 
     if(has) // if exists, remove this line
     {
-        list.removeAt(o);
+        list.erase(itor);
     }
     else // if not exists, add new line to list
     {
@@ -116,10 +119,10 @@ static void render_edge_lines(const LineList &lines)
     glPushMatrix();
     {
         GLfloat vs[6];
-        int o;
-        for(o = 0; o < lines.size(); o++) // find in lines list
+        LineList::const_iterator itor;
+        for(itor = lines.begin(); itor != lines.end(); ++itor)
         {
-            const line_s &lpptr = lines[o];
+            const line_s &lpptr = *itor;
             vs[0] = VECTOR3_X(lpptr.a);
             vs[1] = VECTOR3_Y(lpptr.a);
             vs[2] = VECTOR3_Z(lpptr.a);
@@ -400,9 +403,11 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
     o = 0;
     vd = r->vertex_data.vertex;
 	// TODO: cale clock wise, now the lighting source must be above all cubes
-    for(i = 0; i < lines.size(); i++)
+    LineList::const_iterator itor;
+    i = 0;
+    for(itor = lines.begin(); itor != lines.end(); ++itor)
     {
-        line_s lpptr = lines[i];
+        line_s lpptr = *itor;
 		// point lighting
         vector3_s dir_a = cale_light_direction(&(LINE_A(lpptr)), light_position, dirlight);
         vector3_scalev(&dir_a, SHADOW_VOLUME_LENGTH + SHADOW_CAP_OFFSET);
@@ -503,6 +508,7 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
             m->index[n] = n;
         }
         o += 6;
+        i++;
 	}
 
     if(Cap)

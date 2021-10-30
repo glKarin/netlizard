@@ -101,3 +101,13 @@ void ray_line_to_ray(ray_s *r, const line_s *l)
     RAYV_POSITION_Z(r) = LINEV_A_Z(l);
     line_direction(l, &(RAYV_DIRECTION(r)));
 }
+
+void line_ray_to_line(line_s *r, const ray_s *a, float length)
+{
+    LINEV_A_X(r) = LINEV_B_X(r) = RAYV_POSITION_X(a);
+    LINEV_A_Y(r) = LINEV_B_Y(r) = RAYV_POSITION_Y(a);
+    LINEV_A_Z(r) = LINEV_B_Z(r) = RAYV_POSITION_Z(a);
+    vector3_s normal = RAYV_DIRECTION(a);
+    vector3_scalev(&normal, length);
+    vector3_addv_self(&LINEV_B(r), &normal);
+}
