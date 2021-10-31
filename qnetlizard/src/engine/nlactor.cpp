@@ -408,7 +408,7 @@ void NLActor::Reset()
     NLObject::Reset();
 }
 
-void NLActor::SetPosition(const vector3_s &v)
+void NLActor::SetPosition(const vector3_t &v)
 {
     if(vector3_equals(&m_position, &v))
         return;
@@ -419,7 +419,7 @@ void NLActor::SetPosition(const vector3_s &v)
     emit positionChanged(m_position);
 }
 
-void NLActor::SetRotation(const vector3_s &v)
+void NLActor::SetRotation(const vector3_t &v)
 {
     if(vector3_equals(&m_rotation, &v))
         return;
@@ -431,7 +431,7 @@ void NLActor::SetRotation(const vector3_s &v)
     emit rotationChanged(m_rotation);
 }
 
-void NLActor::SetScale(const vector3_s &v)
+void NLActor::SetScale(const vector3_t &v)
 {
     if(vector3_equals(&m_scale, &v))
         return;

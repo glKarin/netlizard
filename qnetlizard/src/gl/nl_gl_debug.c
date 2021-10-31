@@ -157,8 +157,8 @@ GLvoid NETLizard_DebugRenderGL3DMeshVertexNormal(const GL_NETLizard_3D_Mesh *m)
                     glVertexPointer(3, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), vertex->position);
                     glDrawArrays(GL_POINTS, 0, 1);
 
-                    line_s line;
-                    ray_s ray = RAYV(vertex->position, vertex->normal);
+                    line_t line;
+                    ray_t ray = RAYV(vertex->position, vertex->normal);
                     line_ray_to_line(&line, &ray, NORMAL_LENGTH);
                     GLfloat vs[] = {
                         LINE_A_X(line), LINE_A_Y(line), LINE_A_Z(line),
@@ -259,8 +259,8 @@ GLvoid NETLizard_DebugRenderGL3DMeshPlane(const GL_NETLizard_3D_Mesh *m)
                 glVertexPointer(3, GL_FLOAT, 0, plane->position);
                 glDrawArrays(GL_POINTS, 0, 1);
 
-                line_s line;
-                ray_s ray = RAYV(plane->position, plane->normal);
+                line_t line;
+                ray_t ray = RAYV(plane->position, plane->normal);
                 line_ray_to_line(&line, &ray, NORMAL_LENGTH);
                 GLfloat vs[] = {
                     LINE_A_X(line), LINE_A_Y(line), LINE_A_Z(line),
@@ -305,22 +305,22 @@ GLvoid NETLizard_DebugRenderGL3DMapModelBSP(const GL_NETLizard_3D_Model *m)
             glColor4f(POINT_COLOR);
             glDrawArrays(GL_POINTS, 0, 4);
 
-            bound_s bound;
-            vector3_s vecs[] = {
+            bound_t bound;
+            vector3_t vecs[] = {
                 VECTOR3V(node->plane[0]),
                 VECTOR3V(node->plane[1]),
                 VECTOR3V(node->plane[2]),
                 VECTOR3V(node->plane[3]),
             };
             bound_make_with_vertors(&bound, vecs, 4);
-            vector3_s center;
+            vector3_t center;
             bound_center(&bound, &center);
             glColor4f(POINT_COLOR);
             glVertexPointer(3, GL_FLOAT, 0, VECTOR3_V(center));
             glDrawArrays(GL_POINTS, 0, 1);
 
-            line_s line;
-            ray_s ray = RAYV(VECTOR3_V(center), node->normal);
+            line_t line;
+            ray_t ray = RAYV(VECTOR3_V(center), node->normal);
             line_ray_to_line(&line, &ray, NORMAL_LENGTH);
             GLfloat vs[] = {
                 LINE_A_X(line), LINE_A_Y(line), LINE_A_Z(line),
@@ -341,7 +341,7 @@ void NETLizard_DebugRenderGL3DMapModelBound(const GL_NETLizard_3D_Model *model)
     if(!model)
         return;
 
-    bound_s bound;
+    bound_t bound;
     NETLizard_GetNETLizard3DMapBound(model, NULL, 0, &bound);
     BEGIN_DEBUG_RENDER
     {

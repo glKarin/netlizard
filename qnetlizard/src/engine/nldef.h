@@ -68,7 +68,7 @@ typedef QString NLName;
 typedef QVariantHash NLPropperties;
 typedef QVariant NLPropperty;
 
-typedef vector3_s NLVector3;
+typedef vector3_t NLVector3;
 typedef GLmatrix NLMatrix4;
 
 #define NLINTERFACE

@@ -17,7 +17,7 @@ enum GL_matrix_e
     TotalMatrix
 };
 
-typedef void (*NLSceneCameraRenderFunc)(void);
+typedef void (*NLSceneCameraRenderFunc)(const float view_mat[16], const float proj_mat[16], const float mvp_mat[16]);
 
 class NLSceneCamera
 {

@@ -1,6 +1,6 @@
 #include "triangle.h"
 
-void triangle_make(triangle_s *obj, const vector3_s *a, const vector3_s *b, const vector3_s *c)
+void triangle_make(triangle_t *obj, const vector3_t *a, const vector3_t *b, const vector3_t *c)
 {
     TRIANGLEV_A_X(obj) = VECTOR3V_X(a);
     TRIANGLEV_A_Y(obj) = VECTOR3V_Y(a);
@@ -13,9 +13,9 @@ void triangle_make(triangle_s *obj, const vector3_s *a, const vector3_s *b, cons
     TRIANGLEV_C_Z(obj) = VECTOR3V_Z(c);
 }
 
-void triangle_cale_normal(const triangle_s *tri, vector3_s *normal)
+void triangle_cale_normal(const triangle_t *tri, vector3_t *normal)
 {
-    vector3_s first, second;
+    vector3_t first, second;
     vector3_subtractv(&first, &(TRIANGLEV_B(tri)), &(TRIANGLEV_A(tri)));
     vector3_subtractv(&second, &(TRIANGLEV_C(tri)), &(TRIANGLEV_A(tri)));
 

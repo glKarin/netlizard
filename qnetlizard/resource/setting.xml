@@ -52,6 +52,8 @@
     </category>
 
     <category name="Debug" alias="DEBUG" group="Others">
+        <item alias="DEBUG/noclip" name="No clip" widget="checkbox" type="bool" default-value="false">
+        </item>
         <item alias="DEBUG/render" name="Render map model debug" widget="checkbox" type="int" default-value="0">
             <option name="option" label="Render map bound" value="1"></option>
             <option name="option" label="Render item vertex and normal" value="2"></option>

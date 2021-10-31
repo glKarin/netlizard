@@ -24,7 +24,8 @@ HEADERS += \
     src/comp/component/simplelightsourcecomponent.h \
     src/comp/simplelightsourceactor.h \
     src/changelogdialog.h \
-    src/gl/nl_gl_debug.h
+    src/gl/nl_gl_debug.h \
+    src/gl/nl_algo.h
 
 SOURCES += \
     main.cpp \
@@ -34,7 +35,8 @@ SOURCES += \
     src/comp/component/simplelightsourcecomponent.cpp \
     src/comp/simplelightsourceactor.cpp \
     src/changelogdialog.cpp \
-    src/gl/nl_gl_debug.c
+    src/gl/nl_gl_debug.c \
+    src/gl/nl_algo.c
 
 # Widget
 HEADERS += \

@@ -5,10 +5,10 @@
 extern "C" {
 #endif
 
-typedef struct _vector3_s
+typedef struct vector3_s
 {
 	float v[3];
-} vector3_s;
+} vector3_t;
 
 #define VECTOR3_X(vec) (vec).v[0]
 #define VECTOR3_Y(vec) (vec).v[1]
@@ -35,45 +35,45 @@ typedef struct _vector3_s
 #define VECTOR3V(arr) {{arr[0], arr[1], arr[2]}}
 #define VECTOR3(x, y, z) {{x, y, z}}
 
-void vector3_normalizev(vector3_s *a);
-void vector3_scalev(vector3_s *a, float n);
-void vector3_invertv(vector3_s *a);
-void vector3_addv(vector3_s *r, const vector3_s *a, const vector3_s *b);
-void vector3_subtractv(vector3_s *r, const vector3_s *a, const vector3_s *b);
-void vector3_multiplyv(vector3_s *r, const vector3_s *a, const vector3_s *b);
-void vector3_dividev(vector3_s *r, const vector3_s *a, const vector3_s *b);
-void vector3_crossv(vector3_s *r, const vector3_s *a, const vector3_s *b);
-void vector3_directionv(vector3_s *r, const vector3_s *a, const vector3_s *b);
+void vector3_normalizev(vector3_t *a);
+void vector3_scalev(vector3_t *a, float n);
+void vector3_invertv(vector3_t *a);
+void vector3_addv(vector3_t *r, const vector3_t *a, const vector3_t *b);
+void vector3_subtractv(vector3_t *r, const vector3_t *a, const vector3_t *b);
+void vector3_multiplyv(vector3_t *r, const vector3_t *a, const vector3_t *b);
+void vector3_dividev(vector3_t *r, const vector3_t *a, const vector3_t *b);
+void vector3_crossv(vector3_t *r, const vector3_t *a, const vector3_t *b);
+void vector3_directionv(vector3_t *r, const vector3_t *a, const vector3_t *b);
 
-vector3_s vector3_normalize(const vector3_s *vec);
-vector3_s vector3_cross(const vector3_s *a, const vector3_s *b);
-vector3_s vector3_add(const vector3_s *a, const vector3_s *b);
-vector3_s vector3_subtract(const vector3_s *a, const vector3_s *b);
-vector3_s vector3_multiply(const vector3_s *a, const vector3_s *b);
-vector3_s vector3_divide(const vector3_s *a, const vector3_s *b);
-vector3_s vector3_scale(const vector3_s *a, float n);
-vector3_s vector3_invert(const vector3_s *a);
-vector3_s vector3_direction(const vector3_s *a, const vector3_s *b);
+vector3_t vector3_normalize(const vector3_t *vec);
+vector3_t vector3_cross(const vector3_t *a, const vector3_t *b);
+vector3_t vector3_add(const vector3_t *a, const vector3_t *b);
+vector3_t vector3_subtract(const vector3_t *a, const vector3_t *b);
+vector3_t vector3_multiply(const vector3_t *a, const vector3_t *b);
+vector3_t vector3_divide(const vector3_t *a, const vector3_t *b);
+vector3_t vector3_scale(const vector3_t *a, float n);
+vector3_t vector3_invert(const vector3_t *a);
+vector3_t vector3_direction(const vector3_t *a, const vector3_t *b);
 
-void vector3_addv_self(vector3_s *r, const vector3_s *a);
-void vector3_subtractv_self(vector3_s *r, const vector3_s *a);
-void vector3_multiplyv_self(vector3_s *r, const vector3_s *a);
-void vector3_dividev_self(vector3_s *r, const vector3_s *a);
+void vector3_addv_self(vector3_t *r, const vector3_t *a);
+void vector3_subtractv_self(vector3_t *r, const vector3_t *a);
+void vector3_multiplyv_self(vector3_t *r, const vector3_t *a);
+void vector3_dividev_self(vector3_t *r, const vector3_t *a);
 
-float vector3_dot(const vector3_s *a, const vector3_s *b);
-float vector3_length(const vector3_s *a);
-int vector3_valid(const vector3_s *a);
-int vector3_equals(const vector3_s *a, const vector3_s *b);
-int vector3_iszero(const vector3_s *a);
+float vector3_dot(const vector3_t *a, const vector3_t *b);
+float vector3_length(const vector3_t *a);
+int vector3_valid(const vector3_t *a);
+int vector3_equals(const vector3_t *a, const vector3_t *b);
+int vector3_iszero(const vector3_t *a);
 
-vector3_s vector3_identity(void);
-void vector3_identityv(vector3_s *vec);
-void vector3_assignv(vector3_s *r, const vector3_s *a);
+vector3_t vector3_identity(void);
+void vector3_identityv(vector3_t *vec);
+void vector3_assignv(vector3_t *r, const vector3_t *a);
 
-void vector3_makev(vector3_s *vec, float x, float y, float z);
-vector3_s vector3_make(float x, float y, float z);
-void vector3_makeptrv(vector3_s *vec, const float arr[]);
-vector3_s vector3_makeptr(const float arr[]);
+void vector3_makev(vector3_t *vec, float x, float y, float z);
+vector3_t vector3_make(float x, float y, float z);
+void vector3_makeptrv(vector3_t *vec, const float arr[3]);
+vector3_t vector3_makeptr(const float arr[3]);
 
 #ifdef __cplusplus
 }

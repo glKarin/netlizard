@@ -104,7 +104,7 @@ void SimpleControl2DComponent::Transform(float delta)
             || m_action[NLAction_Move_Down] || m_action[NLAction_Move_Up]
             )
     {
-        vector3_s m_move = VECTOR3(0, 0, 0);
+        vector3_t m_move = VECTOR3(0, 0, 0);
         float movesens = m_moveSens * delta;
 
         if(m_action[NLAction_Move_Left])

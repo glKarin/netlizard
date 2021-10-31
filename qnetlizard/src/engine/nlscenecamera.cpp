@@ -76,7 +76,7 @@ void NLSceneCamera::Projection()
     glMultMatrixf(GL_MATRIX_M(m_projectionMatrix));
 }
 
-void NLSceneCamera::SetPosition(const vector3_s &v)
+void NLSceneCamera::SetPosition(const vector3_t &v)
 {
     if(vector3_equals(&m_position, &v))
         return;
@@ -86,7 +86,7 @@ void NLSceneCamera::SetPosition(const vector3_s &v)
     UpdateMatrix();
 }
 
-void NLSceneCamera::SetRotation(const vector3_s &v)
+void NLSceneCamera::SetRotation(const vector3_t &v)
 {
     if(vector3_equals(&m_rotation, &v))
         return;
@@ -97,7 +97,7 @@ void NLSceneCamera::SetRotation(const vector3_s &v)
     UpdateDirection();
 }
 
-void NLSceneCamera::SetScale(const vector3_s &v)
+void NLSceneCamera::SetScale(const vector3_t &v)
 {
     if(vector3_equals(&m_scale, &v))
         return;
@@ -273,7 +273,7 @@ void NLSceneCamera::Render(NLSceneCameraRenderFunc func)
 {
     if(!func)
         return;
-    CAMERA_RENDER(func())
+    CAMERA_RENDER(func(GL_MATRIX_M(m_viewMatrix), GL_MATRIX_M(m_projectionMatrix), GL_MATRIX_M(m_mvpMatrix)))
 }
 
 NLScene * NLSceneCamera::Scene()

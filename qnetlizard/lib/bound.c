@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-void bound_make(bound_s *bo, const vector3_s *a, const vector3_s *b)
+void bound_make(bound_t *bo, const vector3_t *a, const vector3_t *b)
 {
     BOUNDV_MIN_X(bo) = VECTOR3V_X(a);
     BOUNDV_MIN_Y(bo) = VECTOR3V_Y(a);
@@ -12,7 +12,7 @@ void bound_make(bound_s *bo, const vector3_s *a, const vector3_s *b)
     BOUNDV_MAX_Z(bo) = VECTOR3V_Z(b);
 }
 
-void bound_make_with_vertors(bound_s *bo, const vector3_s *arr, int count)
+void bound_make_with_vertors(bound_t *bo, const vector3_t arr[], int count)
 {
     int i;
     float min_x = 0.0;
@@ -25,7 +25,7 @@ void bound_make_with_vertors(bound_s *bo, const vector3_s *arr, int count)
 
     for(i = 0; i < count; i++)
     {
-        const vector3_s *v = arr + i;
+        const vector3_t *v = arr + i;
         if(inited)
         {
             if(VECTOR3V_X(v) < min_x)
@@ -63,10 +63,10 @@ void bound_make_with_vertors(bound_s *bo, const vector3_s *arr, int count)
     BOUNDV_MAX_Z(bo) = max_z;
 }
 
-int bound_point_in_box(const bound_s *b, const vector3_s *p)
+int bound_point_in_box(const bound_t *b, const vector3_t *p)
 {
-    const vector3_s *v1 = &(BOUNDV_MIN(b));
-    const vector3_s *v2 = &(BOUNDV_MAX(b));
+    const vector3_t *v1 = &(BOUNDV_MIN(b));
+    const vector3_t *v2 = &(BOUNDV_MAX(b));
     return(
             (VECTOR3V_X(p) >= VECTOR3V_X(v1) && VECTOR3V_X(p) <= VECTOR3V_X(v2))
             && (VECTOR3V_Y(p) >= VECTOR3V_Y(v1) && VECTOR3V_Y(p) <= VECTOR3V_Y(v2))
@@ -74,7 +74,17 @@ int bound_point_in_box(const bound_s *b, const vector3_s *p)
             ? 1 : 0);
 }
 
-void bound_get_box_plane(const bound_s *ab, plane_s r[])
+int bound_point_in_box2d(const bound_t *b, const vector3_t *p)
+{
+    const vector3_t *v1 = &(BOUNDV_MIN(b));
+    const vector3_t *v2 = &(BOUNDV_MAX(b));
+    return(
+            (VECTOR3V_X(p) >= VECTOR3V_X(v1) && VECTOR3V_X(p) <= VECTOR3V_X(v2))
+            && (VECTOR3V_Y(p) >= VECTOR3V_Y(v1) && VECTOR3V_Y(p) <= VECTOR3V_Y(v2))
+            ? 1 : 0);
+}
+
+void bound_get_box_plane(const bound_t *ab, plane_t r[6])
 {
 #define COPY_NORMAL(n, xx, yy, zz) \
     { \
@@ -103,7 +113,7 @@ void bound_get_box_plane(const bound_s *ab, plane_s r[])
 #undef COPY_NORMAL
 }
 
-int bound_in_frustum(const bound_s *b, float frustum[][4])
+int bound_in_frustum(const bound_t *b, float frustum[6][4])
 {
     //printf("in %d: %f %f %f  | %f %f %f\n", 1, BOUNDV_MIN_X(b), BOUNDV_MIN_Y(b), BOUNDV_MIN_Z(b), BOUNDV_MAX_X(b), BOUNDV_MAX_Y(b), BOUNDV_MAX_Z(b));
     float x = BOUNDV_MIN_X(b);
@@ -136,30 +146,30 @@ int bound_in_frustum(const bound_s *b, float frustum[][4])
     return 1;
 }
 
-int bound_in_frustum_with_matrix(const bound_s *b, const GLmatrix *proj_mat, const GLmatrix *view_mat)
+int bound_in_frustum_with_matrix(const bound_t *b, const GLmatrix *proj_mat, const GLmatrix *view_mat)
 {
     float frustum[6][4];
     matrix_cale_frustum(proj_mat, view_mat, frustum);
     return bound_in_frustum(b, frustum);
 }
 
-void bound_diff(const bound_s *a, vector3_s *r)
+void bound_diff(const bound_t *a, vector3_t *r)
 {
     VECTOR3V_X(r) = BOUNDV_MAX_X(a) - BOUNDV_MIN_X(a);
     VECTOR3V_Y(r) = BOUNDV_MAX_Y(a) - BOUNDV_MIN_Y(a);
     VECTOR3V_Z(r) = BOUNDV_MAX_Z(a) - BOUNDV_MIN_Z(a);
 }
 
-void bound_center(const bound_s *a, vector3_s *r)
+void bound_center(const bound_t *a, vector3_t *r)
 {
     bound_diff(a, r);
     vector3_scalev(r, 0.5);
     vector3_addv_self(r, &BOUNDV_MIN(a));
 }
 
-float bound_sqrt(const bound_s *b)
+float bound_sqrt(const bound_t *b)
 {
-    vector3_s v;
+    vector3_t v;
     bound_diff(b, &v);
     return vector3_length(&v);
 }

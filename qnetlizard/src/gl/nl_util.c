@@ -2,7 +2,7 @@
 
 #include "bound.h"
 
-int NETLizard_GetMapRenderScenes(const GL_NETLizard_3D_Model *model, int scenes[], float frustum[][4])
+int NETLizard_GetMapRenderScenes(const GL_NETLizard_3D_Model *model, int scenes[], float frustum[6][4])
 {
     if(!model || !scenes || !frustum)
         return -1;
@@ -12,8 +12,8 @@ int NETLizard_GetMapRenderScenes(const GL_NETLizard_3D_Model *model, int scenes[
     for(i = 0; i < model->count; i++)
     {
         const GL_NETLizard_3D_Mesh *mesh = model->meshes + i;
-        bound_s bound = BOUNDV(mesh->box.min, mesh->box.max);
-        vector3_s pos = VECTOR3V(mesh->position);
+        bound_t bound = BOUNDV(mesh->box.min, mesh->box.max);
+        vector3_t pos = VECTOR3V(mesh->position);
         vector3_addv_self(&BOUND_MIN(bound), &pos);
         vector3_addv_self(&BOUND_MAX(bound), &pos);
         int r = bound_in_frustum(&bound, frustum);
@@ -26,7 +26,7 @@ int NETLizard_GetMapRenderScenes(const GL_NETLizard_3D_Model *model, int scenes[
     return count;
 }
 
-void NETLizard_GetNETLizard3DMapBound(const GL_NETLizard_3D_Model *model, int *scenes, unsigned int count, bound_s *box)
+void NETLizard_GetNETLizard3DMapBound(const GL_NETLizard_3D_Model *model, int scenes[], unsigned int count, bound_t *box)
 {
     if(!model || !box)
         return;
@@ -91,7 +91,7 @@ void NETLizard_GetNETLizard3DMapBound(const GL_NETLizard_3D_Model *model, int *s
     BOUNDV_MAX_Z(box) = max_z;
 }
 
-void NETLizard_GetNETLizard3DMeshBound(const GL_NETLizard_3D_Mesh *meshs, unsigned int count, bound_s *box)
+void NETLizard_GetNETLizard3DMeshBound(const GL_NETLizard_3D_Mesh *meshs, unsigned int count, bound_t *box)
 {
     if(!meshs || !count)
         return;

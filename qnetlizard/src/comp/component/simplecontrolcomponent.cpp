@@ -189,7 +189,7 @@ bool SimpleControlComponent::motionev(int button, bool pressed, int x, int y, in
             float dy = y - oldy;
             if(dx != 0 || dy != 0)
             {
-                vector3_s m_rot = VECTOR3(dy * m_freelookSens, dx * m_freelookSens, 0);
+                vector3_t m_rot = VECTOR3(dy * m_freelookSens, dx * m_freelookSens, 0);
                 NLActor *actor = Actor();
                 if(actor)
                 {
@@ -213,7 +213,7 @@ void SimpleControlComponent::Transform(float delta)
             || m_action[NLAction_Move_Down] || m_action[NLAction_Move_Up]
             )
     {
-        vector3_s m_move = VECTOR3(0, 0, 0);
+        vector3_t m_move = VECTOR3(0, 0, 0);
         float movesens = m_moveSens * delta;
 
         if(m_action[NLAction_Move_Forward])
@@ -239,7 +239,7 @@ void SimpleControlComponent::Transform(float delta)
             || m_action[NLAction_Roll_Left] || m_action[NLAction_Roll_Right]
             )
     {
-        vector3_s m_turn = VECTOR3(0, 0, 0);
+        vector3_t m_turn = VECTOR3(0, 0, 0);
         float turnsens = m_turnSens * delta;
 
         if(m_action[NLAction_Turn_Up])

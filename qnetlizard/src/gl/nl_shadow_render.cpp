@@ -77,7 +77,7 @@ static void render_shadow_mask(void)
     //glEnable(GL_DEPTH_TEST);
 }
 
-void NETLizard_RenderNETLizardModelSceneShadow(const GL_NETLizard_3D_Model *map_model, const int *scenes, unsigned int count, const vector3_s *light_position, int dirlight, int method, int render_mask)
+void NETLizard_RenderNETLizardModelSceneShadow(const GL_NETLizard_3D_Model *map_model, const int scenes[], unsigned int count, const vector3_t *light_position, int dirlight, int method, int render_mask)
 {
 	GLuint i;
 	GLint c;
@@ -140,7 +140,7 @@ void NETLizard_RenderNETLizardModelSceneShadow(const GL_NETLizard_3D_Model *map_
     }
 }
 
-void NETLizard_RenderNETLizardModelShadow(const GL_NETLizard_3D_Model *map_model, const vector3_s *light_position, int dirlight, int method, int render_mask)
+void NETLizard_RenderNETLizardModelShadow(const GL_NETLizard_3D_Model *map_model, const vector3_t *light_position, int dirlight, int method, int render_mask)
 {
 	GLuint i;
 	GLuint j;
@@ -241,7 +241,7 @@ void Shadow_RenderNETLizard3DItemMesh(const GL_NETLizard_3D_Item_Mesh *m, const 
 }
 #endif
 
-void NETLizard_RenderNETLizard3DMeshShadow(const GL_NETLizard_3D_Mesh *m, const vector3_s *light_position, int dirlight, int method)
+void NETLizard_RenderNETLizard3DMeshShadow(const GL_NETLizard_3D_Mesh *m, const vector3_t *light_position, int dirlight, int method)
 {
     if(!m || !light_position)
 		return;

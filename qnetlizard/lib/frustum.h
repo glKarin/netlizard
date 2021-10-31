@@ -37,7 +37,7 @@ extern "C" {
 #define PERSPECTIVE(a, b, c, d) {a, b, c, d}
 #define PERSPECTIVE_WH(a, b, c, d, e) {a, (b) / (c), d, e}
 
-typedef struct _frustum_s
+typedef struct frustum_s
 {
     float left;
     float right;
@@ -45,22 +45,22 @@ typedef struct _frustum_s
     float top;
     float z_near;
     float z_far;
-} frustum_s;
+} frustum_t;
 
-typedef struct _perspective_s
+typedef struct perspective_s
 {
     float fovy;
     float aspect;
     float z_near;
     float z_far;
-} perspective_s;
+} perspective_t;
 
-void frustum_make(frustum_s *bo, float left, float right, float bottom, float top, float z_near, float z_far);
-void frustum_matrix(const frustum_s *bo, GLmatrix *mat);
+void frustum_make(frustum_t *bo, float left, float right, float bottom, float top, float z_near, float z_far);
+void frustum_matrix(const frustum_t *bo, GLmatrix *mat);
 
-void perspective_make(perspective_s *bo, float fovy, float aspect, float z_near, float z_far);
-void perspective_make_with_wh(perspective_s *bo, float fovy, float width, float height, float z_near, float z_far);
-void perspective_matrix(const perspective_s *bo, GLmatrix *mat);
+void perspective_make(perspective_t *bo, float fovy, float aspect, float z_near, float z_far);
+void perspective_make_with_wh(perspective_t *bo, float fovy, float width, float height, float z_near, float z_far);
+void perspective_matrix(const perspective_t *bo, GLmatrix *mat);
 
 #ifdef __cplusplus
 }

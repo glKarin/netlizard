@@ -270,8 +270,8 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 							vertex[a + 2].position[0] = (GLfloat)mesh_vertex[i2 * 3];
 							vertex[a + 2].position[1] = (GLfloat)mesh_vertex[i2 * 3 + 1];
                             vertex[a + 2].position[2] = (GLfloat)mesh_vertex[i2 * 3 + 2];
-                            vector3_s v_normal;
-                            triangle_s tri = TRIANGLEV(vertex[a].position, vertex[a + 1].position, vertex[a + 2].position);
+                            vector3_t v_normal;
+                            triangle_t tri = TRIANGLEV(vertex[a].position, vertex[a + 1].position, vertex[a + 2].position);
                             triangle_cale_normal(&tri, &v_normal);
                             vertex[a].normal[0] = VECTOR3_X(v_normal);
                             vertex[a].normal[1] = VECTOR3_Y(v_normal);
@@ -334,7 +334,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 				{
 					GL_NETLizard_3D_Plane *glplane = planes + j;
                     NETLizard_3D_Plane *plane = ((NETLizard_3D_Plane *)(mesh->plane.data)) + j;
-					vector3_s normal = VECTOR3V(plane->normal);
+					vector3_t normal = VECTOR3V(plane->normal);
 					glplane->position[0] = (GLfloat)plane->position[0];
 					glplane->position[1] = (GLfloat)plane->position[1];
 					glplane->position[2] = (GLfloat)plane->position[2];
@@ -376,8 +376,8 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 			else
 			{
 				GLuint plane_count = 1;
-                plane_s ps[6];
-				bound_s item_box = {
+                plane_t ps[6];
+				bound_t item_box = {
                     VECTOR3(
                         (GLfloat)mesh->box.min[0],
                         (GLfloat)mesh->box.min[1],
@@ -556,8 +556,8 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 							vertex[a + 2].position[0] = (GLfloat)mesh_vertex[i2 * 3];
 							vertex[a + 2].position[1] = (GLfloat)mesh_vertex[i2 * 3 + 1];
 							vertex[a + 2].position[2] = (GLfloat)mesh_vertex[i2 * 3 + 2];
-                            vector3_s v_normal;
-                            triangle_s tri = TRIANGLEV(vertex[a].position, vertex[a + 1].position, vertex[a + 2].position);
+                            vector3_t v_normal;
+                            triangle_t tri = TRIANGLEV(vertex[a].position, vertex[a + 1].position, vertex[a + 2].position);
                             triangle_cale_normal(&tri, &v_normal);
                             vertex[a].normal[0] = VECTOR3_X(v_normal);
                             vertex[a].normal[1] = VECTOR3_Y(v_normal);
@@ -648,7 +648,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 			bsp_data[j].direction = bsp[j].direction;
 			bsp_data[j].prev_scene = bsp[j].prev_scene;
 			bsp_data[j].next_scene = bsp[j].next_scene;
-			vector3_s normal = VECTOR3V((float)bsp[j].normal);
+			vector3_t normal = VECTOR3V((float)bsp[j].normal);
             vector3_normalizev(&normal);
             bsp_data[j].normal[0] = VECTOR3_X(normal);
             bsp_data[j].normal[1] = VECTOR3_X(normal);

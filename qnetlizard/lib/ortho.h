@@ -27,7 +27,7 @@ extern "C" {
 #define ORTHO2D(a, b, c, d) ORTHO(a, b, c, d, -1, 1)
 #define ORTHO2DV(a, b) ORTHO2D(a[0], b[0], a[1], b[1])
 
-typedef struct _ortho_s
+typedef struct ortho_s
 {
     float left;
     float right;
@@ -35,14 +35,14 @@ typedef struct _ortho_s
     float top;
     float z_near;
     float z_far;
-} ortho_s;
+} ortho_t;
 
-void ortho_make(ortho_s *bo, float left, float right, float bottom, float top, float z_near, float z_far);
-void ortho_make2d(ortho_s *bo, float left, float right, float bottom, float top);
-void ortho_matrix(const ortho_s *bo, GLmatrix *mat);
-void ortho_matrix2d(const ortho_s *bo, GLmatrix *mat);
-void ortho_min(const ortho_s *bo, vector3_s *m);
-void ortho_max(const ortho_s *bo, vector3_s *m);
+void ortho_make(ortho_t *bo, float left, float right, float bottom, float top, float z_near, float z_far);
+void ortho_make2d(ortho_t *bo, float left, float right, float bottom, float top);
+void ortho_matrix(const ortho_t *bo, GLmatrix *mat);
+void ortho_matrix2d(const ortho_t *bo, GLmatrix *mat);
+void ortho_min(const ortho_t *bo, vector3_t *m);
+void ortho_max(const ortho_t *bo, vector3_t *m);
 
 #ifdef __cplusplus
 }

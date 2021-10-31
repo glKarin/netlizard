@@ -50,29 +50,30 @@ extern "C" {
 #define LINEV_A(obj) (obj)->a
 #define LINEV_B(obj) (obj)->b
 
-struct _plane_s;
+struct plane_s;
 
-typedef struct _line_s
+typedef struct line_s
 {
-    vector3_s a, b;
-} line_s;
+    vector3_t a, b;
+} line_t;
 
-typedef struct _ray_s
+typedef struct ray_s
 {
-    vector3_s position;
-    vector3_s direction;
-} ray_s;
+    vector3_t position;
+    vector3_t direction;
+} ray_t;
 
-void line_make(line_s *line, const vector3_s *a, const vector3_s *b);
-void line_direction(const line_s *line, vector3_s *dir);
-int line_equals(const line_s *a, const line_s *b);
-int line_equals_ignore_seq(const line_s *a, const line_s *b);
-void line_ray_to_line(line_s *r, const ray_s *a, float length);
+void line_make(line_t *line, const vector3_t *a, const vector3_t *b);
+void line_direction(const line_t *line, vector3_t *dir);
+int line_equals(const line_t *a, const line_t *b);
+int line_equals_ignore_seq(const line_t *a, const line_t *b);
+void line_ray_to_line(line_t *r, const ray_t *a, float length);
 
-void ray_make(ray_s *line, const vector3_s *pos, const vector3_s *dir);
-void ray_line_to_ray(ray_s *r, const line_s *l);
-int ray_line_to_plane_intersect(const ray_s *line, const struct _plane_s *plane, vector3_s *point);
-int ray_line_to_plane_collision(const ray_s *line, const struct _plane_s *plane, float *lamda, vector3_s *normal);
+void ray_make(ray_t *line, const vector3_t *pos, const vector3_t *dir);
+void ray_line_to_ray(ray_t *r, const line_t *l);
+int ray_line_to_plane_intersect(const ray_t *line, const struct plane_s *plane, vector3_t *point);
+int ray_line_to_plane_collision(const ray_t *line, const struct plane_s *plane, float *lamda, vector3_t *normal);
+int ray_line_intersect_plane(const ray_t *line, const struct plane_s *plane, float *lamda, vector3_t *point);
 
 #ifdef __cplusplus
 }

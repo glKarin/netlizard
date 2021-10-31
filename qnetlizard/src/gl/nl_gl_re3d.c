@@ -56,8 +56,8 @@ static void NETLizard_TriangleStripToTriangles(GL_NETLizard_3D_Mesh *mesh)
             indexes[c + 1] = c + 1;
             indexes[c + 2] = c + 2;
 
-            vector3_s v_normal;
-            triangle_s tri = TRIANGLEV(vertexes[n].position, vertexes[n + 1].position, vertexes[n + 2].position);
+            vector3_t v_normal;
+            triangle_t tri = TRIANGLEV(vertexes[n].position, vertexes[n + 1].position, vertexes[n + 2].position);
             triangle_cale_normal(&tri, &v_normal);
             vertexes[n].normal[0] = VECTOR3_X(v_normal);
             vertexes[n].normal[1] = VECTOR3_Y(v_normal);
@@ -168,7 +168,7 @@ GLboolean NETLizard_MakeGLRE3DModel(const NETLizard_RE3D_Model *model, const cha
         m->position[1] = mesh->translation[1];
         m->position[2] = mesh->translation[2];
 
-        bound_s bound;
+        bound_t bound;
 
         NETLizard_GetNETLizard3DMeshBound(m, 1, &bound);
         m->box.min[0] = BOUND_MIN_X(bound)/* + mesh->translation[0]*/;

@@ -125,7 +125,7 @@ bool AnimationScene::LoadFile(const QString &file, const QString &resourcePath, 
 
     m_renderer->SetModel(m_model, m_frameAnim);
 
-    vector3_s startPos = VECTOR3(0, 150, 1000);
+    vector3_t startPos = VECTOR3(0, 150, 1000);
     SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
     camera->SetPosition(startPos);
 

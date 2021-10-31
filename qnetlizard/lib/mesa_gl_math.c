@@ -43,14 +43,14 @@ void Mesa_glScale(GLmatrix *mat, float x, float y, float z)
         _math_matrix_scale( mat, x, y, z );
 }
 
-void Mesa_glLoadMatrix(GLmatrix *mat, const float *m)
+void Mesa_glLoadMatrix(GLmatrix *mat, const float m[16])
 {
     IF_NULL_RETURN(mat)
     if (!m) return;
     _math_matrix_loadf( mat, m );
 }
 
-void Mesa_glLoadTransposeMatrix(GLmatrix *mat, const float *m)
+void Mesa_glLoadTransposeMatrix(GLmatrix *mat, const float m[16])
 {
     float tm[16];
     IF_NULL_RETURN(mat)
@@ -65,14 +65,14 @@ void Mesa_glLoadIdentity(GLmatrix *mat)
         _math_matrix_set_identity( mat );
 }
 
-void Mesa_glMultMatrix(GLmatrix *mat, const float *m)
+void Mesa_glMultMatrix(GLmatrix *mat, const float m[16])
 {
    IF_NULL_RETURN(mat)
    if (!m) return;
    _math_matrix_mul_floats( mat, m );
 }
 
-void Mesa_glMultTransposeMatrix(GLmatrix *mat, const float *m)
+void Mesa_glMultTransposeMatrix(GLmatrix *mat, const float m[16])
 {
     float tm[16];
     IF_NULL_RETURN(mat)

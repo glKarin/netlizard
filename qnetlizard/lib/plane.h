@@ -24,19 +24,19 @@ extern "C" {
 #define PLANE(a, b, c, d, e, f) {VECTOR3(a, b, c), VECTOR3(d, e, f)}
 #define PLANEV(a, b) {VECTOR3V(a), VECTOR3V(b)}
 
-typedef struct _plane_s
+typedef struct plane_s
 {
-    vector3_s position;
-    vector3_s normal;
-} plane_s;
+    vector3_t position;
+    vector3_t normal;
+} plane_t;
 
 #define PLANE_POSITION(b) (b).position
 #define PLANE_NORMAL(b) (b).normal
 #define PLANEV_POSITION(b) (b)->position
 #define PLANEV_NORMAL(b) (b)->normal
 
-void plane_make(plane_s *plane, const vector3_s *pos, const vector3_s *nor);
-float plane_point_to_plane_distance(const plane_s *plane, const vector3_s *point);
+void plane_make(plane_t *plane, const vector3_t *pos, const vector3_t *nor);
+float plane_point_to_plane_distance(const plane_t *plane, const vector3_t *point);
 
 #ifdef __cplusplus
 }

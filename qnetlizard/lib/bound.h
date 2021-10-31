@@ -31,21 +31,22 @@ extern "C" {
 #define BOUND(a, b, c, d, e, f) {VECTOR3(a, b, c), VECTOR3(d, e, f)}
 #define BOUNDV(a, b) {VECTOR3V(a), VECTOR3V(b)}
 
-typedef struct _bound_s
+typedef struct bound_s
 {
-    vector3_s min;
-    vector3_s max;
-} bound_s;
+    vector3_t min;
+    vector3_t max;
+} bound_t;
 
-void bound_make(bound_s *bo, const vector3_s *a, const vector3_s *b);
-float bound_sqrt(const bound_s *b);
-void bound_diff(const bound_s *a, vector3_s *r);
-void bound_center(const bound_s *a, vector3_s *r);
-int bound_point_in_box(const bound_s *b, const vector3_s *p);
-void bound_get_box_plane(const bound_s *ab, plane_s r[]);
-int bound_in_frustum(const bound_s *b, float frustum[][4]);
-int bound_in_frustum_with_matrix(const bound_s *b, const GLmatrix *proj_mat, const GLmatrix *view_mat);
-void bound_make_with_vertors(bound_s *bo, const vector3_s *arr, int count);
+void bound_make(bound_t *bo, const vector3_t *a, const vector3_t *b);
+float bound_sqrt(const bound_t *b);
+void bound_diff(const bound_t *a, vector3_t *r);
+void bound_center(const bound_t *a, vector3_t *r);
+int bound_point_in_box(const bound_t *b, const vector3_t *p);
+int bound_point_in_box2d(const bound_t *b, const vector3_t *p);
+void bound_get_box_plane(const bound_t *ab, plane_t r[6]);
+int bound_in_frustum(const bound_t *b, float frustum[6][4]);
+int bound_in_frustum_with_matrix(const bound_t *b, const GLmatrix *proj_mat, const GLmatrix *view_mat);
+void bound_make_with_vertors(bound_t *bo, const vector3_t arr[], int count);
 
 #ifdef __cplusplus
 }

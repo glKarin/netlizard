@@ -34,11 +34,11 @@ extern "C" {
 void Mesa_glTranslate(GLmatrix *mat, float x, float y, float z);
 void Mesa_glRotate(GLmatrix *mat, float angle, float x, float y, float z);
 void Mesa_glScale(GLmatrix *mat, float x, float y, float z);
-void Mesa_glLoadMatrix(GLmatrix *mat, const float *m);
+void Mesa_glLoadMatrix(GLmatrix *mat, const float m[16]);
 void Mesa_glLoadIdentity(GLmatrix *mat);
-void Mesa_glLoadTransposeMatrix(GLmatrix *mat, const float *m);
-void Mesa_glMultMatrix(GLmatrix *mat, const float *m);
-void Mesa_glMultTransposeMatrix(GLmatrix *mat, const float *m);
+void Mesa_glLoadTransposeMatrix(GLmatrix *mat, const float m[16]);
+void Mesa_glMultMatrix(GLmatrix *mat, const float m[16]);
+void Mesa_glMultTransposeMatrix(GLmatrix *mat, const float m[16]);
 void Mesa_glFrustum(GLmatrix *mat, float left, float right, float bottom, float top, float nearval, float farval);
 void Mesa_glOrtho(GLmatrix *mat, float left, float right, float bottom, float top, float nearval, float farval);
 

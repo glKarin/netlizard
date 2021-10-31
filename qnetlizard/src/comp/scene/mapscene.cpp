@@ -19,8 +19,9 @@
 #include "matrix.h"
 #include "nl_util.h"
 #include "nl_shadow_render.h"
+#include "nl_algo.h"
 
-//vector3_s lpos;
+//vector3_t lpos;
 //void rrrrr(void)
 //{
 //    glEnableClientState(GL_VERTEX_ARRAY);
@@ -151,6 +152,28 @@ void MapScene::Update(float delta)
             m_renderer->SetSceneCount(count);
             m_shadowRenderer->SetRenderScenes(scenes, count);
         }
+
+        qDebug() << "---------------------------";
+        qDebug() << "---------------------------";
+        nl_vector3_t pos = CurrentCamera()->Position();
+        NLDEBUG_VECTOR3(pos);
+        GLmatrix mat;
+        Mesa_AllocGLMatrix(&mat);
+        Mesa_glRotate(&mat, -90, 1, 0, 0);
+        matrix_transformv_self_row(&mat, &pos);
+        Mesa_FreeGLMatrix(&mat);
+        NLDEBUG_VECTOR3(pos);
+//        NLDEBUG_VECTOR3(pos);
+//        float z = VECTOR3_Z(pos);
+//        VECTOR3_X(pos) = VECTOR3_X(pos);
+//        VECTOR3_Z(pos) = VECTOR3_Y(pos);
+//        VECTOR3_Y(pos) = -z;
+//        NLDEBUG_VECTOR3(pos);
+        int scene = NETLizard_FindScenePointIn(m_model, &pos);
+        qDebug() << scene;
+        collision_object_t obj = {pos, 50, 100};
+        int res = NETLizard_MapCollisionTesting(m_model, &obj, &scene);
+        qDebug() << res << scene;
     }
 }
 
@@ -246,7 +269,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     if(m_model->bg_tex && m_model->bg_tex)
         m_skyRenderer->SetTexture(m_model->bg_tex);
 
-    bound_s bound = BOUND(0, 0, 0, 0, 0, 0);
+    bound_t bound = BOUND(0, 0, 0, 0, 0, 0);
     NETLizard_GetNETLizard3DMapBound(m_model, 0, 0, &bound);
     NLVector3 lp;
     bound_center(&bound, &lp);

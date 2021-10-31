@@ -37,15 +37,15 @@ extern "C" {
 #define TRIANGLEV_B(t) (t)->b
 #define TRIANGLEV_C(t) (t)->c
 
-typedef struct _triangle_s
+typedef struct triangle_s
 {
-    vector3_s a, b, c;
-    vector3_s normal;
+    vector3_t a, b, c;
+    vector3_t normal;
     int face;
-} triangle_s;
+} triangle_t;
 
-void triangle_make(triangle_s *tri, const vector3_s *a, const vector3_s *b, const vector3_s *c);
-void triangle_cale_normal(const triangle_s *tri, vector3_s *normal);
+void triangle_make(triangle_t *tri, const vector3_t *a, const vector3_t *b, const vector3_t *c);
+void triangle_cale_normal(const triangle_t *tri, vector3_t *normal);
 
 #ifdef __cplusplus
 }

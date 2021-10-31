@@ -22,7 +22,7 @@ void newcam(camera_s *cam)
     VECTOR3_X(cam->scale) = VECTOR3_Y(cam->scale) = VECTOR3_Z(cam->scale) = 1;
 }
 
-void initcam(camera_s *cam, const vector3_s *pos, const vector3_s *rot)
+void initcam(camera_s *cam, const vector3_t *pos, const vector3_t *rot)
 {
     if(!cam)
         return;
@@ -45,10 +45,10 @@ void initcam(camera_s *cam, const vector3_s *pos, const vector3_s *rot)
     VECTOR3_Y(cam->up) = 1;
 }
 
-void cammove(camera_s *cam, const vector3_s *unit)
+void cammove(camera_s *cam, const vector3_t *unit)
 {
-    vector3_s v;
-    vector3_s left;
+    vector3_t v;
+    vector3_t left;
 
     if(!unit)
         return;
@@ -65,7 +65,7 @@ void cammove(camera_s *cam, const vector3_s *unit)
     cam->position = vector3_add(&cam->position, &v);
 }
 
-void camrot(camera_s *cam, const vector3_s *unit)
+void camrot(camera_s *cam, const vector3_t *unit)
 {
     if(!unit)
         return;
@@ -76,7 +76,7 @@ void camrot(camera_s *cam, const vector3_s *unit)
     angtodir(&cam->direction, &cam->rotation);
 }
 
-void angtodir(vector3_s *r, const vector3_s *a)
+void angtodir(vector3_t *r, const vector3_t *a)
 {
     float xrad, yrad;
     float x, y, z;
@@ -97,7 +97,7 @@ void angtodir(vector3_s *r, const vector3_s *a)
     vector3_normalizev(r);
 }
 
-void camscale(camera_s *cam, const vector3_s *factory)
+void camscale(camera_s *cam, const vector3_t *factory)
 {
     vector3_multiplyv_self(&cam->scale, factory);
 }
@@ -127,7 +127,7 @@ void camtrans_gl(GLmatrix *r, const camera_s *cam)
     if(!r || !cam)
         return;
 #if 0
-    vector3_s forward = vector3_add(&cam->position, &cam->direction);
+    vector3_t forward = vector3_add(&cam->position, &cam->direction);
     Mesa_gluLookAt(r, 
                 VECTOR3_X(cam->position),
                 VECTOR3_Y(cam->position),
