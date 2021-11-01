@@ -14,8 +14,8 @@ int NETLizard_GetMapRenderScenes(const GL_NETLizard_3D_Model *model, int scenes[
         const GL_NETLizard_3D_Mesh *mesh = model->meshes + i;
         bound_t bound = BOUNDV(mesh->box.min, mesh->box.max);
         vector3_t pos = VECTOR3V(mesh->position);
-        vector3_addv_self(&BOUND_MIN(bound), &pos);
-        vector3_addv_self(&BOUND_MAX(bound), &pos);
+        vector3_addve(&BOUND_MIN(bound), &pos);
+        vector3_addve(&BOUND_MAX(bound), &pos);
         int r = bound_in_frustum(&bound, frustum);
         if(r)
         {
@@ -158,4 +158,34 @@ void NETLizard_GetNETLizard3DMeshBound(const GL_NETLizard_3D_Mesh *meshs, unsign
     BOUNDV_MAX_X(box) = max_x;
     BOUNDV_MAX_Y(box) = max_y;
     BOUNDV_MAX_Z(box) = max_z;
+}
+
+void conv_nl_vector3(vector3_t *v)
+{
+    float z = VECTOR3V_Z(v);
+    VECTOR3V_X(v) = VECTOR3V_X(v);
+    VECTOR3V_Z(v) = VECTOR3V_Y(v);
+    VECTOR3V_Y(v) = -z;
+}
+
+void conv_gl_vector3(nl_vector3_t *v)
+{
+    float y = VECTOR3V_Y(v);
+    VECTOR3V_X(v) = VECTOR3V_X(v);
+    VECTOR3V_Y(v) = VECTOR3V_Z(v)/* + 100*/;
+    VECTOR3V_Z(v) = -y;
+}
+
+nl_vector3_t to_nl_vector3(const vector3_t *v)
+{
+    vector3_t t = *v;
+    conv_nl_vector3(&t);
+    return t;
+}
+
+vector3_t to_gl_vector3(const vector3_t *v)
+{
+    vector3_t t = *v;
+    conv_gl_vector3(&t);
+    return t;
 }

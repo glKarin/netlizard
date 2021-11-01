@@ -23,3 +23,4 @@ void triangle_cale_normal(const triangle_t *tri, vector3_t *normal)
     vector3_crossv(normal, &first, &second);
     vector3_normalizev(normal);
 }
+

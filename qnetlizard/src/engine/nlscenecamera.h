@@ -46,6 +46,7 @@ public:
     const NLMatrix4 * NormalMatrix() const;
     const NLMatrix4 * GlobalMatrix() const;
     const NLMatrix4 * ViewProjectionMatrix() const;
+    const NLMatrix4 * RenderMatrix() const;
     void SetPosition(const NLVector3 &v);
     void SetRotation(const NLVector3 &v);
     void SetScale(const NLVector3 &v);
@@ -94,6 +95,7 @@ private:
     NLMatrix4 m_mvpMatrix;
     NLMatrix4 m_normalMatrix; // normal
     NLMatrix4 m_globalMatrix;
+    NLMatrix4 m_renderMatrix;
 
     Q_DISABLE_COPY(NLSceneCamera)
 };

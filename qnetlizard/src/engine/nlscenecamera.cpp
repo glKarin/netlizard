@@ -28,10 +28,13 @@ NLSceneCamera::NLSceneCamera(NLScene *widget)
     Mesa_AllocGLMatrix(&m_projectionMatrix);
     Mesa_AllocGLMatrix(&m_globalMatrix);
     Mesa_AllocGLMatrix(&m_mvpMatrix);
+    Mesa_AllocGLMatrix(&m_renderMatrix);
     m_position = InitPosition;
     m_rotation = InitRotation;
     m_scale = InitScale;
     m_up = m_zIsUp ? InitUp_z : InitUp_y;
+    if(m_zIsUp)
+        Mesa_glRotate(&m_renderMatrix, -90, 1, 0, 0);
     UpdateMatrix();
     UpdateDirection();
 }
@@ -44,6 +47,7 @@ NLSceneCamera::~NLSceneCamera()
     Mesa_FreeGLMatrix(&m_projectionMatrix);
     Mesa_FreeGLMatrix(&m_globalMatrix);
     Mesa_FreeGLMatrix(&m_mvpMatrix);
+    Mesa_FreeGLMatrix(&m_renderMatrix);
 }
 
 void NLSceneCamera::UpdateProjectionMatrix(NLMatrix4 *mat)
@@ -137,15 +141,10 @@ NLSceneCamera * NLSceneCamera::Move(const NLVector3 &unit)
     if(vector3_iszero(&unit))
         return this;
 
-    NLVector3 v;
-    v = vector3_scale(&m_right, VECTOR3_X(unit));
-    vector3_addv_self(&m_position, &v);
+    vector3_moveve(&m_position, &m_right, VECTOR3_X(unit));
+    vector3_moveve(&m_position, &m_up, VECTOR3_Y(unit));
+    vector3_moveve(&m_position, &m_direction, VECTOR3_Z(unit));
 
-    v = vector3_scale(&m_up, VECTOR3_Y(unit));
-    vector3_addv_self(&m_position, &v);
-
-    v = vector3_scale(&m_direction, VECTOR3_Z(unit));
-    vector3_addv_self(&m_position, &v);
     UpdateMatrix();
     //qDebug() << "position: " << m_position.v[0] << m_position.v[1] << m_position.v[2];
     return this;
@@ -165,8 +164,8 @@ NLSceneCamera * NLSceneCamera::Turn(const NLVector3 &v)
 
 NLSceneCamera * NLSceneCamera::Zoom(const NLVector3 &v)
 {
-    //vector3_multiplyv_self(&m_scale, &v);
-    vector3_addv_self(&m_scale, &v);
+    //vector3_multiplyve(&m_scale, &v);
+    vector3_addve(&m_scale, &v);
     UpdateMatrix();
     return this;
 }
@@ -293,6 +292,11 @@ void NLSceneCamera::Reset()
     m_rotation = InitRotation;
     m_scale = InitScale;
     m_up = m_zIsUp ? InitUp_z : InitUp_y;
+    if(m_zIsUp)
+    {
+        Mesa_glLoadIdentity(&m_renderMatrix);
+        Mesa_glRotate(&m_renderMatrix, -90, 1, 0, 0);
+    }
     UpdateMatrix();
     UpdateDirection();
 }
@@ -315,20 +319,7 @@ void NLSceneCamera::UpdateViewMatrix()
 {
     Mesa_glLoadIdentity(&m_viewMatrix);
 
-#if 0
-    if(m_zIsUp)
-        Mesa_glRotate(&m_viewMatrix, -90, 1, 0, 0); // z_is_up
-#endif
-
     Mesa_glRotate(&m_viewMatrix, VECTOR3_X(m_rotation), 1, 0, 0);
-#if 0
-    if(m_zIsUp)
-    {
-        Mesa_glRotate(&m_viewMatrix, VECTOR3_Z(m_rotation), 0, 1, 0); // roll
-        Mesa_glRotate(&m_viewMatrix, VECTOR3_Y(m_rotation), 0, 0, 1); // z_is_up
-    }
-    else
-#endif
     {
         Mesa_glRotate(&m_viewMatrix, VECTOR3_Z(m_rotation), 0, 0, 1); // roll
         Mesa_glRotate(&m_viewMatrix, VECTOR3_Y(m_rotation), 0, 1, 0);
@@ -340,8 +331,12 @@ void NLSceneCamera::UpdateViewMatrix()
                 -VECTOR3_Z(m_position)
                 );
 
+#if 0
     if(m_zIsUp)
         Mesa_glRotate(&m_viewMatrix, -90, 1, 0, 0); // z_is_up
+#else
+        Mesa_glMultMatrix(&m_viewMatrix, GL_MATRIX_M(m_renderMatrix));
+#endif
 
     //Mesa_glScale(&m_viewMatrix, VECTOR3_X(m_scale), VECTOR3_Y(m_scale), VECTOR3_Z(m_scale));
 
@@ -383,8 +378,17 @@ void NLSceneCamera::SetZIsUp(bool b)
     {
         m_zIsUp = b;
         m_up = m_zIsUp ? InitUp_z : InitUp_y;
+
+        Mesa_glLoadIdentity(&m_renderMatrix);
+        if(m_zIsUp)
+            Mesa_glRotate(&m_renderMatrix, -90, 1, 0, 0); // z_is_up
+
         UpdateMatrix();
         UpdateDirection();
     }
 }
 
+const NLMatrix4 * NLSceneCamera::RenderMatrix() const
+{
+    return &m_renderMatrix;
+}

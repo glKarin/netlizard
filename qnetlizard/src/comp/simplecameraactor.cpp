@@ -93,3 +93,10 @@ void SimpleCameraActor::OnFovyChanged(float f)
     else
         camera->SetFovy(camera->Fovy() + f);
 }
+
+void SimpleCameraActor::UpdateCamera()
+{
+    if(!m_camera)
+        return;
+    m_camera->UpdateCamera();
+}

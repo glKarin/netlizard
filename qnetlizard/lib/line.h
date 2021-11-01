@@ -68,12 +68,14 @@ void line_direction(const line_t *line, vector3_t *dir);
 int line_equals(const line_t *a, const line_t *b);
 int line_equals_ignore_seq(const line_t *a, const line_t *b);
 void line_ray_to_line(line_t *r, const ray_t *a, float length);
+float line_length(const line_t *line);
+void line_invertv(line_t *line);
+int line_iszero(const line_t *line);
 
 void ray_make(ray_t *line, const vector3_t *pos, const vector3_t *dir);
 void ray_line_to_ray(ray_t *r, const line_t *l);
-int ray_line_to_plane_intersect(const ray_t *line, const struct plane_s *plane, vector3_t *point);
-int ray_line_to_plane_collision(const ray_t *line, const struct plane_s *plane, float *lamda, vector3_t *normal);
-int ray_line_intersect_plane(const ray_t *line, const struct plane_s *plane, float *lamda, vector3_t *point);
+int ray_to_plane_intersect(const ray_t *line, const struct plane_s *plane, vector3_t *point);
+int ray_to_plane_collision(const ray_t *line, const struct plane_s *plane, float *lamda, vector3_t *normal);
 
 #ifdef __cplusplus
 }

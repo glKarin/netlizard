@@ -38,21 +38,7 @@ void SimpleCameraComponent::Init()
 
 void SimpleCameraComponent::Update(float delta)
 {
-    if(m_camera)
-    {
-        NLScene *scene = Scene();
-        if(scene)
-            m_camera->Update(scene->width(), scene->height());
-        NLActor *actor = Actor();
-        if(actor)
-        {
-            NLActor *pa = actor->ParentActor();
-            if(pa)
-                m_camera->SetGlobalMatrix(pa->GlobalMatrix());
-            m_camera->SetPosition(actor->Position());
-            m_camera->SetRotation(actor->Rotation());
-        }
-    }
+    UpdateCamera();
     NLComponent::Update(delta);
 }
 
@@ -119,4 +105,22 @@ void SimpleCameraComponent::SetType(int type)
 NLSceneCamera * SimpleCameraComponent::Camera()
 {
     return m_camera;
+}
+
+void SimpleCameraComponent::UpdateCamera()
+{
+    if(!m_camera)
+        return;
+    NLScene *scene = Scene();
+    if(scene)
+        m_camera->Update(scene->width(), scene->height());
+    NLActor *actor = Actor();
+    if(actor)
+    {
+        NLActor *pa = actor->ParentActor();
+        if(pa)
+            m_camera->SetGlobalMatrix(pa->GlobalMatrix());
+        m_camera->SetPosition(actor->Position());
+        m_camera->SetRotation(actor->Rotation());
+    }
 }

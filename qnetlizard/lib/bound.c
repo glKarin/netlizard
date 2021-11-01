@@ -164,7 +164,7 @@ void bound_center(const bound_t *a, vector3_t *r)
 {
     bound_diff(a, r);
     vector3_scalev(r, 0.5);
-    vector3_addv_self(r, &BOUNDV_MIN(a));
+    vector3_addve(r, &BOUNDV_MIN(a));
 }
 
 float bound_sqrt(const bound_t *b)

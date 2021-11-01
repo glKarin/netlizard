@@ -20,6 +20,10 @@
 #include "nl_util.h"
 #include "nl_shadow_render.h"
 #include "nl_algo.h"
+#include "lib/bound.h"
+
+#define OBJ_RADIUS 60
+#define OBJ_HEIGHT 180
 
 //vector3_t lpos;
 //void rrrrr(void)
@@ -37,17 +41,20 @@
 MapScene::MapScene(QWidget *parent)
     : NLScene(parent),
       m_model(0),
+      m_mainCameraActor(0),
       m_mapActor(0),
       m_shadowActor(0),
       m_skyActor(0),
       m_sky3DActor(0),
+      m_sky3DCameraActor(0),
       m_renderer(0),
       m_shadowRenderer(0),
       m_skyRenderer(0),
       m_sky3DRenderer(0),
       m_skyCamera(0),
       m_sky3DCamera(0),
-      m_control(0)
+      m_control(0),
+      m_noclip(true)
 {
     setObjectName("MapScene");
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
@@ -57,16 +64,16 @@ MapScene::MapScene(QWidget *parent)
 
     // 3D camera + 3D control
     prop.insert("z_is_up", true);
-    SimpleCameraActor *camera = new SimpleCameraActor(prop);
-    AddActor(camera);
-    m_control = static_cast<SimpleControlComponent *>(camera->Control());
+    m_mainCameraActor = new SimpleCameraActor(prop);
+    AddActor(m_mainCameraActor);
+    m_control = static_cast<SimpleControlComponent *>(m_mainCameraActor->Control());
+    SetCurrentCamera(m_mainCameraActor->Camera());
 
     // render model
     m_mapActor = new NLActor;
     AddActor(m_mapActor);
     m_renderer = new NETLizardMapModelRenderer;
     m_mapActor->SetRenderable(m_renderer);
-    SetCurrentCamera(camera->Camera());
     m_renderer->SetCull(settings->GetSetting<bool>("RENDER/scene_cull"));
     m_renderer->SetDebug(settings->GetSetting<int>("DEBUG/render"));
 
@@ -89,9 +96,9 @@ MapScene::MapScene(QWidget *parent)
     prop.clear();
     prop.insert("z_is_up", true);
     prop.insert("enable_control", false);
-    SimpleCameraActor *camera_3d = new SimpleCameraActor(prop);
-    AddActor(camera_3d);
-    m_sky3DCamera = static_cast<NLScenePerspectiveCamera *>(camera_3d->Camera());
+    m_sky3DCameraActor = new SimpleCameraActor(prop);
+    AddActor(m_sky3DCameraActor);
+    m_sky3DCamera = static_cast<NLScenePerspectiveCamera *>(m_sky3DCameraActor->Camera());
 
     // 3D background render
     m_sky3DActor = new NLActor;
@@ -119,6 +126,7 @@ MapScene::MapScene(QWidget *parent)
 
     m_shadowRenderer->SetLightSourceType(lightSource->LightSource()->IsDirectionLighting());
 
+    SetNoclip(settings->GetSetting<bool>("DEBUG/noclip"));
     connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
 
@@ -133,47 +141,58 @@ void MapScene::Init()
 
 void MapScene::Update(float delta)
 {
+    vector3_t oldPos = m_mainCameraActor->Position();
+
     NLScene::Update(delta);
-    NLActor *camera_3d = GetActor(4);
-    camera_3d->SetRotation(CurrentCamera()->Rotation());
+    if(!m_model)
+        return;
+
+    m_sky3DCameraActor->SetRotation(CurrentCamera()->Rotation());
+    m_sky3DCameraActor->UpdateCamera();
     m_shadowRenderer->SetLightSourcePosition(GetActor(7)->Position());
 
-    if(m_model)
+    if(!m_noclip && m_model->game != NL_RACING_EVOLUTION_3D)
     {
-        int *scenes = m_renderer->Scenes();
-        if(scenes)
-        {
-            float frustum[6][4];
-            NLSceneCamera *camera = CurrentCamera();
-            const GLmatrix *projMat = camera->ProjectionMatrix();
-            const GLmatrix *viewMat = camera->ViewMatrix();
-            matrix_cale_frustum(projMat, viewMat, frustum);
-            int count = NETLizard_GetMapRenderScenes(m_model, scenes, frustum);
-            m_renderer->SetSceneCount(count);
-            m_shadowRenderer->SetRenderScenes(scenes, count);
-        }
+        qDebug() << "---------------------------";
+        nl_vector3_t pos = m_mainCameraActor->Position();
 
-        qDebug() << "---------------------------";
-        qDebug() << "---------------------------";
-        nl_vector3_t pos = CurrentCamera()->Position();
-        NLDEBUG_VECTOR3(pos);
-        GLmatrix mat;
-        Mesa_AllocGLMatrix(&mat);
-        Mesa_glRotate(&mat, -90, 1, 0, 0);
-        matrix_transformv_self_row(&mat, &pos);
-        Mesa_FreeGLMatrix(&mat);
-        NLDEBUG_VECTOR3(pos);
-//        NLDEBUG_VECTOR3(pos);
-//        float z = VECTOR3_Z(pos);
-//        VECTOR3_X(pos) = VECTOR3_X(pos);
-//        VECTOR3_Z(pos) = VECTOR3_Y(pos);
-//        VECTOR3_Y(pos) = -z;
-//        NLDEBUG_VECTOR3(pos);
-        int scene = NETLizard_FindScenePointIn(m_model, &pos);
-        qDebug() << scene;
-        collision_object_t obj = {pos, 50, 100};
-        int res = NETLizard_MapCollisionTesting(m_model, &obj, &scene);
+        ConvToAlgoVector3(oldPos);
+        ConvToAlgoVector3(pos);
+
+        //VECTOR3_Z(pos) -= OBJ_HEIGHT;
+        //VECTOR3_Z(oldPos) -= OBJ_HEIGHT;
+        int scene = -1;
+        collision_object_t obj = {oldPos, OBJ_RADIUS, OBJ_HEIGHT};
+        int res = NETLizard_MapCollisionTesting(m_model, &obj, &pos, &scene);
         qDebug() << res << scene;
+        if(res == 4)
+        {
+            //VECTOR3_Z(pos) += OBJ_HEIGHT;
+            ConvToRenderVector3(pos);
+            m_mainCameraActor->SetPosition(pos);
+            m_mainCameraActor->UpdateCamera();
+        }
+        else if(res == 1 || res == 0)
+        {
+            //VECTOR3_Z(oldPos) += OBJ_HEIGHT;
+            ConvToRenderVector3(oldPos);
+            m_mainCameraActor->SetPosition(oldPos);
+            m_mainCameraActor->UpdateCamera();
+        }
+    }
+
+    // cull map scenes
+    int *scenes = m_renderer->Scenes();
+    if(scenes)
+    {
+        float frustum[6][4];
+        NLSceneCamera *camera = CurrentCamera();
+        const GLmatrix *projMat = camera->ProjectionMatrix();
+        const GLmatrix *viewMat = camera->ViewMatrix();
+        matrix_cale_frustum(projMat, viewMat, frustum);
+        int count = NETLizard_GetMapRenderScenes(m_model, scenes, frustum);
+        m_renderer->SetSceneCount(count);
+        m_shadowRenderer->SetRenderScenes(scenes, count);
     }
 }
 
@@ -188,11 +207,7 @@ void MapScene::paintGL()
         float factorX = (float)width() / (float)m_model->bg_tex->width;
         float factorY = (float)height() / (float)m_model->bg_tex->height;
         float factor = qMax(factorX, factorY);
-        NLVector3 scale = VECTOR3(
-                    factor,
-                    factor,
-                    1
-                    );
+        NLVector3 scale = VECTOR3(factor, factor, 1);
         m_skyActor->SetScale(scale);
         m_skyCamera->Render(m_skyActor);
     }
@@ -294,14 +309,15 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
         GetActor(7)->SetPosition(pos);
         CurrentCamera()->SetZIsUp(true);
         m_sky3DCamera->SetZIsUp(true);
-        NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]);
+        //NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[2], -m_model->start_pos[1]);
         NLVector3 startRotate = VECTOR3(m_model->start_angle[0] + 90.0, m_model->start_angle[1] - 180.0, 0);
-        // NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[1], m_model->start_pos[2]); // z_is_up
-        // NLVector3 startRotate = VECTOR3(m_model->start_angle[0] - 90.0, m_model->start_angle[1] - 180.0, 0); // z_is_up
 
-        SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
-        camera->SetPosition(startPos);
-        camera->SetRotation(startRotate);
+        NLVector3 startPos = VECTOR3(m_model->start_pos[0], m_model->start_pos[1], m_model->start_pos[2]);
+        conv_gl_vector3(&startPos);
+
+        m_mainCameraActor->SetPosition(startPos);
+        m_mainCameraActor->SetRotation(startRotate);
+        m_mainCameraActor->UpdateCamera();
         // Egypt 3D level 0(main menu) 8 9 10 12 has a cube sky model
         if(game == NL_SHADOW_OF_EGYPT_3D)
         {
@@ -385,7 +401,40 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
         m_shadowRenderer->SetShadowObject(shadowObj);
     }
     else if(name == "DEBUG/render")
-    {
         m_renderer->SetDebug(value.toInt());
-    }
+    else if(name == "DEBUG/noclip")
+        SetNoclip(value.toBool());
+}
+
+void MapScene::ConvToAlgoVector3(vector3_t &v)
+{
+    NLSceneCamera *camera = CurrentCamera();
+    if(!camera)
+        return;
+
+    const NLMatrix4 *mat = camera->RenderMatrix();
+    matrix_transformv_self_row(mat, &v);
+    //        float z = VECTOR3_Z(pos);
+    //        VECTOR3_X(pos) = VECTOR3_X(pos);
+    //        VECTOR3_Z(pos) = VECTOR3_Y(pos);
+    //        VECTOR3_Y(pos) = -z;
+}
+
+void MapScene::ConvToRenderVector3(vector3_t &v)
+{
+    NLSceneCamera *camera = CurrentCamera();
+    if(!camera)
+        return;
+    const NLMatrix4 *mat = camera->RenderMatrix();
+    matrix_transformv_self(mat, &v);
+//    float z = VECTOR3_Y(pos);
+//    VECTOR3_X(pos) = VECTOR3_X(pos);
+//    VECTOR3_Y(pos) = VECTOR3_Z(pos) + 100;
+//    VECTOR3_Z(pos) = -z;
+}
+
+void MapScene::SetNoclip(bool b)
+{
+    if(m_noclip != b)
+        m_noclip = b;
 }

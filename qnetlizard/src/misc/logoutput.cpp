@@ -93,7 +93,7 @@ void LogOutput::Start()
     if(m_inited)
         return;
     m_inited = true;
-    //qInstallMsgHandler(log_output_msg_handler);
+    qInstallMsgHandler(log_output_msg_handler);
 }
 
 LogOutput * LogOutput::Instance()

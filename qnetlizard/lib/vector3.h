@@ -55,10 +55,10 @@ vector3_t vector3_scale(const vector3_t *a, float n);
 vector3_t vector3_invert(const vector3_t *a);
 vector3_t vector3_direction(const vector3_t *a, const vector3_t *b);
 
-void vector3_addv_self(vector3_t *r, const vector3_t *a);
-void vector3_subtractv_self(vector3_t *r, const vector3_t *a);
-void vector3_multiplyv_self(vector3_t *r, const vector3_t *a);
-void vector3_dividev_self(vector3_t *r, const vector3_t *a);
+void vector3_addve(vector3_t *r, const vector3_t *a);
+void vector3_subtractve(vector3_t *r, const vector3_t *a);
+void vector3_multiplyve(vector3_t *r, const vector3_t *a);
+void vector3_divideve(vector3_t *r, const vector3_t *a);
 
 float vector3_dot(const vector3_t *a, const vector3_t *b);
 float vector3_length(const vector3_t *a);
@@ -74,6 +74,10 @@ void vector3_makev(vector3_t *vec, float x, float y, float z);
 vector3_t vector3_make(float x, float y, float z);
 void vector3_makeptrv(vector3_t *vec, const float arr[3]);
 vector3_t vector3_makeptr(const float arr[3]);
+
+void vector3_moveve(vector3_t *r, const vector3_t *dir, float t);
+void vector3_movev(vector3_t *r, const vector3_t *v, const vector3_t *dir, float t);
+vector3_t vector3_move(const vector3_t *v, const vector3_t *dir, float t);
 
 #ifdef __cplusplus
 }

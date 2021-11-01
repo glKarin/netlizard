@@ -3,6 +3,10 @@
 #include <math.h>
 #include <string.h>
 
+#include "vector3.h"
+#include "ortho.h"
+#include "frustum.h"
+
 void matrix_cale_frustum(const matrix4_t *proj_mat, const matrix4_t *view_mat, float frustum[6][4])
 {
     memset(frustum, 0, sizeof(float) * 4 * 6);

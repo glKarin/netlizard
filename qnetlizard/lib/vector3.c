@@ -215,7 +215,7 @@ int vector3_iszero(const vector3_t *a)
     return VECTOR3V_X(a) == 0 && VECTOR3V_Y(a) == 0 && VECTOR3V_Z(a) == 0;
 }
 
-void vector3_addv_self(vector3_t *r, const vector3_t *a)
+void vector3_addve(vector3_t *r, const vector3_t *a)
 {
     IF_NULL_RETURN2(a, r)
 
@@ -224,7 +224,7 @@ void vector3_addv_self(vector3_t *r, const vector3_t *a)
     VECTOR3V_Z(r) += VECTOR3V_Z(a);
 }
 
-void vector3_subtractv_self(vector3_t *r, const vector3_t *a)
+void vector3_subtractve(vector3_t *r, const vector3_t *a)
 {
     IF_NULL_RETURN2(a, r)
 
@@ -233,7 +233,7 @@ void vector3_subtractv_self(vector3_t *r, const vector3_t *a)
     VECTOR3V_Z(r) -= VECTOR3V_Z(a);
 }
 
-void vector3_multiplyv_self(vector3_t *r, const vector3_t *a)
+void vector3_multiplyve(vector3_t *r, const vector3_t *a)
 {
     IF_NULL_RETURN2(a, r)
 
@@ -242,7 +242,7 @@ void vector3_multiplyv_self(vector3_t *r, const vector3_t *a)
     VECTOR3V_Z(r) *= VECTOR3V_Z(a);
 }
 
-void vector3_dividev_self(vector3_t *r, const vector3_t *a)
+void vector3_divideve(vector3_t *r, const vector3_t *a)
 {
     IF_NULL_RETURN2(a, r)
 
@@ -303,4 +303,28 @@ vector3_t vector3_makeptr(const float arr[3])
 {
     vector3_t vec = VECTOR3V(arr);
     return vec;
+}
+
+void vector3_moveve(vector3_t *r, const vector3_t *dir, float t)
+{
+    IF_NULL_RETURN2(r, dir)
+    vector3_t a = *dir;
+    vector3_scalev(&a, t);
+    vector3_addve(r, &a);
+}
+
+void vector3_movev(vector3_t *r, const vector3_t *v, const vector3_t *dir, float t)
+{
+    IF_NULL_RETURN3(r, v, dir)
+    vector3_t a = *dir;
+    vector3_scalev(&a, t);
+    vector3_addv(r, v, &a);
+}
+
+vector3_t vector3_move(const vector3_t *v, const vector3_t *dir, float t)
+{
+    IF_NULL_RETURN2(v, dir)
+    vector3_t a;
+    vector3_movev(&a, v, dir, t);
+    return a;
 }

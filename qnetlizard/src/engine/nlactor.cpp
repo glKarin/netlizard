@@ -477,15 +477,10 @@ NLActor * NLActor::Move(const NLVector3 &unit)
     if(vector3_iszero(&unit))
         return this;
 
-    NLVector3 v;
-    v = vector3_scale(&m_right, VECTOR3_X(unit));
-    vector3_addv_self(&m_position, &v);
+    vector3_moveve(&m_position, &m_right, VECTOR3_X(unit));
+    vector3_moveve(&m_position, &m_up, VECTOR3_Y(unit));
+    vector3_moveve(&m_position, &m_direction, VECTOR3_Z(unit));
 
-    v = vector3_scale(&m_up, VECTOR3_Y(unit));
-    vector3_addv_self(&m_position, &v);
-
-    v = vector3_scale(&m_direction, VECTOR3_Z(unit));
-    vector3_addv_self(&m_position, &v);
     UpdateMatrix();
     emit positionChanged(m_position);
 //    NLDEBUG_VECTOR3(m_position);
@@ -511,8 +506,8 @@ NLActor * NLActor::Turn(const NLVector3 &v)
 
 NLActor * NLActor::Zoom(const NLVector3 &v)
 {
-    //vector3_multiplyv_self(&m_scale, &v);
-    vector3_addv_self(&m_scale, &v);
+    //vector3_multiplyve(&m_scale, &v);
+    vector3_addve(&m_scale, &v);
     UpdateMatrix();
     emit scaleChanged(m_scale);
     return this;

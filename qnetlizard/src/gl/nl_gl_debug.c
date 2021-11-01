@@ -4,6 +4,7 @@
 
 #include "lib/vector3.h"
 #include "lib/line.h"
+#include "lib/bound.h"
 #include "nl_util.h"
 
 #define BEGIN_DEBUG_RENDER \

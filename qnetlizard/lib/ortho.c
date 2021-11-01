@@ -1,5 +1,7 @@
 #include "ortho.h"
 
+#include "vector3.h"
+
 void ortho_make(ortho_t *bo, float left, float right, float bottom, float top, float z_near, float z_far)
 {
     ORTHOV_LEFT(bo) = left;

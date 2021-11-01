@@ -5,7 +5,6 @@
 extern "C" {
 #endif
 
-#include "vector3.h"
 #include "mesa_gl_math.h"
 
 #define ORTHO_LEFT(b) ((b).left)
@@ -27,6 +26,8 @@ extern "C" {
 #define ORTHO2D(a, b, c, d) ORTHO(a, b, c, d, -1, 1)
 #define ORTHO2DV(a, b) ORTHO2D(a[0], b[0], a[1], b[1])
 
+struct vector3_s;
+
 typedef struct ortho_s
 {
     float left;
@@ -41,8 +42,8 @@ void ortho_make(ortho_t *bo, float left, float right, float bottom, float top, f
 void ortho_make2d(ortho_t *bo, float left, float right, float bottom, float top);
 void ortho_matrix(const ortho_t *bo, GLmatrix *mat);
 void ortho_matrix2d(const ortho_t *bo, GLmatrix *mat);
-void ortho_min(const ortho_t *bo, vector3_t *m);
-void ortho_max(const ortho_t *bo, vector3_t *m);
+void ortho_min(const ortho_t *bo, struct vector3_s *m);
+void ortho_max(const ortho_t *bo, struct vector3_s *m);
 
 #ifdef __cplusplus
 }

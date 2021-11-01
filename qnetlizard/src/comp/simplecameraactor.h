@@ -27,6 +27,7 @@ protected:
 signals:
     
 public slots:
+    void UpdateCamera();
 
 private Q_SLOTS:
     void OnFovyChanged(float f);

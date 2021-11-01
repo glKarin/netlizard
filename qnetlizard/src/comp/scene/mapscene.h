@@ -10,6 +10,7 @@ class NETLizardItemModelRenderer;
 class NLSceneOrthoCamera;
 class NLScenePerspectiveCamera;
 class SimpleControlComponent;
+class SimpleCameraActor;
 class NETLizardShadowModelRenderer;
 
 NLSCENE(MapScene)
@@ -34,13 +35,20 @@ protected:
 
     private Q_SLOTS:
     void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
+    void SetNoclip(bool b);
+
+    private:
+    void ConvToAlgoVector3(vector3_t &v);
+    void ConvToRenderVector3(vector3_t &v);
 
 private:
     GL_NETLizard_3D_Model *m_model;
+    SimpleCameraActor *m_mainCameraActor;
     NLActor *m_mapActor;
     NLActor *m_shadowActor;
     NLActor *m_skyActor;
     NLActor *m_sky3DActor;
+    SimpleCameraActor *m_sky3DCameraActor;
     NETLizardMapModelRenderer *m_renderer;
     NETLizardShadowModelRenderer *m_shadowRenderer;
     NETLizardTextureRenderer *m_skyRenderer;
@@ -48,6 +56,7 @@ private:
     NLSceneOrthoCamera *m_skyCamera;
     NLScenePerspectiveCamera *m_sky3DCamera;
     SimpleControlComponent *m_control;
+    bool m_noclip;
 
     Q_DISABLE_COPY(MapScene)
 };

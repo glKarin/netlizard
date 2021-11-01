@@ -8,7 +8,6 @@
 
 #include "lib/bound.h"
 #include "lib/line.h"
-#include "nl_util.h"
 
 #define SCENE_BOUND(mesh) BOUNDV(mesh->box.min, mesh->box.max)
 #define SCENE_PLANE(plane) PLANEV(plane.position, plane.normal)
@@ -141,7 +140,7 @@ int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netli
             nl_vector3_t dir = PLANE_NORMAL(pla);
             VECTOR3_Z(dir) = -VECTOR3_Z(dir);
             ray_t l = {*new_pos, dir};
-            if(ray_line_to_plane_intersect(&l, &pla, &point))
+            if(plane_ray_intersect(&pla, &l, NULL, &point))
             {
                 if(rglz)
                     *rglz = VECTOR3_Z(point);
@@ -223,7 +222,7 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
 // 2 - 在场景AABB内，且在场景所有碰撞面内
 // 3 - 仅在场景AABB内，但是该场景无碰撞面数据
 // 4 - 在场景AABB内，且在场景所有碰撞面内，但是与某一碰撞面的距离小于测试值
-int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, const vector3_t *new_pos, int *scene)
+int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, vector3_t *new_pos, int *scene)
 {
     if(!map || !obj)
         return -1;
@@ -233,6 +232,9 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
     const float height = obj->height;
     const float width = obj->radius;
     float lamda = 0.0;
+    int dir = 0;
+    int mask = 0;
+
     int s = NETLizard_FindScenePointIn(map, new_pos);
     if(s == -1)
         return 0; // 不在任何场景范围内
@@ -242,33 +244,49 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
     if(!mesh->plane)
         return 3;
 
+    line_t line;
+    line_make(&line, &obj->position, new_pos);
+    LINE_A_Z(line) += obj->height;
+    LINE_B_Z(line) += obj->height;
     res = 1;
     unsigned int j;
     for(j = 0; j < mesh->plane_count; j++)
     {
         plane_t plane = SCENE_PLANE(mesh->plane[j]);
-        ray_t l = {*new_pos, VECTOR3(-mesh->plane[j].normal[0], -mesh->plane[j].normal[1], -mesh->plane[j].normal[2])};
-        vector3_t cpoint;
-        int r = ray_line_intersect_plane(&l, &plane, &lamda, &cpoint);
-        if(r < 0)
-        {
-            res = 1; // 不在场景的某个平面内
-            return res;
-        }
-
         float limit = 0;
-        int po = 0;
         if(IS_FLOOR(mesh->plane[j].normal))
             limit = 0;
         else if(IS_CEIL(mesh->plane[j].normal))
-            limit = height;
+            limit = 0; //height;
         else
-        {
             limit = width;
-            po = 1;
+        if(limit)
+        {
+            vector3_moveve(&PLANE_POSITION(plane), &PLANE_NORMAL(plane), limit);
         }
-        if(lamda < limit && po)
-            res = 4;
+
+        //ray_t l = {*new_pos, VECTOR3(-mesh->plane[j].normal[0], -mesh->plane[j].normal[1], -mesh->plane[j].normal[2])};
+        vector3_t cpoint;
+        int r = plane_line_intersect(&plane, &line, &lamda, &cpoint, &dir, &mask);
+        if(r == 0) // 平行
+        {
+            if(mask == 0) // 两点都在背面
+                return 1;
+            continue; // 两点都在正面
+        }
+        if(r < 0) // 不相交
+        {
+            if(mask == 0) // 两点都在背面
+                return 1;
+            continue; // 两点都在正面
+        }
+        // 相交
+        if(mask == 1)
+        {
+            VECTOR3_Z(cpoint) -= obj->height;
+            *new_pos = cpoint;
+            return 4;
+        }
     }
     if(res == 1)
         res = 2;

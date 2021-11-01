@@ -22,6 +22,7 @@ public:
 signals:
     
 public slots:
+    void UpdateCamera();
 
 protected:
     virtual void Init();
