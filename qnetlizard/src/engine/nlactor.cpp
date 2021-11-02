@@ -24,9 +24,7 @@ NLActor::NLActor(NLActor *parent) :
     NLObject(parent),
     m_renderable(0),
     m_components(0),
-    m_children(0),
-    m_zIsUp(false),
-    m_fixedUp(true)
+    m_children(0)
 {
     Construct();
 }
@@ -35,9 +33,7 @@ NLActor::NLActor(const NLPropperties &prop, NLActor *parent) :
     NLObject(prop, parent),
     m_renderable(0),
     m_components(0),
-    m_children(0),
-    m_zIsUp(false),
-    m_fixedUp(true)
+    m_children(0)
 {
     Construct();
 }
@@ -46,9 +42,7 @@ NLActor::NLActor(NLScene *scene, NLActor *parent) :
     NLObject(scene, parent),
     m_renderable(0),
     m_components(0),
-    m_children(0),
-    m_zIsUp(false),
-    m_fixedUp(true)
+    m_children(0)
 {
     Construct();
 }
@@ -57,9 +51,7 @@ NLActor::NLActor(NLScene *scene, const NLPropperties &prop, NLActor *parent) :
     NLObject(scene, prop, parent),
     m_renderable(0),
     m_components(0),
-    m_children(0),
-    m_zIsUp(false),
-    m_fixedUp(true)
+    m_children(0)
 {
     Construct();
 }
@@ -88,7 +80,7 @@ void NLActor::Construct()
     m_position = InitPosition;
     m_rotation = InitRotation;
     m_scale = InitScale;
-    m_up = m_zIsUp ? InitUp_z : InitUp_y;
+    m_up = /*m_zIsUp ? InitUp_z : */InitUp_y;
     UpdateMatrix();
     UpdateDirection();
 }
@@ -395,7 +387,7 @@ void NLActor::Reset()
     m_position = InitPosition;
     m_rotation = InitRotation;
     m_scale = InitScale;
-    m_up = m_zIsUp ? InitUp_z : InitUp_y;
+    m_up = /*m_zIsUp ? InitUp_z : */InitUp_y;
     UpdateMatrix();
     UpdateDirection();
     emit positionChanged(m_position);
@@ -412,9 +404,7 @@ void NLActor::SetPosition(const vector3_t &v)
 {
     if(vector3_equals(&m_position, &v))
         return;
-    VECTOR3_X(m_position) = VECTOR3_X(v);
-    VECTOR3_Y(m_position) = VECTOR3_Y(v);
-    VECTOR3_Z(m_position) = VECTOR3_Z(v);
+    m_position = v;
     UpdateMatrix();
     emit positionChanged(m_position);
 }
@@ -423,9 +413,7 @@ void NLActor::SetRotation(const vector3_t &v)
 {
     if(vector3_equals(&m_rotation, &v))
         return;
-    VECTOR3_X(m_rotation) = VECTOR3_X(v);
-    VECTOR3_Y(m_rotation) = VECTOR3_Y(v);
-    VECTOR3_Z(m_rotation) = VECTOR3_Z(v);
+    m_rotation = v;
     UpdateMatrix();
     UpdateDirection();
     emit rotationChanged(m_rotation);
@@ -435,9 +423,7 @@ void NLActor::SetScale(const vector3_t &v)
 {
     if(vector3_equals(&m_scale, &v))
         return;
-    VECTOR3_X(m_scale) = VECTOR3_X(v);
-    VECTOR3_Y(m_scale) = VECTOR3_Y(v);
-    VECTOR3_Z(m_scale) = VECTOR3_Z(v);
+    m_scale = v;
     UpdateMatrix();
     emit scaleChanged(m_scale);
 }
@@ -544,20 +530,7 @@ void NLActor::UpdateLocalMatrix()
                 VECTOR3_Z(m_position)
                 );
 
-#if 0
-    if(m_zIsUp)
-        Mesa_glRotate(&m_matrix, 90, 1, 0, 0); // z_is_up
-#endif
-
     Mesa_glRotate(&m_matrix, VECTOR3_X(m_rotation), 1, 0, 0);
-#if 0
-    if(m_zIsUp)
-    {
-        Mesa_glRotate(&m_matrix, VECTOR3_Z(m_rotation), 0, -1, 0); // roll
-        Mesa_glRotate(&m_matrix, VECTOR3_Y(m_rotation), 0, 0, 1); // z_is_up
-    }
-    else
-#endif
     {
         Mesa_glRotate(&m_matrix, VECTOR3_Z(m_rotation), 0, 0, 1); // roll
         Mesa_glRotate(&m_matrix, VECTOR3_Y(m_rotation), 0, 1, 0);
@@ -597,11 +570,7 @@ void NLActor::UpdateChildrenMatrix()
 
 void NLActor::UpdateDirection()
 {
-    if(!m_fixedUp)
-    {
-        NLVector3 up = m_zIsUp ? InitUp_z : InitUp_y;
-        Mesa_glTransform_row(VECTOR3_V(m_up), VECTOR3_V(up), &m_normalMatrix);
-    }
+    UpdateUp(); // virtual, constructor call it
 
     float v[] = {0, 0, -1};
     Mesa_glTransform_row(VECTOR3_V(m_direction), v, &m_normalMatrix);
@@ -610,29 +579,10 @@ void NLActor::UpdateDirection()
     vector3_normalizev(&m_right);
 }
 
-void NLActor::SetZIsUp(bool b)
+void NLActor::UpdateUp()
 {
-    if(m_zIsUp != b)
-    {
-        m_zIsUp = b;
-        m_up = m_zIsUp ? InitUp_z : InitUp_y;
-        //UpdateMatrix();
-        UpdateDirection();
-    }
-}
-
-void NLActor::SetFixedUp(bool b)
-{
-    if(m_fixedUp != b)
-    {
-        m_fixedUp = b;
-        if(m_fixedUp)
-        {
-            m_up = m_zIsUp ? InitUp_z : InitUp_y;
-        }
-        //UpdateMatrix();
-        UpdateDirection();
-    }
+    NLVector3 up = /*m_zIsUp ? InitUp_z : */InitUp_y;
+    Mesa_glTransform_row(VECTOR3_V(m_up), VECTOR3_V(up), &m_normalMatrix);
 }
 
 void NLActor::InitProperty()
@@ -652,7 +602,34 @@ void NLActor::InitProperty()
     VECTOR3_Y(v) = GetProperty<float>("yaw", 0);
     VECTOR3_Z(v) = GetProperty<float>("roll", 0);
     SetRotation(v);
-    //SetZIsUp(GetProperty<bool>("z_is_up", false));
-    //SetFixedUp(GetProperty<bool>("fixed_up", true));
 }
 
+void NLActor::SetUp(const NLVector3 &up)
+{
+    if(!vector3_equals(&m_up, &up))
+    {
+        m_up = up;
+        //UpdateMatrix();
+        UpdateDirection();
+    }
+}
+
+void NLActor::SetDirection(const NLVector3 &dir)
+{
+    if(!vector3_equals(&m_direction, &dir))
+    {
+        m_direction = dir;
+        //UpdateMatrix();
+        UpdateDirection();
+    }
+}
+
+void NLActor::SetRight(const NLVector3 &r)
+{
+    if(!vector3_equals(&m_right, &r))
+    {
+        m_right = r;
+        //UpdateMatrix();
+        UpdateDirection();
+    }
+}

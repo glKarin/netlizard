@@ -13,7 +13,7 @@
 #include "lib/vector3.h"
 
 SimpleCameraActor::SimpleCameraActor(const NLPropperties &prop, NLActor *parent) :
-    NLActor(prop, parent),
+    NLRigidbody(prop, parent),
     m_camera(0),
     m_control(0)
 {
@@ -32,9 +32,9 @@ void SimpleCameraActor::Init()
     QVariant type = GetProperty("type");
     if(type.isValid())
         prop.insert("type", type);
-    QVariant z_is_up = GetProperty("z_is_up");
+    QVariant z_is_up = GetProperty("camera_z_is_up");
     if(z_is_up.isValid())
-        prop.insert("z_is_up", z_is_up);
+        prop.insert("camera_z_is_up", z_is_up);
     m_camera = new SimpleCameraComponent(prop, this);
     m_camera->SetScene(Scene());
     if(type == NLSceneCamera::Type_Ortho)
@@ -52,19 +52,19 @@ void SimpleCameraActor::Init()
         connect(control, SIGNAL(fovyChanged(float)), this, SLOT(OnFovyChanged(float)));
     }
 
-    NLActor::Init();
+    NLRigidbody::Init();
 }
 
 void SimpleCameraActor::Destroy()
 {
-    NLActor::Destroy();
+    NLRigidbody::Destroy();
 }
 
 void SimpleCameraActor::Update(float delta)
 {
     if(!IsInited())
         return;
-    NLActor::Update(delta);
+    NLRigidbody::Update(delta);
 }
 
 NLSceneCamera * SimpleCameraActor::Camera()

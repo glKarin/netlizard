@@ -96,7 +96,7 @@ void SimpleCameraComponent::SetType(int type)
             m_camera = 0;
         }
         m_camera = m_type == NLSceneCamera::Type_Ortho ? (NLSceneCamera *)new NLSceneOrthoCamera : (NLSceneCamera *)new NLScenePerspectiveCamera;
-        if(GetProperty<bool>("z_is_up", false))
+        if(GetProperty<bool>("camera_z_is_up", false))
             m_camera->SetZIsUp(true); // z_is_up
         m_camera->SetScene(Scene());
     }

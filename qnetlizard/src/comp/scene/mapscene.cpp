@@ -63,7 +63,7 @@ MapScene::MapScene(QWidget *parent)
     NLPropperties prop;
 
     // 3D camera + 3D control
-    prop.insert("z_is_up", true);
+    prop.insert("camera_z_is_up", true);
     m_mainCameraActor = new SimpleCameraActor(prop);
     AddActor(m_mainCameraActor);
     m_control = static_cast<SimpleControlComponent *>(m_mainCameraActor->Control());
@@ -94,7 +94,7 @@ MapScene::MapScene(QWidget *parent)
 
     // 3D background camera
     prop.clear();
-    prop.insert("z_is_up", true);
+    prop.insert("camera_z_is_up", true);
     prop.insert("enable_control", false);
     m_sky3DCameraActor = new SimpleCameraActor(prop);
     AddActor(m_sky3DCameraActor);
@@ -153,7 +153,7 @@ void MapScene::Update(float delta)
 
     if(!m_noclip && m_model->game != NL_RACING_EVOLUTION_3D)
     {
-        qDebug() << "---------------------------";
+        //qDebug() << "---------------------------";
         nl_vector3_t pos = m_mainCameraActor->Position();
 
         ConvToAlgoVector3(oldPos);
@@ -164,7 +164,7 @@ void MapScene::Update(float delta)
         int scene = -1;
         collision_object_t obj = {oldPos, OBJ_RADIUS, OBJ_HEIGHT};
         int res = NETLizard_MapCollisionTesting(m_model, &obj, &pos, &scene);
-        qDebug() << res << scene;
+        //qDebug() << res << scene;
         if(res == 4)
         {
             //VECTOR3_Z(pos) += OBJ_HEIGHT;

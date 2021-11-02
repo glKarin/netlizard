@@ -2,6 +2,7 @@
 #define _KARIN_SIMPLECAMERAACTOR_H
 
 #include "nlactor.h"
+#include "nlrigidbody.h"
 
 class SimpleCameraComponent;
 class SimpleControlComponent;
@@ -9,7 +10,7 @@ class NLSceneCamera;
 class NLComponent;
 
 NLACTOR(SimpleCameraActor)
-class SimpleCameraActor : public NLActor
+class SimpleCameraActor : public NLRigidbody
 {
     Q_OBJECT
 public:
