@@ -153,32 +153,27 @@ void MapScene::Update(float delta)
 
     if(!m_noclip && m_model->game != NL_RACING_EVOLUTION_3D)
     {
-        //qDebug() << "---------------------------";
         nl_vector3_t pos = m_mainCameraActor->Position();
 
         ConvToAlgoVector3(oldPos);
         ConvToAlgoVector3(pos);
 
-        //VECTOR3_Z(pos) -= OBJ_HEIGHT;
-        //VECTOR3_Z(oldPos) -= OBJ_HEIGHT;
         int scene = -1;
         collision_object_t obj = {oldPos, OBJ_RADIUS, OBJ_HEIGHT};
         int res = NETLizard_MapCollisionTesting(m_model, &obj, &pos, &scene);
         //qDebug() << res << scene;
-        if(res == 4)
+        vector3_t p = (res != 1 && res != 0) ? pos : oldPos;
+        float rglz = 0;
+        res = NETLizard_GetScenePointZCoord(m_model, &p, scene, &scene, &rglz);
+        if(res)
         {
-            //VECTOR3_Z(pos) += OBJ_HEIGHT;
-            ConvToRenderVector3(pos);
-            m_mainCameraActor->SetPosition(pos);
-            m_mainCameraActor->UpdateCamera();
+            //qDebug() << res << scene << rglz;
+            VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
         }
-        else if(res == 1 || res == 0)
-        {
-            //VECTOR3_Z(oldPos) += OBJ_HEIGHT;
-            ConvToRenderVector3(oldPos);
-            m_mainCameraActor->SetPosition(oldPos);
-            m_mainCameraActor->UpdateCamera();
-        }
+
+        ConvToRenderVector3(p);
+        m_mainCameraActor->SetPosition(p);
+        m_mainCameraActor->UpdateCamera();
     }
 
     // cull map scenes
@@ -436,5 +431,8 @@ void MapScene::ConvToRenderVector3(vector3_t &v)
 void MapScene::SetNoclip(bool b)
 {
     if(m_noclip != b)
+    {
         m_noclip = b;
+        m_mainCameraActor->SetFree(m_noclip);
+    }
 }

@@ -75,6 +75,8 @@ NLActor * NLRigidbody::Turn(const NLVector3 &v)
     if(m_free)
     {
         NLActor::Turn(v);
+        m_moveRotation = Rotation();
+        UpdateMoveMatrix();
         return this;
     }
 
@@ -99,7 +101,7 @@ NLActor * NLRigidbody::Turn(const NLVector3 &v)
     NLActor::Turn(nv);
 
     rot = Rotation();
-    VECTOR3_Y(m_moveRotation) = VECTOR3_Y(rot);
+    VECTOR3_Y(m_moveRotation) = y;
     UpdateMoveMatrix();
     return this;
 }
@@ -109,6 +111,8 @@ void NLRigidbody::SetRotation(const NLVector3 &v)
     if(m_free)
     {
         NLActor::SetRotation(v);
+        m_moveRotation = Rotation();
+        UpdateMoveMatrix();
         return;
     }
 
@@ -122,9 +126,9 @@ void NLRigidbody::SetRotation(const NLVector3 &v)
         VECTOR3_Z(nv) = VECTOR3_Z(rot);
     NLActor::SetRotation(nv);
 
-    if(VECTOR3_Y(m_moveDirection) == VECTOR3_Y(v))
+    if(VECTOR3_Y(m_moveRotation) == VECTOR3_Y(v))
         return;
-    VECTOR3_Y(m_moveDirection) = VECTOR3_Y(v);
+    VECTOR3_Y(m_moveRotation) = VECTOR3_Y(v);
     UpdateMoveMatrix();
 }
 

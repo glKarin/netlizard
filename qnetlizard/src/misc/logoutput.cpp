@@ -27,7 +27,7 @@ LogOutput::LogOutput(QObject *parent) :
 {
     setObjectName("LogOutput");
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(Finish()));
-    Start();
+    //Start();
 }
 
 LogOutput::~LogOutput()
@@ -93,7 +93,7 @@ void LogOutput::Start()
     if(m_inited)
         return;
     m_inited = true;
-    //qInstallMsgHandler(log_output_msg_handler);
+    qInstallMsgHandler(log_output_msg_handler);
 }
 
 LogOutput * LogOutput::Instance()
@@ -106,6 +106,7 @@ void log_output_msg_handler(QtMsgType type, const char *msg)
 {
     LogOutput *lo = LogOutput::Instance();
     FILE *f = type == 0 ? stdout : stderr;
+#ifdef Q_OS_UNIX
     static const char *_console_color[] = {
         "",
         "\033[32m", // green
@@ -114,5 +115,8 @@ void log_output_msg_handler(QtMsgType type, const char *msg)
         "\033[35m", // pur
     };
     fprintf(f, "%s %s\n\033[0m", _console_color[type], msg);
+#else
+    fprintf(f, "%s\n", msg);
+#endif
     lo->Push(type, msg);
 }

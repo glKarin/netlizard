@@ -133,7 +133,7 @@ int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netli
     for(j = 0; j < mesh->plane_count; j++)
     {
         // 计算当前位置的地板坐标
-        if(mesh->plane[j].normal[2] > UP_NORMAL_LIMIT)
+        if(IS_FLOOR(mesh->plane[j].normal))
         {
             plane_t pla = SCENE_PLANE(mesh->plane[j]);
             nl_vector3_t point = VECTOR3(0, 0, 0);
@@ -186,7 +186,7 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
 
     if(scene >= 0)
     {
-        NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, new_pos, scene, rglz);
+        res = NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, new_pos, scene, rglz);
         if(res)
         {
             if(rscene)
@@ -246,8 +246,8 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
 
     line_t line;
     line_make(&line, &obj->position, new_pos);
-    LINE_A_Z(line) += obj->height;
-    LINE_B_Z(line) += obj->height;
+    //LINE_A_Z(line) += obj->height;
+    //LINE_B_Z(line) += obj->height;
     res = 1;
     unsigned int j;
     for(j = 0; j < mesh->plane_count; j++)
@@ -283,7 +283,7 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
         // 相交
         if(mask == 1)
         {
-            VECTOR3_Z(cpoint) -= obj->height;
+            //VECTOR3_Z(cpoint) -= obj->height;
             *new_pos = cpoint;
             return 4;
         }

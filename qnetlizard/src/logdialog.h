@@ -19,6 +19,10 @@ public slots:
     void ResetPosAndSize();
     void ClearLog();
 
+protected:
+    virtual void hideEvent(QHideEvent *e);
+    virtual void showEvent(QShowEvent *e);
+
 private:
     void Init();
 

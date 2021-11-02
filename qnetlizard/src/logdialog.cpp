@@ -23,6 +23,7 @@ LogDialog::LogDialog(QWidget *parent) :
 
 LogDialog::~LogDialog()
 {
+    m_log->Finish();
     DEBUG_DESTROY_Q
 }
 
@@ -80,4 +81,16 @@ void LogDialog::ClearLog()
 {
     m_log->Clear();
     m_textViewer->clear();
+}
+
+void LogDialog::hideEvent(QHideEvent *e)
+{
+    QDialog::hideEvent(e);
+    m_log->Finish();
+}
+
+void LogDialog::showEvent(QShowEvent *e)
+{
+    QDialog::showEvent(e);
+    m_log->Start();
 }
