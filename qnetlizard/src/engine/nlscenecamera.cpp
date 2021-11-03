@@ -8,7 +8,7 @@
 #include "nlscene.h"
 #include "nlactor.h"
 #include "nlactorcontainer.h"
-#include "nlfuncs.h"
+#include "nlmath.h"
 
 static const NLVector3 InitUp_z = VECTOR3(0, 0, 1);
 static const NLVector3 InitUp_y = VECTOR3(0, 1, 0);

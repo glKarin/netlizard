@@ -49,4 +49,6 @@ private:
     Q_DISABLE_COPY(NLComponent)
 };
 
+typedef QList<NLComponent *> NLComponentList;
+
 #endif // _KARIN_NLCOMPONENT_H

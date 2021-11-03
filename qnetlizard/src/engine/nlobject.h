@@ -16,7 +16,8 @@ public:
     {
         Type_General = 0,
         Type_Actor,
-        Type_Component
+        Type_Component,
+        Type_Force
     };
 
 public:

@@ -14,6 +14,7 @@
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); \
     glDisable(GL_BLEND); \
     glDisable(GL_ALPHA_TEST); \
+    glDisable(GL_FOG); \
     glEnable(GL_POLYGON_OFFSET_FILL); \
     glPolygonOffset(0.1, 0.1); \
     glClear(GL_STENCIL_BUFFER_BIT);

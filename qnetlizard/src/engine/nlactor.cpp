@@ -9,7 +9,7 @@
 #include "nlactorcontainer.h"
 #include "nlcomponentcontainer.h"
 #include "nlcomponent.h"
-#include "nlfuncs.h"
+#include "nlmath.h"
 
 static const NLVector3 InitUp_z = VECTOR3(0, 0, 1);
 static const NLVector3 InitUp_y = VECTOR3(0, 1, 0);

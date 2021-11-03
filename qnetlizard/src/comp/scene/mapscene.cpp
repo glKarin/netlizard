@@ -54,7 +54,8 @@ MapScene::MapScene(QWidget *parent)
       m_skyCamera(0),
       m_sky3DCamera(0),
       m_control(0),
-      m_noclip(true)
+      m_noclip(true),
+      m_fog(false)
 {
     setObjectName("MapScene");
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
@@ -127,6 +128,7 @@ MapScene::MapScene(QWidget *parent)
     m_shadowRenderer->SetLightSourceType(lightSource->LightSource()->IsDirectionLighting());
 
     SetNoclip(settings->GetSetting<bool>("DEBUG/noclip"));
+    SetFog(settings->GetSetting<int>("RENDER/fog") > 0);
     connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
 
@@ -137,6 +139,25 @@ MapScene::~MapScene()
 void MapScene::Init()
 {
     NLScene::Init();
+
+    GLfloat color[4];
+    glGetFloatv(GL_CURRENT_COLOR, color);
+    color[3] = 0.2;
+    int fog = SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fog");
+    {
+        glFogf(GL_FOG_START, 2000);
+        glFogf(GL_FOG_END, 5000);
+    }
+    {
+        glFogf(GL_FOG_DENSITY, 0.00035);
+    }
+    if(fog == 2)
+        glFogf(GL_FOG_MODE, GL_EXP);
+    else
+        glFogf(GL_FOG_MODE, GL_LINEAR);
+    glFogfv(GL_FOG_COLOR, color);
+    //glFogi(GL_FOG_COORD_SRC, GL_FRAGMENT_DEPTH);
+    //glHint(GL_FOG_HINT, GL_FASTEST);
 }
 
 void MapScene::Update(float delta)
@@ -215,9 +236,14 @@ void MapScene::paintGL()
         glDepthMask(GL_TRUE);
     }
 
-    CurrentCamera()->Render(m_mapActor);
-    CurrentCamera()->Render(m_shadowActor);
-    //CurrentCamera()->Render(rrrrr);
+    NLSceneCamera *mainCamera = CurrentCamera();
+    if(m_fog)
+        glEnable(GL_FOG);
+    mainCamera->Render(m_mapActor);
+    if(m_fog)
+        glDisable(GL_FOG);
+    mainCamera->Render(m_shadowActor);
+    //mainCamera->Render(rrrrr);
 
     glFlush();
 }
@@ -225,6 +251,7 @@ void MapScene::paintGL()
 void MapScene::Deinit()
 {
     Reset();
+    glDisable(GL_FOG);
     NLScene::Deinit();
 }
 
@@ -266,7 +293,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
         qDebug() << "Unsupport game";
         break;
     }
-    qDebug() << b;
+    qDebug() << "Load result: " << b;
     if(!b)
     {
         free(m_model);
@@ -276,7 +303,8 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
 
     m_renderer->SetModel(m_model);
     m_shadowRenderer->SetModel(m_model);
-    if(m_model->bg_tex && m_model->bg_tex)
+    bool hasSky = m_model->bg_tex && glIsTexture(m_model->bg_tex->texid);
+    if(hasSky)
         m_skyRenderer->SetTexture(m_model->bg_tex);
 
     bound_t bound = BOUND(0, 0, 0, 0, 0, 0);
@@ -285,6 +313,16 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     bound_center(&bound, &lp);
 
     glColor4f(1, 1, 1, 1);
+    if(hasSky)
+    {
+        GLfloat color[4] = {1, 1, 1, 0.2};
+        glFogfv(GL_FOG_COLOR, color);
+    }
+    else
+    {
+        GLfloat color[4] = {0, 0, 0, 0.2};
+        glFogfv(GL_FOG_COLOR, color);
+    }
     // RE3D using java MSG 3D, like OpenGL, y is up
     if(game == NL_RACING_EVOLUTION_3D)
     {
@@ -296,9 +334,19 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
         NLVector3 pos = VECTOR3(VECTOR3_X(lp), BOUND_MAX_Y(bound) + (VECTOR3_Y(lp) - BOUND_MIN_Y(bound)) * 2, VECTOR3_Z(lp));
         GetActor(7)->SetPosition(pos);
         //lpos = pos;
+#if 0
+        NLVector3 scale = VECTOR3(20, 20, 20);
+        m_renderer->Actor()->SetScale(scale);
+        m_shadowRenderer->Actor()->SetScale(scale);
+#endif
     }
     else
     {
+#if 0
+        NLVector3 scale = VECTOR3(1, 1, 1);
+        m_renderer->Actor()->SetScale(scale);
+        m_shadowRenderer->Actor()->SetScale(scale);
+#endif
         NLVector3 pos = VECTOR3(VECTOR3_X(lp), VECTOR3_Y(lp), BOUND_MAX_Z(bound) + (VECTOR3_Z(lp) - BOUND_MIN_Z(bound)) * 2);
         //lpos = pos;
         GetActor(7)->SetPosition(pos);
@@ -317,6 +365,8 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
         if(game == NL_SHADOW_OF_EGYPT_3D)
         {
             glColor4f(0, 0, 0, 1);
+            GLfloat color[4] = {0, 0, 0, 0.2};
+            glFogfv(GL_FOG_COLOR, color);
             if(level == 0 || level == 8 || level == 9 || level == 10 || level == 12)
             {
                 for(uint i = 0; i < m_model->item_count; i++)
@@ -399,6 +449,15 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
         m_renderer->SetDebug(value.toInt());
     else if(name == "DEBUG/noclip")
         SetNoclip(value.toBool());
+    else if(name == "RENDER/fog")
+    {
+        int fog = value.toInt();
+        if(fog == 2)
+            glFogf(GL_FOG_MODE, GL_EXP);
+        else
+            glFogf(GL_FOG_MODE, GL_LINEAR);
+        SetFog(fog > 0);
+    }
 }
 
 void MapScene::ConvToAlgoVector3(vector3_t &v)
@@ -434,5 +493,13 @@ void MapScene::SetNoclip(bool b)
     {
         m_noclip = b;
         m_mainCameraActor->SetFree(m_noclip);
+    }
+}
+
+void MapScene::SetFog(bool b)
+{
+    if(m_fog != b)
+    {
+        m_fog = b;
     }
 }

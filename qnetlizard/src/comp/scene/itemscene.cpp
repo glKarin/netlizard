@@ -57,6 +57,7 @@ void ItemScene::paintGL()
         return;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    glDisable(GL_CULL_FACE);
     NLScene::paintGL();
 
     glFlush();
@@ -123,7 +124,7 @@ bool ItemScene::LoadFile(const QString &file, const QString &resourcePath, int g
         qDebug() << "Unsupport game";
         break;
     }
-    qDebug() << b;
+    qDebug() << "Load item model result: " << b;
     if(!b)
     {
         free(m_model);
@@ -141,6 +142,7 @@ bool ItemScene::LoadFile(const QString &file, const QString &resourcePath, int g
         control->SetMoveSens(control->MoveSens() / 50);
         vector3_t startPos = VECTOR3(0, 0.5, 5);
         cameraActor->SetPosition(startPos);
+        cameraActor->UpdateCamera();
     }
     else
     {
@@ -148,6 +150,7 @@ bool ItemScene::LoadFile(const QString &file, const QString &resourcePath, int g
         vector3_t startPos = VECTOR3(0, 150, 1000);
         SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
         camera->SetPosition(startPos);
+        camera->UpdateCamera();
     }
 
     GrabMouseCursor(true);

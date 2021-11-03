@@ -78,7 +78,7 @@ bool TextViewer::OpenFile(const QString &file)
     }
 
     SetTitleLabel(QString("%1 - Length: %2").arg(file).arg(len));
-    m_textBrowser->setText(data);
+    m_textBrowser->setText(QString::fromLocal8Bit(data));
     SetData(data, len);
     m_saveButton->setEnabled(true);
 

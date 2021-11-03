@@ -102,7 +102,7 @@ bool FontScene::LoadFile(const QString &file, const QString &texFile)
     memset(m_font, 0, sizeof(font_s));
     qDebug() << "Load font: " << path << tex_path;
     GLboolean b = new_netlizard_font(m_font, path, tex_path);
-    qDebug() << b;
+    qDebug() << "Load font result: " << b;
     if(!b)
     {
         free(m_font);

@@ -243,7 +243,6 @@ bool ImageScene::LoadFile(const QString &file, int type, int index)
         if(!data)
             return false;
         bool res = GenTexture(data, len);
-        qDebug() << res;
         if(!res)
         {
             free(data);

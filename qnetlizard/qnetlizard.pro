@@ -26,7 +26,10 @@ HEADERS += \
     src/changelogdialog.h \
     src/gl/nl_gl_debug.h \
     src/gl/nl_algo.h \
-    src/engine/nlrigidbody.h
+    src/engine/nlrigidbody.h \
+    src/engine/nlphysics.h \
+    src/engine/nlforce.h \
+    src/engine/nlforcecontainer.h
 
 SOURCES += \
     main.cpp \
@@ -38,7 +41,10 @@ SOURCES += \
     src/changelogdialog.cpp \
     src/gl/nl_gl_debug.c \
     src/gl/nl_algo.c \
-    src/engine/nlrigidbody.cpp
+    src/engine/nlrigidbody.cpp \
+    src/engine/nlphysics.cpp \
+    src/engine/nlforce.cpp \
+    src/engine/nlforcecontainer.cpp
 
 # Widget
 HEADERS += \

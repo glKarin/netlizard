@@ -104,7 +104,7 @@ bool SpriteScene::LoadFile(const QString &file, const QString &texFile)
     memset(m_sprite, 0, sizeof(GL_NETLizard_Sprite));
     qDebug() << "Load sprite: " << path << tex_path;
     GLboolean b = NETLizard_ReadSpirit(m_sprite, path, tex_path);
-    qDebug() << b;
+    qDebug() << "Load sprite result: " << b;
     if(!b)
     {
         free(m_sprite);

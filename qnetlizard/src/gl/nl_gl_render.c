@@ -13,7 +13,7 @@ void NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
 	{
 		GLuint i;
 		for(i = 0; i < model->count; i++)
-		{
+        {
             const GL_NETLizard_3D_Mesh *m = model->meshes + i;
             NETLizard_RenderGL3DMesh(m, model->texes);
 #if 0

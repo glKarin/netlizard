@@ -52,9 +52,9 @@ static void NETLizard_TriangleStripToTriangles(GL_NETLizard_3D_Mesh *mesh)
                 memcpy(vertexes + n + 1, mesh->vertex_data.vertex + (index_1), sizeof(GL_NETLizard_3D_Vertex));
                 memcpy(vertexes + n + 2, mesh->vertex_data.vertex + (index), sizeof(GL_NETLizard_3D_Vertex));
             }
-            indexes[c] = c;
-            indexes[c + 1] = c + 1;
-            indexes[c + 2] = c + 2;
+            indexes[c] = n;
+            indexes[c + 1] = n + 1;
+            indexes[c + 2] = n + 2;
 
             vector3_t v_normal;
             triangle_t tri = TRIANGLEV(vertexes[n].position, vertexes[n + 1].position, vertexes[n + 2].position);
@@ -76,7 +76,7 @@ static void NETLizard_TriangleStripToTriangles(GL_NETLizard_3D_Mesh *mesh)
         m->index_count = c;
         m->index_start = s;
 
-        s += n;
+        s += c;
         c = 0;
         free(m->index);
         m->index = indexes;

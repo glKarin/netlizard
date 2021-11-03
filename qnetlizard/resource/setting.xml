@@ -49,6 +49,11 @@
             <option name="option" label="Render item and scene wall shadow" value="5"></option>
             <option name="option" label="Render all shadow" value="255"></option>
         </item>
+        <item alias="RENDER/fog" name="Render distance fog" widget="combobox" type="int" default-value="0">
+            <option name="option" label="No fog" value="0"></option>
+            <option name="option" label="Linear" value="1"></option>
+            <option name="option" label="Exp" value="2"></option>
+        </item>
     </category>
 
     <category name="Debug" alias="DEBUG" group="Others">

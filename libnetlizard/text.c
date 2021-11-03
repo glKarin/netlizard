@@ -166,10 +166,12 @@ array class_p__function_a_1string_2char__text(const array *arr, wchar_t paramCha
     int k = wstr.length;
     wchar_t *arrayOfChar = (wchar_t *)wstr.array;
     size_t s = sizeof(wchar_t) / sizeof(char);
+    const char *ori_locale = setlocale(LC_CTYPE, NULL);
     const char *locale = setlocale(LC_CTYPE, "ru");
     if(!locale)
     {
         log_append("Not support ru lang.");
+        locale = setlocale(LC_CTYPE, ""); // using localhost
     }
     char *str = NEW_II(char, k * s);
 
@@ -194,7 +196,7 @@ array class_p__function_a_1string_2char__text(const array *arr, wchar_t paramCha
 
     new_array_with_data(&res, 1, ii + 1, str, ii);
     ((char *)(res.array))[ii] = '\0';
-    setlocale(LC_CTYPE, NULL);
+    setlocale(LC_CTYPE, ori_locale);
     delete_array(&wstr);
     free(str);
     log_append("%s", (char *)res.array);

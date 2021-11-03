@@ -36,6 +36,7 @@ protected:
     private Q_SLOTS:
     void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
     void SetNoclip(bool b);
+    void SetFog(bool b);
 
     private:
     void ConvToAlgoVector3(vector3_t &v);
@@ -57,6 +58,7 @@ private:
     NLScenePerspectiveCamera *m_sky3DCamera;
     SimpleControlComponent *m_control;
     bool m_noclip;
+    bool m_fog;
 
     Q_DISABLE_COPY(MapScene)
 };

@@ -2,7 +2,9 @@
 
 #include <QDebug>
 
-#include "nlfuncs.h"
+#include "nlforce.h"
+#include "nlforcecontainer.h"
+#include "nlmath.h"
 
 static const NLVector3 InitUp_z = VECTOR3(0, 0, 1);
 static const NLVector3 InitUp_y = VECTOR3(0, 1, 0);
@@ -17,7 +19,8 @@ NLRigidbody::NLRigidbody(NLActor *parent) :
     NLActor(parent),
     m_zIsUp(false),
     m_fixedUp(true),
-    m_free(false)
+    m_free(false),
+    m_forces(0)
 {
     Construct();
 }
@@ -26,7 +29,8 @@ NLRigidbody::NLRigidbody(const NLPropperties &prop, NLActor *parent) :
     NLActor(prop, parent),
     m_zIsUp(false),
     m_fixedUp(true),
-    m_free(false)
+    m_free(false),
+    m_forces(0)
 {
     Construct();
 }
@@ -35,7 +39,8 @@ NLRigidbody::NLRigidbody(NLScene *scene, NLActor *parent) :
     NLActor(scene, parent),
     m_zIsUp(false),
     m_fixedUp(true),
-    m_free(false)
+    m_free(false),
+    m_forces(0)
 {
     Construct();
 }
@@ -44,7 +49,8 @@ NLRigidbody::NLRigidbody(NLScene *scene, const NLPropperties &prop, NLActor *par
     NLActor(scene, prop, parent),
     m_zIsUp(false),
     m_fixedUp(true),
-    m_free(false)
+    m_free(false),
+    m_forces(0)
 {
     Construct();
 }
@@ -216,5 +222,74 @@ void NLRigidbody::InitProperty()
     SetZIsUp(GetProperty<bool>("z_is_up", false));
     SetFixedUp(GetProperty<bool>("fixed_up", true));
     SetFree(GetProperty<bool>("free", true));
+}
+
+bool NLRigidbody::AddForce(NLForce *item)
+{
+    if(!item)
+        return false;
+    if(!m_forces)
+    {
+        m_forces = new NLForceContainer(this);
+        m_forces->SetScene(Scene());
+    }
+    return m_forces->Add(item);
+}
+
+bool NLRigidbody::RemoveForce(NLForce *item)
+{
+    if(!item)
+        return false;
+    if(!m_forces)
+        return false;
+    bool res = m_forces->Remove(item);
+    if(res)
+    {
+        item->Destroy();
+        delete item;
+    }
+    return res;
+}
+
+bool NLRigidbody::RemoveForce(int index)
+{
+    if(!m_forces)
+        return false;
+    NLForce *force = GetForce(index);
+    return RemoveForce(force);
+}
+
+bool NLRigidbody::RemoveForce(const NLName &name)
+{
+    if(!m_forces)
+        return false;
+    NLForce *force = GetForce(name);
+    return RemoveForce(force);
+}
+
+NLForce * NLRigidbody::GetForce(const NLName &name)
+{
+    if(!m_forces)
+        return 0;
+    return m_forces->Get(name);
+}
+
+NLForce * NLRigidbody::GetForce(int index)
+{
+    if(!m_forces)
+        return 0;
+    return m_forces->Get(index);
+}
+
+NLRigidbody & operator+(NLRigidbody &actor, NLForce *item)
+{
+    actor.AddForce(item);
+    return actor;
+}
+
+NLRigidbody & operator-(NLRigidbody &actor, NLForce *item)
+{
+    actor.RemoveForce(item);
+    return actor;
 }
 

@@ -113,7 +113,7 @@ bool AnimationScene::LoadFile(const QString &file, const QString &resourcePath, 
         qDebug() << "Unsupport game";
         break;
     }
-    qDebug() << b;
+    qDebug() << "Load animation model result: " << b;
     if(!b)
     {
         free(m_model);

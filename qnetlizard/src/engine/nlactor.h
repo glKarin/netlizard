@@ -116,6 +116,8 @@ private:
     Q_DISABLE_COPY(NLActor)
 };
 
+typedef QList<NLActor *> NLActorList;
+
 template <class T>
 T * NLActor::GetChild_T(const NLName &name)
 {
