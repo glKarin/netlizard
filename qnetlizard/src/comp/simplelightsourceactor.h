@@ -10,7 +10,7 @@ class SimpleLightSourceActor : public NLActor
 {
     Q_OBJECT
 public:
-    explicit SimpleLightSourceActor(const NLPropperties &prop = QVariantHash(), NLActor *parent = 0);
+    explicit SimpleLightSourceActor(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleLightSourceActor();
     SimpleLightSourceComponent * LightSource();
     NLVector3 LightSourceDirection() const;

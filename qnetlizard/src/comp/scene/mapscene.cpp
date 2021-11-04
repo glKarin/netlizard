@@ -61,7 +61,7 @@ MapScene::MapScene(QWidget *parent)
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
     SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
 
-    NLPropperties prop;
+    NLProperties prop;
 
     // 3D camera + 3D control
     prop.insert("camera_z_is_up", true);
@@ -160,6 +160,8 @@ void MapScene::Init()
     //glHint(GL_FOG_HINT, GL_FASTEST);
 }
 
+#include "nlforce.h"
+
 void MapScene::Update(float delta)
 {
     vector3_t oldPos = m_mainCameraActor->Position();
@@ -171,6 +173,11 @@ void MapScene::Update(float delta)
     m_sky3DCameraActor->SetRotation(CurrentCamera()->Rotation());
     m_sky3DCameraActor->UpdateCamera();
     m_shadowRenderer->SetLightSourcePosition(GetActor(7)->Position());
+    static bool b = false;
+    if(!b)
+    {
+        b = true;
+    }
 
     if(!m_noclip && m_model->game != NL_RACING_EVOLUTION_3D)
     {
@@ -186,10 +193,22 @@ void MapScene::Update(float delta)
         vector3_t p = (res != 1 && res != 0) ? pos : oldPos;
         float rglz = 0;
         res = NETLizard_GetScenePointZCoord(m_model, &p, scene, &scene, &rglz);
+        //qDebug() << res << scene << rglz;
         if(res)
         {
-            //qDebug() << res << scene << rglz;
-            VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
+            if(VECTOR3_Z(p) > OBJ_HEIGHT + rglz)
+            {
+                if(!m_mainCameraActor->HasForce())
+                {
+                    m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties()("g", NL::Physics::EARTH_G * 1000), m_mainCameraActor));
+                }
+            }
+            else
+            {
+                if(m_mainCameraActor->HasForce())
+                    m_mainCameraActor->RemoveForce(0);
+                VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
+            }
         }
 
         ConvToRenderVector3(p);

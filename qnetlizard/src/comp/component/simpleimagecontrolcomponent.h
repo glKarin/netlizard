@@ -8,7 +8,7 @@ class SimpleImageControlComponent : public NLComponent
 {
     Q_OBJECT
 public:
-    explicit SimpleImageControlComponent(const NLPropperties &prop = NLPropperties(), NLActor *parent = 0);
+    explicit SimpleImageControlComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleImageControlComponent();
     virtual void Reset();
     NLSETTER(transSens) void SetTransSens(float transSens);

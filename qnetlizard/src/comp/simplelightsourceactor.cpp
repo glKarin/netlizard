@@ -5,7 +5,7 @@
 #include "lib/vector3.h"
 #include "simplelightsourcecomponent.h"
 
-SimpleLightSourceActor::SimpleLightSourceActor(const NLPropperties &prop, NLActor *parent) :
+SimpleLightSourceActor::SimpleLightSourceActor(const NLProperties &prop, NLActor *parent) :
     NLActor(prop, parent),
     m_lightSource(0)
 {
@@ -20,7 +20,7 @@ void SimpleLightSourceActor::Init()
 {
     if(IsInited())
         return;
-    NLPropperties prop;
+    NLProperties prop;
     QVariant type = GetProperty("type");
     if(type.isValid())
         prop.insert("type", type);

@@ -65,8 +65,10 @@ enum NLAction_e
 typedef NLAction_e NLActionType;
 
 typedef QString NLName;
-typedef QVariantHash NLPropperties;
-typedef QVariant NLPropperty;
+#if 0
+typedef QVariantHash NLProperties;
+typedef QVariant NLProperty;
+#endif
 
 typedef vector3_t NLVector3;
 typedef GLmatrix NLMatrix4;

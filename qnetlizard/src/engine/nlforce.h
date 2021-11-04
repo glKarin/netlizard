@@ -20,9 +20,9 @@ public:
 
 public:
     explicit NLForce(NLRigidbody *parent = 0);
-    explicit NLForce(const NLPropperties &prop, NLRigidbody *parent = 0);
+    explicit NLForce(const NLProperties &prop, NLRigidbody *parent = 0);
     explicit NLForce(NLScene *scene, NLRigidbody *parent = 0);
-    explicit NLForce(NLScene *scene, const NLPropperties &prop, NLRigidbody *parent = 0);
+    explicit NLForce(NLScene *scene, const NLProperties &prop, NLRigidbody *parent = 0);
     virtual ~NLForce();
     NL::Physics::t Time() const;
     NL::Physics::F Force() const;
@@ -76,9 +76,9 @@ class NLForce_gravity : public NLForce
 {
 public:
     explicit NLForce_gravity(NLRigidbody *parent = 0);
-    explicit NLForce_gravity(const NLPropperties &prop, NLRigidbody *parent = 0);
+    explicit NLForce_gravity(const NLProperties &prop, NLRigidbody *parent = 0);
     explicit NLForce_gravity(NLScene *scene, NLRigidbody *parent = 0);
-    explicit NLForce_gravity(NLScene *scene, const NLPropperties &prop, NLRigidbody *parent = 0);
+    explicit NLForce_gravity(NLScene *scene, const NLProperties &prop, NLRigidbody *parent = 0);
     virtual ~NLForce_gravity();
     virtual void Reset();
     NL::Physics::g Gravity() const;

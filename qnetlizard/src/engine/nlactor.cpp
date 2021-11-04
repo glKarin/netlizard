@@ -29,7 +29,7 @@ NLActor::NLActor(NLActor *parent) :
     Construct();
 }
 
-NLActor::NLActor(const NLPropperties &prop, NLActor *parent) :
+NLActor::NLActor(const NLProperties &prop, NLActor *parent) :
     NLObject(prop, parent),
     m_renderable(0),
     m_components(0),
@@ -47,7 +47,7 @@ NLActor::NLActor(NLScene *scene, NLActor *parent) :
     Construct();
 }
 
-NLActor::NLActor(NLScene *scene, const NLPropperties &prop, NLActor *parent) :
+NLActor::NLActor(NLScene *scene, const NLProperties &prop, NLActor *parent) :
     NLObject(scene, prop, parent),
     m_renderable(0),
     m_components(0),
@@ -589,18 +589,18 @@ void NLActor::InitProperty()
 {
     NLObject::InitProperty();
     NLVector3 v = VECTOR3(
-                GetProperty<float>("x", 0),
-                GetProperty<float>("y", 0),
-                GetProperty<float>("z", 0)
+                GetProperty_T<float>("x", 0),
+                GetProperty_T<float>("y", 0),
+                GetProperty_T<float>("z", 0)
                 );
     SetPosition(v);
-    VECTOR3_X(v) = GetProperty<float>("scale_x", 1);
-    VECTOR3_Y(v) = GetProperty<float>("scale_y", 1);
-    VECTOR3_Z(v) = GetProperty<float>("scale_z", 1);
+    VECTOR3_X(v) = GetProperty_T<float>("scale_x", 1);
+    VECTOR3_Y(v) = GetProperty_T<float>("scale_y", 1);
+    VECTOR3_Z(v) = GetProperty_T<float>("scale_z", 1);
     SetScale(v);
-    VECTOR3_X(v) = GetProperty<float>("pitch", 0);
-    VECTOR3_Y(v) = GetProperty<float>("yaw", 0);
-    VECTOR3_Z(v) = GetProperty<float>("roll", 0);
+    VECTOR3_X(v) = GetProperty_T<float>("pitch", 0);
+    VECTOR3_Y(v) = GetProperty_T<float>("yaw", 0);
+    VECTOR3_Z(v) = GetProperty_T<float>("roll", 0);
     SetRotation(v);
 }
 
@@ -632,4 +632,33 @@ void NLActor::SetRight(const NLVector3 &r)
         //UpdateMatrix();
         UpdateDirection();
     }
+}
+
+int NLActor::ChildrenCount() const
+{
+    if(m_children)
+        return m_children->Count();
+    return 0;
+}
+
+int NLActor::ComponentCount() const
+{
+    if(m_components)
+        return m_components->Count();
+    return 0;
+}
+
+bool NLActor::HasChildren() const
+{
+    return ChildrenCount() > 0;
+}
+
+bool NLActor::HasComponent() const
+{
+    return ComponentCount() > 0;
+}
+
+bool NLActor::CanRender() const
+{
+    return m_renderable != 0;
 }

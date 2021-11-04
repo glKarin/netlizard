@@ -1,5 +1,7 @@
 #include "nlforce.h"
 
+#include <QDebug>
+
 #include "nlrigidbody.h"
 #include "nlforcecontainer.h"
 
@@ -16,7 +18,7 @@ NLForce::NLForce(NLRigidbody *parent) :
         SetScene(parent->Scene());
 }
 
-NLForce::NLForce(const NLPropperties &prop, NLRigidbody *parent) :
+NLForce::NLForce(const NLProperties &prop, NLRigidbody *parent) :
     NLObject(prop, parent),
     m_mass(0),
           m_force(0),
@@ -38,7 +40,7 @@ NLForce::NLForce(NLScene *scene, NLRigidbody *parent) :
     Construct();
 }
 
-NLForce::NLForce(NLScene *scene, const NLPropperties &prop, NLRigidbody *parent) :
+NLForce::NLForce(NLScene *scene, const NLProperties &prop, NLRigidbody *parent) :
     NLObject(scene, prop, parent),
     m_mass(0),
           m_force(0),
@@ -163,11 +165,11 @@ NLRigidbody * NLForce::Rigidbody()
 void NLForce::InitProperty()
 {
     NLObject::InitProperty();
-    m_mass = GetProperty<float>("mass", 0);
-    m_force = GetProperty<float>("force", 0);
-    VECTOR3_X(m_direction) = GetProperty<float>("direction_x", 0);
-    VECTOR3_Y(m_direction) = GetProperty<float>("direction_y", 0);
-    VECTOR3_Z(m_direction) = GetProperty<float>("direction_z", 0);
+    m_mass = GetProperty_T<float>("mass", 0);
+    m_force = GetProperty_T<float>("force", 0);
+    VECTOR3_X(m_direction) = GetProperty_T<float>("direction_x", 0);
+    VECTOR3_Y(m_direction) = GetProperty_T<float>("direction_y", 0);
+    VECTOR3_Z(m_direction) = GetProperty_T<float>("direction_z", 0);
 }
 
 void NLForce::Destroy()
@@ -199,7 +201,7 @@ NLForce_gravity::NLForce_gravity(NLRigidbody *parent) :
     Construct();
 }
 
-NLForce_gravity::NLForce_gravity(const NLPropperties &prop, NLRigidbody *parent) :
+NLForce_gravity::NLForce_gravity(const NLProperties &prop, NLRigidbody *parent) :
     NLForce(prop, parent),
     m_g(NL::Physics::EARTH_G),
     m_initialSpeed(0),
@@ -221,7 +223,7 @@ NLForce_gravity::NLForce_gravity(NLScene *scene, NLRigidbody *parent) :
     Construct();
 }
 
-NLForce_gravity::NLForce_gravity(NLScene *scene, const NLPropperties &prop, NLRigidbody *parent) :
+NLForce_gravity::NLForce_gravity(NLScene *scene, const NLProperties &prop, NLRigidbody *parent) :
     NLForce(scene, prop, parent),
     m_g(NL::Physics::EARTH_G),
     m_initialSpeed(0),
@@ -240,8 +242,8 @@ NLForce_gravity::~NLForce_gravity()
 void NLForce_gravity::InitProperty()
 {
     NLForce::InitProperty();
-    m_g = GetProperty<float>("g", 0);
-    m_initialSpeed = GetProperty<float>("initial_speed", 0);
+    m_g = GetProperty_T<float>("g", NL::Physics::EARTH_G);
+    m_initialSpeed = GetProperty_T<float>("initial_speed", 0);
 }
 
 void NLForce_gravity::Construct()
@@ -287,7 +289,7 @@ void NLForce_gravity::Update(float delta)
     NLRigidbody *actor = Rigidbody();
     if(actor)
     {
-        NLVector3 unit = VECTOR3(0, 0, -m_lastDistance);
+        NLVector3 unit = VECTOR3(0, -m_lastDistance, 0);
         actor->Move(unit);
     }
 }

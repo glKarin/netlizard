@@ -8,7 +8,7 @@ class SimpleControl2DComponent : public NLComponent
 {
     Q_OBJECT
 public:
-    explicit SimpleControl2DComponent(const NLPropperties &prop = NLPropperties(), NLActor *parent = 0);
+    explicit SimpleControl2DComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleControl2DComponent();
     virtual void Reset();
     NLSETTER(moveSens) void SetMoveSens(float moveSens);

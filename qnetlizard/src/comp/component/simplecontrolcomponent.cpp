@@ -12,7 +12,7 @@ const int SimpleControlComponent::M_Turn_Sens = 180;
 const float SimpleControlComponent::M_Freelook_Sens = 0.35;
 const float SimpleControlComponent::M_Fovy_Sens = 0.01;
 
-SimpleControlComponent::SimpleControlComponent(const NLPropperties &prop, NLActor *parent) :
+SimpleControlComponent::SimpleControlComponent(const NLProperties &prop, NLActor *parent) :
     NLComponent(prop, parent),
       m_moveSens(M_Move_Sens),
       m_turnSens(M_Turn_Sens),
@@ -53,7 +53,7 @@ void SimpleControlComponent::Reset()
 
 void SimpleControlComponent::InitProperty()
 {
-    NLPropperty v;
+    NLProperty v;
     v = GetProperty("moveSens");
     if(v.isValid())
         SetMoveSens(v.toInt());

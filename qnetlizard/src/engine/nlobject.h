@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include "nldef.h"
+#include "nlproperties.h"
 
 class NLObjectContainer;
 class NLScene;
@@ -22,9 +23,9 @@ public:
 
 public:
     explicit NLObject(QObject *parent = 0);
-    explicit NLObject(const NLPropperties &prop, QObject *parent = 0);
+    explicit NLObject(const NLProperties &prop, QObject *parent = 0);
     explicit NLObject(NLScene *scene, QObject *parent = 0);
-    explicit NLObject(NLScene *scene, const NLPropperties &prop, QObject *parent = 0);
+    explicit NLObject(NLScene *scene, const NLProperties &prop, QObject *parent = 0);
     virtual ~NLObject();
     virtual bool IsActived() const;
     virtual void Reset();
@@ -33,11 +34,12 @@ public:
     NLObject * ParentObject();
     bool IsInited() const;
     NLObjectContainer * Container();
-    NLPropperty GetProperty(const QString &name, const NLPropperty &def = QVariant()) const;
-    template<class T> T GetProperty(const QString &name, const T &def = T());
-    void SetProperty(const QString &name, const NLPropperty &value);
-    NLPropperty & operator[](const QString &name);
-    NLPropperty operator[](const QString &name) const;
+    NLProperty GetProperty(const QString &name, const NLProperty &def = QVariant()) const;
+    template<class T> T GetProperty_T(const QString &name, const T &def = T());
+    void SetProperty(const QString &name, const NLProperty &value);
+    template<class T> void SetProperty_T(const QString &name, const T &value);
+    NLProperty & operator[](const QString &name);
+    NLProperty operator[](const QString &name) const;
     void SetScene(NLScene *scene);
     NLScene * Scene();
     bool IsEnabled() const;
@@ -57,20 +59,20 @@ signals:
     void initilized();
     void destroying();
     void reseted();
-    void propertyChanged(const QString &name, const NLPropperty &value);
+    void propertyChanged(const QString &name, const NLProperty &value);
     
 public slots:
 
 private:
-    void CopyProperty(const NLPropperties &prop);
-    void Construct(const NLPropperties &prop = NLPropperties());
+    void CopyProperty(const NLProperties &prop);
+    void Construct(const NLProperties &prop = NLProperties());
 
 private:
     NLObject_Type m_type;
     bool m_inited;
     QString m_name;
     NLObjectContainer *m_container;
-    NLPropperties m_property;
+    NLProperties m_property;
     NLScene *m_scene;
     bool m_enabled;
 
@@ -81,11 +83,16 @@ private:
 
 typedef QList<NLObject *> NLObjectList;
 
-template <class T> T NLObject::GetProperty(const QString &name, const T &def)
+template <class T> T NLObject::GetProperty_T(const QString &name, const T &def)
 {
-    if(!m_property.contains(name))
-        return def;
-    return m_property.value(name).value<T>();
+    return m_property.Get_T<T>(name, def);
+}
+
+template<class T> void NLObject::SetProperty_T(const QString &name, const T &value)
+{
+    int r = m_property.Set_T<T>(name, value);
+    if(r == 2)
+        emit propertyChanged(name, NLProperty::fromValue(value));
 }
 
 #endif // _KARIN_NLOBJECT_H

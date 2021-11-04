@@ -17,7 +17,7 @@ NLObject::NLObject(QObject *parent) :
     Construct();
 }
 
-NLObject::NLObject(const NLPropperties &prop, QObject *parent) :
+NLObject::NLObject(const NLProperties &prop, QObject *parent) :
     QObject(parent),
     m_type(NLObject::Type_General),
     m_inited(false),
@@ -39,7 +39,7 @@ NLObject::NLObject(NLScene *scene, QObject *parent) :
     Construct();
 }
 
-NLObject::NLObject(NLScene *scene, const NLPropperties &prop, QObject *parent) :
+NLObject::NLObject(NLScene *scene, const NLProperties &prop, QObject *parent) :
     QObject(parent),
     m_type(NLObject::Type_General),
     m_inited(false),
@@ -57,7 +57,7 @@ NLObject::~NLObject()
     DEBUG_DESTROY_Q;
 }
 
-void NLObject::Construct(const NLPropperties &prop)
+void NLObject::Construct(const NLProperties &prop)
 {
     setObjectName("NLObject");
     QObject *p = parent();
@@ -71,7 +71,7 @@ void NLObject::Construct(const NLPropperties &prop)
     SetName(NLObjectPool::Instance()->Attach(this));
 }
 
-void NLObject::CopyProperty(const NLPropperties &prop)
+void NLObject::CopyProperty(const NLProperties &prop)
 {
     Q_FOREACH(const QString &name, prop.keys())
     {
@@ -81,7 +81,7 @@ void NLObject::CopyProperty(const NLPropperties &prop)
 
 void NLObject::InitProperty()
 {
-    SetEnabled(GetProperty<bool>("enabled", true));
+    SetEnabled(GetProperty_T<bool>("enabled", true));
 }
 
 NLObject::NLObject_Type NLObject::Type() const
@@ -157,33 +157,24 @@ void NLObject::SetContainer(NLObjectContainer *container)
     m_container = container;
 }
 
-NLPropperty NLObject::GetProperty(const QString &name, const NLPropperty &def) const
+NLProperty NLObject::GetProperty(const QString &name, const NLProperty &def) const
 {
-    if(!m_property.contains(name))
-        return def;
-    return m_property.value(name);
+    return m_property.Get(name, def);
 }
 
-void NLObject::SetProperty(const QString &name, const NLPropperty &value)
+void NLObject::SetProperty(const QString &name, const NLProperty &value)
 {
-    if(!m_property.contains(name))
-    {
-        m_property.insert(name, value);
-        return;
-    }
-    if(m_property[name] != value)
-    {
-        m_property[name] = value;
+    int r = m_property.Set(name, value);
+    if(r == 2)
         emit propertyChanged(name, value);
-    }
 }
 
-NLPropperty & NLObject::operator[](const QString &name)
+NLProperty & NLObject::operator[](const QString &name)
 {
     return m_property[name];
 }
 
-NLPropperty NLObject::operator[](const QString &name) const
+NLProperty NLObject::operator[](const QString &name) const
 {
     return GetProperty(name);
 }

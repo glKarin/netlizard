@@ -29,7 +29,8 @@ HEADERS += \
     src/engine/nlrigidbody.h \
     src/engine/nlphysics.h \
     src/engine/nlforce.h \
-    src/engine/nlforcecontainer.h
+    src/engine/nlforcecontainer.h \
+    src/engine/nlproperties.h
 
 SOURCES += \
     main.cpp \
@@ -44,7 +45,8 @@ SOURCES += \
     src/engine/nlrigidbody.cpp \
     src/engine/nlphysics.cpp \
     src/engine/nlforce.cpp \
-    src/engine/nlforcecontainer.cpp
+    src/engine/nlforcecontainer.cpp \
+    src/engine/nlproperties.cpp
 
 # Widget
 HEADERS += \

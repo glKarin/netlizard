@@ -12,7 +12,7 @@
 #include "simplecameracomponent.h"
 #include "lib/vector3.h"
 
-SimpleCameraActor::SimpleCameraActor(const NLPropperties &prop, NLActor *parent) :
+SimpleCameraActor::SimpleCameraActor(const NLProperties &prop, NLActor *parent) :
     NLRigidbody(prop, parent),
     m_camera(0),
     m_control(0)
@@ -28,7 +28,7 @@ void SimpleCameraActor::Init()
 {
     if(IsInited())
         return;
-    NLPropperties prop;
+    NLProperties prop;
     QVariant type = GetProperty("type");
     if(type.isValid())
         prop.insert("type", type);
@@ -38,11 +38,11 @@ void SimpleCameraActor::Init()
     m_camera = new SimpleCameraComponent(prop, this);
     m_camera->SetScene(Scene());
     if(type == NLSceneCamera::Type_Ortho)
-        m_control = new SimpleControl2DComponent(NLPropperties(), this);
+        m_control = new SimpleControl2DComponent(NLProperties(), this);
     else
-        m_control = new SimpleControlComponent(NLPropperties(), this);
+        m_control = new SimpleControlComponent(NLProperties(), this);
     m_control->SetScene(Scene());
-    SetEnableControl(GetProperty("enable_control", true));
+    SetEnableControl(GetProperty_T("enable_control", true));
     AddComponent(m_camera);
     AddComponent(m_control);
 

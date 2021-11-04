@@ -13,9 +13,9 @@ class NLActor : public NLObject
     Q_OBJECT
 public:
     explicit NLActor(NLActor *parent = 0);
-    explicit NLActor(const NLPropperties &prop, NLActor *parent = 0);
+    explicit NLActor(const NLProperties &prop, NLActor *parent = 0);
     explicit NLActor(NLScene *scene, NLActor *parent = 0);
-    explicit NLActor(NLScene *scene, const NLPropperties &prop, NLActor *parent = 0);
+    explicit NLActor(NLScene *scene, const NLProperties &prop, NLActor *parent = 0);
     virtual ~NLActor();
     virtual void Reset();
     void SetRenderable(NLRenderable *renderable);
@@ -65,6 +65,11 @@ public:
     friend NLActor & operator+(NLActor &actor, NLComponent *item);
     friend NLActor & operator-(NLActor &actor, NLComponent *item);
     virtual void Render();
+    int ChildrenCount() const;
+    int ComponentCount() const;
+    bool HasChildren() const;
+    bool HasComponent() const;
+    bool CanRender() const;
 
 protected:
     virtual bool keyev(int key, bool pressed, int modifier);

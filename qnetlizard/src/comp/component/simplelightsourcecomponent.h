@@ -16,7 +16,7 @@ class SimpleLightSourceComponent : public NLComponent
     };
 
 public:
-    explicit SimpleLightSourceComponent(const NLPropperties &prop = NLPropperties(), NLActor *parent = 0);
+    explicit SimpleLightSourceComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleLightSourceComponent();
     NLSETTER(type) void SetType(LightSourceType type);
     NLGETTER(type) LightSourceType Type() const;

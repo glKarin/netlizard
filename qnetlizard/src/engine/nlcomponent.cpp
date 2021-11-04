@@ -15,7 +15,7 @@ NLComponent::NLComponent(NLActor *parent) :
         SetScene(parent->Scene());
 }
 
-NLComponent::NLComponent(const NLPropperties &prop, NLActor *parent) :
+NLComponent::NLComponent(const NLProperties &prop, NLActor *parent) :
     NLObject(prop, parent),
     m_mounted(false)
 {
@@ -29,7 +29,7 @@ NLComponent::NLComponent(NLScene *scene, NLActor *parent) :
     Construct();
 }
 
-NLComponent::NLComponent(NLScene *scene, const NLPropperties &prop, NLActor *parent) :
+NLComponent::NLComponent(NLScene *scene, const NLProperties &prop, NLActor *parent) :
     NLObject(scene, prop, parent),
     m_mounted(false)
 {

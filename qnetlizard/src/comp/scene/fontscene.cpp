@@ -24,7 +24,7 @@ FontScene::FontScene(QWidget *parent) :
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
     SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
 
-    NLPropperties prop;
+    NLProperties prop;
     prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
     prop.insert("enable_control", false);
     SimpleCameraActor *camera = new SimpleCameraActor(prop);

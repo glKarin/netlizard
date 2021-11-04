@@ -14,7 +14,7 @@ class SimpleCameraActor : public NLRigidbody
 {
     Q_OBJECT
 public:
-    explicit SimpleCameraActor(const NLPropperties &prop = QVariantHash(), NLActor *parent = 0);
+    explicit SimpleCameraActor(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleCameraActor();
     NLSceneCamera * Camera();
     NLComponent * Control();

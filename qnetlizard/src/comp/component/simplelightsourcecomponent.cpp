@@ -7,7 +7,7 @@
 #include "nlscene.h"
 #include "nlactor.h"
 
-SimpleLightSourceComponent::SimpleLightSourceComponent(const NLPropperties &prop, NLActor *parent) :
+SimpleLightSourceComponent::SimpleLightSourceComponent(const NLProperties &prop, NLActor *parent) :
     NLComponent(prop, parent),
     m_type(SimpleLightSourceComponent::LightSourceType_Direction)
 {
@@ -43,7 +43,7 @@ void SimpleLightSourceComponent::Reset()
 
 void SimpleLightSourceComponent::InitProperty()
 {
-    NLPropperty v;
+    NLProperty v;
     v = GetProperty("type");
     if(v.isValid())
         SetType(static_cast<SimpleLightSourceComponent::LightSourceType>(v.toInt()));

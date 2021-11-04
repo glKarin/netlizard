@@ -25,7 +25,7 @@ NLRigidbody::NLRigidbody(NLActor *parent) :
     Construct();
 }
 
-NLRigidbody::NLRigidbody(const NLPropperties &prop, NLActor *parent) :
+NLRigidbody::NLRigidbody(const NLProperties &prop, NLActor *parent) :
     NLActor(prop, parent),
     m_zIsUp(false),
     m_fixedUp(true),
@@ -45,7 +45,7 @@ NLRigidbody::NLRigidbody(NLScene *scene, NLActor *parent) :
     Construct();
 }
 
-NLRigidbody::NLRigidbody(NLScene *scene, const NLPropperties &prop, NLActor *parent) :
+NLRigidbody::NLRigidbody(NLScene *scene, const NLProperties &prop, NLActor *parent) :
     NLActor(scene, prop, parent),
     m_zIsUp(false),
     m_fixedUp(true),
@@ -219,9 +219,9 @@ void NLRigidbody::UpdateUp()
 void NLRigidbody::InitProperty()
 {
     NLActor::InitProperty();
-    SetZIsUp(GetProperty<bool>("z_is_up", false));
-    SetFixedUp(GetProperty<bool>("fixed_up", true));
-    SetFree(GetProperty<bool>("free", true));
+    SetZIsUp(GetProperty_T<bool>("z_is_up", false));
+    SetFixedUp(GetProperty_T<bool>("fixed_up", true));
+    SetFree(GetProperty_T<bool>("free", true));
 }
 
 bool NLRigidbody::AddForce(NLForce *item)
@@ -293,3 +293,45 @@ NLRigidbody & operator-(NLRigidbody &actor, NLForce *item)
     return actor;
 }
 
+void NLRigidbody::Init()
+{
+    if(IsInited())
+        return;
+    if(m_forces)
+        m_forces->Init();
+    NLActor::Init();
+}
+
+void NLRigidbody::Update(float delta)
+{
+    if(!IsActived())
+        return;
+    if(m_forces)
+        m_forces->Update(delta);
+    NLActor::Update(delta);
+}
+
+void NLRigidbody::Destroy()
+{
+    if(!IsInited())
+        return;
+    if(m_forces)
+    {
+        m_forces->Destroy();
+        delete m_forces;
+        m_forces = 0;
+    }
+    NLActor::Destroy();
+}
+
+int NLRigidbody::ForceCount() const
+{
+    if(m_forces)
+        return m_forces->Count();
+    return 0;
+}
+
+bool NLRigidbody::HasForce() const
+{
+    return ForceCount() > 0;
+}

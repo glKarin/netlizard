@@ -24,7 +24,7 @@ SpriteScene::SpriteScene(QWidget *parent) :
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
     SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
 
-    NLPropperties prop;
+    NLProperties prop;
     prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
     prop.insert("enable_control", false);
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
@@ -35,7 +35,7 @@ SpriteScene::SpriteScene(QWidget *parent) :
     AddActor(actor);
     m_renderer = new NETLizardSpriteRenderer;
     actor->SetRenderable(m_renderer);
-    m_control = new SimpleImageControlComponent(NLPropperties(), actor);
+    m_control = new SimpleImageControlComponent(NLProperties(), actor);
     actor->AddComponent(m_control);
     NLSceneOrthoCamera *orthoCam = static_cast<NLSceneOrthoCamera *>(camera->Camera());
     orthoCam->SetAlignment(align);

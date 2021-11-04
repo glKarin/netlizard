@@ -21,7 +21,7 @@ ItemScene::ItemScene(QWidget *parent)
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
     SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
 
-    NLPropperties prop;
+    NLProperties prop;
     prop.insert("camera_z_is_up", true);
     SimpleCameraActor *camera = new SimpleCameraActor(prop);
     AddActor(camera);

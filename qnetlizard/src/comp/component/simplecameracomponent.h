@@ -12,7 +12,7 @@ class SimpleCameraComponent : public NLComponent
 {
     Q_OBJECT
 public:
-    explicit SimpleCameraComponent(const NLPropperties &prop = NLPropperties(), NLActor *parent = 0);
+    explicit SimpleCameraComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleCameraComponent();
     virtual void Reset();
     NLINTERFACE void Render();

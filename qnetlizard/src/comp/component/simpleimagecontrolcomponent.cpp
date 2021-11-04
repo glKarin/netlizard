@@ -13,7 +13,7 @@ const float SimpleImageControlComponent::M_Trans_Sens = 1000;
 const float SimpleImageControlComponent::M_Rot_Sens = 100;
 const float SimpleImageControlComponent::M_Zoom_Sens = 0.001;
 
-SimpleImageControlComponent::SimpleImageControlComponent(const NLPropperties &prop, NLActor *parent) :
+SimpleImageControlComponent::SimpleImageControlComponent(const NLProperties &prop, NLActor *parent) :
     NLComponent(prop, parent),
       m_transSens(M_Trans_Sens),
         m_rotSens(M_Rot_Sens),
@@ -53,7 +53,7 @@ void SimpleImageControlComponent::Reset()
 
 void SimpleImageControlComponent::InitProperty()
 {
-    NLPropperty v;
+    NLProperty v;
     v = GetProperty("transSens");
     if(v.isValid())
         SetTransSens(v.toFloat());

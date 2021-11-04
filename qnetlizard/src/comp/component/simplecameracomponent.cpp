@@ -7,7 +7,7 @@
 #include "nlsceneperspectivecamera.h"
 #include "nlsceneorthocamera.h"
 
-SimpleCameraComponent::SimpleCameraComponent(const NLPropperties &prop, NLActor *parent) :
+SimpleCameraComponent::SimpleCameraComponent(const NLProperties &prop, NLActor *parent) :
     NLComponent(prop, parent),
       m_type(0),
       m_camera(0)
@@ -22,7 +22,7 @@ SimpleCameraComponent::~SimpleCameraComponent()
 
 void SimpleCameraComponent::InitProperty()
 {
-    SetType(GetProperty<int>("type", static_cast<int>(NLSceneCamera::Type_Perspective)));
+    SetType(GetProperty_T<int>("type", static_cast<int>(NLSceneCamera::Type_Perspective)));
 }
 
 void SimpleCameraComponent::Init()
@@ -96,7 +96,7 @@ void SimpleCameraComponent::SetType(int type)
             m_camera = 0;
         }
         m_camera = m_type == NLSceneCamera::Type_Ortho ? (NLSceneCamera *)new NLSceneOrthoCamera : (NLSceneCamera *)new NLScenePerspectiveCamera;
-        if(GetProperty<bool>("camera_z_is_up", false))
+        if(GetProperty_T<bool>("camera_z_is_up", false))
             m_camera->SetZIsUp(true); // z_is_up
         m_camera->SetScene(Scene());
     }

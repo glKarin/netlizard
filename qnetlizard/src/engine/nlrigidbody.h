@@ -11,9 +11,9 @@ class NLRigidbody : public NLActor
     Q_OBJECT
 public:
     explicit NLRigidbody(NLActor *parent = 0);
-    explicit NLRigidbody(const NLPropperties &prop, NLActor *parent = 0);
+    explicit NLRigidbody(const NLProperties &prop, NLActor *parent = 0);
     explicit NLRigidbody(NLScene *scene, NLActor *parent = 0);
-    explicit NLRigidbody(NLScene *scene, const NLPropperties &prop, NLActor *parent = 0);
+    explicit NLRigidbody(NLScene *scene, const NLProperties &prop, NLActor *parent = 0);
     virtual ~NLRigidbody();
     bool AddForce(NLForce *actor);
     bool RemoveForce(NLForce *actor);
@@ -33,12 +33,17 @@ public:
     virtual NLActor * Turn(const NLVector3 &v);
     void SetFree(bool b);
     bool Free() const;
+    int ForceCount() const;
+    bool HasForce() const;
 
 protected:
     void SetZIsUp(bool b);
     void SetFixedUp(bool b);
     virtual void UpdateUp();
     virtual void InitProperty();
+    virtual void Init();
+    virtual void Destroy();
+    virtual void Update(float delta);
 
 private:
     void Construct();

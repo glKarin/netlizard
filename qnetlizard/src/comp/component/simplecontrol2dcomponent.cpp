@@ -9,7 +9,7 @@
 
 const float SimpleControl2DComponent::M_Move_Sens = 1000;
 
-SimpleControl2DComponent::SimpleControl2DComponent(const NLPropperties &prop, NLActor *parent) :
+SimpleControl2DComponent::SimpleControl2DComponent(const NLProperties &prop, NLActor *parent) :
     NLComponent(prop, parent),
       m_moveSens(M_Move_Sens),
         m_invertX(false),
@@ -127,7 +127,7 @@ void SimpleControl2DComponent::Transform(float delta)
 
 void SimpleControl2DComponent::InitProperty()
 {
-    NLPropperty v;
+    NLProperty v;
     v = GetProperty("moveSens");
     if(v.isValid())
         SetMoveSens(v.toFloat());
