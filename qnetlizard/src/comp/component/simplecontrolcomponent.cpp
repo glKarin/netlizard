@@ -89,11 +89,11 @@ bool SimpleControlComponent::keyev(int key, bool pressed, int modifier)
             i = NLAction_Move_Right;
             break;
         case Qt::Key_Q:
-        case Qt::Key_Control:
+        //case Qt::Key_Control:
             i = NLAction_Move_Down;
             break;
         case Qt::Key_E:
-        case Qt::Key_Space:
+        //case Qt::Key_Space:
             i = NLAction_Move_Up;
             break;
 

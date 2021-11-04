@@ -125,6 +125,7 @@ void NLScene::mousePressEvent(QMouseEvent* event)
     m_lastPos.setY(y);
 
     bool res = m_actors.MouseEventHandler(event->button(), true, x, y, event->modifiers());
+    res = MouseEventHandler(event->button(), true, x, y, event->modifiers()) || res;
     if(res)
         event->accept();
 
@@ -140,6 +141,7 @@ void NLScene::mouseReleaseEvent(QMouseEvent* event)
     m_lastPos.setY(y);
 
     bool res = m_actors.MouseEventHandler(event->button(), false, x, y, event->modifiers());
+    res = MouseEventHandler(event->button(), false, x, y, event->modifiers()) || res;
     if(res)
         event->accept();
     QGLWidget::mouseReleaseEvent(event);
@@ -150,6 +152,7 @@ void NLScene::mouseMoveEvent(QMouseEvent* event)
     int x = event->x();
     int y = event->y();
     bool res = m_actors.MouseMotionHandler(event->button(), m_pressed, x, y, m_lastPos.x(), m_lastPos.y(), event->modifiers());
+    res = MouseMotionHandler(event->button(), m_pressed, x, y, m_lastPos.x(), m_lastPos.y(), event->modifiers()) || res;
     if(res)
         event->accept();
     m_lastPos.setX(x);
@@ -162,6 +165,7 @@ void NLScene::mouseMoveEvent(QMouseEvent* event)
 void NLScene::keyPressEvent(QKeyEvent *event)
 {
     bool res = m_actors.KeyEventHandler(event->key(), true, event->modifiers());
+    res = KeyEventHandler(event->key(), true, event->modifiers()) || res;
     if(res)
         event->accept();
     QGLWidget::keyPressEvent(event);
@@ -170,6 +174,7 @@ void NLScene::keyPressEvent(QKeyEvent *event)
 void NLScene::keyReleaseEvent(QKeyEvent *event)
 {
     bool res = m_actors.KeyEventHandler(event->key(), false, event->modifiers());
+    res = KeyEventHandler(event->key(), false, event->modifiers()) || res;
     if(res)
         event->accept();
    QGLWidget::keyReleaseEvent(event);
@@ -178,6 +183,7 @@ void NLScene::keyReleaseEvent(QKeyEvent *event)
 void NLScene::wheelEvent(QWheelEvent *event)
 {
     bool res = m_actors.WheelEventHandler(event->buttons(), event->orientation(), event->delta(), event->x(), event->y(), event->modifiers());
+    res = WheelEventHandler(event->buttons(), event->orientation(), event->delta(), event->x(), event->y(), event->modifiers()) || res;
     if(res)
         event->accept();
    QGLWidget::wheelEvent(event);
@@ -405,4 +411,45 @@ void NLScene::UpdateCurrentFPS(qint64 delta)
 {
     m_currentFps = qRound(1000.0 / (float)delta);
     //qDebug() << m_currentFps;
+}
+
+bool NLScene::KeyEventHandler(int key, bool pressed, int modifier)
+{
+    Q_UNUSED(key);
+    Q_UNUSED(pressed);
+    Q_UNUSED(modifier);
+    return false;
+}
+
+bool NLScene::MouseEventHandler(int mouse, bool pressed, int x, int y, int modifier)
+{
+    Q_UNUSED(mouse);
+    Q_UNUSED(pressed);
+    Q_UNUSED(x);
+    Q_UNUSED(y);
+    Q_UNUSED(modifier);
+    return false;
+}
+
+bool NLScene::MouseMotionHandler(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modifier)
+{
+    Q_UNUSED(mouse);
+    Q_UNUSED(pressed);
+    Q_UNUSED(x);
+    Q_UNUSED(y);
+    Q_UNUSED(oldx);
+    Q_UNUSED(oldy);
+    Q_UNUSED(modifier);
+    return false;
+}
+
+bool NLScene::WheelEventHandler(int mouse, int orientation, int delta, int x, int y, int modifier)
+{
+    Q_UNUSED(mouse);
+    Q_UNUSED(orientation);
+    Q_UNUSED(delta);
+    Q_UNUSED(x);
+    Q_UNUSED(y);
+    Q_UNUSED(modifier);
+    return false;
 }

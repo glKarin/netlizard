@@ -65,6 +65,10 @@ protected:
     virtual void wheelEvent(QWheelEvent *event);
 
     virtual void Update(float f);
+    virtual bool KeyEventHandler(int key, bool pressed, int modifier);
+    virtual bool MouseEventHandler(int mouse, bool pressed, int x, int y, int modifier);
+    virtual bool MouseMotionHandler(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modifier);
+    virtual bool WheelEventHandler(int mouse, int orientation, int delta, int x, int y, int modifier);
 
 protected Q_SLOTS:
 

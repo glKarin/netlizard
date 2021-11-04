@@ -31,11 +31,9 @@ ImageScene::ImageScene(QWidget *parent)
     memset(&m_data.data, 0, sizeof(m_data.data));
     m_data.type = NL_TEXTURE_UNKNOWN;
 
-    NLProperties prop;
-    prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
     NLActor *actor = new NLActor;
     AddActor(actor);
-    SimpleCameraActor *camera = new SimpleCameraActor(prop);
+    SimpleCameraActor *camera = new SimpleCameraActor(NLProperties("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho)));
     AddActor(camera);
     m_control = static_cast<SimpleControl2DComponent *>(camera->Control());
     m_imageControl = new SimpleImageControlComponent(NLProperties(), actor);

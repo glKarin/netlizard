@@ -16,6 +16,11 @@ namespace NL
             return v0 * t0 + a0 * (t0 * t0) / 2;
         }
 
+        a acceleration(F F0, m m0)
+        {
+            return F0 / m0;
+        }
+
         G gravity_force(m m0, g g0)
         {
             return m0 * g0;

@@ -30,9 +30,7 @@ AnimationScene::AnimationScene(QWidget *parent)
     SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
     SetAnimFPS(10);
 
-    NLProperties prop;
-    prop.insert("camera_z_is_up", true);
-    SimpleCameraActor *camera = new SimpleCameraActor(prop);
+    SimpleCameraActor *camera = new SimpleCameraActor(NLProperties("camera_z_is_up", true));
     AddActor(camera);
     m_control = static_cast<SimpleControlComponent *>(camera->Control());
     NLActor *actor = new NLActor;

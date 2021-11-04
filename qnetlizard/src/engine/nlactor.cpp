@@ -477,6 +477,28 @@ NLActor * NLActor::Move(const NLVector3 &unit)
     return this;
 }
 
+NLActor * NLActor::MoveOriginal(const NLVector3 &unit)
+{
+    if(vector3_iszero(&unit))
+        return this;
+
+    NLVector3 right = InitRight;
+    NLVector3 up = InitUp_y;
+    NLVector3 direction = InitDirection_y;
+    vector3_moveve(&m_position, &right, VECTOR3_X(unit));
+    vector3_moveve(&m_position, &up, VECTOR3_Y(unit));
+    vector3_moveve(&m_position, &direction, VECTOR3_Z(unit));
+
+    UpdateMatrix();
+    emit positionChanged(m_position);
+//    NLDEBUG_VECTOR3(m_position);
+//    NLDEBUG_VECTOR3(m_direction);
+//    NLDEBUG_VECTOR3(m_right);
+//    NLDEBUG_VECTOR3(m_up);
+//    NLDEBUG_VECTOR3(unit);
+    return this;
+}
+
 NLActor * NLActor::Turn(const NLVector3 &v)
 {
     if(vector3_iszero(&v))

@@ -39,6 +39,7 @@ public:
     void SetOnce(bool b);
     bool Once() const;
     NLVector3 Direction() const;
+    virtual bool IsActived() const;
 
 signals:
     void started();
@@ -50,9 +51,9 @@ protected:
     void SetState(State s);
     virtual void InitProperty();
     void SetContainer(NLForceContainer *container);
+    NL::Physics::a Acceleration() const;
 
 protected:
-    NL::Physics::m m_mass;
     NL::Physics::F m_force;
     NL::Physics::t m_time;
     NLVector3 m_direction;

@@ -2,6 +2,7 @@
 #define _KARIN_NLRIGIDBODY_H
 
 #include "nlactor.h"
+#include "nlphysics.h"
 
 class NLForce;
 class NLForceContainer;
@@ -35,6 +36,9 @@ public:
     bool Free() const;
     int ForceCount() const;
     bool HasForce() const;
+    NLGETTER(mass) NL::Physics::m Mass() const;
+    NLSETTER(mass) void SetMass(NL::Physics::m m);
+    NLActor * MoveSelfOriginal(const NLVector3 &v);
 
 protected:
     void SetZIsUp(bool b);
@@ -56,6 +60,7 @@ private:
     NLMatrix4 m_moveMatrix;
     NLVector3 m_moveRotation;
     NLVector3 m_moveDirection;
+    NLPROPERTY(float, mess) NL::Physics::m m_mass;
     NLForceContainer *m_forces;
 
     Q_DISABLE_COPY(NLRigidbody)

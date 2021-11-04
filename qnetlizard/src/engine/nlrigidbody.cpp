@@ -20,6 +20,7 @@ NLRigidbody::NLRigidbody(NLActor *parent) :
     m_zIsUp(false),
     m_fixedUp(true),
     m_free(false),
+    m_mass(1),
     m_forces(0)
 {
     Construct();
@@ -30,6 +31,7 @@ NLRigidbody::NLRigidbody(const NLProperties &prop, NLActor *parent) :
     m_zIsUp(false),
     m_fixedUp(true),
     m_free(false),
+    m_mass(1),
     m_forces(0)
 {
     Construct();
@@ -40,6 +42,7 @@ NLRigidbody::NLRigidbody(NLScene *scene, NLActor *parent) :
     m_zIsUp(false),
     m_fixedUp(true),
     m_free(false),
+    m_mass(1),
     m_forces(0)
 {
     Construct();
@@ -50,6 +53,7 @@ NLRigidbody::NLRigidbody(NLScene *scene, const NLProperties &prop, NLActor *pare
     m_zIsUp(false),
     m_fixedUp(true),
     m_free(false),
+    m_mass(1),
     m_forces(0)
 {
     Construct();
@@ -167,6 +171,26 @@ NLActor * NLRigidbody::Move(const NLVector3 &v)
     return this;
 }
 
+NLActor * NLRigidbody::MoveSelfOriginal(const NLVector3 &unit)
+{
+    NLVector3 pos = NLActor::Position();
+    if(!m_zIsUp)
+        return NLActor::MoveOriginal(unit);
+
+    if(vector3_iszero(&unit))
+        return this;
+
+    NLVector3 right = InitRight;
+    NLVector3 up = m_zIsUp ? InitUp_z : InitUp_y;
+    NLVector3 direction = m_zIsUp ? InitDirection_z : InitDirection_y;
+    vector3_moveve(&pos, &right, VECTOR3_X(unit));
+    vector3_moveve(&pos, &up, VECTOR3_Y(unit));
+    vector3_moveve(&pos, &direction, VECTOR3_Z(unit));
+
+    NLActor::SetPosition(pos);
+    return this;
+}
+
 void NLRigidbody::SetFree(bool b)
 {
     if(m_free != b)
@@ -222,6 +246,7 @@ void NLRigidbody::InitProperty()
     SetZIsUp(GetProperty_T<bool>("z_is_up", false));
     SetFixedUp(GetProperty_T<bool>("fixed_up", true));
     SetFree(GetProperty_T<bool>("free", true));
+    SetMass(GetProperty_T<float>("mass", 1));
 }
 
 bool NLRigidbody::AddForce(NLForce *item)
@@ -334,4 +359,16 @@ int NLRigidbody::ForceCount() const
 bool NLRigidbody::HasForce() const
 {
     return ForceCount() > 0;
+}
+
+NL::Physics::m NLRigidbody::Mass() const
+{
+    return m_mass;
+}
+
+
+void NLRigidbody::SetMass(NL::Physics::m m)
+{
+    if(m_mass != m)
+        m_mass = m;
 }

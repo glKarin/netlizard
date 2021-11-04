@@ -32,6 +32,7 @@ protected:
     virtual void paintGL();
     virtual void Update(float f);
     virtual void Deinit();
+    virtual bool KeyEventHandler(int key, bool pressed, int modifier);
 
     private Q_SLOTS:
     void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);

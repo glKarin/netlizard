@@ -70,6 +70,7 @@ public:
     bool HasChildren() const;
     bool HasComponent() const;
     bool CanRender() const;
+    NLINTERFACE virtual NLActor * MoveOriginal(const NLVector3 &v);
 
 protected:
     virtual bool keyev(int key, bool pressed, int modifier);

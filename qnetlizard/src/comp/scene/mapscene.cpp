@@ -61,11 +61,8 @@ MapScene::MapScene(QWidget *parent)
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
     SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
 
-    NLProperties prop;
-
     // 3D camera + 3D control
-    prop.insert("camera_z_is_up", true);
-    m_mainCameraActor = new SimpleCameraActor(prop);
+    m_mainCameraActor = new SimpleCameraActor(NLProperties("camera_z_is_up", true));
     AddActor(m_mainCameraActor);
     m_control = static_cast<SimpleControlComponent *>(m_mainCameraActor->Control());
     SetCurrentCamera(m_mainCameraActor->Camera());
@@ -79,10 +76,7 @@ MapScene::MapScene(QWidget *parent)
     m_renderer->SetDebug(settings->GetSetting<int>("DEBUG/render"));
 
     // 2D background camera
-    prop.clear();
-    prop.insert("type", NLSceneCamera::Type_Ortho);
-    prop.insert("enable_control", false);
-    SimpleCameraActor *camera_2d = new SimpleCameraActor(prop);
+    SimpleCameraActor *camera_2d = new SimpleCameraActor(NLProperties("type", static_cast<int>(NLSceneCamera::Type_Ortho))("enable_control", false));
     AddActor(camera_2d);
     m_skyCamera = static_cast<NLSceneOrthoCamera *>(camera_2d->Camera());
     m_skyCamera->SetAlignment(Qt::AlignCenter);
@@ -94,10 +88,7 @@ MapScene::MapScene(QWidget *parent)
     m_skyActor->SetRenderable(m_skyRenderer);
 
     // 3D background camera
-    prop.clear();
-    prop.insert("camera_z_is_up", true);
-    prop.insert("enable_control", false);
-    m_sky3DCameraActor = new SimpleCameraActor(prop);
+    m_sky3DCameraActor = new SimpleCameraActor(NLProperties("camera_z_is_up", true)("enable_control", false));
     AddActor(m_sky3DCameraActor);
     m_sky3DCamera = static_cast<NLScenePerspectiveCamera *>(m_sky3DCameraActor->Camera());
 
@@ -120,9 +111,7 @@ MapScene::MapScene(QWidget *parent)
     m_shadowRenderer->SetShadowObject(shadowObj);
 
     // light source
-    prop.clear();
-    prop.insert("type", static_cast<int>(SimpleLightSourceComponent::LightSourceType_Point));
-    SimpleLightSourceActor *lightSource = new SimpleLightSourceActor(prop);
+    SimpleLightSourceActor *lightSource = new SimpleLightSourceActor(NLProperties("type", static_cast<int>(SimpleLightSourceComponent::LightSourceType_Point)));
     AddActor(lightSource);
 
     m_shadowRenderer->SetLightSourceType(lightSource->LightSource()->IsDirectionLighting());
@@ -194,13 +183,14 @@ void MapScene::Update(float delta)
         float rglz = 0;
         res = NETLizard_GetScenePointZCoord(m_model, &p, scene, &scene, &rglz);
         //qDebug() << res << scene << rglz;
+        //qDebug() << "------" << VECTOR3_Z(p) << rglz << OBJ_HEIGHT + rglz;
         if(res)
         {
             if(VECTOR3_Z(p) > OBJ_HEIGHT + rglz)
             {
                 if(!m_mainCameraActor->HasForce())
                 {
-                    m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties()("g", NL::Physics::EARTH_G * 1000), m_mainCameraActor));
+                    m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", NL::Physics::EARTH_G * 1000), m_mainCameraActor));
                 }
             }
             else
@@ -407,6 +397,24 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     GrabMouseCursor(true);
 
     return true;
+}
+bool MapScene::KeyEventHandler(int key, bool pressed, int modifier)
+{
+    if(!pressed)
+        return false;
+    switch(key)
+    {
+        case Qt::Key_Control:
+            break;
+        case Qt::Key_Space:
+            if(!m_mainCameraActor->HasForce())
+            {
+                m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", NL::Physics::EARTH_G * 1000)("force", -2000), m_mainCameraActor));
+            }
+            return true;
+            break;
+    }
+    return false;
 }
 
 void MapScene::Reset()

@@ -24,10 +24,7 @@ SpriteScene::SpriteScene(QWidget *parent) :
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
     SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
 
-    NLProperties prop;
-    prop.insert("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho));
-    prop.insert("enable_control", false);
-    SimpleCameraActor *camera = new SimpleCameraActor(prop);
+    SimpleCameraActor *camera = new SimpleCameraActor(NLProperties("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho))("enable_control", false));
     Qt::Alignment align = Qt::AlignLeft | Qt::AlignTop;
     align = Qt::AlignCenter;
     AddActor(camera);

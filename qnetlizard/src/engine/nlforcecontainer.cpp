@@ -37,6 +37,7 @@ bool NLForceContainer::Add(NLForce *item, bool start)
     bool res = NLObjectContainer::Add(item);
     if(res)
     {
+        item->SetRigidbody(Rigidbody());
         if(start)
             item->Start();
     }

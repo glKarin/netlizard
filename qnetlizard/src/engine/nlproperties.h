@@ -27,6 +27,7 @@ class NLProperties : public QVariantHash
 {
 public:
     explicit NLProperties();
+    explicit NLProperties(const QString &name, const NLProperty &value);
     virtual ~NLProperties();
     NLProperties & Insert(const QString &name, const NLProperty &value);
     NLProperties & Insert(const NLPropertyPair &p);

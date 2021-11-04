@@ -7,7 +7,6 @@
 
 NLForce::NLForce(NLRigidbody *parent) :
     NLObject(parent),
-    m_mass(0),
   m_force(0),
   m_time(0),
   m_state(NLForce::State_Ready),
@@ -20,7 +19,6 @@ NLForce::NLForce(NLRigidbody *parent) :
 
 NLForce::NLForce(const NLProperties &prop, NLRigidbody *parent) :
     NLObject(prop, parent),
-    m_mass(0),
           m_force(0),
           m_time(0),
           m_state(NLForce::State_Ready),
@@ -31,7 +29,6 @@ NLForce::NLForce(const NLProperties &prop, NLRigidbody *parent) :
 
 NLForce::NLForce(NLScene *scene, NLRigidbody *parent) :
     NLObject(scene, parent),
-    m_mass(0),
           m_force(0),
           m_time(0),
           m_state(NLForce::State_Ready),
@@ -42,7 +39,6 @@ NLForce::NLForce(NLScene *scene, NLRigidbody *parent) :
 
 NLForce::NLForce(NLScene *scene, const NLProperties &prop, NLRigidbody *parent) :
     NLObject(scene, prop, parent),
-    m_mass(0),
           m_force(0),
           m_time(0),
           m_state(NLForce::State_Ready),
@@ -91,11 +87,6 @@ NL::Physics::t NLForce::Time() const
 NL::Physics::F NLForce::Force() const
 {
     return m_force;
-}
-
-NL::Physics::m NLForce::Mass() const
-{
-    return m_mass;
 }
 
 void NLForce::SetRigidbody(NLRigidbody *o)
@@ -165,7 +156,6 @@ NLRigidbody * NLForce::Rigidbody()
 void NLForce::InitProperty()
 {
     NLObject::InitProperty();
-    m_mass = GetProperty_T<float>("mass", 0);
     m_force = GetProperty_T<float>("force", 0);
     VECTOR3_X(m_direction) = GetProperty_T<float>("direction_x", 0);
     VECTOR3_Y(m_direction) = GetProperty_T<float>("direction_y", 0);
@@ -186,6 +176,23 @@ NLVector3 NLForce::Direction() const
 void NLForce::SetContainer(NLForceContainer *container)
 {
     NLObject::SetContainer(container);
+}
+
+bool NLForce::IsActived() const
+{
+    return NLObject::IsActived() && (const_cast<NLForce *>(this))->Rigidbody() != 0;
+}
+
+NL::Physics::m NLForce::Mass() const
+{
+    const NLRigidbody *r = (const_cast<NLForce *>(this))->Rigidbody();
+    return r ? r->Mass() : 0;
+}
+
+NL::Physics::a NLForce::Acceleration() const
+{
+    NL::Physics::m mass = Mass();
+    return NL::Physics::acceleration(m_force, mass);
 }
 
 
@@ -243,12 +250,13 @@ void NLForce_gravity::InitProperty()
 {
     NLForce::InitProperty();
     m_g = GetProperty_T<float>("g", NL::Physics::EARTH_G);
-    m_initialSpeed = GetProperty_T<float>("initial_speed", 0);
+    m_initialSpeed = Acceleration();
+    m_speed = m_initialSpeed;
 }
 
 void NLForce_gravity::Construct()
 {
-    m_force = NL::Physics::gravity_force(m_mass, m_g);
+    m_force = NL::Physics::gravity_force(1, m_g);
     NLVector3 down = VECTOR3(0, -1, 0);
     m_direction = down;
 }
@@ -290,6 +298,6 @@ void NLForce_gravity::Update(float delta)
     if(actor)
     {
         NLVector3 unit = VECTOR3(0, -m_lastDistance, 0);
-        actor->Move(unit);
+        actor->MoveOriginal(unit);
     }
 }

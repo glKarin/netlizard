@@ -18,7 +18,7 @@ NLObjectPool::~NLObjectPool()
 NLName NLObjectPool::GenName(const NLObject *item)
 {
     NLName name;
-    int i = 0;
+    quint64 i = 0;
     do
     {
         name = item->objectName() + "_" + QString::number(i++);

@@ -50,7 +50,14 @@ void NLPropertyPair::SetValue(const NLProperty &val)
 
 
 NLProperties::NLProperties()
+    : QVariantHash()
 {
+}
+
+NLProperties::NLProperties(const QString &name, const NLProperty &value)
+    : QVariantHash()
+{
+    insert(name, value);
 }
 
 NLProperties::~NLProperties()
