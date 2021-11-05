@@ -195,8 +195,15 @@ NL::Physics::a NLForce::Acceleration() const
     return NL::Physics::acceleration(m_force, mass);
 }
 
+NL::Physics::a NLForce::Acceleration(NL::Physics::F f0) const
+{
+    NL::Physics::m mass = Mass();
+    return NL::Physics::acceleration(f0, mass);
+}
 
 
+
+// gravity
 NLForce_gravity::NLForce_gravity(NLRigidbody *parent) :
     NLForce(parent),
     m_g(NL::Physics::EARTH_G),
@@ -256,6 +263,7 @@ void NLForce_gravity::InitProperty()
 
 void NLForce_gravity::Construct()
 {
+    setObjectName("NLForce_gravity");
     m_force = NL::Physics::gravity_force(1, m_g);
     NLVector3 down = VECTOR3(0, -1, 0);
     m_direction = down;
@@ -299,5 +307,121 @@ void NLForce_gravity::Update(float delta)
     {
         NLVector3 unit = VECTOR3(0, -m_lastDistance, 0);
         actor->MoveOriginal(unit);
+    }
+}
+
+
+
+// push
+NLForce_push::NLForce_push(NLRigidbody *parent) :
+    NLForce(parent),
+    m_dragForce(0),
+    m_initialSpeed(0),
+    m_distance(0),
+    m_speed(0),
+    m_lastDistance(0),
+    m_acceleration(0)
+{
+    Construct();
+}
+
+NLForce_push::NLForce_push(const NLProperties &prop, NLRigidbody *parent) :
+    NLForce(prop, parent),
+    m_dragForce(NL::Physics::EARTH_G),
+    m_initialSpeed(0),
+    m_distance(0),
+    m_speed(0),
+    m_lastDistance(0),
+    m_acceleration(0)
+{
+    Construct();
+}
+
+NLForce_push::NLForce_push(NLScene *scene, NLRigidbody *parent) :
+    NLForce(scene, parent),
+    m_dragForce(0),
+    m_initialSpeed(0),
+    m_distance(0),
+    m_speed(0),
+    m_lastDistance(0),
+    m_acceleration(0)
+{
+    Construct();
+}
+
+NLForce_push::NLForce_push(NLScene *scene, const NLProperties &prop, NLRigidbody *parent) :
+    NLForce(scene, prop, parent),
+    m_dragForce(0),
+    m_initialSpeed(0),
+    m_distance(0),
+    m_speed(0),
+    m_lastDistance(0),
+    m_acceleration(0)
+{
+    Construct();
+}
+
+NLForce_push::~NLForce_push()
+{
+
+}
+
+void NLForce_push::InitProperty()
+{
+    NLForce::InitProperty();
+    m_dragForce = GetProperty_T<float>("drag_force", 0);
+    m_initialSpeed = Acceleration();
+    m_speed = m_initialSpeed;
+    m_acceleration = NL::Physics::acceleration(m_force + m_dragForce, Mass());
+}
+
+void NLForce_push::Construct()
+{
+    setObjectName("NLForce_push");
+}
+
+NL::Physics::F NLForce_push::FragForce() const
+{
+    return m_dragForce;
+}
+
+NL::Physics::d NLForce_push::Distance() const
+{
+    return m_distance;
+}
+
+NL::Physics::v NLForce_push::Speed() const
+{
+    return m_speed;
+}
+
+void NLForce_push::Reset()
+{
+    NLForce::Reset();
+    m_distance = 0;
+    m_speed = 0;
+    m_lastDistance = 0;
+}
+
+void NLForce_push::Update(float delta)
+{
+    if(!IsForcing())
+        return;
+    NLForce::Update(delta);
+
+    m_speed = NL::Physics::speed(m_time, m_acceleration, m_initialSpeed);
+    if(m_speed <= 0)
+    {
+        m_speed = 0;
+        Finish();
+        return;
+    }
+    m_lastDistance = NL::Physics::distance(delta, m_speed, m_acceleration);
+    m_distance = NL::Physics::distance(m_time, m_initialSpeed, m_acceleration);
+
+    NLRigidbody *actor = Rigidbody();
+    if(actor)
+    {
+        actor->MoveDirectionOriginal(m_lastDistance, m_direction);
     }
 }

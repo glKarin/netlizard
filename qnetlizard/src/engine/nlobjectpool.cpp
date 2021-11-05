@@ -1,6 +1,7 @@
 #include "nlobjectpool.h"
 
 #include <QDebug>
+#include <limits>
 
 #include "qdef.h"
 
@@ -17,11 +18,45 @@ NLObjectPool::~NLObjectPool()
 
 NLName NLObjectPool::GenName(const NLObject *item)
 {
+typedef quint64 index_t;
+#define INDEX_MAX std::numeric_limits<index_t>::max()
     NLName name;
-    quint64 i = 0;
+    static index_t _i = 0;
+    static char _n = '0';
+    static char _c = 'a';
+    static char _C = 'A';
+    static index_t _I = 0;
+    if(_i >= INDEX_MAX)
+    {
+        _i = 0;
+        _n++;
+    }
+    if(_n > '9')
+    {
+        _n = '0';
+        _c++;
+    }
+    if(_c > 'z')
+    {
+        _c = 'a';
+        _C++;
+    }
+    if(_C > 'Z')
+    {
+        _C = 'A';
+        _I++;
+    }
     do
     {
-        name = item->objectName() + "_" + QString::number(i++);
+        name = item->objectName()
+                + "_"
+                + QString::number(_I)
+                + _C
+                + _c
+                + _n
+                + "_"
+                + QString::number(_i++)
+                ;
     }
     while(m_namePool.contains(name));
     m_namePool.push_back(name);

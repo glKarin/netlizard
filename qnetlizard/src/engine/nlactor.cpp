@@ -499,6 +499,32 @@ NLActor * NLActor::MoveOriginal(const NLVector3 &unit)
     return this;
 }
 
+NLActor * NLActor::MoveDirectionOriginal(float len, const NLVector3 &dir)
+{
+    if(vector3_iszero(&dir) || len == 0.0)
+        return this;
+
+    vector3_moveve(&m_position, &dir, len);
+
+    UpdateMatrix();
+    emit positionChanged(m_position);
+    return this;
+}
+
+NLActor * NLActor::MoveDirection(float len, const NLVector3 &dir)
+{
+    if(vector3_iszero(&dir) || len == 0.0)
+        return this;
+
+    NLVector3 nd;
+    Mesa_glTransform_row(VECTOR3_V(nd), VECTOR3_V(dir), &m_normalMatrix);
+    vector3_moveve(&m_position, &nd, len);
+
+    UpdateMatrix();
+    emit positionChanged(m_position);
+    return this;
+}
+
 NLActor * NLActor::Turn(const NLVector3 &v)
 {
     if(vector3_iszero(&v))
@@ -675,7 +701,7 @@ bool NLActor::HasChildren() const
     return ChildrenCount() > 0;
 }
 
-bool NLActor::HasComponent() const
+bool NLActor::HasComponents() const
 {
     return ComponentCount() > 0;
 }

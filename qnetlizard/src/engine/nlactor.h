@@ -3,9 +3,12 @@
 
 #include "nlobject.h"
 
-class NLActorContainer;
+#include "nlactorcontainer.h"
+#include "nlcomponentcontainer.h"
+
+//class NLActorContainer;
 class NLRenderable;
-class NLComponentContainer;
+//class NLComponentContainer;
 class NLComponent;
 
 class NLActor : public NLObject
@@ -68,9 +71,45 @@ public:
     int ChildrenCount() const;
     int ComponentCount() const;
     bool HasChildren() const;
-    bool HasComponent() const;
+    bool HasComponents() const;
     bool CanRender() const;
-    NLINTERFACE virtual NLActor * MoveOriginal(const NLVector3 &v);
+    NLINTERFACE virtual NLActor * MoveOriginal(const NLVector3 &v); // original
+    NLINTERFACE virtual NLActor * MoveDirection(float len, const NLVector3 &dir); // local
+    NLINTERFACE virtual NLActor * MoveDirectionOriginal(float len, const NLVector3 &dir); // original
+
+    template <class T>
+    bool ChildIsType(int index) const;
+    template <class T>
+    bool ChildIsType(const NLName &name) const;
+    template <class T>
+    int TypeChildCount() const;
+    template <class T>
+    bool HasTypeChild() const;
+    template <class T>
+    T * GetTypeChild();
+    template <class T>
+    QList<T *> GetTypeChildren();
+    template <class T>
+    bool RemoveTypeChild();
+    template <class T>
+    int RemoveTypeChildren();
+
+    template <class T>
+    bool ComponentIsType(int index) const;
+    template <class T>
+    bool ComponentIsType(const NLName &name) const;
+    template <class T>
+    int TypeComponentCount() const;
+    template <class T>
+    bool HasTypeComponent() const;
+    template <class T>
+    T * GetTypeComponent();
+    template <class T>
+    QList<T *> GetTypeComponents();
+    template <class T>
+    bool RemoveTypeComponent();
+    template <class T>
+    int RemoveTypeComponents();
 
 protected:
     virtual bool keyev(int key, bool pressed, int modifier);
@@ -158,6 +197,154 @@ T * NLActor::GetComponent_T(int index)
     if(!obj)
         return 0;
     return dynamic_cast<T *>(obj);
+}
+
+template <class T>
+bool NLActor::ChildIsType(int index) const
+{
+    if(!m_children)
+        return false;
+    return m_children->IsType<T>(index);
+}
+
+template <class T>
+bool NLActor::ChildIsType(const NLName &name) const
+{
+    if(!m_children)
+        return false;
+    return m_children->IsType<T>(name);
+}
+
+template <class T>
+int NLActor::TypeChildCount() const
+{
+    if(!m_children)
+        return 0;
+    return m_children->TypeCount<T>();
+}
+
+template <class T>
+bool NLActor::HasTypeChild() const
+{
+    if(!m_children)
+        return false;
+    return m_children->HasType<T>();
+}
+
+template <class T>
+T * NLActor::GetTypeChild()
+{
+    if(!m_children)
+        return 0;
+    return m_children->GetType<T>();
+}
+
+template <class T>
+QList<T *> NLActor::GetTypeChildren()
+{
+    if(!m_children)
+        return 0;
+    return m_children->GetTypes<T>();
+}
+
+template <class T>
+bool NLActor::RemoveTypeChild()
+{
+    if(!m_children)
+        return false;
+    T *r = m_children->GetType<T>();
+    if(!r)
+        return false;
+    return RemoveChild(r);
+}
+
+template <class T>
+int NLActor::RemoveTypeChildren()
+{
+    if(!m_children)
+        return 0;
+    QList<T *> list = m_children->GetTypes<T>();
+    int c = 0;
+    Q_FOREACH(T *obj, list)
+    {
+        if(RemoveChild(obj))
+            c++;
+    }
+    return c;
+}
+
+template <class T>
+bool NLActor::ComponentIsType(int index) const
+{
+    if(!m_components)
+        return false;
+    return m_components->IsType<T>(index);
+}
+
+template <class T>
+bool NLActor::ComponentIsType(const NLName &name) const
+{
+    if(!m_components)
+        return false;
+    return m_components->IsType<T>(name);
+}
+
+template <class T>
+int NLActor::TypeComponentCount() const
+{
+    if(!m_components)
+        return 0;
+    return m_components->TypeCount<T>();
+}
+
+template <class T>
+bool NLActor::HasTypeComponent() const
+{
+    if(!m_components)
+        return false;
+    return m_components->HasType<T>();
+}
+
+template <class T>
+T * NLActor::GetTypeComponent()
+{
+    if(!m_components)
+        return 0;
+    return m_components->GetType<T>();
+}
+
+template <class T>
+QList<T *> NLActor::GetTypeComponents()
+{
+    if(!m_components)
+        return 0;
+    return m_components->GetTypes<T>();
+}
+
+template <class T>
+bool NLActor::RemoveTypeComponent()
+{
+    if(!m_components)
+        return false;
+    T *r = m_components->GetType<T>();
+    if(!r)
+        return false;
+    return RemoveComponent(r);
+}
+
+template <class T>
+int NLActor::RemoveTypeComponents()
+{
+    if(!m_components)
+        return 0;
+    QList<T *> list = m_components->GetTypes<T>();
+    int c = 0;
+    Q_FOREACH(T *obj, list)
+    {
+        if(RemoveComponent(obj))
+            c++;
+    }
+    return c;
 }
 
 #endif // _KARIN_NLACTOR_H

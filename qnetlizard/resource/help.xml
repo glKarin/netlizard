@@ -125,10 +125,10 @@
             <![CDATA[<b>D</b> - Move right]]>
         </item>
         <item>
-            <![CDATA[<b>Q / Control</b> - Move down]]>
+            <![CDATA[<b>Q</b> - Move down]]>
         </item>
         <item>
-            <![CDATA[<b>E / Space</b> - Move up]]>
+            <![CDATA[<b>E</b> - Move up]]>
         </item>
         <item>
             <![CDATA[]]>
@@ -183,6 +183,9 @@
         </item>
         <item font-style="italic">
             <![CDATA[5. Other action: ]]>
+        </item>
+        <item>
+            <![CDATA[<b>Space</b> - Jump]]>
         </item>
         <item>
             <![CDATA[<b>M</b> - Grab mouse pointer(If pointer is hidden, moving mouse for turning)]]>

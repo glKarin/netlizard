@@ -190,6 +190,17 @@ void NLObjectContainer::Clear()
     m_objectList.clear();
 }
 
+void NLObjectContainer::Clean()
+{
+    NLObjectList objectList = m_objectList;
+    Clear();
+    Q_FOREACH(NLObject *obj, objectList)
+    {
+        obj->Destroy();
+        delete obj;
+    }
+}
+
 NLObjectList & NLObjectContainer::ObjectList()
 {
     return m_objectList;

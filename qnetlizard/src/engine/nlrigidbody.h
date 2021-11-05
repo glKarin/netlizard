@@ -3,9 +3,10 @@
 
 #include "nlactor.h"
 #include "nlphysics.h"
+#include "nlforcecontainer.h"
 
 class NLForce;
-class NLForceContainer;
+//class NLForceContainer;
 
 class NLRigidbody : public NLActor
 {
@@ -39,6 +40,26 @@ public:
     NLGETTER(mass) NL::Physics::m Mass() const;
     NLSETTER(mass) void SetMass(NL::Physics::m m);
     NLActor * MoveSelfOriginal(const NLVector3 &v);
+    NLINTERFACE void ClearAllForces();
+    NLINTERFACE void Collision();
+    //NLINTERFACE void CollisionFloor();
+
+    template <class T>
+    bool ForceIsType(int index) const;
+    template <class T>
+    bool ForceIsType(const NLName &name) const;
+    template <class T>
+    int TypeForceCount() const;
+    template <class T>
+    bool HasTypeForce() const;
+    template <class T>
+    T * GetTypeForce();
+    template <class T>
+    QList<T *> GetTypeForces();
+    template <class T>
+    bool RemoveTypeForce();
+    template <class T>
+    int RemoveTypeForces();
 
 protected:
     void SetZIsUp(bool b);
@@ -82,6 +103,80 @@ T * NLRigidbody::GetForce_T(int index)
     if(!obj)
         return 0;
     return dynamic_cast<T *>(obj);
+}
+
+template <class T>
+bool NLRigidbody::ForceIsType(int index) const
+{
+    if(!m_forces)
+        return false;
+    return m_forces->IsType<T>(index);
+}
+
+template <class T>
+bool NLRigidbody::ForceIsType(const NLName &name) const
+{
+    if(!m_forces)
+        return false;
+    return m_forces->IsType<T>(name);
+}
+
+template <class T>
+int NLRigidbody::TypeForceCount() const
+{
+    if(!m_forces)
+        return 0;
+    return m_forces->TypeCount<T>();
+}
+
+template <class T>
+bool NLRigidbody::HasTypeForce() const
+{
+    if(!m_forces)
+        return false;
+    return m_forces->HasType<T>();
+}
+
+template <class T>
+T * NLRigidbody::GetTypeForce()
+{
+    if(!m_forces)
+        return 0;
+    return m_forces->GetType<T>();
+}
+
+template <class T>
+QList<T *> NLRigidbody::GetTypeForces()
+{
+    if(!m_forces)
+        return 0;
+    return m_forces->GetTypes<T>();
+}
+
+template <class T>
+bool NLRigidbody::RemoveTypeForce()
+{
+    if(!m_forces)
+        return false;
+    T *r = m_forces->GetType<T>();
+    if(!r)
+        return false;
+    return RemoveForce(r);
+}
+
+template <class T>
+int NLRigidbody::RemoveTypeForces()
+{
+    if(!m_forces)
+        return 0;
+    QList<T *> list = m_forces->GetTypes<T>();
+    int c = 0;
+    Q_FOREACH(T *obj, list)
+    {
+        if(RemoveForce(obj))
+            c++;
+    }
+    return c;
 }
 
 #endif // _KARIN_NLRIGIDBODY_H

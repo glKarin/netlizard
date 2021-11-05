@@ -361,6 +361,20 @@ bool NLRigidbody::HasForce() const
     return ForceCount() > 0;
 }
 
+void NLRigidbody::ClearAllForces()
+{
+    if(!m_forces)
+        return;
+    m_forces->Clean();
+}
+
+void NLRigidbody::Collision()
+{
+    if(!m_forces)
+        return;
+    m_forces->Clean();
+}
+
 NL::Physics::m NLRigidbody::Mass() const
 {
     return m_mass;

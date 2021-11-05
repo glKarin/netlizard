@@ -52,6 +52,7 @@ protected:
     virtual void InitProperty();
     void SetContainer(NLForceContainer *container);
     NL::Physics::a Acceleration() const;
+    NL::Physics::a Acceleration(NL::Physics::F force) const;
 
 protected:
     NL::Physics::F m_force;
@@ -99,6 +100,35 @@ private:
     NL::Physics::d m_distance;
     NL::Physics::v m_speed;
     NL::Physics::d m_lastDistance;
+};
+
+class NLForce_push : public NLForce
+{
+public:
+    explicit NLForce_push(NLRigidbody *parent = 0);
+    explicit NLForce_push(const NLProperties &prop, NLRigidbody *parent = 0);
+    explicit NLForce_push(NLScene *scene, NLRigidbody *parent = 0);
+    explicit NLForce_push(NLScene *scene, const NLProperties &prop, NLRigidbody *parent = 0);
+    virtual ~NLForce_push();
+    virtual void Reset();
+    NL::Physics::F FragForce() const;
+    NL::Physics::d Distance() const;
+    NL::Physics::v Speed() const;
+
+protected:
+    virtual void InitProperty();
+    virtual void Update(float delta);
+
+private:
+    void Construct();
+
+private:
+    NL::Physics::g m_dragForce;
+    NL::Physics::v m_initialSpeed;
+    NL::Physics::d m_distance;
+    NL::Physics::v m_speed;
+    NL::Physics::d m_lastDistance;
+    NL::Physics::a m_acceleration;
 };
 
 #endif // _KARIN_NLFORCE_H

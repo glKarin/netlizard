@@ -179,24 +179,42 @@ void MapScene::Update(float delta)
         collision_object_t obj = {oldPos, OBJ_RADIUS, OBJ_HEIGHT};
         int res = NETLizard_MapCollisionTesting(m_model, &obj, &pos, &scene);
         //qDebug() << res << scene;
-        vector3_t p = (res != 1 && res != 0) ? pos : oldPos;
+        vector3_t p;
+        bool clear = false;
+        if(res == 4)
+        {
+            p = pos;
+            clear = true;
+        }
+        else if(res == 2)
+        {
+            p = pos;
+        }
+        else
+        {
+            p = oldPos;
+            clear = true;
+        }
+        qDebug() << res;
         float rglz = 0;
         res = NETLizard_GetScenePointZCoord(m_model, &p, scene, &scene, &rglz);
-        //qDebug() << res << scene << rglz;
-        //qDebug() << "------" << VECTOR3_Z(p) << rglz << OBJ_HEIGHT + rglz;
+        qDebug() << "------"<<  res << VECTOR3_Z(p)<< OBJ_HEIGHT + rglz << rglz ;
+        if(clear)
+            m_mainCameraActor->Collision();
+
         if(res)
         {
             if(VECTOR3_Z(p) > OBJ_HEIGHT + rglz)
             {
-                if(!m_mainCameraActor->HasForce())
+                if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())
                 {
                     m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", NL::Physics::EARTH_G * 1000), m_mainCameraActor));
                 }
             }
             else
             {
-                if(m_mainCameraActor->HasForce())
-                    m_mainCameraActor->RemoveForce(0);
+                if(m_mainCameraActor->HasTypeForce<NLForce_gravity>())
+                    m_mainCameraActor->RemoveTypeForces<NLForce_gravity>();
                 VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
             }
         }
@@ -405,9 +423,14 @@ bool MapScene::KeyEventHandler(int key, bool pressed, int modifier)
     switch(key)
     {
         case Qt::Key_Control:
+            //if(!m_mainCameraActor->HasTypeForce<NLForce_push>())
+            {
+                NLVector3 dir = m_mainCameraActor->MoveDirection();
+                m_mainCameraActor->AddForce(new NLForce_push(NLProperties("drag_force", -3000)("force", 2000)("direction_x", VECTOR3_X(dir))("direction_y", VECTOR3_Y(dir))("direction_z", VECTOR3_Z(dir)), m_mainCameraActor));
+            }
             break;
         case Qt::Key_Space:
-            if(!m_mainCameraActor->HasForce())
+            if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())
             {
                 m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", NL::Physics::EARTH_G * 1000)("force", -2000), m_mainCameraActor));
             }

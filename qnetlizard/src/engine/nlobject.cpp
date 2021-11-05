@@ -59,7 +59,8 @@ NLObject::~NLObject()
 
 void NLObject::Construct(const NLProperties &prop)
 {
-    setObjectName("NLObject");
+    CopyProperty(prop);
+    setObjectName(GetProperty_T<QString>("name", "NLObject"));
     QObject *p = parent();
     if(p)
     {
@@ -67,7 +68,6 @@ void NLObject::Construct(const NLProperties &prop)
         if(obj)
             SetScene(obj->Scene());
     }
-    CopyProperty(prop);
     SetName(NLObjectPool::Instance()->Attach(this));
 }
 
