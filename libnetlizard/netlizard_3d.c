@@ -404,7 +404,7 @@ static const char *Frame_Animation_Name[NL_FRAME_ANIMATION_TOTAL] = {
     "Dead-2"
 };
 
-void delete_NETLizard_3D_Mesh(NETLizard_3D_Mesh *mesh)
+void nlDeleteNETLizard3DMesh(NETLizard_3D_Mesh *mesh)
 {
     free(mesh->vertex.data);
     free(mesh->primitive.data);
@@ -412,21 +412,21 @@ void delete_NETLizard_3D_Mesh(NETLizard_3D_Mesh *mesh)
     free(mesh->bsp.data);
 }
 
-void delete_NETLizard_3D_Item_Mesh(NETLizard_3D_Item_Mesh *mesh)
+void nlDeleteNETLizard3DItemMesh(NETLizard_3D_Item_Mesh *mesh)
 {
-	delete_NETLizard_3D_Mesh(&mesh->item_mesh);
+	nlDeleteNETLizard3DMesh(&mesh->item_mesh);
 }
 
-void delete_NETLizard_3D_Model(NETLizard_3D_Model *model)
+void nlDeleteNETLizard3DModel(NETLizard_3D_Model *model)
 {
     int i;
 
     for(i = 0; i < model->data.count; i++)
-        delete_NETLizard_3D_Mesh(((NETLizard_3D_Mesh *)(model->data.data)) + i);
+        nlDeleteNETLizard3DMesh(((NETLizard_3D_Mesh *)(model->data.data)) + i);
     free(model->data.data);
 
     for(i = 0; i < model->item_data.count; i++)
-        delete_NETLizard_3D_Item_Mesh(((NETLizard_3D_Item_Mesh *)(model->item_data.data)) + i);
+        nlDeleteNETLizard3DItemMesh(((NETLizard_3D_Item_Mesh *)(model->item_data.data)) + i);
     free(model->item_data.data);
 
     free(model->bsp_data.data);

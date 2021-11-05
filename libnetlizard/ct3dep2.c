@@ -5,9 +5,9 @@
 
 // ct3d ep2 no jad version v1?
 
-#define dprintfsi(s, d) nlprintf("CT 3D Ep2 : "#s"->%d\n", d)
-#define dprintfsii(s, d, d2) nlprintf("CT 3D Ep2 : ""%d - "#s"->%d\n", d, d2)
-#define dprintfss(s) nlprintf("CT 3D Ep2 : "#s"\n")
+#define dprintfsi(s, d) nllogfln("CT 3D Ep2 : "#s"->%d", d)
+#define dprintfsii(s, d, d2) nllogfln("CT 3D Ep2 : ""%d - "#s"->%d", d, d2)
+#define dprintfss(s) nllogfln("CT 3D Ep2 : "#s)
 
 typedef struct _class__h__scene // 地图模型场景
 {

@@ -1,6 +1,5 @@
 #include "netlizard.h"
 
-#include "texture.h"
 #include "priv_local.h"
 
 NLuchar * nlMakePixelDataRGBACompress(const NETLizard_Texture *tex, NLint *rlen)

@@ -5,9 +5,9 @@
 
 // army ranger 3d guagua cracked glo version
 
-#define dprintfsi(s, d) nlprintf("Specnaz 3D : "#s"->%d\n", d)
-#define dprintfsii(s, d, d2) nlprintf("Specnaz 3D : ""%d - "#s"->%d\n", d, d2)
-#define dprintfss(s) nlprintf("Specnaz 3D : "#s"\n")
+#define dprintfsi(s, d) nllogfln("Specnaz 3D : "#s"->%d", d)
+#define dprintfsii(s, d, d2) nllogfln("Specnaz 3D : ""%d - "#s"->%d", d, d2)
+#define dprintfss(s) nllogfln("Specnaz 3D : "#s)
 
 typedef struct _class__g__scene
 {

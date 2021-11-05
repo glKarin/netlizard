@@ -5,9 +5,9 @@
 
 // clone 3d glo version
 
-#define dprintfsi(s, d) nlprintf("Clone 3D : "#s"->%d\n", d)
-#define dprintfsii(s, d, d2) nlprintf("Clone 3D : ""%d - "#s"->%d\n", d, d2)
-#define dprintfss(s) nlprintf("Clone 3D : "#s"\n")
+#define dprintfsi(s, d) nllogfln("Clone 3D : "#s"->%d", d)
+#define dprintfsii(s, d, d2) nllogfln("Clone 3D : ""%d - "#s"->%d", d, d2)
+#define dprintfss(s) nllogfln("Clone 3D : "#s)
 
 typedef struct _class__c__scene
 {

@@ -1,6 +1,10 @@
 #ifndef _KARIN_DEF_H
 #define _KARIN_DEF_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define NEW(T) malloc(sizeof(T))
 #define NEW_II(T, size) calloc(size, sizeof(T))
 #define ZERO(ptr, T) memset(ptr, 0, sizeof(T))
@@ -30,5 +34,9 @@
 #define BITS_TRUE(b, t) (((b) & (t)) != 0)
 
 #define printfln(fmt, args...) printf(fmt"\n", ##args)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // _KARIN_DEF_H

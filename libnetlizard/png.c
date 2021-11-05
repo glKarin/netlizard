@@ -69,7 +69,7 @@ char * nlEncodeDecodeData(const char *arr, char *data, NLsizei length)
     return nlEncodeDecodeDatav(data, length);
 }
 
-char * nlEncodeDecodeDatan(const char *arr, NLsizei length)
+char * nlEncodeDecodeDataa(const char *arr, NLsizei length)
 {
     char *res = NEW_II(char, length);
     return nlEncodeDecodeData(arr, res, length);

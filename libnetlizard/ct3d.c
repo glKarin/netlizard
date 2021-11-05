@@ -5,9 +5,9 @@
 
 // ct 3d konon version by serviak
 
-#define dprintfsi(s, d) nlprintf("CT 3D : "#s"->%d\n", d)
-#define dprintfsii(s, d, d2) nlprintf("CT 3D : ""%d - "#s"->%d\n", d, d2)
-#define dprintfss(s) nlprintf("CT 3D : "#s"\n")
+#define dprintfsi(s, d) nllogfln("CT 3D : "#s"->%d", d)
+#define dprintfsii(s, d, d2) nllogfln("CT 3D : ""%d - "#s"->%d", d, d2)
+#define dprintfss(s) nllogfln("CT 3D : "#s)
 
 typedef struct _class__f__scene
 {

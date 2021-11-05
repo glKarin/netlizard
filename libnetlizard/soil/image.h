@@ -3,6 +3,10 @@
 
 // SOIL
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum
 {
     SOIL_SAVE_TYPE_TGA = 0,
@@ -44,5 +48,9 @@ unsigned char*
         int *width, int *height, int *channels,
         int force_channels
     );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // _KARIN_IMAGE_H

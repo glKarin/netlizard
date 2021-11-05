@@ -5,9 +5,9 @@
 
 // egypt 3d
 
-#define dprintfsi(s, d) nlprintf("Egypt 3D : "#s"->%d\n", d)
-#define dprintfsii(s, d, d2) nlprintf("Egypt 3D : ""%d - "#s"->%d\n", d, d2)
-#define dprintfss(s) nlprintf("Egypt 3D : "#s"\n")
+#define dprintfsi(s, d) nllogfln("Egypt 3D : "#s"->%d", d)
+#define dprintfsii(s, d, d2) nllogfln("Egypt 3D : ""%d - "#s"->%d", d, d2)
+#define dprintfss(s) nllogfln("Egypt 3D : "#s)
 
 typedef struct _class__a__scene // map
 {

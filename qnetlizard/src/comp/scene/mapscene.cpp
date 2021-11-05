@@ -128,6 +128,13 @@ MapScene::~MapScene()
 void MapScene::Init()
 {
     NLScene::Init();
+#define LOG_FILE "E:\\qobject\\log.txt"
+    FILE *file = fopen(LOG_FILE, 1 ? "a+" : "w");
+    nlEnable(NL_LOG);
+    nlLogFunc(NL_LOG_OUT, NL_LOG_STD, file);
+    nlLogFunc(NL_LOG_ERR, NL_LOG_STD, file);
+//    nlLogFunc(NL_LOG_OUT, NL_LOG_USER, (void *)lllll);
+//    nlLogFunc(NL_LOG_ERR, NL_LOG_USER, (void *)lllll);
 
     GLfloat color[4];
     glGetFloatv(GL_CURRENT_COLOR, color);
@@ -195,10 +202,10 @@ void MapScene::Update(float delta)
             p = oldPos;
             clear = true;
         }
-        qDebug() << res;
+        //qDebug() << res;
         float rglz = 0;
         res = NETLizard_GetScenePointZCoord(m_model, &p, scene, &scene, &rglz);
-        qDebug() << "------"<<  res << VECTOR3_Z(p)<< OBJ_HEIGHT + rglz << rglz ;
+        //qDebug() << "------"<<  res << VECTOR3_Z(p)<< OBJ_HEIGHT + rglz << rglz ;
         if(clear)
             m_mainCameraActor->Collision();
 

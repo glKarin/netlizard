@@ -2,7 +2,6 @@
 
 #include "priv_local.h"
 #include "soil/image.h"
-#include "texture.h"
 
 // ct 3d - class h
 // specnaz 3d - class ?
@@ -29,7 +28,7 @@ NLboolean nlLoadTextureV2Data(const char *data, NLsizei length, NETLizard_Textur
 {
     if(!nlIsNL3DTextureV2(data, length))
     {
-        nlprintf("Not NETLizard 3D texture v2\n");
+        nlflogfln(NL_LOG_ERR, "Not NETLizard 3D texture v2");
         return NL_FALSE;
     }
 
@@ -136,9 +135,9 @@ NLboolean nlSavePixelDataToTextureV2File(const NLuchar *data,  int width, int he
 	}
 
 	if(over)
-		nlprintf("Color map'size is over 256. Need to compress.\n")
+        nllogfln("Color map'size is over 256. Need to compress.");
 	else
-		nlprintf("Color map'size is less 256. Don't need compress.\n")
+        nllogfln("Color map'size is less 256. Don't need compress.");
 
 	free(map);
 	len = 0;
@@ -211,7 +210,7 @@ NLboolean nlSavePixelDataToTextureV2File(const NLuchar *data,  int width, int he
 
 	//class_h__function_a_1byte_array__swap(index);
 
-	nlprintf("Make v2 PNG Color map'size->%d\n", len);
+    nllogf("Make v2 PNG Color map'size->%d", len);
 	int i2 = 3; // 3
 	int i3 = format != NL_RGB ? 1 : 0; // 4
 	char c;
@@ -269,7 +268,7 @@ NLboolean nlSavePixelDataToTextureV2File(const NLuchar *data,  int width, int he
 	// 2 index
 	unsigned int i5 = width;
 	unsigned int i6 = height;
-	nlprintf("Make v2 PNG->width: %d, height: %d\n", i5, i6);
+    nllogf("Make v2 PNG->width: %d, height: %d\n", i5, i6);
     c = (uint8_t)(i5);
     fwrite(&c, ESIZE(unsigned char, 1), 1, file);
     c = (uint8_t)(i6);
@@ -296,7 +295,7 @@ NLboolean nlConvertImageFileToTextureV2File(const char *from, const char *to)
 	int height;
 	NETLizard_Texture_format format;
 	unsigned char *data = SOIL_load_image(from, &width, &height, &channel, SOIL_LOAD_AUTO);
-	nlprintf("Read image->width: %d, height: %d\n", width, height);
+    nllogfln("Read image->width: %d, height: %d", width, height);
 	if(!data)
         return NL_FALSE;
 	if(channel == SOIL_LOAD_RGB)
@@ -329,7 +328,7 @@ int_array class_h__function_b_1byte_array__color_map(const byte paramArrayOfByte
 	if ((i1 = paramArrayOfByte[4]) < 0) {
 		i1 += 256;
 	}
-	nlprintf("NETLizard 3D engine v2 texture color map'size->%d\n", i1);
+    nllogfln("NETLizard 3D engine v2 texture color map'size->%d", i1);
     int_array arr;
     new_array(&arr, ESIZE(int32_t, 4), i1);
     int32_t *arrayOfInt = (int32_t *)(arr.array);
@@ -411,7 +410,7 @@ byte_array class_h__function_a_1byte_array_2bool_3int_4int_5int_6int__color_inde
 		}
         jint i1;
 		arrayOfByte = NEW_II(byte, (i1 = i5 * i6));
-		nlprintf("NETLizard 3D engine v2 texture->width: %d, height: %d\n", i5, i6);
+        nllogfln("NETLizard 3D engine v2 texture->width: %d, height: %d", i5, i6);
 		for (i7 = 0; i7 < i1; i7++) {
 			arrayOfByte[i7] = paramArrayOfByte[(++i2)];
 		}

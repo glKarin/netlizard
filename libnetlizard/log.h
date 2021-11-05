@@ -3,6 +3,11 @@
 
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#if 0
 #define ENDL printf("\n");
 
 #define printfi(x) printf(#x"->%d\n", x)
@@ -17,15 +22,17 @@
 #define printf2f(x) printf(#x"->%.2f\n", x)
 #define printf1f(x) printf(#x"->%.1f\n", x)
 #define printfln(fmt, args...) printf(fmt"\n", ##args)
+#endif
 
-//if(nl_debug_mode) \;
+int nlflogfln(int type, const char *fmt, ...);
+int nlflogf(int type, const char *fmt, ...);
+int nllogf(const char *fmt, ...);
+int nllogfln(const char *fmt, ...);
 
-#define nlprintf(fmt, args...) \
-{ \
-    { \
-        printf(fmt, ##args); \
-    } \
-}
+int nlvasprintf(char **ptr, const char *fmt, va_list ap);
+int nlasprintf(char **ptr, const char *fmt, ...);
+unsigned enable_log(unsigned b);
+unsigned log_enabled(void);
 
 int log_begin(int append);
 int log_write(const char *str, ...);
@@ -34,5 +41,9 @@ void log_flush();
 void log_end();
 int log_append(const char *str, ...);
 int log_wappend(const wchar_t *str, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // _KARIN_LOG_H

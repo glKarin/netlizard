@@ -3,10 +3,10 @@
 #include "priv_local.h"
 #include "netlizard_3d.h"
 
-#define dprintfsi(s, d) nlprintf("CT 3D Ep3 : "#s"->%d\n", d)
-#define dprintfsii(s, d, d2) nlprintf("CT 3D Ep3 : ""%d - "#s"->%d\n", d, d2)
-#define dprintfss(s) nlprintf("CT 3D Ep3 : "#s"\n")
-#define dprintfs(s) nlprintf("CT 3D Ep3 : %s\n", s)
+#define dprintfsi(s, d) nllogfln("CT 3D Ep3 : "#s"->%d", d)
+#define dprintfsii(s, d, d2) nllogfln("CT 3D Ep3 : ""%d - "#s"->%d", d, d2)
+#define dprintfss(s) nllogfln("CT 3D Ep3 : "#s)
+#define dprintfs(s) nllogfln("CT 3D Ep3 : %s", s)
 
 // ct3d ep3 no jad
 

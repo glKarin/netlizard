@@ -1,6 +1,10 @@
 #ifndef _KARIN_NETLIZARD_3D_H
 #define _KARIN_NETLIZARD_3D_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define CT3D_LEVEL 10
 #define CT3DEP2_LEVEL 9
 #define RE3D_LEVEL 7
@@ -49,6 +53,18 @@
 #define EGYPT3D_OBJ_SUBFIX "o/o%d.png"
 #define CT3DEP3_OBJ_SUBFIX "o/o%d.png"
 
+#define RE3D_MIDI_COUNT 4
+#define CT3D_MIDI_COUNT 0
+#define EGYPT3D_MIDI_COUNT 6
+#define CLONE3D_MIDI_COUNT 3
+#define CT3DEP2_MIDI_COUNT 5
+#define CT3DEP3_MIDI_COUNT 5
+#define SPECNAZ3D_MIDI_COUNT 5
+
 char * make_resource_file_path(const char *format, int index, const char *resc_path);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

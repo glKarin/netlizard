@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define ARRAY_DATA(arr) (arr).array
 #define ARRAY_NULL(arr) memset(&(arr), 0, sizeof(array))
 
@@ -56,5 +60,9 @@ array * new_array_with_data(array *arr, size_t size, size_t length, const void *
 array * make_array(array *arr, size_t size, size_t length, void *data); // stack
 size_t array_size(const array *arr);
 int array_is_empty(const array *arr);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // _KARIN_JPORT_H

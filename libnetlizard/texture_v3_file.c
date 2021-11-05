@@ -2,7 +2,6 @@
 
 #include "priv_local.h"
 #include "soil/image.h"
-#include "texture.h"
 
 // egpyt 3d - class s
 // clone 3d - class g
@@ -39,7 +38,7 @@ NLboolean nlLoadTextureV3Data(const char *data, NLsizei length, NLint i1, NETLiz
 {
     if(!nlIsNL3DTextureV3(data, length))
     {
-        nlprintf("Not NETLizard 3D texture v3\n");
+        nlflogfln(NL_LOG_ERR, "Not NETLizard 3D texture v3");
         return NL_FALSE;
     }
 
@@ -74,7 +73,7 @@ NLboolean nlLoadCompressTextureV3Data(const char *data, NLsizei length, NETLizar
 {
     if(!nlIsNL3DTextureV3(data, length))
     {
-        nlprintf("Not NETLizard 3D texture v3 compress\n");
+        nlflogfln(NL_LOG_ERR, "Not NETLizard 3D texture v3 compress");
         return NL_FALSE;
     }
 
@@ -195,9 +194,9 @@ NLboolean nlSavePixelDataToTextureV3File(const NLuchar *data, NLint _i, int widt
 	}
 
 	if(over)
-		nlprintf("Color map'size is over 256. Need to compress.\n")
+        nllogfln("Color map'size is over 256. Need to compress.");
 	else
-		nlprintf("Color map'size is less 256. Don't need to compress.\n")
+        nllogfln("Color map'size is less 256. Don't need to compress.");
 
 	free(map);
 	len = 0;
@@ -277,7 +276,7 @@ NLboolean nlSavePixelDataToTextureV3File(const NLuchar *data, NLint _i, int widt
 		class_s__function_a_1byte_array_2int__swap(index, 8);
 	}
 
-	nlprintf("Make v3 PNG color map'size->%d\n", len);
+    nllogfln("Make v3 PNG color map'size->%d", len);
 	int j = 3; // 3
 	int m4 = 0; // 4
 	int k = format != NL_RGB ? 1 : 0; // 5
@@ -338,7 +337,7 @@ NLboolean nlSavePixelDataToTextureV3File(const NLuchar *data, NLint _i, int widt
 	// 2 index
 	unsigned int i1 = width;
 	unsigned int i2 = height;
-	nlprintf("Make v3 PNG->width: %d, height: %d\n", i1, i2);
+    nllogfln("Make v3 PNG->width: %d, height: %d", i1, i2);
     c = (uint8_t)(i1 << 16 >> 24);
     fwrite(&c, ESIZE(unsigned char, 1), 1, file);
     c = (uint8_t)(i1 << 24 >> 24);
@@ -385,7 +384,7 @@ NLboolean nlConvertImageFileToTextureV3File(const char *from, NLint _i, const ch
 	int height;
 	NETLizard_Texture_format format;
 	unsigned char *data = SOIL_load_image(from, &width, &height, &channel, SOIL_LOAD_AUTO);
-	nlprintf("Read image->width: %d, height: %d\n", width, height);
+    nllogfln("Read image->width: %d, height: %d", width, height);
 	if(!data)
 		return 0;
 	if(channel == SOIL_LOAD_RGB)
@@ -438,7 +437,7 @@ int_array class_s__function_a_1byte_array__color_map(const byte paramArrayOfByte
 	if ((i = paramArrayOfByte[5]) < 0) {
 		i += 256;
 	}
-	nlprintf("NETLizard 3D engine v3 texture color map'size->%d\n", i);
+    nllogfln("NETLizard 3D engine v3 texture color map'size->%d", i);
     int_array arr;
     new_array(&arr, ESIZE(jint, 4), i);
     jint *arrayOfInt = (jint *)(arr.array);
@@ -518,7 +517,7 @@ byte_array class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_inde
 		}
 		j++;
         jint i;
-		nlprintf("NETLizard 3D engine v3 texture->width: %d, height: %d\n", i1, i2);
+        nllogfln("NETLizard 3D engine v3 texture->width: %d, height: %d", i1, i2);
 		if (m == 0)
 		{
 			arrayOfByte = NEW_II(byte, (i = i1 * i2));

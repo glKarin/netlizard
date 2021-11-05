@@ -42,7 +42,7 @@ NLboolean nlLoadSpiritMapData(const char *data, NLsizei len, NETLizard_Sprite *r
 
     T_array(jshort[6]) qarr = clone3d_class_g__function_M_void__read_sprite_map(&arr);
     if(qarr.length == 0)
-        return NULL;
+        return NL_FALSE;
 
     const int Length = qarr.length;
     ret->data = NEW_II(NETLizard_Sprite_Cell, Length);

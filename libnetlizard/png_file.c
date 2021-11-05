@@ -24,15 +24,15 @@ char * nlLoadAndHandlePNGData(const char *arr, NLint len)
 {
     if(nlIsPNG(arr, len))
     {
-        nlprintf("Encode NETLizard 2D image PNG\n");
+        nllogfln("Encode NETLizard 2D image PNG");
     }
     else if(nlIsNLPNG(arr, len))
     {
-        nlprintf("Decode NETLizard 2D image PNG\n");
+        nllogfln("Decode NETLizard 2D image PNG");
     }
     else
     {
-        nlprintf("Unsupported PNG\n");
+        nlflogfln(NL_LOG_ERR, "Unsupported PNG");
         return NULL;
     }
 

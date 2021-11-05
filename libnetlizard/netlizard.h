@@ -39,6 +39,8 @@ typedef uint8_t NLboolean;
 typedef uint32_t NLsizei;
 typedef NLsizei NLsize;
 typedef void * NLdata;
+typedef uint32_t NLenum;
+typedef void * NLfunc;
 
 //typedef char byte; // unsigned
 
@@ -385,7 +387,7 @@ NLboolean nlIsNLPNG(const char *data, NLsizei len); // check data is NETLizard p
 char * nlEncodeDecodeData(const char *arr, char *data, NLsizei length); // encode/decode data to new data
 char * nlEncodeDecodeFile(const char *file, NLint *rlen); // encode/decode file to new adta
 char * nlEncodeDecodeDatav(char *arr, NLsizei length); // encode/decode data self
-char * nlEncodeDecodeDatan(const char *arr, NLsizei length); // encode/decode data to new adta
+char * nlEncodeDecodeDataa(const char *arr, NLsizei length); // encode/decode data to new adta
 
 /* Texture util */
 NLboolean nlIsNL3DTextureV2File(const char *name); // check file is NETLizard 3D texture v2
@@ -423,9 +425,9 @@ NLboolean nlReadNETLizardFontFile(const char *map_file, NETLizard_Font *fnt); //
 void delete_NETLizard_Font(NETLizard_Font *fnt); // free font
 
 // 3D
-void delete_NETLizard_3D_Mesh(NETLizard_3D_Mesh *mesh); // free 3D mesh
-void delete_NETLizard_3D_Item_Mesh(NETLizard_3D_Item_Mesh *mesh); // free 3D item mesh
-void delete_NETLizard_3D_Model(NETLizard_3D_Model *model); // free 3D model
+void nlDeleteNETLizard3DMesh(NETLizard_3D_Mesh *mesh); // free 3D mesh
+void nlDeleteNETLizard3DItemMesh(NETLizard_3D_Item_Mesh *mesh); // free 3D item mesh
+void nlDeleteNETLizard3DModel(NETLizard_3D_Model *model); // free 3D model
 
 // util
 const char * nlGet3DModelFrameAnimationName(NETLizard_3D_Animation_Type anim); // get 3D Egypt/3D Clone player character animation name
@@ -522,6 +524,29 @@ NLuchar * nlMakePixelDataRGBACompress(const NETLizard_Texture *tex, NLint *rlen)
 NLuchar * nlMakePixelDataRGB(const NETLizard_Texture *tex, NLint *rlen);
 NLuchar * nlMakePixelDataRGBA(const NETLizard_Texture *tex, NLint *rlen);
 NLuchar * nlMakePixelData(const NETLizard_Texture *tex, NLint *rlen);
+
+#define NL_LOG 1
+
+#define NL_LOG_OUT 1
+#define NL_LOG_ERR 2
+
+#define NL_LOG_STD 1
+#define NL_LOG_USER 2
+
+#define NL_NO_ERROR                             0x0
+#define NL_INVALID_VALUE                        0x0501
+#define NL_INVALID_ENUM                         0x0500
+#define NL_INVALID_OPERATION                    0x0502
+#define NL_STACK_OVERFLOW                       0x0503
+#define NL_STACK_UNDERFLOW                      0x0504
+#define NL_OUT_OF_MEMORY                        0x0505
+/* misc */
+void nlEnable(NLenum e);
+void nlDisable(NLenum e);
+NLboolean nlIsEnabled(NLenum e);
+NLenum nlGetError(void);
+const char * nlErrorString(NLenum error);
+void nlLogFunc(NLenum type, NLenum way, void *f);
 
 #ifdef __cplusplus
 }

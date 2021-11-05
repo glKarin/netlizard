@@ -2,10 +2,10 @@
 
 #include "priv_local.h"
 
-#define dprintfsi(s, d) nlprintf("RE 3D : "#s"->%d\n", d)
-#define dprintfsii(s, d, d2) nlprintf("RE 3D : ""%d - "#s"->%d\n", d, d2)
-#define dprintfss(s) nlprintf("RE 3D : "#s"\n")
-#define dprintfsss(s, s2) nlprintf("RE 3D : "#s"->%s""\n", s2)
+#define dprintfsi(s, d) nllogfln("RE 3D : "#s"->%d", d)
+#define dprintfsii(s, d, d2) nllogfln("RE 3D : ""%d - "#s"->%d", d, d2)
+#define dprintfss(s) nllogfln("RE 3D : "#s)
+#define dprintfsss(s, s2) nllogfln("RE 3D : "#s"->%s", s2)
 
 static jint class_b__function_a__1byte_2byte(byte paramByte1, byte paramByte2);
 static jint class_b__function_c__1byte_array_2int(const byte paramArrayOfByte[], jint paramInt);

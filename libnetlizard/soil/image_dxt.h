@@ -10,6 +10,10 @@
 #ifndef HEADER_IMAGE_DXT
 #define HEADER_IMAGE_DXT
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
 	Converts an image from an array of unsigned chars (RGB or RGBA) to
 	DXT1 or DXT5, then saves the converted image to disk.
@@ -119,5 +123,9 @@ DDS_header ;
 #define DDSCAPS2_CUBEMAP_POSITIVEZ	0x00004000
 #define DDSCAPS2_CUBEMAP_NEGATIVEZ	0x00008000
 #define DDSCAPS2_VOLUME	0x00200000
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* HEADER_IMAGE_DXT	*/

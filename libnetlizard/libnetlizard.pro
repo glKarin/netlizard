@@ -18,14 +18,13 @@ HEADERS += \
     log.h \
     io.h \
     util.h \
-    texture.h \
     priv_local.h \
     soil/image.h \
     soil/image_dxt.h \
     soil/stb_image_aug.h \
     soil/stbi_dds_aug_c.h \
     soil/stbi_dds_aug.h \
-    media_util.h
+    error.h
 
 SOURCES += \
     jport.c \
@@ -54,7 +53,9 @@ SOURCES += \
     ct3dep3.c \
     re3d.c \
     clone3d.c \
-    sprite.c
+    sprite.c \
+    state.c \
+    error.c
 
 #libnetlizard.files = $$DESTDIR/libnetlizard*
 #libnetlizard.path = /usr/lib
