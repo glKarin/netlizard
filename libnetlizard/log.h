@@ -1,8 +1,6 @@
 #ifndef _KARIN_LOG_H
 #define _KARIN_LOG_H
 
-#include <stddef.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -28,19 +26,6 @@ int nlflogfln(int type, const char *fmt, ...);
 int nlflogf(int type, const char *fmt, ...);
 int nllogf(const char *fmt, ...);
 int nllogfln(const char *fmt, ...);
-
-int nlvasprintf(char **ptr, const char *fmt, va_list ap);
-int nlasprintf(char **ptr, const char *fmt, ...);
-unsigned enable_log(unsigned b);
-unsigned log_enabled(void);
-
-int log_begin(int append);
-int log_write(const char *str, ...);
-int log_wwrite(const wchar_t *str, ...);
-void log_flush();
-void log_end();
-int log_append(const char *str, ...);
-int log_wappend(const wchar_t *str, ...);
 
 #ifdef __cplusplus
 }

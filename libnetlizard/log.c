@@ -2,6 +2,9 @@
 
 #include "priv_local.h"
 
+#define GET_BY_TYPE(type) (type == NL_LOG_ERR ? &_log.err : &_log.out)
+#define LOG_ENABLED() (nlIsEnabled(NL_LOG))
+
 typedef int (*NETLizard_Log_f)(int type, const char *str);
 
 typedef struct _LogFunc_STD
@@ -23,36 +26,13 @@ typedef union _LogState
     LogFunc_User user;
 } LogState;
 
-static LogState _out;
-static LogState _err;
-static NLboolean _log = NL_FALSE;
-
-int nlvasprintf(char **ptr, const char *fmt, va_list ap)
+typedef struct _LogMachine
 {
-    int length = vsnprintf(NULL, 0, fmt, ap);
-    *ptr = NULL;
-    if(length < 0)
-        return length;
-    char *str = calloc(length + 1, sizeof(char));
-    va_list ap_copy;
-    va_copy(ap_copy, ap);
-    length = vsnprintf(str, length + 1, fmt, ap_copy);
-    va_end(ap_copy);
-    if(length < 0)
-        free(str);
-    else
-        *ptr = str;
-    return length;
-}
+    LogState out;
+    LogState err;
+} LogMachine;
 
-int nlasprintf(char **ptr, const char *fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    int length = nlvasprintf(ptr, fmt, ap);
-    va_end(ap);
-    return length;
-}
+static LogMachine _log;
 
 void nlLogFunc(NLenum type, NLenum way, void *f)
 {
@@ -66,10 +46,10 @@ void nlLogFunc(NLenum type, NLenum way, void *f)
     switch(type)
     {
         case NL_LOG_OUT:
-            state = &_out;
+            state = &_log.out;
             break;
         case NL_LOG_ERR:
-            state = &_err;
+            state = &_log.err;
             break;
         default:
             E_INVALID_ENUM;
@@ -82,27 +62,12 @@ void nlLogFunc(NLenum type, NLenum way, void *f)
         state->std.file = f;
 }
 
-unsigned enable_log(unsigned b)
-{
-    if(_log != b)
-    {
-        _log = b;
-        return NL_TRUE;
-    }
-    return NL_FALSE;
-}
-
-unsigned log_enabled(void)
-{
-    return _log;
-}
-
 int nlflogfln(int type, const char *fmt, ...)
 {
-    if(!_log)
+    if(!LOG_ENABLED())
         return -1;
     int res = 0;
-    const LogState *state = type == NL_LOG_ERR ? &_err : &_out;
+    const LogState *state = GET_BY_TYPE(type);
     if(state->type == NL_LOG_USER)
     {
         if(state->user.callback)
@@ -142,10 +107,10 @@ int nlflogfln(int type, const char *fmt, ...)
 
 int nlflogf(int type, const char *fmt, ...)
 {
-    if(!_log)
+    if(!LOG_ENABLED())
         return -1;
     int res = 0;
-    const LogState *state = type == NL_LOG_ERR ? &_err : &_out;
+    const LogState *state = GET_BY_TYPE(type);
     if(state->type == NL_LOG_USER)
     {
         if(state->user.callback)
@@ -178,11 +143,11 @@ int nlflogf(int type, const char *fmt, ...)
 
 int nllogfln(const char *fmt, ...)
 {
-    if(!_log)
+    if(!LOG_ENABLED())
         return -1;
     int type = NL_LOG_OUT;
     int res = 0;
-    const LogState *state = type == NL_LOG_ERR ? &_err : &_out;
+    const LogState *state = GET_BY_TYPE(type);
     if(state->type == NL_LOG_USER)
     {
         if(state->user.callback)
@@ -222,11 +187,11 @@ int nllogfln(const char *fmt, ...)
 
 int nllogf(const char *fmt, ...)
 {
-    if(!_log)
+    if(!LOG_ENABLED())
         return -1;
     int type = NL_LOG_OUT;
     int res = 0;
-    const LogState *state = type == NL_LOG_ERR ? &_err : &_out;
+    const LogState *state = GET_BY_TYPE(type);
     if(state->type == NL_LOG_USER)
     {
         if(state->user.callback)
@@ -255,88 +220,4 @@ int nllogf(const char *fmt, ...)
         }
     }
     return res;
-}
-
-
-#define LOG_FILE "E:\\qobject\\log.txt"
-
-static FILE *file;
-
-int log_append(const char *str, ...)
-{
-    int res;
-    int is_open;
-
-    is_open = file != NULL;
-    res = 0;
-    if(!(!is_open && log_begin(1)))
-        return -1;
-    va_list ap;
-    va_start(ap, str);
-    res = vfprintf(file, str, ap);
-    va_end(ap);
-    fprintf(file, "\n");
-    res++;
-    if(is_open)
-        log_flush();
-    else
-        log_end();
-    return res;
-}
-
-int log_wappend(const wchar_t *str, ...)
-{
-    int res;
-    int is_open;
-
-    is_open = file != NULL;
-    res = 0;
-    if(!(!is_open && log_begin(1)))
-        return -1;
-    va_list ap;
-    va_start(ap, str);
-    res = vfwprintf(file, str, ap);
-    va_end(ap);
-    fwprintf(file, L"\n");
-    res++;
-    if(is_open)
-        log_flush();
-    else
-        log_end();
-    return res;
-}
-
-int log_begin(int append)
-{
-    if(!file)
-    {
-        file = fopen(LOG_FILE, append ? "a+" : "w");
-    }
-    return file != NULL;
-}
-
-int log_write(const char *str, ...)
-{
-    va_list ap;
-    va_start(ap, str);
-    int res = vfprintf(file, str, ap);
-    va_end(ap);
-    return res;
-}
-
-void log_flush(int append)
-{
-    if(!file)
-        return;
-    fflush(file);
-}
-
-void log_end()
-{
-    if(!file)
-        return;
-    FILE *f = file;
-    file = NULL;
-    fflush(f);
-    fclose(f);
 }

@@ -154,6 +154,18 @@ GLboolean NETLizard_ReadGLCT3DEp3MapModelFile(const char *name, int i, const cha
     NETLizard_3D_Model m;
     if(!nlReadCT3DEp3ModelFile(name, i, resource_path, &m))
         return GL_FALSE;
+
+//    if(model)
+//	{
+//		int i;
+//		for(i = 0; i < model->item_count; i++)
+//		{
+//			if(model->item_meshes[i].item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL)
+//				model->item_meshes[i].item_type |= NL_3D_ITEM_TYPE_THIN;
+//			// TODO: now no item event support for this game map's door.
+//		}
+//	}
+
     NETLizard_MakeGL3DModel(&m, resource_path, model);
     nlDeleteNETLizard3DModel(&m);
     return GL_TRUE;
@@ -170,29 +182,3 @@ GLboolean NETLizard_ReadGLCT3DEp3ItemModelFile(const char *name, int i, const ch
     nlDeleteNETLizard3DModel(&m);
     return GL_TRUE;
 }
-
-
-#if 0
-GL_NETLizard_3D_Model * NETLizard_ReadGLCT3DEp3MapModelFile(const char *name, int i)
-{
-	if(!name)
-		return NULL;
-	NETLizard_3D_Model *m = nlReadCT3DEp3ModelFile(name, i);
-	if(!m)
-		return NULL;
-	GL_NETLizard_3D_Model *model = NETLizard_MakeGL3DModel(m);
-	if(model)
-	{
-		int i;
-		for(i = 0; i < model->item_count; i++)
-		{
-			if(model->item_meshes[i].item_type == Item_DoorV_Type)
-				model->item_meshes[i].item_type = Item_Tiny_Type;
-			// TODO: now no item event support for this game map's door.
-		}
-	}
-	nlDeleteNETLizard3DModel(m);
-	free(m);
-	return model;
-}
-#endif

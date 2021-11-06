@@ -22,7 +22,7 @@ GLboolean NETLizard_ReadFont(GL_NETLizard_Font *fnt, const char *map_file, const
     res = new_OpenGL_texture_2d(&tex, tex_file);
     if(!res)
 	{
-        delete_NETLizard_Font(&o);
+        nlDeleteNETLizardFont(&o);
         return GL_FALSE;
 	}
 
@@ -87,7 +87,7 @@ GLboolean NETLizard_ReadFont(GL_NETLizard_Font *fnt, const char *map_file, const
         c->index_data.index_count = 6;
         c->index_data.mode = GL_TRIANGLES;
     }
-    delete_NETLizard_Font(&o);
+    nlDeleteNETLizardFont(&o);
     return GL_TRUE;
 }
 

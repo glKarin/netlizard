@@ -11,6 +11,8 @@ extern "C" {
 #define ARRAY_DATA(arr) (arr).array
 #define ARRAY_NULL(arr) memset(&(arr), 0, sizeof(array))
 
+#define ARRAY_DATA_T(arr, T) ((T *)ARRAY_DATA(arr))
+
 #define jtrue 1
 #define jfalse 0
 
@@ -49,6 +51,7 @@ typedef struct array_s double_array;
 
 typedef struct array_s strings;
 typedef struct array_s jstring;
+typedef struct array_s wstrings;
 
 void reset_array(array *arr);
 void delete_array(array *arr);

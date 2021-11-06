@@ -4,8 +4,8 @@
 #include <locale.h>
 
 // clone 3d
-static array class_p__function_a_1string_2char__text_w(const array *arr, wchar_t paramChar); // wchar_t
-static array class_p__function_a_1string_2char__text(const array *arr, wchar_t paramChar); // char
+static wstrings class_p__function_a_1string_2char__text_w(const byte_array *arr, wchar_t paramChar); // wchar_t
+static strings class_p__function_a_1string_2char__text(const array *arr, wchar_t paramChar); // char
 
 char * nlReadAndHandleTextFile(const char *name, NLint *rlen)
 {
@@ -29,7 +29,7 @@ char * nlLoadAndHandleTextData(const char *data, NLsizei len, NLint *rlen)
     array arr;
     make_array(&arr, 1, len, (char *)data);
 
-    array res = class_p__function_a_1string_2char__text(&arr, L' ');
+    strings res = class_p__function_a_1string_2char__text(&arr, L' ');
     *rlen = array_size(&res);
 
     return (char *)res.array;
@@ -73,11 +73,11 @@ NLboolean nlSaveAndHandleTextData(const char *in_data, NLsizei len, const char *
 }
 
 // clone 3d
-array class_p__function_a_1string_2char__text_w(const array *arr, wchar_t paramChar)
+wstrings class_p__function_a_1string_2char__text_w(const byte_array *arr, wchar_t paramChar)
 {
     jint length = array_size(arr);
     int8_t *o = (int8_t *)(arr->array); // signed char
-    array data;
+    byte_array data;
     ARRAY_NULL(data);
     int8_t *paramString = NULL;
 	if ((length > 1) && (o[0] == 59) && (o[1] == 67)) {
@@ -151,7 +151,7 @@ array class_p__function_a_1string_2char__text_w(const array *arr, wchar_t paramC
     arrayOfChar[k] = L'\0';
     //log_wappend(L"%ls", arrayOfChar);
 
-    array res;
+    wstrings res;
     make_array(&res, sizeof(wchar_t), k + 1, arrayOfChar);
 
     delete_array(&data);
@@ -159,9 +159,9 @@ array class_p__function_a_1string_2char__text_w(const array *arr, wchar_t paramC
     return res;
 }
 
-array class_p__function_a_1string_2char__text(const array *arr, wchar_t paramChar)
+strings class_p__function_a_1string_2char__text(const byte_array *arr, wchar_t paramChar)
 {
-    array wstr = class_p__function_a_1string_2char__text_w(arr, paramChar);
+    wstrings wstr = class_p__function_a_1string_2char__text_w(arr, paramChar);
 
     int k = wstr.length;
     wchar_t *arrayOfChar = (wchar_t *)wstr.array;
@@ -170,7 +170,7 @@ array class_p__function_a_1string_2char__text(const array *arr, wchar_t paramCha
     const char *locale = setlocale(LC_CTYPE, "ru");
     if(!locale)
     {
-        log_append("Not support ru lang.");
+        nlflogfln(NL_LOG_ERR, "Not support ru lang.");
         locale = setlocale(LC_CTYPE, ""); // using localhost
     }
     char *str = NEW_II(char, k * s);
@@ -199,7 +199,7 @@ array class_p__function_a_1string_2char__text(const array *arr, wchar_t paramCha
     setlocale(LC_CTYPE, ori_locale);
     delete_array(&wstr);
     free(str);
-    log_append("%s", (char *)res.array);
+    //nllogfln("%s", (char *)res.array);
 
 	return res;
 }

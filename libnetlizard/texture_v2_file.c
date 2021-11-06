@@ -8,7 +8,7 @@
 // ct 3d ep2 - class ?
 
 static int_array class_h__function_b_1byte_array__color_map(const byte paramArrayOfByte[], NETLizard_Texture_format *format);
-static byte_array class_h__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(const array *data, jint paramBoolean, jint paramInt1, jint paramInt2, jint paramInt3, jint paramInt4, int *width, int *height);
+static byte_array class_h__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(const byte_array *data, jint paramBoolean, jint paramInt1, jint paramInt2, jint paramInt3, jint paramInt4, int *width, int *height);
 static void class_h__function_a_1byte_array__swap(byte paramArrayOfByte[]);
 
 NLboolean nlReadTextureV2File(const char *name, NETLizard_Texture *tex)
@@ -34,11 +34,11 @@ NLboolean nlLoadTextureV2Data(const char *data, NLsizei length, NETLizard_Textur
 
     ZERO(tex, NETLizard_Texture);
 
-    array arr = class_h__function_b_1byte_array__color_map((const byte *)data, &tex->format);
+    int_array arr = class_h__function_b_1byte_array__color_map((const byte *)data, &tex->format);
     tex->color_map.data = (NLint *)arr.array;
     tex->color_map.count = arr.length;
 
-    array data_arr;
+    byte_array data_arr;
     make_array(&data_arr, 1, length, data);
     arr = class_h__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(&data_arr, 0, 0, 0, 0, 0, &tex->width, &tex->height);
     tex->color_index.data = (NLuchar *)arr.array;
@@ -56,7 +56,7 @@ NLboolean nlConvertTextureV2FileToImageFile(const char *from, const char *to, in
     if(!res)
         return NL_FALSE;
     res = nlSaveTextureV2DataToImageFile(&tex, to, img_type);
-    delete_NETLizard_Texture(&tex);
+    nlDeleteNETLizardTexture(&tex);
 	return res;
 }
 
@@ -367,7 +367,7 @@ int_array class_h__function_b_1byte_array__color_map(const byte paramArrayOfByte
 	return arr;
 }
 
-byte_array class_h__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(const array *data, jint paramBoolean, jint paramInt1, jint paramInt2, jint paramInt3, jint paramInt4, int *width, int *height)
+byte_array class_h__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(const byte_array *data, jint paramBoolean, jint paramInt1, jint paramInt2, jint paramInt3, jint paramInt4, int *width, int *height)
 {
     jint i2 = 0;
     jint i3 = 0;

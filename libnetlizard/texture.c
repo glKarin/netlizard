@@ -160,7 +160,7 @@ NLuchar * nlMakePixelData(const NETLizard_Texture *tex, NLint *rlen)
     return tex->format == NL_RGB ? nlMakePixelDataRGB(tex, rlen) : nlMakePixelDataRGBA(tex, rlen);
 }
 
-void delete_NETLizard_Texture(NETLizard_Texture *tex)
+void nlDeleteNETLizardTexture(NETLizard_Texture *tex)
 {
     if(tex->color_index.data)
     {
@@ -189,18 +189,4 @@ int nlCompareColor(unsigned int a, unsigned int b)
 	return ((ar / pr == br / pr) && (ag / pg == bg / pg) && (ab / pb == bb / pb)) ? 1 : 0;
 }
 */
-
-unsigned int rgb888_to_rgb332(unsigned int a)
-{
-	unsigned int ar = (unsigned int)(a << 8 >> 24);
-	unsigned int ag = (unsigned int)(a << 16 >> 24);
-	unsigned int ab = (unsigned int)(a << 24 >> 24);
-	unsigned int r = (unsigned int)floor((double)ar / (double)255 * (double)7) ;
-	unsigned int g = (unsigned int)floor((double)ag / (double)255 * (double)7);
-	unsigned int b = (unsigned int)floor((double)ab / (double)255 * (double)3);
-	r = (unsigned int)floor((double)r / (double)7 * (double)255);
-	g = (unsigned int)floor((double)g / (double)7 * (double)255);
-	b = (unsigned int)floor((double)b / (double)3 * (double)255);
-	return 0xff000000 | (r << 16) | (g << 8) | b;
-}
 

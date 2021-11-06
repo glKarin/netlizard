@@ -17,7 +17,7 @@
 	class_s__function_a_1byte_array_2int__swap(byte_array, int1)
 
 static int_array class_s__function_a_1byte_array__color_map(const byte paramArrayOfByte[], NETLizard_Texture_format *format);
-static byte_array class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(const array *data, jint paramBoolean, jint paramInt1, jint paramInt2, jint paramInt3, jint paramInt4, int *width, int *height);
+static byte_array class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(const byte_array *data, jint paramBoolean, jint paramInt1, jint paramInt2, jint paramInt3, jint paramInt4, int *width, int *height);
 static void class_s__function_a_1byte_array_2int__swap(byte paramArrayOfByte[], jint paramInt);
 static jint class_s__function_a_1byte_array_2byte__get_width_height_depth(byte paramArrayOfByte[], byte paramByte);
 
@@ -43,11 +43,11 @@ NLboolean nlLoadTextureV3Data(const char *data, NLsizei length, NLint i1, NETLiz
     }
 
     ZERO(tex, NETLizard_Texture);
-    array arr = class_s__function_a_1byte_array__color_map((const byte *)data, &tex->format);
+    int_array arr = class_s__function_a_1byte_array__color_map((const byte *)data, &tex->format);
     tex->color_map.data = (NLint *)arr.array;
     tex->color_map.count = arr.length;
 
-    array data_arr;
+    byte_array data_arr;
     make_array(&data_arr, 1, length, data);
     arr = class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(&data_arr, 0, 0, 0, 0, 0, &tex->width, &tex->height);
     tex->color_index.data = arr.array;
@@ -79,11 +79,11 @@ NLboolean nlLoadCompressTextureV3Data(const char *data, NLsizei length, NETLizar
 
     ZERO(tex, NETLizard_Texture);
 
-    array arr = class_s__function_a_1byte_array__color_map((const byte *)data, &tex->format);
+    int_array arr = class_s__function_a_1byte_array__color_map((const byte *)data, &tex->format);
     tex->color_map.data = (NLint *)arr.array;
     tex->color_map.count = arr.length;
 
-    array data_arr;
+    byte_array data_arr;
     make_array(&data_arr, 1, length, data);
     arr = class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(&data_arr, 0, 0, 0, 0, 0, &tex->width, &tex->height);
     tex->color_index.data = arr.array;
@@ -117,7 +117,7 @@ NLboolean nlConvertTextureV3FileToImageFile(const char *from, NLint i, const cha
     if(!res)
         return NL_FALSE;
     res = nlSaveTextureV3DataToImageFile(&tex, to, img_type);
-    delete_NETLizard_Texture(&tex);
+    nlDeleteNETLizardTexture(&tex);
     return res;
 }
 
@@ -408,7 +408,7 @@ NLboolean nlConvertTextureV3CompressFileToImageFile(const char *from, const char
     if(!res)
         return NL_FALSE;
     res = nlSaveTextureV3CompressDataToImageFile(&tex, to, img_type);
-    delete_NETLizard_Texture(&tex);
+    nlDeleteNETLizardTexture(&tex);
     return res;
 }
 
@@ -476,7 +476,7 @@ int_array class_s__function_a_1byte_array__color_map(const byte paramArrayOfByte
 	return arr;
 }
 
-byte_array class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(const array *data, jint paramBoolean, jint paramInt1, jint paramInt2, jint paramInt3, jint paramInt4, int *width, int *height)
+byte_array class_s__function_a_1byte_array_2bool_3int_4int_5int_6int__color_index(const byte_array *data, jint paramBoolean, jint paramInt1, jint paramInt2, jint paramInt3, jint paramInt4, int *width, int *height)
 {
     jint j = 0;
     jint k = 0;

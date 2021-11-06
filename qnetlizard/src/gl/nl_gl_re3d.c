@@ -248,7 +248,7 @@ GLboolean NETLizard_ReadGLRE3DMapModelFile(const char *name, const char *resourc
     if(!nlReadRE3DMeshFile(name, &m))
         return GL_FALSE;
     NETLizard_MakeGLRE3DModel(&m, resource_path, model);
-    delete_NETLizard_RE3D_Model(&m);
+    nlDeleteNETLizardRE3DModel(&m);
     return GL_TRUE;
 }
 
@@ -269,7 +269,7 @@ GLboolean NETLizard_ReadGLRE3DCarModelFile(const char *car_file, const char *tex
     m.texes.data[0] = strdup(tex_file);
 
     NETLizard_MakeGLRE3DModel(&m, resource_path, model);
-    delete_NETLizard_RE3D_Model(&m);
+    nlDeleteNETLizardRE3DModel(&m);
     return GL_TRUE;
 
 

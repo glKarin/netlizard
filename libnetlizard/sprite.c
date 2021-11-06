@@ -65,7 +65,7 @@ NLboolean nlLoadSpiritMapData(const char *data, NLsizei len, NETLizard_Sprite *r
     return NL_TRUE;
 }
 
-void delete_NETLizard_Sprite(NETLizard_Sprite *sprite)
+void nlDeleteNETLizardSprite(NETLizard_Sprite *sprite)
 {
     free(sprite->data);
     sprite->count = 0;

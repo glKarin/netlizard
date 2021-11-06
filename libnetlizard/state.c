@@ -2,13 +2,17 @@
 
 #include "priv_local.h"
 
+#define SET_IF_DIFF(target, param) (((target) != (param)) ? (((target) = (param)) || 1) : 0)
+
+static NETLizard_State _state = {0};
+
 static int set_enable(NLenum e, NLboolean b)
 {
     int res = -1;
     switch(e)
     {
     case NL_LOG:
-        res = enable_log(b) ? 1 : 0;
+        res = SET_IF_DIFF(_state.log_enabled, b);
         break;
     default:
         E_INVALID_ENUM;
@@ -27,13 +31,18 @@ void nlDisable(NLenum e)
     set_enable(e, NL_FALSE);
 }
 
+const NETLizard_State * current_state(void)
+{
+    return &_state;
+}
+
 NLboolean nlIsEnabled(NLenum e)
 {
     NLboolean res = NL_FALSE;
     switch(e)
     {
     case NL_LOG:
-        res = log_enabled();
+        res = _state.log_enabled;
         break;
     default:
         E_INVALID_ENUM;

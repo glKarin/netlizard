@@ -18,7 +18,7 @@ typedef struct _class__o__font
 } class__o__font;
 
 static class__o__font * class__o__font___construct(class__o__font *fnt);
-static class__o__font clone3d_class_o__function_a_void_return_class_o(const array *arr);
+static class__o__font clone3d_class_o__function_a_void_return_class_o(const byte_array *arr);
 static jint clone3d_class_o__function_a_1int_return_int__get_char_map_index(const class__o__font *o, jint paramInt);
 
 NLboolean nlLoadNETLizardFontData(const char *data, NLsizei size, NETLizard_Font *fnt)
@@ -74,7 +74,7 @@ NLboolean nlReadNETLizardFontFile(const char *map_file, NETLizard_Font *fnt)
     return res;
 }
 
-void delete_NETLizard_Font(NETLizard_Font *fnt)
+void nlDeleteNETLizardFont(NETLizard_Font *fnt)
 {
     free(fnt->char_raster_map.data);
     fnt->char_raster_map.count = 0;
@@ -96,7 +96,7 @@ class__o__font * class__o__font___construct(class__o__font *fnt)
 }
 
 // cf.png
-class__o__font clone3d_class_o__function_a_void_return_class_o(const array *arr)
+class__o__font clone3d_class_o__function_a_void_return_class_o(const byte_array *arr)
 {
     class__o__font res;
     class__o__font___construct(&res);

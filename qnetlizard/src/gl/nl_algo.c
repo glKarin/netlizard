@@ -328,7 +328,7 @@ item_collision_testing_result_type Algo_NETLizard3DItemCollisionTesting(const GL
             //printfi(im->item_type);
             if(index)
                 *index = k;
-            if(im->item_type & Item_Weapon_Type || im->item_type & Item_Tiny_Type || im->item_type & Item_Box_Type)
+            if(im->item_type & NL_3D_ITEM_TYPE_WEAPON || im->item_type & NL_3D_ITEM_TYPE_THIN || im->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
             {
                 if(index)
                     *index = k;
@@ -399,10 +399,10 @@ int Algo_GetItemTopCoord(const GL_NETLizard_3D_Model *netlizard_3d_model, const 
     for(a = mesh->item_index_range[0]; a < mesh->item_index_range[1]; a++)
     {
         const GL_NETLizard_3D_Item_Mesh *im = netlizard_3d_model->item_meshes + a;
-        if(im->item_type != Item_Elevator_Type && new_position->z < im->item_mesh.ortho[2] + im->pos[2])
+        if(im->item_type != NL_3D_ITEM_TYPE_ELEVATOR && new_position->z < im->item_mesh.ortho[2] + im->pos[2])
             continue;
         const GL_NETLizard_3D_Plane *planes = im->item_mesh.plane;
-        if(im->item_type & Item_DoorV_Type || im->item_type & Item_DoorH_Type || im->item_type & Item_Weapon_Type || im->item_type & Item_Tiny_Type || im->item_type & Item_Box_Type)
+        if(im->item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL || im->item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL || im->item_type & NL_3D_ITEM_TYPE_WEAPON || im->item_type & NL_3D_ITEM_TYPE_THIN || im->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
             continue;
         bound_t aabb = {
             {im->item_mesh.ortho[3] - width + im->pos[0], im->item_mesh.ortho[4] - width + im->pos[1], im->item_mesh.ortho[5] + im->pos[2]},
@@ -482,7 +482,7 @@ int Algo_GetItemTopCoordForAll(const GL_NETLizard_3D_Model *netlizard_3d_model, 
     {
         const GL_NETLizard_3D_Item_Mesh *im = netlizard_3d_model->item_meshes + a;
         const GL_NETLizard_3D_Plane *planes = im->item_mesh.plane;
-        if(im->item_type & Item_DoorV_Type || im->item_type & Item_DoorH_Type || im->item_type & Item_Weapon_Type || im->item_type & Item_Tiny_Type || im->item_type & Item_Box_Type)
+        if(im->item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL || im->item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL || im->item_type & NL_3D_ITEM_TYPE_WEAPON || im->item_type & NL_3D_ITEM_TYPE_THIN || im->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
             continue;
         bound_t aabb = {
             {im->item_mesh.ortho[3] + im->pos[0], im->item_mesh.ortho[4] + im->pos[1], im->item_mesh.ortho[5] + im->pos[2]},
@@ -1088,7 +1088,7 @@ int Algo_PointIsCollisionInScene(const GL_NETLizard_3D_Model *model, const nl_ve
             res = item_only_in_aabb_type;
             //printfi(im->item_type);
             it = k;
-            if(im->item_type & Item_Weapon_Type || im->item_type & Item_Tiny_Type || im->item_type & Item_Box_Type)
+            if(im->item_type & NL_3D_ITEM_TYPE_WEAPON || im->item_type & NL_3D_ITEM_TYPE_THIN || im->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
             {
                 it = k;
                 continue;

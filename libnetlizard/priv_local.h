@@ -16,6 +16,7 @@
 #include "jport.h"
 #include "util.h"
 #include "error.h"
+#include "state.h"
 
 #ifdef __cplusplus
 extern "C" {

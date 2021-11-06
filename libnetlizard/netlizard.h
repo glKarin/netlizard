@@ -122,21 +122,21 @@ typedef struct NETLizard_Texture_s
 /* NETLizard 3D game item category */
 typedef enum NETLizard_3D_Item_Type_e
 {
-    Item_Other_Type = 0,
-    Item_Tiny_Type = 1,
-    Item_2D_Type = 1 << 1,
-    Item_FanV_Type = 1 << 2,
-    Item_FanH_Type = 1 << 3,
-    Item_Role_Type = 1 << 4,
-    Item_Box_Type = 1 << 5,
-    Item_DoorV_Type = 1 << 6,
-    Item_DoorH_Type = 1 << 7,
-    Item_Elevator_Type = 1 << 8,
-    Item_Ladder_Type = 1 << 9,
-    Item_Weapon_Type = 1 << 10,
-    Item_Skyline_Type = 1 << 11,
-    Item_Portal_Type = 1 << 12,
-    Item_Switcher_Type = 1 << 13
+    NL_3D_ITEM_TYPE_GENERAL = 0,
+    NL_3D_ITEM_TYPE_THIN = 1,
+    NL_3D_ITEM_TYPE_2D = 1 << 1,
+    NL_3D_ITEM_TYPE_FAN_VERTICAL = 1 << 2,
+    NL_3D_ITEM_TYPE_FAN_HORIZONTAL = 1 << 3,
+    NL_3D_ITEM_TYPE_ROLE = 1 << 4,
+    NL_3D_ITEM_TYPE_SKY_BOX = 1 << 5,
+    NL_3D_ITEM_TYPE_DOOR_VERTICAL = 1 << 6,
+    NL_3D_ITEM_TYPE_DOOR_HORIZONTAL = 1 << 7,
+    NL_3D_ITEM_TYPE_ELEVATOR = 1 << 8,
+    NL_3D_ITEM_TYPE_LADDER = 1 << 9,
+    NL_3D_ITEM_TYPE_WEAPON = 1 << 10,
+    NL_3D_ITEM_TYPE_SKYLINE = 1 << 11,
+    NL_3D_ITEM_TYPE_PORTAL = 1 << 12,
+    NL_3D_ITEM_TYPE_SWITCH = 1 << 13
 } NETLizard_3D_Item_Type;
 
 /* NETLizard 3D game character animation category */
@@ -417,12 +417,12 @@ NLint nlGetSpiritFileCount(const char *file);
 NLint nlGetSpiritDataCount(const char *data, NLsizei length);
 NLboolean nlReadSpiritMapFile(const char *file, NETLizard_Sprite *ret);
 NLboolean nlLoadSpiritMapData(const char *data, NLsizei len, NETLizard_Sprite *ret);
-void delete_NETLizard_Sprite(NETLizard_Sprite *sprite); // free sprite
+void nlDeleteNETLizardSprite(NETLizard_Sprite *sprite); // free sprite
 
 /* Font: exam `fnt.png` */
 NLboolean nlLoadNETLizardFontData(const char *data, NLsizei size, NETLizard_Font *fnt); // load font data
 NLboolean nlReadNETLizardFontFile(const char *map_file, NETLizard_Font *fnt); // load font file
-void delete_NETLizard_Font(NETLizard_Font *fnt); // free font
+void nlDeleteNETLizardFont(NETLizard_Font *fnt); // free font
 
 // 3D
 void nlDeleteNETLizard3DMesh(NETLizard_3D_Mesh *mesh); // free 3D mesh
@@ -482,15 +482,15 @@ NLboolean nlLoadCT3DEp3ItemModelData(const char* data, NLsizei size, NLint index
 // Racing Evolution 3D
 NLboolean nlIsRE3DMeshFile(const char *name);
 NLboolean nlIsRE3DMesh(const char *data, NLsizei len);
-void delete_NETLizard_RE3D_Mesh(NETLizard_RE3D_Mesh *mesh);
-void delete_NETLizard_RE3D_Model(NETLizard_RE3D_Model *model);
+void nlDeleteNETLizardRE3DMesh(NETLizard_RE3D_Mesh *mesh);
+void nlDeleteNETLizardRE3DModel(NETLizard_RE3D_Model *model);
 NLboolean nlReadRE3DMeshFile(const char *name, NETLizard_RE3D_Model *model);
 NLboolean nlLoadRE3DMeshData(const char *data,  NLsizei size,  NETLizard_RE3D_Model *model);
 
 /* Texture util */
 NETLizard_Texture_Type nlGetPNGType(const char *data, NLsizei length); // check png image/texture file type
 NETLizard_Texture_Type nlGetPNGFileType(const char *file); // check png image/texture data type
-void delete_NETLizard_Texture(NETLizard_Texture *tex); // free texture
+void nlDeleteNETLizardTexture(NETLizard_Texture *tex); // free texture
 
 /* PNG */
 char * nlReadAndHandlePNGFile(const char *name, NLint *len); // encode/decode png file to data

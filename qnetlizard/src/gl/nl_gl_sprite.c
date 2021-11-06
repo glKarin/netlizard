@@ -46,7 +46,7 @@ GLboolean NETLizard_ReadSpirit(GL_NETLizard_Sprite *sprite, const char *map_file
     res = new_image_texture(&tex, tex_file);
     if(!res)
     {
-        delete_NETLizard_Sprite(&s);
+        nlDeleteNETLizardSprite(&s);
         return GL_FALSE;
     }
 
@@ -101,7 +101,7 @@ GLboolean NETLizard_ReadSpirit(GL_NETLizard_Sprite *sprite, const char *map_file
         glcell->index_data.index_count = 6;
         glcell->index_data.mode = GL_TRIANGLES;
     }
-    delete_NETLizard_Sprite(&s);
+    nlDeleteNETLizardSprite(&s);
     return GL_TRUE;
 }
 

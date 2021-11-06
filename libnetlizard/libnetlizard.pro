@@ -24,7 +24,8 @@ HEADERS += \
     soil/stb_image_aug.h \
     soil/stbi_dds_aug_c.h \
     soil/stbi_dds_aug.h \
-    error.h
+    error.h \
+    state.h
 
 SOURCES += \
     jport.c \

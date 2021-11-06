@@ -194,7 +194,7 @@ bool ImageScene::LoadFile(const QString &file, int type, int index)
         bool res = GenTexture(&tex);
         if(!res)
         {
-            delete_NETLizard_Texture(&tex);
+            nlDeleteNETLizardTexture(&tex);
             return false;
         }
         SetData(NL_TEXTURE_3D_ENGINE_V2, &tex, 1, "bmp");
@@ -211,7 +211,7 @@ bool ImageScene::LoadFile(const QString &file, int type, int index)
         bool res = GenTexture(&tex);
         if(!res)
         {
-            delete_NETLizard_Texture(&tex);
+            nlDeleteNETLizardTexture(&tex);
             return false;
         }
         SetData(NL_TEXTURE_3D_ENGINE_V3, &tex, 1, "bmp");
@@ -228,7 +228,7 @@ bool ImageScene::LoadFile(const QString &file, int type, int index)
         bool res = GenTexture(&tex);
         if(!res)
         {
-            delete_NETLizard_Texture(&tex);
+            nlDeleteNETLizardTexture(&tex);
             return false;
         }
         SetData(NL_TEXTURE_3D_ENGINE_V3, &tex, 1, "bmp");
@@ -298,7 +298,7 @@ void ImageScene::UnsetData()
     case NL_TEXTURE_3D_ENGINE_V3_COMPRESS:
         if(m_data.data.texture)
         {
-            delete_NETLizard_Texture(m_data.data.texture);
+            nlDeleteNETLizardTexture(m_data.data.texture);
             free(m_data.data.texture);
         }
         break;

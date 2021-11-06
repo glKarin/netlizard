@@ -129,7 +129,7 @@ void NETLizard_RenderNETLizardModelSceneShadow(const GL_NETLizard_3D_Model *map_
                         im = map_model->item_meshes + j;
                         if(!im->materials) // REDO
                             continue;
-                        if(im->item_type == Item_Box_Type)
+                        if(im->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
                             continue;
                         NETLizard_RenderMeshShadow(im, light_position, dirlight, method, 0);
                     }
@@ -177,7 +177,7 @@ void NETLizard_RenderNETLizardModelShadow(const GL_NETLizard_3D_Model *map_model
                     im = map_model->item_meshes + j;
                     if(!im->materials) // REDO
                         continue;
-                    if(im->item_type == Item_Box_Type)
+                    if(im->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
                         continue;
                     NETLizard_RenderMeshShadow(im, light_position, dirlight, method, 0);
                 }
