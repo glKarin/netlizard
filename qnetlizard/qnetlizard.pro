@@ -20,33 +20,13 @@ HEADERS += \
     src/qdef.h \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
-    src/misc/settings.h \
-    src/comp/component/simplelightsourcecomponent.h \
-    src/comp/simplelightsourceactor.h \
-    src/changelogdialog.h \
-    src/gl/nl_gl_debug.h \
-    src/gl/nl_algo.h \
-    src/engine/nlrigidbody.h \
-    src/engine/nlphysics.h \
-    src/engine/nlforce.h \
-    src/engine/nlforcecontainer.h \
-    src/engine/nlproperties.h
+    src/misc/settings.h
 
 SOURCES += \
     main.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
-    src/misc/settings.cpp \
-    src/comp/component/simplelightsourcecomponent.cpp \
-    src/comp/simplelightsourceactor.cpp \
-    src/changelogdialog.cpp \
-    src/gl/nl_gl_debug.c \
-    src/gl/nl_algo.c \
-    src/engine/nlrigidbody.cpp \
-    src/engine/nlphysics.cpp \
-    src/engine/nlforce.cpp \
-    src/engine/nlforcecontainer.cpp \
-    src/engine/nlproperties.cpp
+    src/misc/settings.cpp
 
 # Widget
 HEADERS += \
@@ -65,7 +45,8 @@ HEADERS += \
     src/animationviewer.h \
     src/settingdialog.h \
     src/indexviewer.h \
-    src/spriteviewer.h
+    src/spriteviewer.h \
+    src/changelogdialog.h
 
 SOURCES += \
     src/widget/baseviewer.cpp \
@@ -83,27 +64,32 @@ SOURCES += \
     src/animationviewer.cpp \
     src/settingdialog.cpp \
     src/indexviewer.cpp \
-    src/spriteviewer.cpp
+    src/spriteviewer.cpp \
+    src/changelogdialog.cpp
 
 # Component
 DEPENDPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer
 INCLUDEPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer
 
 HEADERS += \
-    src/comp/simplecameraactor.h
+    src/comp/simplecameraactor.h \
+    src/comp/simplelightsourceactor.h
 SOURCES += \
-    src/comp/simplecameraactor.cpp
+    src/comp/simplecameraactor.cpp \
+    src/comp/simplelightsourceactor.cpp
 
 HEADERS += \
     src/comp/component/simplecontrolcomponent.h \
     src/comp/component/simplecontrol2dcomponent.h \
     src/comp/component/simpleimagecontrolcomponent.h \
-    src/comp/component/simplecameracomponent.h
+    src/comp/component/simplecameracomponent.h \
+    src/comp/component/simplelightsourcecomponent.h
 SOURCES += \
     src/comp/component/simplecontrolcomponent.cpp \
     src/comp/component/simplecontrol2dcomponent.cpp \
     src/comp/component/simpleimagecontrolcomponent.cpp \
-    src/comp/component/simplecameracomponent.cpp
+    src/comp/component/simplecameracomponent.cpp \
+    src/comp/component/simplelightsourcecomponent.cpp \
 
 HEADERS += \
     src/comp/renderer/netlizardmapmodelrenderer.h \
@@ -156,7 +142,12 @@ HEADERS += \
     src/engine/nlsceneorthocamera.h \
     src/engine/nlsceneperspectivecamera.h \
     src/engine/nlfuncs.h \
-    src/engine/nlmath.h
+    src/engine/nlmath.h \
+    src/engine/nlrigidbody.h \
+    src/engine/nlphysics.h \
+    src/engine/nlforce.h \
+    src/engine/nlforcecontainer.h \
+    src/engine/nlproperties.h
 
 SOURCES += \
     src/engine/nlscene.cpp \
@@ -172,7 +163,12 @@ SOURCES += \
     src/engine/nlsceneorthocamera.cpp \
     src/engine/nlsceneperspectivecamera.cpp \
     src/engine/nlfuncs.cpp \
-    src/engine/nlmath.cpp
+    src/engine/nlmath.cpp \
+    src/engine/nlrigidbody.cpp \
+    src/engine/nlphysics.cpp \
+    src/engine/nlforce.cpp \
+    src/engine/nlforcecontainer.cpp \
+    src/engine/nlproperties.cpp
 
 # Lib
 DEPENDPATH += ./lib
@@ -188,7 +184,9 @@ HEADERS += \
     lib/line.h \
     lib/ortho.h \
     lib/frustum.h \
-    lib/matrix.h
+    lib/matrix.h \
+    lib/math_std.h \
+    lib/euler.h
 
 SOURCES += \
     lib/mesa_gl_math.c \
@@ -200,7 +198,8 @@ SOURCES += \
     lib/line.c \
     lib/ortho.c \
     lib/frustum.c \
-    lib/matrix.c
+    lib/matrix.c \
+    lib/euler.c
 
 # NL-GL
 DEPENDPATH += ./src/gl
@@ -214,7 +213,9 @@ HEADERS += \
     src/gl/nl_shadow_render.h \
     src/gl/stencil_shadow.h \
     src/gl/glk.h \
-    src/gl/nl_util.h
+    src/gl/nl_util.h \
+    src/gl/nl_gl_debug.h \
+    src/gl/nl_algo.h
 
 SOURCES += \
     src/gl/gl_texture.c \
@@ -229,7 +230,9 @@ SOURCES += \
     src/gl/nl_shadow_render.cpp \
     src/gl/stencil_shadow.cpp \
     src/gl/glk.c \
-    src/gl/nl_util.c
+    src/gl/nl_util.c \
+    src/gl/nl_gl_debug.c \
+    src/gl/nl_algo.c
 
 # Mesa GL math
 DEPENDPATH += ./lib/mesa_math

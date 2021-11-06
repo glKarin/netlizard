@@ -43,5 +43,26 @@
 #define BUILD_TIMEZONE "+0800" // zh_cn
 
 #define BITS(x) (1 << (x))
+#define BITS_ALL (~0U)
+
+#define SWAP(a, b, T) \
+{ \
+    T __x = (a); \
+    a = (b) ; \
+    b = __x; \
+}
+
+#define SWAPV(a, b, T) \
+{ \
+    T __x = *(a); \
+    *(a) = *(b) ; \
+    *(b) = __x; \
+}
+
+#define PTR_MOVE(dst, src) \
+{ \
+    (dst) = (src); \
+    (src) = NULL; \
+}
 
 #endif // _KARIN_QDEF_H

@@ -8,6 +8,7 @@
 
 #include "lib/bound.h"
 #include "lib/line.h"
+#include "lib/euler.h"
 
 #define SCENE_BOUND(mesh) BOUNDV(mesh->box.min, mesh->box.max)
 #define SCENE_PLANE(plane) PLANEV(plane.position, plane.normal)
@@ -16,6 +17,22 @@
 
 #define IS_FLOOR(normal) ((normal)[2] > UP_NORMAL_LIMIT)
 #define IS_CEIL(normal) ((normal)[2] < -UP_NORMAL_LIMIT)
+
+static void Algo_GetNormalAngle(const nl_vector3_t *normal, float *yr, float *xr)
+{
+    if(!normal)
+        return;
+    float xl = VECTOR3V_X(normal);
+    float yl = VECTOR3V_Y(normal);
+    if(yr)
+        *yr = clamp_degree(rtod(atan2(yl, xl)) - 90.0);
+    if(xr)
+    {
+        float xyl = sqrt(xl * xl + yl * yl);
+        float zl = VECTOR3V_Z(normal);
+        *xr = clamp_degree(rtod(atan2(zl, xyl)));
+    }
+}
 
 /*
   点a是否在全图范围内
@@ -250,7 +267,7 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
     //LINE_B_Z(line) += obj->height;
     res = 1;
     unsigned int j;
-    for(j = 0; j < mesh->plane_count; j++)
+    for(j = 0; j < mesh->plane_count; )
     {
         plane_t plane = SCENE_PLANE(mesh->plane[j]);
         float limit = 0;
@@ -267,31 +284,109 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
 
         //ray_t l = {*new_pos, VECTOR3(-mesh->plane[j].normal[0], -mesh->plane[j].normal[1], -mesh->plane[j].normal[2])};
         vector3_t cpoint;
+        fprintf(stderr,">>>>> %f, %f\n", LINE_A_Y(line), LINE_B_Y(line));fflush(stderr);
         int r = plane_line_intersect(&plane, &line, &lamda, &cpoint, &dir, &mask);
+        fprintf(stderr,"%d - %d: %f, %f, %f ======= %f %f %f\n", r, mask, mesh->plane[j].normal[0], mesh->plane[j].normal[1], mesh->plane[j].normal[2],cpoint.v[0],cpoint.v[1],cpoint.v[2]);fflush(stderr);
         if(r == 0) // 平行
         {
             if(mask == 0) // 两点都在背面
                 return 1;
+            j++;
             continue; // 两点都在正面
         }
         if(r < 0) // 不相交
         {
             if(mask == 0) // 两点都在背面
                 return 1;
+            j++;
             continue; // 两点都在正面
         }
+
         // 相交
         if(mask == 1)
         {
             //VECTOR3_Z(cpoint) -= obj->height;
             *new_pos = cpoint;
-            return 4;
+            res = 4;
+            LINE_B(line) = cpoint;
         }
+        j++;
     }
+    fprintf(stderr,"--- -----\n");fflush(stderr);
     if(res == 1)
         res = 2;
     return res;
 }
+
+#if 0
+int Algo_GetPositionCoordIfCollatedMapWall(const GL_NETLizard_3D_Model *model, float limit, const nl_vector3_t *last_position, const nl_vector3_t *new_position, int scene, nl_vector3_t *rv, int *rs)
+{
+    if(!model || !last_position || !new_position)
+        return 0;
+    const GL_NETLizard_3D_Mesh *mesh = model->meshes + scene;
+    if(mesh->plane)
+    {
+        unsigned int j;
+        for(j = 0; j < mesh->plane_count; j++)
+        {
+            if(IS_FLOOR(mesh->plane[j].normal) || IS_CEIL(mesh->plane[j].normal))
+                continue;
+            plane_t plane = {
+                {mesh->plane[j].position[0], mesh->plane[j].position[1], mesh->plane[j].position[2]},
+                {mesh->plane[j].normal[0], mesh->plane[j].normal[1], mesh->plane[j].normal[2]}
+            };
+            ray_s l = {*new_position, {-mesh->plane[j].normal[0], -mesh->plane[j].normal[1], -mesh->plane[j].normal[2]}};
+            float lamda = 0.0;
+            int r = Math3D_LineToPlaneCollision(&l, &plane, &lamda, NULL);
+            if(r != 1)
+                continue;
+            if(lamda <= limit)
+            {
+                float xr = 0.0, yr = 0.0;
+                float pxr = 0.0, pyr = 0.0;
+                nl_vector3_s dir = Vector3_SubtractVector3(new_position, last_position);
+                nl_vector3_s nml = plane.normal;
+                Vector3_Inverse(&nml);
+                Vector3_Normalize(&dir);
+                Algo_GetNormalAngle(&dir, &yr, &xr);
+                Algo_GetNormalAngle(&nml, &pyr, &pxr);
+                float nyr = Algo_FormatAngle(pyr - yr);
+                /* 2017 8 7
+                     if(nyr >= 90.0 && nyr <= 270.0)
+                     continue;
+                     */
+
+                nl_vector3_s up = {0.0, 0.0, 1.0};
+                nl_vector3_s pla = Vector3_CrossVector3(&nml, &up);
+                Vector3_Normalize(&pla);
+                float t = tan(ator(nyr)) * (limit - lamda);
+                nl_vector3_s n = Vector3_Scale(&pla, t);
+                //printf("%0.2f, %0.2f  ---====\n", nyr, rtoa(acos(Vector3_DotVector3(&nml, &dir))));
+                nl_vector3_s v = {last_position->x + n.x, last_position->y + n.y, new_position->z};
+                int s = -1;
+                map_collision_testing_result_type res = Algo_NETLizard3DMapCollisionTesting(model, &v, limit, 0, &s);
+                if(res == map_in_all_planes_and_in_aabb_type && s != -1)
+                {
+                    if(rv)
+                    {
+                        rv->x = v.x;
+                        rv->y = v.y;
+                        rv->z = v.z;
+                    }
+                    if(rs)
+                        *rs = s;
+                    return 1;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+        }
+    }
+    return 0;
+}
+#endif
 
 #if 0
 // 0 在AABB内，并在所有碰撞面内

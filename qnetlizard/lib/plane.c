@@ -1,5 +1,8 @@
 #include "plane.h"
 
+#include "math_std.h"
+
+#include <stdio.h>
 #include "line.h"
 #include "triangle.h"
 
@@ -70,6 +73,7 @@ int plane_point_clip(const plane_t *plane, const vector3_t *v)
     float a = vector3_dot(v, &(PLANEV_NORMAL(plane))) - plane_d(plane);
 
     //float a = PLANEV_NORMAL_X(plane) * VECTOR3V_X(v) + PLANEV_NORMAL_Y(plane) * VECTOR3V_Y(v) + PLANEV_NORMAL_Z(plane) * VECTOR3V_Z(v) + plane_d(plane);
+    fprintf(stderr, "aaaa } %f\n", a);fflush(stderr);
     return a > 0 ? 1 : (a < 0 ? -1 : 0);
 }
 
@@ -78,6 +82,7 @@ int plane_point_clip(const plane_t *plane, const vector3_t *v)
   0: 平行
   1: 相交
   */
+#define CMP_ZERO 0.0001
 int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda, vector3_t *point, int *dir, int *mask)
 {
     vector3_t p;
@@ -89,8 +94,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
     int bc = plane_point_clip(plane, &LINEV_B(line));
     if(same)
     {
-        int m = ac == 0 && bc == 0;
-        if(m)
+        if(ac == 0 && bc == 0)
         {
             if(mask)
                 *mask = 1 | 2;
@@ -100,7 +104,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
                 *lamda = 0;
             if(point)
                 *point = LINEV_A(line);
-            return 1;
+            return 10;
         }
         else
         {
@@ -109,7 +113,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
                 if(ac > 0)
                     *mask = 1 | 2;
             }
-            return -1;
+            return -10;
         }
     }
 
@@ -123,17 +127,22 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
     }
 
     ray_line_to_ray(&a, line);
-    float length = line_length(line);
+    const float length = line_length(line);
     int res = plane_ray_intersect(plane, &a, &l, &p);
     if(res == 0)
+    {
+        fprintf(stderr, " ppp } %d, %d\n", ac, bc);fflush(stderr);
         return 0;
+    }
+
     if(res > 0)
     {
-        if(l > length)
+        //if(l > length)
+        if(FLOAT_GREATER(l, length, CMP_ZERO))
         {
             if(dir)
                 *dir = 1;
-            return -1;
+            return -11;
         }
         else
         {
@@ -143,7 +152,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
                 *point = p;
             if(dir)
                 *dir = 1;
-            return 1;
+            return 11;
         }
     }
 
@@ -151,13 +160,15 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
     ray_line_to_ray(&a, &inv);
     res = plane_ray_intersect(plane, &a, &l, &p);
     if(res <= 0)
-        return -1;
+        return -12;
 
-    if(l > length)
+    fprintf(stderr, " length %f <> %f\n", length, l);
+    //if(l > length)
+    if(FLOAT_GREATER(l, length, CMP_ZERO))
     {
         if(dir)
             *dir = 2;
-        return -1;
+        return -13;
     }
     else
     {
@@ -167,6 +178,6 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
             *point = p;
         if(dir)
             *dir = -1;
-        return 1;
+        return 12;
     }
 }
