@@ -1,5 +1,7 @@
 #include "euler.h"
 
+#include <math.h>
+
 float clamp_degree(float angle)
 {
     int i = (int)angle;

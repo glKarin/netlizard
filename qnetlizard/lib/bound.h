@@ -1,13 +1,13 @@
 #ifndef _KARIN_BOUND_H
 #define _KARIN_BOUND_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "vector3.h"
 #include "matrix.h"
 #include "plane.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define BOUND_MIN(b) (b).min
 #define BOUND_MAX(b) (b).max

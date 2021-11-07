@@ -47,7 +47,9 @@ int plane_ray_intersect(const plane_t *plane, const ray_t *line, float *lamda, v
     if(lamda)
         *lamda = l2;
 
-    if (l2 <= -COLLISION_ZERO)
+     // ray start point is allow on plane
+    //if (l2 <= -COLLISION_ZERO) // not allow
+    if (l2 < -COLLISION_ZERO) // allow
         return -1;
 
     if(point)
@@ -73,14 +75,22 @@ int plane_point_clip(const plane_t *plane, const vector3_t *v)
     float a = vector3_dot(v, &(PLANEV_NORMAL(plane))) - plane_d(plane);
 
     //float a = PLANEV_NORMAL_X(plane) * VECTOR3V_X(v) + PLANEV_NORMAL_Y(plane) * VECTOR3V_Y(v) + PLANEV_NORMAL_Z(plane) * VECTOR3V_Z(v) + plane_d(plane);
-    fprintf(stderr, "aaaa } %f\n", a);fflush(stderr);
     return a > 0 ? 1 : (a < 0 ? -1 : 0);
 }
 
 /*
-  -1: 不相交
-  0: 平行
-  1: 相交
+  mask:
+    0: A and B all under plane
+    & 1: A above plane
+    & 2: B above plane
+  dir:
+    0: not cross
+    -1: B -> A cross plane
+    1: A -> B cross plane
+  return:
+      -1: 不相交
+      0: 平行
+      1: 相交
   */
 #define CMP_ZERO 0.0001
 int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda, vector3_t *point, int *dir, int *mask)
@@ -127,18 +137,24 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
     }
 
     ray_line_to_ray(&a, line);
-    const float length = line_length(line);
+    const float length = line_length(line); // UNUSED: because `sqrt` may be has precision on float
     int res = plane_ray_intersect(plane, &a, &l, &p);
     if(res == 0)
     {
-        fprintf(stderr, " ppp } %d, %d\n", ac, bc);fflush(stderr);
         return 0;
     }
 
     if(res > 0)
     {
-        //if(l > length)
-        if(FLOAT_GREATER(l, length, CMP_ZERO))
+        // cale $line.b point with $plane.normal and ray's collsion's distance, instead of line's $length
+        plane_t bp;
+        plane_make(&bp, &LINEV_B(line), &PLANEV_NORMAL(plane));
+        float bl;
+        plane_ray_intersect(&bp, &a, &bl, NULL);
+        //fprintf(stderr, " a->b } %f, %f %f\n", l, bl, length);fflush(stderr);
+
+        if(l > bl)
+        //if(FLOAT_GREATER(l, length, CMP_ZERO))
         {
             if(dir)
                 *dir = 1;
@@ -162,9 +178,15 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
     if(res <= 0)
         return -12;
 
-    fprintf(stderr, " length %f <> %f\n", length, l);
-    //if(l > length)
-    if(FLOAT_GREATER(l, length, CMP_ZERO))
+    // cale $line.a point with $plane.normal and inverse ray's collsion's distance, instead of line's $length
+    plane_t bp;
+    plane_make(&bp, &LINEV_A(line), &PLANEV_NORMAL(plane));
+    float al;
+    plane_ray_intersect(&bp, &a, &al, NULL);
+    //fprintf(stderr, " b->a } %f, %f %f\n", l, length, al);fflush(stderr);
+
+    if(l > al)
+    //if(FLOAT_GREATER(l, length, CMP_ZERO))
     {
         if(dir)
             *dir = 2;
@@ -173,7 +195,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
     else
     {
         if(lamda)
-            *lamda = length - l;
+            *lamda = al - l;
         if(point)
             *point = p;
         if(dir)

@@ -1,11 +1,11 @@
 #ifndef _KARIN_ORTHO_H
 #define _KARIN_ORTHO_H
 
+#include "mesa_gl_math.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "mesa_gl_math.h"
 
 #define ORTHO_LEFT(b) ((b).left)
 #define ORTHO_RIGHT(b) ((b).right)

@@ -1,11 +1,11 @@
 #ifndef _KARIN_LINE_H
 #define _KARIN_LINE_H
 
+#include "vector3.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "vector3.h"
 
 #define RAY_POSITION_X(obj) VECTOR3_X((obj).position)
 #define RAY_POSITION_Y(obj) VECTOR3_Y((obj).position)

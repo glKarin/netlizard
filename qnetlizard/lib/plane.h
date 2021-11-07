@@ -1,11 +1,11 @@
 #ifndef _KARIN_PLANE_H
 #define _KARIN_PLANE_H
 
+#include "vector3.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "vector3.h"
 
 #define PLANE_POSITION_X(b) VECTOR3_X((b).position)
 #define PLANE_POSITION_Y(b) VECTOR3_Y((b).position)

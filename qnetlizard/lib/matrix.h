@@ -1,11 +1,11 @@
 #ifndef _KARIN_MATRIX_H
 #define _KARIN_MATRIX_H
 
+#include "mesa_gl_math.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "mesa_gl_math.h"
 
 typedef GLmatrix matrix4_t;
 struct vector3_s;

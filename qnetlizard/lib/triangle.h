@@ -1,11 +1,11 @@
 #ifndef _KARIN_TRIANGLE_H
 #define _KARIN_TRIANGLE_H
 
+#include "vector3.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "vector3.h"
 
 #define TRIANGLE_A_X(t) VECTOR3_X((t).a)
 #define TRIANGLE_A_Y(t) VECTOR3_Y((t).a)

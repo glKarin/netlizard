@@ -165,7 +165,7 @@ void MapScene::Update(float delta)
     NLScene::Update(delta);
     if(!m_model)
         return;
-    VECTOR3_Y(oldPos) = VECTOR3_Y(m_mainCameraActor->Position());
+    VECTOR3_Y(oldPos) = VECTOR3_Y(m_mainCameraActor->Position()); // if has gravity effect
 
     m_sky3DCameraActor->SetRotation(CurrentCamera()->Rotation());
     m_sky3DCameraActor->UpdateCamera();
@@ -203,11 +203,11 @@ void MapScene::Update(float delta)
             p = oldPos;
             clear = true;
         }
-        fprintf(stderr,"res : %d\n", res);fflush(stderr);
+        //fprintf(stderr,"res : %d\n", res);fflush(stderr);
         float rglz = 0;
         res = NETLizard_GetScenePointZCoord(m_model, &p, scene, &scene, &rglz);
         //qDebug() << "------"<<  res << VECTOR3_Z(p)<< OBJ_HEIGHT + rglz << rglz ;
-        fprintf(stderr,"res222 : %d %f %f\n\n", res, VECTOR3_Z(p), rglz);fflush(stderr);
+        //fprintf(stderr,"res222 : %d %f %f\n\n", res, VECTOR3_Z(p), rglz);fflush(stderr);
         if(clear)
             m_mainCameraActor->Collision();
 

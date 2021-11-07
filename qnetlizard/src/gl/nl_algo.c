@@ -263,17 +263,24 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
 
     line_t line;
     line_make(&line, &obj->position, new_pos);
+    float line_len = line_length(&line);
+    int line_zero = line_iszero(&line);
+    nl_vector3_t line_dir;
+    vector3_directionv(&line_dir, pos, new_pos);
+    unsigned redo = 0;
     //LINE_A_Z(line) += obj->height;
     //LINE_B_Z(line) += obj->height;
     res = 1;
     unsigned int j;
     for(j = 0; j < mesh->plane_count; )
     {
+        unsigned is_floor = IS_FLOOR(mesh->plane[j].normal);
+        unsigned is_ceil = IS_CEIL(mesh->plane[j].normal);
         plane_t plane = SCENE_PLANE(mesh->plane[j]);
         float limit = 0;
-        if(IS_FLOOR(mesh->plane[j].normal))
+        if(is_floor)
             limit = 0;
-        else if(IS_CEIL(mesh->plane[j].normal))
+        else if(is_ceil)
             limit = 0; //height;
         else
             limit = width;
@@ -284,9 +291,9 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
 
         //ray_t l = {*new_pos, VECTOR3(-mesh->plane[j].normal[0], -mesh->plane[j].normal[1], -mesh->plane[j].normal[2])};
         vector3_t cpoint;
-        fprintf(stderr,">>>>> %f, %f\n", LINE_A_Y(line), LINE_B_Y(line));fflush(stderr);
+        //fprintf(stderr,">>>>> %f, %f\n", LINE_A_Y(line), LINE_B_Y(line));fflush(stderr);
         int r = plane_line_intersect(&plane, &line, &lamda, &cpoint, &dir, &mask);
-        fprintf(stderr,"%d - %d: %f, %f, %f ======= %f %f %f\n", r, mask, mesh->plane[j].normal[0], mesh->plane[j].normal[1], mesh->plane[j].normal[2],cpoint.v[0],cpoint.v[1],cpoint.v[2]);fflush(stderr);
+        //fprintf(stderr,"%d - %d: %f, %f, %f ======= %f %f %f\n", r, mask, mesh->plane[j].normal[0], mesh->plane[j].normal[1], mesh->plane[j].normal[2],cpoint.v[0],cpoint.v[1],cpoint.v[2]);fflush(stderr);
         if(r == 0) // 平行
         {
             if(mask == 0) // 两点都在背面
@@ -302,17 +309,52 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
             continue; // 两点都在正面
         }
 
-        // 相交
-        if(mask == 1)
+        // 相交, 且Old->New穿过, 且Old != New
+        if(mask == 1 && dir > 0 && !line_zero)
         {
             //VECTOR3_Z(cpoint) -= obj->height;
-            *new_pos = cpoint;
             res = 4;
+
+            if(!is_floor && !is_ceil) // if is a wall
+            {
+                nl_vector3_t nml = plane.normal;
+                vector3_invertv(&nml);
+                float dot = vector3_dot(&line_dir, &nml);
+                float rad = acos(dot);
+
+                float l = line_len - lamda;
+                if(l < 0) l = 0;
+                if(l > 0)
+                {
+                    nl_vector3_t up = VECTOR3(0.0, 0.0, 1.0);
+                    nl_vector3_t pla;
+                    vector3_crossv(&pla, &nml, &up);
+                    vector3_normalizev(&pla);
+                    float dot2 = vector3_dot(&line_dir, &pla);
+                    float t = sin(rad) * l * (dot2 >= 0 ? 1 : -1);
+                    vector3_scalev(&pla, t);
+                    VECTOR3_X(cpoint) += VECTOR3_X(pla);
+                    VECTOR3_Y(cpoint) += VECTOR3_Y(pla);
+                }
+            }
+
+            *new_pos = cpoint;
             LINE_B(line) = cpoint;
+            vector3_directionv(&line_dir, pos, new_pos);
+            line_len = line_length(&line);
+            line_zero = line_iszero(&line);
+
+            if(redo == 0)
+            {
+                redo++;
+                j = 0; // redo !!!
+                continue;
+            }
         }
+
         j++;
     }
-    fprintf(stderr,"--- -----\n");fflush(stderr);
+    //fprintf(stderr,"------------------\n\n");fflush(stderr);
     if(res == 1)
         res = 2;
     return res;
