@@ -18,6 +18,100 @@
 #define IS_FLOOR(normal) ((normal)[2] > UP_NORMAL_LIMIT)
 #define IS_CEIL(normal) ((normal)[2] < -UP_NORMAL_LIMIT)
 
+#define PUSH_BACK(T, arr, count, t) \
+{ \
+    T *_narr = (T *)calloc(count + 1, sizeof(T)); \
+    if(arr) { \
+        memcpy(_narr, arr, count * sizeof(T)); \
+        free(arr); \
+    } \
+    _narr[count] = t; \
+    count++; \
+    arr = _narr; \
+}
+
+static void * push_back(int size, void **arr, int *count, const void *t)
+{
+    void *_narr = calloc(*count + 1, size);
+    if(*arr)
+    {
+        memcpy(_narr, *arr, *count * size);
+        free(*arr);
+    }
+    memcpy((char *)_narr + *count * size, t, size);
+    *count += 1;
+    *arr = _narr;
+    return _narr;
+}
+
+typedef struct array_list_s
+{
+    void *arr;
+    unsigned count;
+    unsigned size;
+} array_list_t;
+
+static void array_list_push_back(array_list_t *list, const void *t)
+{
+    push_back(list->size, list->arr, &list->count, t);
+}
+
+static void array_list_make(array_list_t *list, int size)
+{
+    list->arr = NULL;
+    list->size = size;
+    list->count = 0;
+}
+
+static void array_list_free(array_list_t *list)
+{
+    if(list->arr)
+        free(list->arr);
+    list->arr = NULL;
+    list->count = 0;
+}
+
+static void * array_list_at(array_list_t *list, int index)
+{
+    if(!list->arr)
+        return NULL;
+    int i = index >= 0 ? index : list->count + index;
+    return (char *)list->arr + i * list->count;
+}
+
+static void array_list_pop_front(array_list_t *list)
+{
+    if(!list->arr || list->count == 0)
+        return;
+
+    void *_narr = NULL;
+    if(list->count > 1)
+    {
+        _narr = calloc(list->count - 1, list->size);
+        memcpy(_narr, (char *)list->arr + list->size, list->size * (list->count - 1));
+        free(list->arr);
+    }
+    list->count -= 1;
+    list->arr = _narr;
+}
+
+static void array_list_pop_back(array_list_t *list)
+{
+    if(!list->arr || list->count == 0)
+        return;
+    void *_narr = NULL;
+    if(list->count > 1)
+    {
+        _narr = calloc(list->count - 1, list->size);
+        memcpy(_narr, list->arr, list->size * (list->count - 1));
+        free(list->arr);
+    }
+    list->count -= 1;
+    list->arr = _narr;
+}
+
+#define array_list(T) array_list_t
+
 static void Algo_GetNormalAngle(const nl_vector3_t *normal, float *yr, float *xr)
 {
     if(!normal)
@@ -234,16 +328,23 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
     return 0;
 }
 
-// 0 - 在场景外 返回 -1
-// 1 - 仅在场景AABB内
-// 2 - 在场景AABB内，且在场景所有碰撞面内
-// 3 - 仅在场景AABB内，但是该场景无碰撞面数据
-// 4 - 在场景AABB内，且在场景所有碰撞面内，但是与某一碰撞面的距离小于测试值
-int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, vector3_t *new_pos, int *scene)
+typedef struct collision_result_s
 {
-    if(!map || !obj)
-        return -1;
-    int res = 0;
+    int res;
+    int scene;
+    nl_vector3_t npos;
+} collision_result_t;
+
+typedef struct collision_plane_s
+{
+    plane_t plane;
+    nl_vector3_t point;
+    float lamda;
+} collision_plane_t;
+
+static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, const nl_vector3_t *new_pos)
+{
+    collision_result_t result = {-1, -1, *new_pos};
 
     const vector3_t *pos = &obj->position;
     const float height = obj->height;
@@ -253,24 +354,29 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
     int mask = 0;
 
     int s = NETLizard_FindScenePointIn(map, new_pos);
-    if(s == -1)
-        return 0; // 不在任何场景范围内
-    if(scene)
-        *scene = s;
+    if(s == -1) // 不在任何场景范围内
+    {
+        result.res = 0;
+        return result;
+    }
+    result.scene = s;
     const GL_NETLizard_3D_Mesh *mesh = map->meshes + s;
-    if(!mesh->plane)
-        return 3;
+    if(!mesh->plane) // 无碰撞面数据
+    {
+        result.res = 3;
+        return result;
+    }
 
     line_t line;
     line_make(&line, &obj->position, new_pos);
+    nl_vector3_t line_dir;
+
     float line_len = line_length(&line);
     int line_zero = line_iszero(&line);
-    nl_vector3_t line_dir;
     vector3_directionv(&line_dir, pos, new_pos);
-    unsigned redo = 0;
     //LINE_A_Z(line) += obj->height;
     //LINE_B_Z(line) += obj->height;
-    res = 1;
+
     unsigned int j;
     for(j = 0; j < mesh->plane_count; )
     {
@@ -297,14 +403,20 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
         if(r == 0) // 平行
         {
             if(mask == 0) // 两点都在背面
-                return 1;
+            {
+                result.res = 1;
+                break;
+            }
             j++;
             continue; // 两点都在正面
         }
         if(r < 0) // 不相交
         {
             if(mask == 0) // 两点都在背面
-                return 1;
+            {
+                result.res = 1;
+                break;
+            }
             j++;
             continue; // 两点都在正面
         }
@@ -313,7 +425,7 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
         if(mask == 1 && dir > 0 && !line_zero)
         {
             //VECTOR3_Z(cpoint) -= obj->height;
-            res = 4;
+            result.res = 4;
 
             if(!is_floor && !is_ceil) // if is a wall
             {
@@ -333,102 +445,80 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
                     float dot2 = vector3_dot(&line_dir, &pla);
                     float t = sin(rad) * l * (dot2 >= 0 ? 1 : -1);
                     vector3_scalev(&pla, t);
-                    VECTOR3_X(cpoint) += VECTOR3_X(pla);
-                    VECTOR3_Y(cpoint) += VECTOR3_Y(pla);
+
+                    nl_vector3_t npoint = cpoint;
+                    VECTOR3_X(npoint) += VECTOR3_X(pla);
+                    VECTOR3_Y(npoint) += VECTOR3_Y(pla);
+
+                    collision_object_t nco = {cpoint, width, height};
+                    collision_result_t ct = NETLizard_MapCollisionTesting_r(map, &nco, &npoint);
+                    if(ct.res == 2 || ct.res == 4)
+                    {
+                        //fprintf(stderr,"scene %d - %d\n", result.scene, ct.scene);fflush(stderr);
+                        result.npos = ct.npos;
+                        result.scene = ct.scene;
+                        LINE_B(line) = cpoint;
+                        vector3_directionv(&line_dir, pos, new_pos);
+                        line_len = line_length(&line);
+                        line_zero = line_iszero(&line);
+                    }
+                    else
+                    {
+                        result.npos = cpoint;
+                        LINE_B(line) = cpoint;
+                        vector3_directionv(&line_dir, pos, new_pos);
+                        line_len = line_length(&line);
+                        line_zero = line_iszero(&line);
+                    }
+                }
+                else
+                {
+                    result.npos = cpoint;
+                    LINE_B(line) = cpoint;
+                    vector3_directionv(&line_dir, pos, new_pos);
+                    line_len = line_length(&line);
+                    line_zero = line_iszero(&line);
                 }
             }
-
-            *new_pos = cpoint;
-            LINE_B(line) = cpoint;
-            vector3_directionv(&line_dir, pos, new_pos);
-            line_len = line_length(&line);
-            line_zero = line_iszero(&line);
-
-            if(redo == 0)
+            else
             {
-                redo++;
-                j = 0; // redo !!!
-                continue;
+                result.res = 1;
+                break;
             }
         }
 
         j++;
     }
+
     //fprintf(stderr,"------------------\n\n");fflush(stderr);
-    if(res == 1)
-        res = 2;
-    return res;
+    if(result.res == -1)
+        result.res = 2;
+    return result;
 }
 
-#if 0
-int Algo_GetPositionCoordIfCollatedMapWall(const GL_NETLizard_3D_Model *model, float limit, const nl_vector3_t *last_position, const nl_vector3_t *new_position, int scene, nl_vector3_t *rv, int *rs)
+
+// 0 - 在场景外 返回 -1
+// 1 - 仅在场景AABB内
+// 2 - 在场景AABB内，且在场景所有碰撞面内
+// 3 - 仅在场景AABB内，但是该场景无碰撞面数据
+// 4 - 在场景AABB内，且在场景所有碰撞面内，但是与某一碰撞面的距离小于测试值
+int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, nl_vector3_t *new_pos, int *scene)
 {
-    if(!model || !last_position || !new_position)
-        return 0;
-    const GL_NETLizard_3D_Mesh *mesh = model->meshes + scene;
-    if(mesh->plane)
-    {
-        unsigned int j;
-        for(j = 0; j < mesh->plane_count; j++)
-        {
-            if(IS_FLOOR(mesh->plane[j].normal) || IS_CEIL(mesh->plane[j].normal))
-                continue;
-            plane_t plane = {
-                {mesh->plane[j].position[0], mesh->plane[j].position[1], mesh->plane[j].position[2]},
-                {mesh->plane[j].normal[0], mesh->plane[j].normal[1], mesh->plane[j].normal[2]}
-            };
-            ray_s l = {*new_position, {-mesh->plane[j].normal[0], -mesh->plane[j].normal[1], -mesh->plane[j].normal[2]}};
-            float lamda = 0.0;
-            int r = Math3D_LineToPlaneCollision(&l, &plane, &lamda, NULL);
-            if(r != 1)
-                continue;
-            if(lamda <= limit)
-            {
-                float xr = 0.0, yr = 0.0;
-                float pxr = 0.0, pyr = 0.0;
-                nl_vector3_s dir = Vector3_SubtractVector3(new_position, last_position);
-                nl_vector3_s nml = plane.normal;
-                Vector3_Inverse(&nml);
-                Vector3_Normalize(&dir);
-                Algo_GetNormalAngle(&dir, &yr, &xr);
-                Algo_GetNormalAngle(&nml, &pyr, &pxr);
-                float nyr = Algo_FormatAngle(pyr - yr);
-                /* 2017 8 7
-                     if(nyr >= 90.0 && nyr <= 270.0)
-                     continue;
-                     */
+    if(!map || !obj)
+        return -1;
 
-                nl_vector3_s up = {0.0, 0.0, 1.0};
-                nl_vector3_s pla = Vector3_CrossVector3(&nml, &up);
-                Vector3_Normalize(&pla);
-                float t = tan(ator(nyr)) * (limit - lamda);
-                nl_vector3_s n = Vector3_Scale(&pla, t);
-                //printf("%0.2f, %0.2f  ---====\n", nyr, rtoa(acos(Vector3_DotVector3(&nml, &dir))));
-                nl_vector3_s v = {last_position->x + n.x, last_position->y + n.y, new_position->z};
-                int s = -1;
-                map_collision_testing_result_type res = Algo_NETLizard3DMapCollisionTesting(model, &v, limit, 0, &s);
-                if(res == map_in_all_planes_and_in_aabb_type && s != -1)
-                {
-                    if(rv)
-                    {
-                        rv->x = v.x;
-                        rv->y = v.y;
-                        rv->z = v.z;
-                    }
-                    if(rs)
-                        *rs = s;
-                    return 1;
-                }
-                else
-                {
-                    continue;
-                }
-            }
-        }
+    collision_result_t result = NETLizard_MapCollisionTesting_r(map, obj, new_pos);
+    if(result.res <= 0)
+        return result.res;
+    if(scene)
+        *scene = result.scene;
+    if(result.res == 4)
+    {
+        *new_pos = result.npos;
     }
-    return 0;
+
+    return result.res;
 }
-#endif
 
 #if 0
 // 0 在AABB内，并在所有碰撞面内

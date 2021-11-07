@@ -137,6 +137,7 @@ NLObjectPool * NLObjectPool::Detach(NLObject *item)
     QString name = Find(item);
     if(!name.isEmpty())
         m_pool.remove(name);
+    qDebug() << "[NLObjectPool]: Current NLObject count: " << m_pool.size();
     return this;
 }
 

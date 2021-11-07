@@ -201,12 +201,20 @@ void MapScene::Update(float delta)
         else
         {
             p = oldPos;
-            clear = true;
+            NLForce_gravity *gravity = m_mainCameraActor->GetTypeForce<NLForce_gravity>();
+            if(gravity && gravity->GetProperty_T("force", 0) != 0) // is jump
+                clear = true;
         }
         //fprintf(stderr,"res : %d\n", res);fflush(stderr);
         float rglz = 0;
+        NLDEBUG_VECTOR3(oldPos);
+        qDebug() << "NETLizard_MapCollisionTesting: "<<  res;
+        NLDEBUG_VECTOR3(pos);
+        NLVector3 vv = p;
+        VECTOR3_Z(vv) += OBJ_HEIGHT;
         res = NETLizard_GetScenePointZCoord(m_model, &p, scene, &scene, &rglz);
-        //qDebug() << "------"<<  res << VECTOR3_Z(p)<< OBJ_HEIGHT + rglz << rglz ;
+        qDebug() << "NETLizard_GetScenePointZCoord: "<<  res << VECTOR3_Z(p)<< rglz << " = " << OBJ_HEIGHT + rglz;
+        qDebug() << "##############" << "\n";
         //fprintf(stderr,"res222 : %d %f %f\n\n", res, VECTOR3_Z(p), rglz);fflush(stderr);
         if(clear)
             m_mainCameraActor->Collision();
