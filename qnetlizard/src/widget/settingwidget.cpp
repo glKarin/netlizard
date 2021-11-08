@@ -28,6 +28,7 @@ SettingGroup::~SettingGroup()
 void SettingGroup::Init()
 {
     m_layout = new QFormLayout;
+    m_layout->setRowWrapPolicy(QFormLayout::WrapLongRows);
     setLayout(m_layout);
 }
 

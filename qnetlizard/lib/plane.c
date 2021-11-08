@@ -44,6 +44,8 @@ int plane_ray_intersect(const plane_t *plane, const ray_t *line, float *lamda, v
     vector3_subtractv(&vec, &(PLANEV_POSITION(plane)), &(RAYV_POSITION(line)));
     l2 = (vector3_dot(&(PLANEV_NORMAL(plane)), &vec)) / dotProduct;
 
+    //l2 = -(vector3_dot(&(PLANEV_NORMAL(plane)), &(RAYV_POSITION(line))) - plane_d(plane)) / dotProduct;
+
     if(lamda)
         *lamda = l2;
 

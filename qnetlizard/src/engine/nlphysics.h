@@ -21,7 +21,7 @@ namespace NL
 
         G gravity_force(m m0, g g0 = EARTH_G); // G = mg
         v gravity_speed(t t0, v v0 = 0, g g0 = EARTH_G); // v = gt + v0
-        G gravity_distance(t t0, v v0 = 0, g g0 = EARTH_G);
+        d gravity_distance(t t0, v v0 = 0, g g0 = EARTH_G);
     }
 }
 

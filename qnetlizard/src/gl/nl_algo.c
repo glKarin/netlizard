@@ -112,21 +112,21 @@ static void array_list_pop_back(array_list_t *list)
 
 #define array_list(T) array_list_t
 
-static void Algo_GetNormalAngle(const nl_vector3_t *normal, float *yr, float *xr)
-{
-    if(!normal)
-        return;
-    float xl = VECTOR3V_X(normal);
-    float yl = VECTOR3V_Y(normal);
-    if(yr)
-        *yr = clamp_degree(rtod(atan2(yl, xl)) - 90.0);
-    if(xr)
-    {
-        float xyl = sqrt(xl * xl + yl * yl);
-        float zl = VECTOR3V_Z(normal);
-        *xr = clamp_degree(rtod(atan2(zl, xyl)));
-    }
-}
+//static void Algo_GetNormalAngle(const nl_vector3_t *normal, float *yr, float *xr)
+//{
+//    if(!normal)
+//        return;
+//    float xl = VECTOR3V_X(normal);
+//    float yl = VECTOR3V_Y(normal);
+//    if(yr)
+//        *yr = clamp_degree(rtod(atan2(yl, xl)) - 90.0);
+//    if(xr)
+//    {
+//        float xyl = sqrt(xl * xl + yl * yl);
+//        float zl = VECTOR3V_Z(normal);
+//        *xr = clamp_degree(rtod(atan2(zl, xyl)));
+//    }
+//}
 
 /*
   点a是否在全图范围内
@@ -235,6 +235,7 @@ int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizard_3d_mo
 /*
   获取点new_pos下的场景索引scene的地板Z坐标rglz
   */
+#define GET_FLOOR_INVERT_NORMAL 3 // 1 2 3
 int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_pos, int scene, float *rglz)
 {
     if(!netlizard_3d_model || !new_pos)
@@ -248,8 +249,17 @@ int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netli
         {
             plane_t pla = SCENE_PLANE(mesh->plane[j]);
             nl_vector3_t point = VECTOR3(0, 0, 0);
+
+#if(GET_FLOOR_INVERT_NORMAL == 1) // 1: only invert z coord
             nl_vector3_t dir = PLANE_NORMAL(pla);
             VECTOR3_Z(dir) = -VECTOR3_Z(dir);
+#elif(GET_FLOOR_INVERT_NORMAL == 2) // 2: invert plane normal
+            nl_vector3_t dir = PLANE_NORMAL(pla);
+            vector3_invertv(&dir);
+#else // 3: using fixed down normal
+            nl_vector3_t dir = VECTOR3(0, 0, -1);
+#endif
+
             ray_t l = {*new_pos, dir};
             if(plane_ray_intersect(&pla, &l, NULL, &point))
             {
@@ -452,9 +462,9 @@ static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_
 
                     collision_object_t nco = {cpoint, width, height};
                     collision_result_t ct = NETLizard_MapCollisionTesting_r(map, &nco, &npoint);
+                    //fprintf(stderr,"new scene %d - %d\n", ct.res, ct.scene);fflush(stderr);
                     if(ct.res == 2 || ct.res == 4)
                     {
-                        //fprintf(stderr,"scene %d - %d\n", result.scene, ct.scene);fflush(stderr);
                         result.npos = ct.npos;
                         result.scene = ct.scene;
                         LINE_B(line) = cpoint;

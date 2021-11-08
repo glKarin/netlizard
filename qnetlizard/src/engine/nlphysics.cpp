@@ -31,7 +31,7 @@ namespace NL
             return speed(t0, g0, v0);
         }
 
-        G gravity_distance(t t0, v v0, g g0)
+        d gravity_distance(t t0, v v0, g g0)
         {
             return distance(t0, v0, g0);
         }

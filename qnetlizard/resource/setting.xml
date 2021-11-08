@@ -69,6 +69,8 @@
             <option name="option" label="Render scene plane" value="64"></option>
             <option name="option" label="Render scene BSP" value="128"></option>
         </item>
+        <item alias="DEBUG/single_scene" name="Render current scene" widget="checkbox" type="bool" default-value="false">
+        </item>
     </category>
 
 </setting>

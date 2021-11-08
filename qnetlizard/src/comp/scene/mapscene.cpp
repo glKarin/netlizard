@@ -25,6 +25,8 @@
 #define OBJ_RADIUS 60
 #define OBJ_HEIGHT 180
 
+static const float _g = NL::Physics::EARTH_G * 1000;
+
 //vector3_t lpos;
 //void rrrrr(void)
 //{
@@ -55,7 +57,8 @@ MapScene::MapScene(QWidget *parent)
       m_sky3DCamera(0),
       m_control(0),
       m_noclip(true),
-      m_fog(false)
+      m_fog(false),
+      m_singleScene(false)
 {
     setObjectName("MapScene");
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
@@ -118,6 +121,7 @@ MapScene::MapScene(QWidget *parent)
 
     SetNoclip(settings->GetSetting<bool>("DEBUG/noclip"));
     SetFog(settings->GetSetting<int>("RENDER/fog") > 0);
+    SetSingleScene(settings->GetSetting<bool>("DEBUG/single_scene"));
     connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
 
@@ -170,12 +174,8 @@ void MapScene::Update(float delta)
     m_sky3DCameraActor->SetRotation(CurrentCamera()->Rotation());
     m_sky3DCameraActor->UpdateCamera();
     m_shadowRenderer->SetLightSourcePosition(GetActor(7)->Position());
-    static bool b = false;
-    if(!b)
-    {
-        b = true;
-    }
 
+    int scene = -1;
     if(!m_noclip && m_model->game != NL_RACING_EVOLUTION_3D)
     {
         nl_vector3_t pos = m_mainCameraActor->Position();
@@ -183,7 +183,6 @@ void MapScene::Update(float delta)
         ConvToAlgoVector3(oldPos);
         ConvToAlgoVector3(pos);
 
-        int scene = -1;
         collision_object_t obj = {oldPos, OBJ_RADIUS, OBJ_HEIGHT};
         int res = NETLizard_MapCollisionTesting(m_model, &obj, &pos, &scene);
         //qDebug() << res << scene;
@@ -205,16 +204,11 @@ void MapScene::Update(float delta)
             if(gravity && gravity->GetProperty_T("force", 0) != 0) // is jump
                 clear = true;
         }
-        //fprintf(stderr,"res : %d\n", res);fflush(stderr);
+        //fprintf(stderr,"NETLizard_MapCollisionTesting : %d\n", res);fflush(stderr);
         float rglz = 0;
-        NLDEBUG_VECTOR3(oldPos);
-        qDebug() << "NETLizard_MapCollisionTesting: "<<  res;
-        NLDEBUG_VECTOR3(pos);
-        NLVector3 vv = p;
-        VECTOR3_Z(vv) += OBJ_HEIGHT;
+        //qDebug() << "NETLizard_MapCollisionTesting: "<<  res;
         res = NETLizard_GetScenePointZCoord(m_model, &p, scene, &scene, &rglz);
-        qDebug() << "NETLizard_GetScenePointZCoord: "<<  res << VECTOR3_Z(p)<< rglz << " = " << OBJ_HEIGHT + rglz;
-        qDebug() << "##############" << "\n";
+        //qDebug() << "NETLizard_GetScenePointZCoord: "<<  res << VECTOR3_Z(p)<< rglz << " = " << OBJ_HEIGHT + rglz;
         //fprintf(stderr,"res222 : %d %f %f\n\n", res, VECTOR3_Z(p), rglz);fflush(stderr);
         if(clear)
             m_mainCameraActor->Collision();
@@ -225,7 +219,16 @@ void MapScene::Update(float delta)
             {
                 if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())
                 {
-                    m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", NL::Physics::EARTH_G * 1000), m_mainCameraActor));
+                    // pre cale
+                    vector3_t de;
+                    vector3_subtractv(&de, &p, &oldPos);
+                    VECTOR3_Z(de) = 0;
+                    float d0 = vector3_length(&de) / 2.0;
+                    //fprintf(stderr,"res222 : %f %f %f\n\n", d0, VECTOR3_Z(p), OBJ_HEIGHT + rglz);fflush(stderr);
+                    if(VECTOR3_Z(p) - d0 > OBJ_HEIGHT + rglz)
+                        m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", _g), m_mainCameraActor));
+                    else
+                        VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
                 }
             }
             else
@@ -236,6 +239,7 @@ void MapScene::Update(float delta)
             }
         }
 
+        //qDebug() << "##############" << "\n";
         ConvToRenderVector3(p);
         m_mainCameraActor->SetPosition(p);
         m_mainCameraActor->UpdateCamera();
@@ -245,12 +249,26 @@ void MapScene::Update(float delta)
     int *scenes = m_renderer->Scenes();
     if(scenes)
     {
-        float frustum[6][4];
-        NLSceneCamera *camera = CurrentCamera();
-        const GLmatrix *projMat = camera->ProjectionMatrix();
-        const GLmatrix *viewMat = camera->ViewMatrix();
-        matrix_cale_frustum(projMat, viewMat, frustum);
-        int count = NETLizard_GetMapRenderScenes(m_model, scenes, frustum);
+        int count;
+        if(!m_noclip && m_singleScene)
+        {
+            if(scene >= 0)
+            {
+                scenes[0] = scene;
+                count = 1;
+            }
+            else
+                count = 0;
+        }
+        else
+        {
+            float frustum[6][4];
+            NLSceneCamera *camera = CurrentCamera();
+            const GLmatrix *projMat = camera->ProjectionMatrix();
+            const GLmatrix *viewMat = camera->ViewMatrix();
+            matrix_cale_frustum(projMat, viewMat, frustum);
+            count = NETLizard_GetMapRenderScenes(m_model, scenes, frustum);
+        }
         m_renderer->SetSceneCount(count);
         m_shadowRenderer->SetRenderScenes(scenes, count);
     }
@@ -440,6 +458,7 @@ bool MapScene::KeyEventHandler(int key, bool pressed, int modifier)
     switch(key)
     {
         case Qt::Key_Control:
+        break;
             //if(!m_mainCameraActor->HasTypeForce<NLForce_push>())
             {
                 NLVector3 dir = m_mainCameraActor->MoveDirection();
@@ -449,7 +468,7 @@ bool MapScene::KeyEventHandler(int key, bool pressed, int modifier)
         case Qt::Key_Space:
             if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())
             {
-                m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", NL::Physics::EARTH_G * 1000)("force", -2000), m_mainCameraActor));
+                m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", _g)("force", -2000), m_mainCameraActor));
             }
             return true;
             break;
@@ -525,6 +544,8 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
             glFogf(GL_FOG_MODE, GL_LINEAR);
         SetFog(fog > 0);
     }
+    else if(name == "DEBUG/single_scene")
+        SetSingleScene(value.toBool());
 }
 
 void MapScene::ConvToAlgoVector3(vector3_t &v)
@@ -568,5 +589,13 @@ void MapScene::SetFog(bool b)
     if(m_fog != b)
     {
         m_fog = b;
+    }
+}
+
+void MapScene::SetSingleScene(bool b)
+{
+    if(m_singleScene != b)
+    {
+        m_singleScene = b;
     }
 }
