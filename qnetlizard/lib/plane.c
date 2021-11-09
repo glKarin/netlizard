@@ -81,7 +81,7 @@ int plane_point_clip(const plane_t *plane, const vector3_t *v)
 {
     float a = plane_point_to_plane_distance(plane, v);
 
-    fprintf(stderr, "plane_point_clip: %f = %f %f %f | %f %f %f - %f %f %f\n", a, v->v[0], v->v[1], v->v[2], plane->normal.v[0], plane->normal.v[1], plane->normal.v[2], plane->position.v[0], plane->position.v[1], plane->position.v[2]);fflush(stderr);
+    //fprintf(stderr, "plane_point_clip: %f = %f %f %f | %f %f %f - %f %f %f\n", a, v->v[0], v->v[1], v->v[2], plane->normal.v[0], plane->normal.v[1], plane->normal.v[2], plane->position.v[0], plane->position.v[1], plane->position.v[2]);fflush(stderr);
     return a > 0 ? 1 : (a < 0 ? -1 : 0);
 }
 
@@ -201,7 +201,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
         plane_make(&bp, &LINEV_B(line), &PLANEV_NORMAL(plane));
         float bl;
         plane_ray_intersect(&bp, &a, &bl, NULL);
-        fprintf(stderr, " a->b } %f, %f %f\n", l, bl, length);fflush(stderr);
+        //fprintf(stderr, " a->b } %f, %f %f\n", l, bl, length);fflush(stderr);
 
         if(l > bl)
         //if(FLOAT_GREATER(l, length, CMP_ZERO))
@@ -233,7 +233,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
     plane_make(&bp, &LINEV_A(line), &PLANEV_NORMAL(plane));
     float al;
     plane_ray_intersect(&bp, &a, &al, NULL);
-    fprintf(stderr, " b->a } %f, %f %f\n", l, length, al);fflush(stderr);
+    //fprintf(stderr, " b->a } %f, %f %f\n", l, length, al);fflush(stderr);
 
     if(l > al)
     //if(FLOAT_GREATER(l, length, CMP_ZERO))

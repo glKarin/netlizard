@@ -360,13 +360,18 @@ static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_
     const float height = obj->height;
     const float width = obj->radius;
 
+    // 获取位置所在的场景
     int s = NETLizard_FindScenePointIn(map, new_pos);
-    if(s == -1) // 不在任何场景范围内
+    if(s == -1) // New位置不在任何场景范围内
     {
         result.res = 0;
-        return result;
+        s = NETLizard_FindScenePointIn(map, pos); // 尝试获取原位置的场景
+        if(s == -1)
+            return result;
     }
+
     result.scene = s;
+    // 检查场景是否有碰撞面数据
     const GL_NETLizard_3D_Mesh *mesh = map->meshes + s;
     if(!mesh->plane) // 无碰撞面数据
     {
@@ -384,8 +389,8 @@ static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_
     //LINE_A_Z(line) += obj->height;
     //LINE_B_Z(line) += obj->height;
 
-    unsigned int j;
-    for(j = 0; j < mesh->plane_count; )
+    unsigned int j = 0;
+    while(j < mesh->plane_count)
     {
         unsigned is_floor = IS_FLOOR(mesh->plane[j].normal);
         unsigned is_ceil = IS_CEIL(mesh->plane[j].normal);
@@ -472,18 +477,27 @@ static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_
                     if(!line_equals(&line, &lb)) // forbid recursion // 使用碰撞点和新的延墙壁New位置进行递归的碰撞测试
                     {
                         collision_object_t nco = {cpoint, width, height};
-                        fprintf(stderr," rrrrrrr %f %f %f - %f %f %f\n", cpoint.v[0], cpoint.v[1], cpoint.v[2], npoint.v[0], npoint.v[1], npoint.v[2]);fflush(stderr);
+                        //fprintf(stderr," rrrrrrr %f %f %f - %f %f %f\n", cpoint.v[0], cpoint.v[1], cpoint.v[2], npoint.v[0], npoint.v[1], npoint.v[2]);fflush(stderr);
                         collision_result_t ct = NETLizard_MapCollisionTesting_r(map, &nco, &npoint);
-                        fprintf(stderr," new scene %d - %d\n", ct.res, ct.scene);fflush(stderr);
+                        //fprintf(stderr," new scene %d - %d\n", ct.res, ct.scene);fflush(stderr);
 
                         if(ct.res == 2 || ct.res == 4) // 测试通过则把测试线段的B点改为`延墙壁计算的New位置`继续进行碰撞测试
                         { // TODO: scene发生变更
+                            unsigned scene_change = result.scene != ct.scene;
                             result.npos = ct.npos;
                             result.scene = ct.scene;
                             LINE_B(line) = ct.npos;
                             line_direction(&line, &line_dir);
                             line_len = line_length(&line);
                             line_zero = line_iszero(&line);
+#if 0
+                            if(scene_change)
+                            {
+                                fprintf(stderr," new scene %d - %d\n", s, ct.scene);fflush(stderr);
+                                mesh = map->meshes + ct.scene;
+                                j = 0;
+                            }
+#endif
                         }
                         else // 测试失败则丢弃延墙壁计算的New位置: 测试线段的B点改为`碰撞点`继续进行碰撞测试
                         {
@@ -496,7 +510,7 @@ static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_
                     }
                     else // 如果两条线段相同则对该平面重新进行一次碰撞测试
                     {
-                        fprintf(stderr," same\n");fflush(stderr);
+                        //fprintf(stderr," same\n");fflush(stderr);
                         LINE_B(line) = npoint;
                         line_direction(&line, &line_dir);
                         line_len = line_length(&line);

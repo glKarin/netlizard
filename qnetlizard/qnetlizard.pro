@@ -20,17 +20,13 @@ HEADERS += \
     src/qdef.h \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
-    src/misc/settings.h \
-    src/scenedialog.h \
-    lib/opengl_render.h
+    src/misc/settings.h
 
 SOURCES += \
     main.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
-    src/misc/settings.cpp \
-    src/scenedialog.cpp \
-    lib/opengl_render.c
+    src/misc/settings.cpp
 
 # Widget
 HEADERS += \
@@ -50,7 +46,8 @@ HEADERS += \
     src/settingdialog.h \
     src/indexviewer.h \
     src/spriteviewer.h \
-    src/changelogdialog.h
+    src/changelogdialog.h \
+    src/scenedialog.h
 
 SOURCES += \
     src/widget/baseviewer.cpp \
@@ -69,7 +66,8 @@ SOURCES += \
     src/settingdialog.cpp \
     src/indexviewer.cpp \
     src/spriteviewer.cpp \
-    src/changelogdialog.cpp
+    src/changelogdialog.cpp \
+    src/scenedialog.cpp
 
 # Component
 DEPENDPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer
@@ -190,7 +188,8 @@ HEADERS += \
     lib/frustum.h \
     lib/matrix.h \
     lib/math_std.h \
-    lib/euler.h
+    lib/euler.h \
+    lib/opengl_render.h
 
 SOURCES += \
     lib/mesa_gl_math.c \
@@ -203,7 +202,8 @@ SOURCES += \
     lib/ortho.c \
     lib/frustum.c \
     lib/matrix.c \
-    lib/euler.c
+    lib/euler.c \
+    lib/opengl_render.c
 
 # NL-GL
 DEPENDPATH += ./src/gl

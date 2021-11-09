@@ -16,11 +16,19 @@ extern "C" {
 #define GL_MATRIX_MM(matrix) ((float **)(GL_MATRIX_M(matrix)))
 #define GL_MATRIXV_MM(matrix) ((float **)(GL_MATRIXV_M(matrix)))
 
+#if 0
 #define GL_MATRIX_M_CR(matrix, col, row) (GL_MATRIX_M(matrix))[row * 4 + col]
 #define GL_MATRIXV_M_CR(matrix, col, row) (GL_MATRIXV_M(matrix))[row * 4 + col]
 
 #define GL_MATRIX_M_CR4(matrix, col, row) (GL_MATRIX_M(matrix))[(row - 1) * 4 + (col - 1)]
 #define GL_MATRIXV_M_CR4(matrix, col, row) (GL_MATRIXV_M(matrix))[(row - 1) * 4 + (col - 1)]
+#else
+#define GL_MATRIX_M_CR(matrix, col, row) (GL_MATRIX_M(matrix))[col * 4 + row]
+#define GL_MATRIXV_M_CR(matrix, col, row) (GL_MATRIXV_M(matrix))[col * 4 + row]
+
+#define GL_MATRIX_M_CR4(matrix, col, row) (GL_MATRIX_M(matrix))[(col - 1) * 4 + (row - 1)]
+#define GL_MATRIXV_M_CR4(matrix, col, row) (GL_MATRIXV_M(matrix))[(col - 1) * 4 + (row - 1)]
+#endif
 
 #define GL_MATRIX_M_I(matrix, i) (GL_MATRIX_M(matrix))[i]
 #define GL_MATRIXV_M_I(matrix, i) (GL_MATRIXV_M(matrix))[i]

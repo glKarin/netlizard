@@ -117,8 +117,8 @@ void SceneDialog::UpdateSceneInfo()
         list << _DBG_VEC3("Position", v);
         v = camera->Rotation();
         list << _DBG_VEC3("Rotation", v);
-        v = camera->Scale();
-        list << _DBG_VEC3("Scale", v);
+//        v = camera->Scale();
+//        list << _DBG_VEC3("Scale", v);
 
         list << _B("normal");
         v = camera->Direction();

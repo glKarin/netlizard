@@ -23,7 +23,7 @@
 #include "nlforce.h"
 #include "lib/bound.h"
 
-#define OBJ_RADIUS 60
+#define OBJ_RADIUS 50
 #define OBJ_HEIGHT 180
 
 static const float _g = NL::Physics::EARTH_G * 1000;
