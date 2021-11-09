@@ -3,6 +3,7 @@
 #include "math_std.h"
 
 #include <stdio.h>
+#include <math.h>
 #include "line.h"
 #include "triangle.h"
 
@@ -18,13 +19,16 @@ void plane_make(plane_t *bo, const vector3_t *a, const vector3_t *b)
 
 float plane_point_to_plane_distance(const plane_t *plane, const vector3_t *point)
 {
+    return vector3_dot(point, &(PLANEV_NORMAL(plane))) + plane_d(plane);
+
     float distance = vector3_dot(&(PLANEV_NORMAL(plane)), &(PLANEV_POSITION(plane)));
-    return vector3_dot(point, &(PLANEV_POSITION(plane))) - distance;
+    return vector3_dot(point, &(PLANEV_NORMAL(plane))) - distance;
 }
 
+// Ax + By + Cz + D = 0: D is left
 float plane_d(const plane_t *plane)
 {
-    float distance = vector3_dot(&(PLANEV_NORMAL(plane)), &(PLANEV_POSITION(plane)));
+    float distance = -vector3_dot(&(PLANEV_NORMAL(plane)), &(PLANEV_POSITION(plane)));
     return distance;
 }
 
@@ -33,6 +37,7 @@ int plane_ray_intersect(const plane_t *plane, const ray_t *line, float *lamda, v
 {
     float dotProduct = vector3_dot(&(RAYV_DIRECTION(line)), &(PLANEV_NORMAL(plane)));
     float l2;
+    fprintf(stderr, " dotProduct %f, %f  ---- > %f\n", dotProduct, (acos(dotProduct) / M_PI * 180), plane_point_to_plane_distance(plane, &line->position));fflush(stderr);
 
     if((dotProduct <= COLLISION_ZERO) && (dotProduct >= -COLLISION_ZERO))
         return 0;
@@ -74,9 +79,9 @@ void plane_triangle_plane(plane_t *plane, const triangle_t *tri)
 
 int plane_point_clip(const plane_t *plane, const vector3_t *v)
 {
-    float a = vector3_dot(v, &(PLANEV_NORMAL(plane))) - plane_d(plane);
+    float a = plane_point_to_plane_distance(plane, v);
 
-    //float a = PLANEV_NORMAL_X(plane) * VECTOR3V_X(v) + PLANEV_NORMAL_Y(plane) * VECTOR3V_Y(v) + PLANEV_NORMAL_Z(plane) * VECTOR3V_Z(v) + plane_d(plane);
+    fprintf(stderr, "plane_point_clip: %f = %f %f %f | %f %f %f - %f %f %f\n", a, v->v[0], v->v[1], v->v[2], plane->normal.v[0], plane->normal.v[1], plane->normal.v[2], plane->position.v[0], plane->position.v[1], plane->position.v[2]);fflush(stderr);
     return a > 0 ? 1 : (a < 0 ? -1 : 0);
 }
 
@@ -101,12 +106,12 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
     float l;
     ray_t a;
 
-    int same = line_iszero(line);
-    int ac = plane_point_clip(plane, &LINEV_A(line));
-    int bc = plane_point_clip(plane, &LINEV_B(line));
-    if(same)
+    int same = line_iszero(line); // 线段起点和终点是否相同
+    int ac = plane_point_clip(plane, &LINEV_A(line)); // 点A到平南裁剪
+    int bc = plane_point_clip(plane, &LINEV_B(line)); // 点B到平南裁剪
+    if(same) // 如果线段起点和终点相同
     {
-        if(ac == 0 && bc == 0)
+        if(ac == 0 && bc == 0) // 两点都在平面里
         {
             if(mask)
                 *mask = 1 | 2;
@@ -116,26 +121,68 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
                 *lamda = 0;
             if(point)
                 *point = LINEV_A(line);
-            return 10;
+            return 10; // 0;
         }
         else
         {
-            if(mask)
+            if(ac > 0) // 两点都在平面上方
             {
-                if(ac > 0)
+                if(mask)
                     *mask = 1 | 2;
+                if(dir)
+                    *dir = 0;
+                if(lamda)
+                    *lamda = 0;
+                if(point)
+                    *point = LINEV_A(line);
+                return 9;
             }
-            return -10;
+            else
+            {
+                if(mask)
+                    *mask = 0;
+                if(dir)
+                    *dir = 0;
+                if(lamda)
+                    *lamda = 0;
+                return 0;
+            }
         }
     }
 
+    int m = 0;
+    if(ac >= 0)
+        m |= 1;
+    if(bc >= 0)
+        m |= 2;
     if(mask)
     {
-        *mask = 0;
-        if(ac >= 0)
-            *mask |= 1;
-        if(bc >= 0)
-            *mask |= 2;
+        *mask = m;
+    }
+
+    if(m == 0) // 如果两点都在平面下方, 则不相交
+        return -111;
+    if(m == (1 | 2)) // 如果两点都在平面上方, 则不相交
+        return -122;
+    if(ac == 0 && bc < 0) // 点A在平面上
+    {
+        if(lamda)
+            *lamda = 0;
+        if(point)
+            *point = LINEV_A(line);
+        if(dir)
+            *dir = 1;
+        return 133;
+    }
+    if(bc == 0 && ac < 0) // 点B在平面上
+    {
+        if(lamda)
+            *lamda = 0;
+        if(point)
+            *point = LINEV_B(line);
+        if(dir)
+            *dir = -1;
+        return 135;
     }
 
     ray_line_to_ray(&a, line);
@@ -146,6 +193,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
         return 0;
     }
 
+    fprintf(stderr, " 111111 } %d, %f %f\n", res, l, length);fflush(stderr);
     if(res > 0)
     {
         // cale $line.b point with $plane.normal and ray's collsion's distance, instead of line's $length
@@ -153,7 +201,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
         plane_make(&bp, &LINEV_B(line), &PLANEV_NORMAL(plane));
         float bl;
         plane_ray_intersect(&bp, &a, &bl, NULL);
-        //fprintf(stderr, " a->b } %f, %f %f\n", l, bl, length);fflush(stderr);
+        fprintf(stderr, " a->b } %f, %f %f\n", l, bl, length);fflush(stderr);
 
         if(l > bl)
         //if(FLOAT_GREATER(l, length, CMP_ZERO))
@@ -185,7 +233,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
     plane_make(&bp, &LINEV_A(line), &PLANEV_NORMAL(plane));
     float al;
     plane_ray_intersect(&bp, &a, &al, NULL);
-    //fprintf(stderr, " b->a } %f, %f %f\n", l, length, al);fflush(stderr);
+    fprintf(stderr, " b->a } %f, %f %f\n", l, length, al);fflush(stderr);
 
     if(l > al)
     //if(FLOAT_GREATER(l, length, CMP_ZERO))

@@ -28,9 +28,14 @@ public:
     float FPS() const;
     void SetFPS(float fps);
     float CurrentFPS() const;
+    int ActorCount() const;
+
+    NLSceneCamera * CurrentCamera();
     
 signals:
     void sizeChanged(const QSize &s);
+    void updated(float delta);
+    void rendered(float fps);
     
 public slots:
     void RunLoop(bool b);
@@ -44,7 +49,6 @@ protected:
     virtual void Init();
     virtual void Deinit();
     void SetCurrentCamera(NLSceneCamera *camera);
-    NLSceneCamera * CurrentCamera();
     bool MousePressed() const;
     void AddActor(NLActor *actor);
     void RemoveActor(NLActor *actor);

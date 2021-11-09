@@ -159,7 +159,10 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
 
         if(widget)
         {
-            m_layout->addRow(label, widget);
+            if(label.isEmpty())
+                m_layout->addRow(widget);
+            else
+                m_layout->addRow(label, widget);
         }
     }
 }

@@ -91,5 +91,10 @@ typedef GLmatrix NLMatrix4;
 .arg(GL_MATRIX_M_CR4(v, 1, 3), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 2, 3), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 3, 3), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 4, 3), 16, 'g', 6)\
 .arg(GL_MATRIX_M_CR4(v, 1, 4), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 2, 4), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 3, 4), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 4, 4), 16, 'g', 6)\
 ;
+#define NLDEBUG_MATRIX3(v) qDebug() << QString(#v "[\n| %1, %2, %3 |\n| %4, %5, %6 |\n| %7, %8, %9 |\n| %10, %11, %12 |\n]")\
+.arg(GL_MATRIX_M_CR4(v, 1, 1), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 2, 1), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 3, 1), 16, 'g', 6)\
+.arg(GL_MATRIX_M_CR4(v, 1, 2), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 2, 2), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 3, 2), 16, 'g', 6)\
+.arg(GL_MATRIX_M_CR4(v, 1, 3), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 2, 3), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 3, 3), 16, 'g', 6)\
+;
 
 #endif // _KARIN_NLDEF_H

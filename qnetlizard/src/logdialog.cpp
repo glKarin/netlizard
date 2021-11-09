@@ -35,7 +35,7 @@ void LogDialog::Init()
     QPushButton *button = new QPushButton;
 
     m_textViewer->setAcceptRichText(true);
-    layout->addWidget(m_textViewer);
+    layout->addWidget(m_textViewer, 1);
     button->setText("Clear");
     toolLayout->addStretch();
     toolLayout->addWidget(button);

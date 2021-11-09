@@ -20,6 +20,7 @@
 #include "nl_util.h"
 #include "nl_shadow_render.h"
 #include "nl_algo.h"
+#include "nlforce.h"
 #include "lib/bound.h"
 
 #define OBJ_RADIUS 60
@@ -160,8 +161,6 @@ void MapScene::Init()
     //glHint(GL_FOG_HINT, GL_FASTEST);
 }
 
-#include "nlforce.h"
-
 void MapScene::Update(float delta)
 {
     vector3_t oldPos = m_mainCameraActor->Position();
@@ -183,9 +182,12 @@ void MapScene::Update(float delta)
         ConvToAlgoVector3(oldPos);
         ConvToAlgoVector3(pos);
 
+        fprintf(stderr,"Old pos : %f %f %f\n", oldPos.v[0], oldPos.v[1], oldPos.v[2]);fflush(stderr);
+        fprintf(stderr,"Tmp pos : %f %f %f\n", pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
         collision_object_t obj = {oldPos, OBJ_RADIUS, OBJ_HEIGHT};
         int res = NETLizard_MapCollisionTesting(m_model, &obj, &pos, &scene);
         //qDebug() << res << scene;
+        fprintf(stderr,"new_pos : %f %f %f\n", pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
         vector3_t p;
         bool clear = false;
         if(res == 4)
@@ -204,7 +206,7 @@ void MapScene::Update(float delta)
             if(gravity && gravity->GetProperty_T("force", 0) != 0) // is jump
                 clear = true;
         }
-        //fprintf(stderr,"NETLizard_MapCollisionTesting : %d\n", res);fflush(stderr);
+        fprintf(stderr,"NETLizard_MapCollisionTesting : %d\n###########\n\n\n", res);fflush(stderr);
         float rglz = 0;
         //qDebug() << "NETLizard_MapCollisionTesting: "<<  res;
         res = NETLizard_GetScenePointZCoord(m_model, &p, scene, &scene, &rglz);

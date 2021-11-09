@@ -20,13 +20,17 @@ HEADERS += \
     src/qdef.h \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
-    src/misc/settings.h
+    src/misc/settings.h \
+    src/scenedialog.h \
+    lib/opengl_render.h
 
 SOURCES += \
     main.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
-    src/misc/settings.cpp
+    src/misc/settings.cpp \
+    src/scenedialog.cpp \
+    lib/opengl_render.c
 
 # Widget
 HEADERS += \

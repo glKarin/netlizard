@@ -55,6 +55,7 @@ public:
     NLVector3 Scale() const;
     NLVector3 Direction() const;
     NLVector3 Up() const;
+    NLVector3 Right() const;
     NLSceneCamera * Move(const NLVector3 &v);
     NLSceneCamera * Turn(const NLVector3 &v);
     NLSceneCamera * Zoom(const NLVector3 &v);

@@ -24,6 +24,8 @@
 #include "settings.h"
 #include "settingdialog.h"
 #include "changelogdialog.h"
+#include "scenedialog.h"
+#include "nlscene.h"
 
 #ifdef _DEV_TEST
 #include "testviewer.h"
@@ -31,7 +33,8 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    m_logDialog(0)
+    m_logDialog(0),
+    m_sceneDialog(0)
 {
     setObjectName("MainWindow");
     Init();
@@ -39,6 +42,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    if(m_logDialog)
+    {
+        m_logDialog->close();
+        m_logDialog->deleteLater();
+    }
+    if(m_sceneDialog)
+    {
+        m_sceneDialog->close();
+        m_sceneDialog->deleteLater();
+    }
     DEBUG_DESTROY_Q;
 }
 
@@ -102,6 +115,11 @@ void MainWindow::MenuActionSlot(QAction *action)
         return;
     }
 
+    if(m_sceneDialog)
+    {
+        m_sceneDialog->SetScene(0);
+    }
+
     QString type = action->data().toString();
 
     if(type == "exit")
@@ -126,10 +144,16 @@ void MainWindow::MenuActionSlot(QAction *action)
     {
         ChangelogDialog::Show(this);
     }
+    else if(type == "scene")
+    {
+        ToggleSceneDialog();
+    }
     else
     {
         BaseViewer *viewer = GenViewer(type);
         setCentralWidget(viewer);
+
+        SetupSceneDialog();
     }
 }
 
@@ -224,5 +248,41 @@ void MainWindow::moveEvent(QMoveEvent *event)
         QPoint pos = event->pos();
         settings->SetSetting("WINDOW/x", pos.x());
         settings->SetSetting("WINDOW/y", pos.y());
+    }
+}
+
+void MainWindow::ToggleSceneDialog()
+{
+    if(!m_sceneDialog)
+    {
+        m_sceneDialog = new SceneDialog(this);
+    }
+    if(m_sceneDialog->isVisible())
+    {
+        m_sceneDialog->hide();
+        m_sceneDialog->SetScene(0);
+    }
+    else
+    {
+        m_sceneDialog->ResetPosAndSize();
+        m_sceneDialog->show();
+        setFocus(Qt::MouseFocusReason);
+
+        SetupSceneDialog();
+    }
+}
+
+void MainWindow::SetupSceneDialog()
+{
+    if(!m_sceneDialog)
+        return;
+    m_sceneDialog->UpdateSceneInfo();
+    if(!m_sceneDialog->isVisible())
+        return;
+    BaseViewer *viewer = dynamic_cast<BaseViewer *>(centralWidget());
+    if(viewer)
+    {
+        NLScene *scene = dynamic_cast<NLScene *>(viewer->CentralWidget());
+        m_sceneDialog->SetScene(scene);
     }
 }

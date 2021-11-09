@@ -254,6 +254,7 @@ void NLScene::IdleTimer_slot()
     m_delta = delta / 1000.0f;
     m_lastTime = ts;
     Update(m_delta);
+    emit updated(m_delta);
 
     if(m_updateGLInterval > 0)
     {
@@ -263,6 +264,7 @@ void NLScene::IdleTimer_slot()
             m_updateGLLastTime = m_lastTime;
             updateGL();
             UpdateCurrentFPS(fd);
+            emit rendered(m_currentFps);
         }
     }
     else
@@ -452,4 +454,9 @@ bool NLScene::WheelEventHandler(int mouse, int orientation, int delta, int x, in
     Q_UNUSED(y);
     Q_UNUSED(modifier);
     return false;
+}
+
+int NLScene::ActorCount() const
+{
+    return m_actors.Count();
 }

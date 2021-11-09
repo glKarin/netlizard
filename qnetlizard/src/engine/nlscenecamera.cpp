@@ -136,6 +136,11 @@ NLVector3 NLSceneCamera::Up() const
     return m_up;
 }
 
+NLVector3 NLSceneCamera::Right() const
+{
+    return m_right;
+}
+
 NLSceneCamera * NLSceneCamera::Move(const NLVector3 &unit)
 {
     if(vector3_iszero(&unit))
