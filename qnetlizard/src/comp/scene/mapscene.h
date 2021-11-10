@@ -36,7 +36,7 @@ protected:
 
     private Q_SLOTS:
     void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
-    void SetNoclip(bool b);
+    void SetNoclip(int b);
     void SetFog(bool b);
     void SetSingleScene(bool b);
 
@@ -59,7 +59,7 @@ private:
     NLSceneOrthoCamera *m_skyCamera;
     NLScenePerspectiveCamera *m_sky3DCamera;
     SimpleControlComponent *m_control;
-    bool m_noclip;
+    int m_noclip;
     bool m_fog;
     bool m_singleScene;
 

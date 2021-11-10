@@ -10,10 +10,29 @@
 #include "lib/line.h"
 #include "lib/euler.h"
 
-#define SCENE_BOUND(mesh) BOUNDV(mesh->box.min, mesh->box.max)
-#define SCENE_PLANE(plane) PLANEV(plane.position, plane.normal)
+#define SCT_Invalid -1
+#define SCT_Outside NETLizard_Collision_Testing_Scene_Outside
+#define SCT_Only_In_AABB NETLizard_Collision_Testing_Scene_Only_In_AABB
+#define SCT_Pass NETLizard_Collision_Testing_Scene_Pass
+#define SCT_Missing_Plane NETLizard_Collision_Testing_Scene_Missing_Plane
+#define SCT_Movement NETLizard_Collision_Testing_Scene_Movement
+#define SCT_Item NETLizard_Collision_Testing_Scene_Item
+
+#define ICT_Invalid -1
+#define ICT_Inside NETLizard_Collision_Testing_Item_Inside
+#define ICT_Only_In_AABB NETLizard_Collision_Testing_Item_Only_In_AABB
+#define ICT_Pass NETLizard_Collision_Testing_Item_Pass
+#define ICT_Missing_Plane NETLizard_Collision_Testing_Item_Missing_Plane
+#define ICT_Movement NETLizard_Collision_Testing_Item_Movement
+#define ICT_Ignore NETLizard_Collision_Testing_Item_Ignore
+
+//#define SCENE_BOUND(mesh) BOUNDV(mesh->box.min, mesh->box.max)
+#define SCENE_BOUND(mesh) NETLizard_GetSceneBound(mesh)
+//#define SCENE_PLANE(plane) PLANEV(mesh->plane[i])
+#define SCENE_PLANE(mesh, i) NETLizard_GetScenePlane(mesh, i)
 
 #define UP_NORMAL_LIMIT 0.866025
+#define _MAX(a, b) ((a) > (b) ? (a) : (b))
 
 #define IS_FLOOR(normal) ((normal)[2] > UP_NORMAL_LIMIT)
 #define IS_CEIL(normal) ((normal)[2] < -UP_NORMAL_LIMIT)
@@ -44,89 +63,49 @@ static void * push_back(int size, void **arr, int *count, const void *t)
     return _narr;
 }
 
-typedef struct array_list_s
+static bound_t NETLizard_GetSceneBound(const GL_NETLizard_3D_Mesh *scene)
 {
-    void *arr;
-    unsigned count;
-    unsigned size;
-} array_list_t;
-
-static void array_list_push_back(array_list_t *list, const void *t)
-{
-    push_back(list->size, list->arr, &list->count, t);
+    nl_vector3_t min = VECTOR3V(scene->box.min);
+    nl_vector3_t max = VECTOR3V(scene->box.max);
+    GLmatrix mat;
+    Mesa_AllocGLMatrix(&mat);
+    Mesa_glTranslate(&mat, scene->position[0], scene->position[1], scene->position[2]);
+    matrix_transformv_self(&mat, &min);
+    matrix_transformv_self(&mat, &max);
+    Mesa_FreeGLMatrix(&mat);
+    bound_t bound;
+    bound_make(&bound, &min, &max);
+    return bound;
 }
 
-static void array_list_make(array_list_t *list, int size)
+static plane_t NETLizard_GetScenePlane(const GL_NETLizard_3D_Mesh *scene, int j)
 {
-    list->arr = NULL;
-    list->size = size;
-    list->count = 0;
+    const GL_NETLizard_3D_Plane *plane = scene->plane + j;
+    nl_vector3_t normal = VECTOR3V(plane->normal);
+    nl_vector3_t position = VECTOR3V(plane->position);
+    GLmatrix mat;
+    Mesa_AllocGLMatrix(&mat);
+    Mesa_glTranslate(&mat, scene->position[0], scene->position[1], scene->position[2]);
+    matrix_transformv_self(&mat, &position);
+    Mesa_InverseTransposeMatrix(&mat);
+    matrix_transformv_self_row(&mat, &normal);
+    Mesa_FreeGLMatrix(&mat);
+    plane_t p;
+    plane_make(&p, &position, &normal);
+    return p;
 }
 
-static void array_list_free(array_list_t *list)
+static int NETLizard_IgnoreCollisionTestingItem(int item_type)
 {
-    if(list->arr)
-        free(list->arr);
-    list->arr = NULL;
-    list->count = 0;
+    if((item_type & NL_3D_ITEM_TYPE_WEAPON)
+            || (item_type & NL_3D_ITEM_TYPE_THIN)
+            || (item_type & NL_3D_ITEM_TYPE_SKY_BOX)
+            || (item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL)
+            || (item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL)
+            )
+        return 1;
+    return 0;
 }
-
-static void * array_list_at(array_list_t *list, int index)
-{
-    if(!list->arr)
-        return NULL;
-    int i = index >= 0 ? index : list->count + index;
-    return (char *)list->arr + i * list->count;
-}
-
-static void array_list_pop_front(array_list_t *list)
-{
-    if(!list->arr || list->count == 0)
-        return;
-
-    void *_narr = NULL;
-    if(list->count > 1)
-    {
-        _narr = calloc(list->count - 1, list->size);
-        memcpy(_narr, (char *)list->arr + list->size, list->size * (list->count - 1));
-        free(list->arr);
-    }
-    list->count -= 1;
-    list->arr = _narr;
-}
-
-static void array_list_pop_back(array_list_t *list)
-{
-    if(!list->arr || list->count == 0)
-        return;
-    void *_narr = NULL;
-    if(list->count > 1)
-    {
-        _narr = calloc(list->count - 1, list->size);
-        memcpy(_narr, list->arr, list->size * (list->count - 1));
-        free(list->arr);
-    }
-    list->count -= 1;
-    list->arr = _narr;
-}
-
-#define array_list(T) array_list_t
-
-//static void Algo_GetNormalAngle(const nl_vector3_t *normal, float *yr, float *xr)
-//{
-//    if(!normal)
-//        return;
-//    float xl = VECTOR3V_X(normal);
-//    float yl = VECTOR3V_Y(normal);
-//    if(yr)
-//        *yr = clamp_degree(rtod(atan2(yl, xl)) - 90.0);
-//    if(xr)
-//    {
-//        float xyl = sqrt(xl * xl + yl * yl);
-//        float zl = VECTOR3V_Z(normal);
-//        *xr = clamp_degree(rtod(atan2(zl, xyl)));
-//    }
-//}
 
 /*
   点a是否在全图范围内
@@ -172,7 +151,7 @@ int NETLizard_FindScenePointIn(const GL_NETLizard_3D_Model *map_model, const nl_
 /*
   获取new_pos下的场景索引scene, 返回场景盒子的最高值rglz. floor为真则该场景必须有地板
   */
-int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_pos, int floor, int *scene, float *rglz)
+static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_pos, unsigned floor, int *scene, float *rglz)
 {
     if(!netlizard_3d_model || !new_pos)
         return 0;
@@ -232,50 +211,101 @@ int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizard_3d_mo
     return res;
 }
 
-/*
-  获取点new_pos下的场景索引scene的地板Z坐标rglz
-  */
-#define GET_FLOOR_INVERT_NORMAL 3 // 1 2 3
-int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_pos, int scene, float *rglz)
+static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *mesh,  const nl_vector3_t *new_pos, unsigned under, float *rglz)
 {
-    if(!netlizard_3d_model || !new_pos)
+    if(!mesh || !new_pos)
         return 0;
-    const GL_NETLizard_3D_Mesh *mesh = netlizard_3d_model->meshes + scene;
     unsigned int j;
     for(j = 0; j < mesh->plane_count; j++)
     {
-        // 计算当前位置的地板坐标
-        if(IS_FLOOR(mesh->plane[j].normal))
+        // 平面是否向上
+        if(!IS_FLOOR(mesh->plane[j].normal))
+            continue;
+        plane_t pla = SCENE_PLANE(mesh, j);
+
+        // 平面点和New位置的Z值比较, 高于New位置的Z则丢弃
+        if(under)
         {
-            plane_t pla = SCENE_PLANE(mesh->plane[j]);
-            nl_vector3_t point = VECTOR3(0, 0, 0);
+            if(VECTOR3V_Z(new_pos) < PLANE_POSITION_Z(pla))
+                continue;
+        }
+
+        nl_vector3_t point = VECTOR3(0, 0, 0);
 
 #if(GET_FLOOR_INVERT_NORMAL == 1) // 1: only invert z coord
-            nl_vector3_t dir = PLANE_NORMAL(pla);
-            VECTOR3_Z(dir) = -VECTOR3_Z(dir);
+        nl_vector3_t dir = PLANE_NORMAL(pla);
+        VECTOR3_Z(dir) = -VECTOR3_Z(dir);
 #elif(GET_FLOOR_INVERT_NORMAL == 2) // 2: invert plane normal
-            nl_vector3_t dir = PLANE_NORMAL(pla);
-            vector3_invertv(&dir);
+        nl_vector3_t dir = PLANE_NORMAL(pla);
+        vector3_invertv(&dir);
 #else // 3: using fixed down normal
-            nl_vector3_t dir = VECTOR3(0, 0, -1);
+        nl_vector3_t dir = VECTOR3(0, 0, -1);
 #endif
 
-            ray_t l = {*new_pos, dir};
-            if(plane_ray_intersect(&pla, &l, NULL, &point))
-            {
-                if(rglz)
-                    *rglz = VECTOR3_Z(point);
-                return 1;
-            }
+        ray_t l = {*new_pos, dir};
+        if(plane_ray_intersect(&pla, &l, NULL, &point))
+        {
+            if(rglz)
+                *rglz = VECTOR3_Z(point);
+            return 1;
         }
     }
     return 0;
 }
 
 /*
+  获取点new_pos下的场景索引scene的地板Z坐标rglz
+  */
+#define GET_FLOOR_INVERT_NORMAL 3 // 1 2 3
+int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_pos, int scene, unsigned include_item, float *rglz)
+{
+    if(!netlizard_3d_model || !new_pos)
+        return 0;
+    const GL_NETLizard_3D_Mesh *mesh = netlizard_3d_model->meshes + scene;
+
+    unsigned has = 0;
+    float zcoord;
+    if(include_item)
+    {
+        unsigned int j;
+        for(j = mesh->item_index_range[0]; j < mesh->item_index_range[1]; j++)
+        {
+            const GL_NETLizard_3D_Mesh *im = netlizard_3d_model->item_meshes + j;
+            if(NETLizard_IgnoreCollisionTestingItem(im->item_type))
+                continue;
+            bound_t aabb = SCENE_BOUND(im);
+            nl_vector3_t expand = VECTOR3(50, 50, 0);
+            bound_expand(&aabb, &expand);
+            if(!bound_point_in_box2d(&aabb, new_pos))
+                continue;
+            float f;
+            int r = NETLizard_GetMeshFloorZCoordInScenePoint(netlizard_3d_model->item_meshes + j, new_pos, 1, &f);
+            if(r)
+            {
+                zcoord = (has++) ? _MAX(zcoord, f) : f;
+            }
+        }
+    }
+
+    float f;
+    int r = NETLizard_GetMeshFloorZCoordInScenePoint(mesh, new_pos, 0, &f);
+    if(r)
+    {
+        zcoord = (has++) ? _MAX(zcoord, f) : f;
+    }
+    if(has)
+    {
+        if(rglz)
+            *rglz = zcoord;
+    }
+    fprintf(stderr,"iii : %d %d %f\n\n", has ? 1 : 0, has, f);fflush(stderr);
+    return has ? 1 : 0;
+}
+
+/*
   获取点new_pos下的所有场景的地板Z坐标rglz, 返回场景索引scene
   */
-int NETLizard_GetSceneFloorZCoordUnderPoint(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_pos, int *scene, float *rglz)
+int NETLizard_GetSceneFloorZCoordUnderPoint(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_pos, unsigned include_item, int *scene, float *rglz)
 {
     if(!netlizard_3d_model || !new_pos)
         return 0;
@@ -285,7 +315,7 @@ int NETLizard_GetSceneFloorZCoordUnderPoint(const GL_NETLizard_3D_Model *netliza
     if(!res)
         return 0;
     nl_vector3_t pos = VECTOR3(VECTOR3V_X(new_pos), VECTOR3V_Y(new_pos), gress_z);
-    res = NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, &pos, gress_scene, &gress_z);
+    res = NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, &pos, gress_scene, include_item, &gress_z);
     if(res)
     {
         if(scene)
@@ -299,7 +329,7 @@ int NETLizard_GetSceneFloorZCoordUnderPoint(const GL_NETLizard_3D_Model *netliza
 /*
   获取点new_pos下的场景索引scene的地板Z坐标rglz, 如果没有地板, 则继续向下寻找, 如果一直没有地板, 则获取整个场景盒子的最小Z, 返回新的场景索引rscene
   */
-int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_pos, int scene, int *rscene, float *rglz)
+int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_pos, int scene, unsigned include_item, int *rscene, float *rglz)
 {
     if(!netlizard_3d_model || !new_pos)
         return 0;
@@ -307,7 +337,7 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
 
     if(scene >= 0)
     {
-        res = NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, new_pos, scene, rglz);
+        res = NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, new_pos, scene, include_item, rglz);
         if(res)
         {
             if(rscene)
@@ -315,7 +345,7 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
             return 1;
         }
     }
-    res = NETLizard_GetSceneFloorZCoordUnderPoint(netlizard_3d_model, new_pos, rscene, rglz);
+    res = NETLizard_GetSceneFloorZCoordUnderPoint(netlizard_3d_model, new_pos, include_item, rscene, rglz);
     if(res)
         return 1;
     bound_t bound;
@@ -343,6 +373,7 @@ typedef struct collision_result_s
     int res;
     int scene;
     nl_vector3_t npos;
+    int item;
 } collision_result_t;
 
 typedef struct collision_plane_s
@@ -352,33 +383,38 @@ typedef struct collision_plane_s
     float lamda;
 } collision_plane_t;
 
-static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, const nl_vector3_t *new_pos)
+static collision_result_t NETLizard_ItemCollisionTesting(const GL_NETLizard_3D_Model *map, int s, const collision_object_t *obj, const nl_vector3_t *new_pos)
 {
-    collision_result_t result = {-1, -1, *new_pos};
+    collision_result_t result = {-1, -1, *new_pos, -1};
 
     const vector3_t *pos = &obj->position;
     const float height = obj->height;
     const float width = obj->radius;
+    const GL_NETLizard_3D_Mesh *mesh = map->item_meshes + s;
 
-    // 获取位置所在的场景
-    int s = NETLizard_FindScenePointIn(map, new_pos);
-    if(s == -1) // New位置不在任何场景范围内
+    if(NETLizard_IgnoreCollisionTestingItem(mesh->item_type))
     {
-        result.res = 0;
-        s = NETLizard_FindScenePointIn(map, pos); // 尝试获取原位置的场景
-        if(s == -1)
-            return result;
-    }
-
-    result.scene = s;
-    // 检查场景是否有碰撞面数据
-    const GL_NETLizard_3D_Mesh *mesh = map->meshes + s;
-    if(!mesh->plane) // 无碰撞面数据
-    {
-        result.res = 3;
+        result.res = ICT_Ignore;
         return result;
     }
 
+    bound_t bound = SCENE_BOUND(mesh);
+    nl_vector3_t expand = VECTOR3(width, width, 0);
+    bound_expand(&bound, &expand);
+    if(!bound_point_in_box(&bound, new_pos))
+    {
+        result.res = ICT_Pass;
+        return result;
+    }
+
+    // 检查场景是否有碰撞面数据
+    if(!mesh->plane) // 无碰撞面数据
+    {
+        result.res = ICT_Missing_Plane;
+        return result;
+    }
+
+    result.res = ICT_Only_In_AABB;
     line_t line;
     line_make(&line, &obj->position, new_pos);
     nl_vector3_t line_dir;
@@ -394,7 +430,7 @@ static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_
     {
         unsigned is_floor = IS_FLOOR(mesh->plane[j].normal);
         unsigned is_ceil = IS_CEIL(mesh->plane[j].normal);
-        plane_t plane = SCENE_PLANE(mesh->plane[j]);
+        plane_t plane = SCENE_PLANE(mesh, j);
         float limit = 0;
         if(is_floor)
             limit = 0;
@@ -414,12 +450,12 @@ static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_
         int mask = 0;
         //fprintf(stderr,">>>>> %f, %f\n", LINE_A_Y(line), LINE_B_Y(line));fflush(stderr);
         int r = plane_line_intersect(&plane, &line, &lamda, &cpoint, &dir, &mask);
-        fprintf(stderr,"\talgo %d - %d: %f | %f, %f, %f ======= %f %f %f  === %f\n", r, mask,lamda, mesh->plane[j].normal[0], mesh->plane[j].normal[1], mesh->plane[j].normal[2],cpoint.v[0],cpoint.v[1],cpoint.v[2], limit);fflush(stderr);
+        //fprintf(stderr,"\talgo %d - %d: %f | %f, %f, %f ======= %f %f %f  === %f\n", r, mask,lamda, mesh->plane[j].normal[0], mesh->plane[j].normal[1], mesh->plane[j].normal[2],cpoint.v[0],cpoint.v[1],cpoint.v[2], limit);fflush(stderr);
         if(r == 0) // 平行
         {
             if(mask == 0) // 两点都在背面
             {
-                result.res = 1;
+                result.res = ICT_Inside;
                 break;
             }
             j++;
@@ -429,7 +465,184 @@ static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_
         {
             if(mask == 0) // 两点都在背面
             {
-                result.res = 1;
+                result.res = ICT_Inside;
+                break;
+            }
+            j++;
+            continue; // 两点都在正面
+        }
+
+        // 相交, 且Old->New穿过, 且Old != New
+        if(mask == 1 && dir > 0)
+        {
+            //VECTOR3_Z(cpoint) -= obj->height;
+            result.res = ICT_Movement;
+
+            result.npos = cpoint;
+            LINE_B(line) = cpoint;
+            line_direction(&line, &line_dir);
+            line_len = line_length(&line);
+            line_zero = line_iszero(&line);
+        }
+
+        j++;
+    }
+
+    //fprintf(stderr,"------------------\n\n");fflush(stderr);
+    if(result.res == ICT_Only_In_AABB)
+        result.res = ICT_Pass;
+    return result;
+}
+
+static collision_result_t NETLizard_SceneItemCollisionTesting(const GL_NETLizard_3D_Model *map, int s, const collision_object_t *obj, const nl_vector3_t *new_pos)
+{
+    collision_result_t result = {-1, -1, *new_pos, -1};
+    result.res = ICT_Pass;
+    result.scene = s;
+    collision_object_t nobj = *obj;
+    const GL_NETLizard_3D_Mesh *mesh = map->meshes + s;
+    unsigned int k;
+    for(k = mesh->item_index_range[0]; k < mesh->item_index_range[1]; k++)
+    {
+        collision_result_t r = NETLizard_ItemCollisionTesting(map, k, &nobj, new_pos);
+        //fprintf(stderr,"  NETLizard_SceneItemCollisionTesting : %d : %d| \n\n", k, r.res);fflush(stderr);
+        if(r.res == ICT_Pass) // 没有与物体碰撞则继续检测下个物体
+            continue;
+        if(r.res == ICT_Only_In_AABB) // 实际没有与物体碰撞则继续检测下个物体
+            continue;
+        if(r.res == ICT_Ignore)
+        {
+            result.res = r.res;
+            result.item = k;
+            continue;
+        }
+        if(r.res == ICT_Missing_Plane)
+        {
+            result.res = r.res;
+            result.item = k;
+            continue;
+        }
+        if(r.res == ICT_Movement)
+        {
+            result.res = r.res;
+            result.item = k;
+            result.npos = r.npos;
+            nobj.position = r.npos;
+            continue;
+        }
+        if(r.res == ICT_Inside)
+        {
+            result.res = r.res;
+            result.item = k;
+            break;
+        }
+    }
+    return result;
+}
+
+static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, const nl_vector3_t *new_pos, unsigned include_item)
+{
+    collision_result_t result = {-1, -1, *new_pos, -1};
+
+    const vector3_t *pos = &obj->position;
+    const float height = obj->height;
+    const float width = obj->radius;
+    nl_vector3_t npos = *new_pos;
+
+    // 获取位置所在的场景
+    int s = NETLizard_FindScenePointIn(map, new_pos);
+    if(s == -1) // New位置不在任何场景范围内
+    {
+        result.res = SCT_Outside;
+        s = NETLizard_FindScenePointIn(map, pos); // 尝试获取原位置的场景
+        if(s == -1)
+            return result;
+    }
+
+    result.scene = s;
+    if(include_item) // 首先检测物体碰撞
+    {
+        collision_result_t ires = NETLizard_SceneItemCollisionTesting(map, s, obj, new_pos);
+        if(ires.res == ICT_Inside)
+        {
+            result.item = ires.item;
+            result.res = SCT_Item;
+            return result;
+        }
+        if(ires.res == ICT_Ignore || ires.res == ICT_Missing_Plane)
+        {
+            result.item = ires.item;
+        }
+        if(ires.res == ICT_Movement)
+        {
+            result.item = ires.item;
+            npos = ires.npos;
+        }
+    }
+
+    // 检查场景是否有碰撞面数据
+    const GL_NETLizard_3D_Mesh *mesh = map->meshes + s;
+    if(!mesh->plane) // 无碰撞面数据
+    {
+        result.res = SCT_Missing_Plane;
+        return result;
+    }
+
+    result.res = SCT_Only_In_AABB;
+    line_t line;
+    line_make(&line, &obj->position, &npos);
+    nl_vector3_t line_dir;
+
+    unsigned fail = 0;
+    float line_len = line_length(&line);
+    int line_zero = line_iszero(&line);
+    line_direction(&line, &line_dir);
+    //LINE_A_Z(line) += obj->height;
+    //LINE_B_Z(line) += obj->height;
+
+    unsigned int j = 0;
+    while(j < mesh->plane_count)
+    {
+        unsigned is_floor = IS_FLOOR(mesh->plane[j].normal);
+        unsigned is_ceil = IS_CEIL(mesh->plane[j].normal);
+        plane_t plane = SCENE_PLANE(mesh, j);
+        float limit = 0;
+        if(is_floor)
+            limit = 0;
+        else if(is_ceil)
+            limit = 0; //height;
+        else
+            limit = width;
+        if(limit)
+        {
+            vector3_moveve(&PLANE_POSITION(plane), &PLANE_NORMAL(plane), limit);
+        }
+
+        //ray_t l = {*new_pos, VECTOR3(-mesh->plane[j].normal[0], -mesh->plane[j].normal[1], -mesh->plane[j].normal[2])};
+        vector3_t cpoint = VECTOR3(0, 0, 0);
+        float lamda = 0.0;
+        int dir = 0;
+        int mask = 0;
+        //fprintf(stderr,">>>>> %f, %f\n", LINE_A_Y(line), LINE_B_Y(line));fflush(stderr);
+        int r = plane_line_intersect(&plane, &line, &lamda, &cpoint, &dir, &mask);
+        //fprintf(stderr,"\talgo %d - %d: %f | %f, %f, %f ======= %f %f %f  === %f\n", r, mask,lamda, mesh->plane[j].normal[0], mesh->plane[j].normal[1], mesh->plane[j].normal[2],cpoint.v[0],cpoint.v[1],cpoint.v[2], limit);fflush(stderr);
+        if(r == 0) // 平行
+        {
+            if(mask == 0) // 两点都在背面
+            {
+                result.res = SCT_Only_In_AABB;
+                fail = 1;
+                break;
+            }
+            j++;
+            continue; // 两点都在正面
+        }
+        if(r < 0) // 不相交
+        {
+            if(mask == 0) // 两点都在背面
+            {
+                result.res = SCT_Only_In_AABB;
+                fail = 1;
                 break;
             }
             j++;
@@ -440,12 +653,12 @@ static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_
         if(mask == 1 && dir > 0 && !line_zero)
         {
             //VECTOR3_Z(cpoint) -= obj->height;
-            result.res = 4;
+            result.res = SCT_Movement;
 
             if(!is_floor && !is_ceil) // if is a wall // 如果是墙壁, 则计算碰撞点延墙壁方向前进的点(模拟触墙滑动)
             {
                 float l = line_len - lamda;
-                fprintf(stderr," res == 4 - %f\n", l);fflush(stderr);
+                //fprintf(stderr," res == 4 - %f\n", l);fflush(stderr);
                 if(l < 0) l = 0;
                 if(l > 0) // 如果New位置在平面背面, 则进行延墙滑动
                 {
@@ -478,10 +691,10 @@ static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_
                     {
                         collision_object_t nco = {cpoint, width, height};
                         //fprintf(stderr," rrrrrrr %f %f %f - %f %f %f\n", cpoint.v[0], cpoint.v[1], cpoint.v[2], npoint.v[0], npoint.v[1], npoint.v[2]);fflush(stderr);
-                        collision_result_t ct = NETLizard_MapCollisionTesting_r(map, &nco, &npoint);
+                        collision_result_t ct = NETLizard_SceneCollisionTesting_r(map, &nco, &npoint, include_item);
                         //fprintf(stderr," new scene %d - %d\n", ct.res, ct.scene);fflush(stderr);
 
-                        if(ct.res == 2 || ct.res == 4) // 测试通过则把测试线段的B点改为`延墙壁计算的New位置`继续进行碰撞测试
+                        if(ct.res == SCT_Pass || ct.res == SCT_Movement) // 测试通过则把测试线段的B点改为`延墙壁计算的New位置`继续进行碰撞测试
                         { // TODO: scene发生变更
                             unsigned scene_change = result.scene != ct.scene;
                             result.npos = ct.npos;
@@ -529,7 +742,8 @@ static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_
             }
             else
             {
-                result.res = 1;
+                result.res = SCT_Only_In_AABB;
+                fail = 1;
                 break;
             }
         }
@@ -538,8 +752,8 @@ static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_
     }
 
     //fprintf(stderr,"------------------\n\n");fflush(stderr);
-    if(result.res == -1)
-        result.res = 2;
+    if(result.res == SCT_Only_In_AABB && !fail)
+        result.res = SCT_Pass;
     return result;
 }
 
@@ -549,12 +763,12 @@ static collision_result_t NETLizard_MapCollisionTesting_r(const GL_NETLizard_3D_
 // 2 - 在场景AABB内，且在场景所有碰撞面内
 // 3 - 仅在场景AABB内，但是该场景无碰撞面数据
 // 4 - 在场景AABB内，且在场景所有碰撞面内，但是与某一碰撞面的距离小于测试值
-int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, nl_vector3_t *new_pos, int *scene)
+int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, nl_vector3_t *new_pos, int *scene, unsigned include_item, int *collision_item)
 {
     if(!map || !obj)
         return -1;
 
-    collision_result_t result = NETLizard_MapCollisionTesting_r(map, obj, new_pos);
+    collision_result_t result = NETLizard_SceneCollisionTesting_r(map, obj, new_pos, include_item);
     if(result.res <= 0)
         return result.res;
     if(scene)
@@ -563,103 +777,13 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
     {
         *new_pos = result.npos;
     }
+    if(collision_item)
+        *collision_item = result.item;
 
     return result.res;
 }
 
 #if 0
-// 0 在AABB内，并在所有碰撞面内
-// 1 仅在AABB内，不在所有碰撞面内
-// 2 不在AABB内，也不在所有碰撞面内
-// 3 在AABB内，但是没有碰撞面数据
-// 4 不在AABB内，也不在所有碰撞面内, 但是距离太近
-// 5 特殊物品，不进行碰撞测试
-item_collision_testing_result_type Algo_NETLizard3DItemCollisionTesting(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *pos, const nl_vector3_t *new_pos, float width, float height, int scene, nl_vector3_t *c_normal, int *index)
-{
-    if(!netlizard_3d_model || !pos || !new_pos)
-        return item_in_all_planes_and_in_aabb_type;
-
-    int res = item_only_in_aabb_type;
-    const GL_NETLizard_3D_Mesh *mesh = netlizard_3d_model->meshes + scene;
-    //float lamda = 0.0;
-    nl_vector3_t position = {pos->x, pos->y, pos->z - height};
-    nl_vector3_t new_position = {new_pos->x, new_pos->y, new_pos->z - height};
-    nl_vector3_t direction = Vector3_SubtractVector3(&new_position, &position);
-    Vector3_Normalize(&direction);
-    ray_t line = {new_position, direction};
-    unsigned int k;
-    for(k = mesh->item_index_range[0]; k < mesh->item_index_range[1]; k++)
-    {
-        const GL_NETLizard_3D_Item_Mesh *im = netlizard_3d_model->item_meshes + k;
-        bound_t aabb = {
-            {im->item_mesh.ortho[3] - width + im->pos[0], im->item_mesh.ortho[4] - width + im->pos[1], im->item_mesh.ortho[5] + im->pos[2]},
-            {im->item_mesh.ortho[0] + width + im->pos[0], im->item_mesh.ortho[1] + width + im->pos[1], im->item_mesh.ortho[2] + im->pos[2]}
-        };
-        // 检测新位置是否在地图中某一物品盒子内
-        if(Math3D_PointInAABB(&new_position, &aabb))
-        {
-            res = item_only_in_aabb_type;
-            //printfi(im->item_type);
-            if(index)
-                *index = k;
-            if(im->item_type & NL_3D_ITEM_TYPE_WEAPON || im->item_type & NL_3D_ITEM_TYPE_THIN || im->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
-            {
-                if(index)
-                    *index = k;
-                return item_not_need_collision_testing_type;
-            }
-            // 检测新位置是否在物品盒子中真实场景内
-            if(im->item_mesh.plane_count > 0)
-            {
-                const GL_NETLizard_3D_Plane *planes = im->item_mesh.plane;
-                unsigned int j;
-                for(j = 0; j < im->item_mesh.plane_count; j++)
-                {
-                    plane_t plane = {
-                        {planes[j].position[0] + im->pos[0], planes[j].position[1] + im->pos[1], planes[j].position[2] + im->pos[2]},
-                        {-planes[j].normal[0], -planes[j].normal[1], -planes[j].normal[2]}
-                    };
-                    nl_vector3_t point = {0.0, 0.0, 0.0};
-                    float lamda = 0.0;
-                    int r;
-                    r = Math3D_LineToPlaneIntersect(&line, &plane, &point);
-                    if(r && Math3D_PointInAABB(&point, &aabb))
-                    {
-                        nl_vector3_t normal;
-                        r = Math3D_LineToPlaneCollision(&line, &plane, &lamda, &normal);
-                        //if(res > 0 && lamda <= width)
-                        if(c_normal)
-                        {
-                            c_normal->x = -normal.x;
-                            c_normal->y = -normal.y;
-                            c_normal->z = -normal.z;
-                        }
-                        if(index)
-                            *index = k;
-                        res = item_in_all_planes_and_in_aabb_type;
-                        return res;
-                    }
-                }
-
-                if(index)
-                    *index = k;
-                res = item_only_in_aabb_type;
-                return res;
-            }
-            else
-            {
-                res = item_in_aabb_and_item_no_planes_type;
-                return res;
-            }
-        }
-    }
-
-    if(index)
-        *index = -1;
-    res = item_out_aabb_type;
-    return res;
-}
-
 int Algo_GetItemTopCoord(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_position, int scene, float width, float *rglz, int *index, float *height)
 {
     if(!netlizard_3d_model || !new_position)

@@ -68,6 +68,7 @@ int Mesa_GLMatrixIsAlloc(GLmatrix *mat);
 void Mesa_glTranspose(GLmatrix *mat);
 void Mesa_NormalMatrix(GLmatrix *mat, const GLfloat mv[16]);
 void Mesa_InverseMatrix(GLmatrix *mat);
+void Mesa_InverseTransposeMatrix(GLmatrix *mat);
 
 
 #ifdef __cplusplus

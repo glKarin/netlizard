@@ -15,7 +15,7 @@ static int set_enable(NLenum e, NLboolean b)
         res = SET_IF_DIFF(_state.log_enabled, b);
         break;
     default:
-        E_INVALID_ENUM;
+        ES_INVALID_ENUM("%s(NLenum e=<0x%x>)", b ? "nlEnable" : "nlDisable", e);
         break;
     }
     return res;
@@ -45,33 +45,8 @@ NLboolean nlIsEnabled(NLenum e)
         res = _state.log_enabled;
         break;
     default:
-        E_INVALID_ENUM;
+        ES_INVALID_ENUM("nlIsEnabled(NLenum e=<0x%x>)", e);
         break;
     }
     return res;
-}
-
-NLenum nlGetError(void)
-{
-    return clear_errno();
-}
-
-const char * nlErrorString(NLenum error)
-{
-    static const char *_Error_Strings[] = {
-        "No error",
-        "Invalid value",
-        "Invalid enum",
-        "Invalid operation",
-        "stack overflow",
-        "Stack underflow",
-        "Out of memory",
-    };
-    if(error != NL_NO_ERROR && (error < NL_INVALID_VALUE || error > NL_OUT_OF_MEMORY))
-    {
-        E_INVALID_ENUM;
-        return NULL;
-    }
-    const int index = error == NL_NO_ERROR ? error : error - 0x0500;
-    return _Error_Strings[index];
 }

@@ -56,7 +56,8 @@ SOURCES += \
     clone3d.c \
     sprite.c \
     state.c \
-    error.c
+    error.c \
+    constants.c
 
 #libnetlizard.files = $$DESTDIR/libnetlizard*
 #libnetlizard.path = /usr/lib

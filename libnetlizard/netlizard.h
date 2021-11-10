@@ -1,14 +1,30 @@
 #ifndef _KARIN_NETLIZARD_H
 #define _KARIN_NETLIZARD_H
 
+#include <stdint.h>
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdint.h>
-#include <stddef.h>
+#define NL_VERSION_1_0 0x01000101
+#define NL_VERSION_LASTEST NL_VERSION_1_0
 
-#define ARR_MIN_LEN(x)
+#define NL_ARG_MIN_LEN(len) // array/string param min length, if string include '\0'
+#define NL_ARG_DEF_VAL(val) // param default value if set null or 0
+#define NL_ARG_VAL_UNUSED() // param is unused
+#define NL_ARG_READ_WRITE(mask) // param pointer is read and write
+#define NL_ARG_NOT_NULL(b) // param pointer is not null, function do not check pointer is null
+#define NL_ARG_PTR_ALLOC(T) // param pointer is alloc memory
+#define NL_ARG_ENUM(enum_name) // integer param is a enum
+#define NL_ARG_PTR_STR() // pointer param is a string
+#define NL_ARG_PTR_ARR() // pointer param is a array
+#define NL_ARG_LEN(arg_name) // integer param is a param's size/length
+
+#define NL_RET_PTR_ALLOC(T) // return pointer is alloc memory
+#define NL_RET_PTR_CONST(T) // return pointer is constant, do not modify
+#define NL_RET_PTR_REF_ARG(T, arg_name) // return pointer is a in-param
 
 /* NETLizard 3D game v2 texture header. 3D CT - 3D CT2 */
 #define NL_TEXTURE_V2_HEADER_MAGIC "&&&"
@@ -24,6 +40,7 @@ extern "C" {
 
 /* Basic type define */
 typedef void NLvoid;
+typedef uint8_t NLubyte;
 typedef int8_t NLbyte;
 typedef int8_t NLchar;
 typedef uint8_t NLuchar;
@@ -35,11 +52,16 @@ typedef int64_t NLlong;
 typedef uint64_t NLulong;
 typedef float NLfloat;
 typedef double NLdouble;
+typedef float NLclampf;
+typedef double NLclampd;
 typedef uint8_t NLboolean;
-typedef uint32_t NLsizei;
-typedef NLsizei NLsize;
-typedef void * NLdata;
+typedef int32_t NLsizei; // uint32_t
 typedef uint32_t NLenum;
+typedef uint32_t NLbitfield;
+
+typedef float NLclamp;
+typedef uint32_t NLsize;
+typedef void * NLdata;
 typedef void * NLfunc;
 
 //typedef char byte; // unsigned
@@ -384,10 +406,10 @@ NLboolean nlIsPNGFile(const char *name); // check file is normal png
 NLboolean nlIsPNG(const char *data, NLsizei len); // check data is normal png
 NLboolean nlIsNLPNGFile(const char *name); // check file is NETLizard png
 NLboolean nlIsNLPNG(const char *data, NLsizei len); // check data is NETLizard png
-char * nlEncodeDecodeData(const char *arr, char *data, NLsizei length); // encode/decode data to new data
-char * nlEncodeDecodeFile(const char *file, NLint *rlen); // encode/decode file to new adta
-char * nlEncodeDecodeDatav(char *arr, NLsizei length); // encode/decode data self
-char * nlEncodeDecodeDataa(const char *arr, NLsizei length); // encode/decode data to new adta
+NL_RET_PTR_REF_ARG(char *, data) char * nlEncodeDecodeData(const char *arr, char *data, NLsizei length); // encode/decode data to special data
+NL_RET_PTR_ALLOC(char *) char * nlEncodeDecodeFile(const char *file, NLint *rlen); // encode/decode file to new adta
+NL_RET_PTR_REF_ARG(char *, arr) char * nlEncodeDecodeDatav(char *arr, NLsizei length); // encode/decode data self
+NL_RET_PTR_ALLOC(char *) char * nlEncodeDecodeDataa(const char *arr, NLsizei length); // encode/decode data to new adta
 
 /* Texture util */
 NLboolean nlIsNL3DTextureV2File(const char *name); // check file is NETLizard 3D texture v2
@@ -396,21 +418,21 @@ NLboolean nlIsNL3DTextureV3File(const char *name); // check file is NETLizard 3D
 NLboolean nlIsNL3DTextureV3(const char *data, NLsizei length); // check data is NETLizard 3D texture v3
 
 /* String util: In java source, some string using integer array */
-char * nlDecodeStringi(const NLint *arr, NLsizei length); // decode integer array to string
-char * nlDecodeStringCi(const NLint *arr, NLsizei length); // decode integer array to string(C)
-char * nlDecodeString(const char *arr, NLsizei length); // decode byte array to string
-char * nlDecodeStringC(const char *arr, NLsizei length); // decode byte array to string(C)
-NLint * nlEncodeStringC(const char *str, NLint *rlen); // encode string to integer array
+NL_RET_PTR_ALLOC(char *) char * nlDecodeStringi(const NLint *arr, NLsizei length); // decode integer array to string
+NL_RET_PTR_ALLOC(char *) char * nlDecodeStringCi(const NLint *arr, NLsizei length); // decode integer array to string(C)
+NL_RET_PTR_ALLOC(char *) char * nlDecodeString(const char *arr, NLsizei length); // decode byte array to string
+NL_RET_PTR_ALLOC(char *) char * nlDecodeStringC(const char *arr, NLsizei length); // decode byte array to string(C)
+NL_RET_PTR_ALLOC(char *) NLint * nlEncodeStringC(const char *str, NLint *rlen); // encode string to integer array
 
 /* Text util: exam some text in `about`, `help` menu */
-char * nlReadAndHandleTextFile(const char *name, NLint *len); // decode text file to data
-char * nlLoadAndHandleTextData(const char *data, NLsizei len, NLint *rlen); // decode text data to data
+NL_RET_PTR_ALLOC(char *) char * nlReadAndHandleTextFile(const char *name, NLint *len); // decode text file to data
+NL_RET_PTR_ALLOC(char *) char * nlLoadAndHandleTextData(const char *data, NLsizei len, NLint *rlen); // decode text data to data
 NLboolean nlConvertAndHandleTextFile(const char *from, const char *to); // decode text file to file
 NLboolean nlSaveAndHandleTextData(const char *data, NLsizei len, const char *to); // decode text data to file
 
 /* Media util */
-char * nlGet3DGameLevelMusicFileName(NETLizard_Game game, NLint level, char *file ARR_MIN_LEN(8)); // get 3D game music file of level
-char * nlGet3DGameMenuMusicFileName(NETLizard_Game game, char *file ARR_MIN_LEN(8)); // get 3D game main menu music file
+NL_RET_PTR_REF_ARG(char *, level) char * nlGet3DGameLevelMusicFileName(NETLizard_Game game, NLint level, char *file NL_ARG_MIN_LEN(8)); // get 3D game music file of level
+NL_RET_PTR_REF_ARG(char *, file) char * nlGet3DGameMenuMusicFileName(NETLizard_Game game, char *file NL_ARG_MIN_LEN(8)); // get 3D game main menu music file
 
 /* 3D sprite: exam broken bodies in `3D Clone` */
 NLint nlGetSpiritFileCount(const char *file);
@@ -430,13 +452,13 @@ void nlDeleteNETLizard3DItemMesh(NETLizard_3D_Item_Mesh *mesh); // free 3D item 
 void nlDeleteNETLizard3DModel(NETLizard_3D_Model *model); // free 3D model
 
 // util
-const char * nlGet3DModelFrameAnimationName(NETLizard_3D_Animation_Type anim); // get 3D Egypt/3D Clone player character animation name
+NL_RET_PTR_CONST(char *) const char * nlGet3DModelFrameAnimationName(NETLizard_3D_Animation_Type anim); // get 3D Egypt/3D Clone player character animation name
 NLboolean nlCheck3DGameLevelIsAvailable(NETLizard_Game game, int level); // check 3D game level is availabel
 int nlGetItemType(NETLizard_Game game, int index); // get 3D game item type
 const NETLizard_3D_Frame_Animation * nlGet3DModelFrameAnimationConfig(NETLizard_Game game, NLuint index); // get 3D Egypt/3D Clone player character animation index start and end
-const char * nlGet3DGameLevelName(NETLizard_Game game, NLuint level);
+NL_RET_PTR_CONST(char *) const char * nlGet3DGameLevelName(NETLizard_Game game, NLuint level);
 NLboolean nlGet3DGameLevelRange(NETLizard_Game game, NLint *start, NLint *count);
-const char * nlGet3DGameName(NETLizard_Game game);
+NL_RET_PTR_CONST(char *) const char * nlGet3DGameName(NETLizard_Game game);
 const NETLizard_3D_Model_Config * nlGet3DGameModelConfig(NETLizard_Game game);
 
 // Contr Terrisiem 3D
@@ -493,8 +515,8 @@ NETLizard_Texture_Type nlGetPNGFileType(const char *file); // check png image/te
 void nlDeleteNETLizardTexture(NETLizard_Texture *tex); // free texture
 
 /* PNG */
-char * nlReadAndHandlePNGFile(const char *name, NLint *len); // encode/decode png file to data
-char * nlLoadAndHandlePNGData(const char *data, NLint len); // encode/decode png data to data
+NL_RET_PTR_ALLOC(char *) char * nlReadAndHandlePNGFile(const char *name, NLint *len); // encode/decode png file to data
+NL_RET_PTR_ALLOC(char *) char * nlLoadAndHandlePNGData(const char *data, NLint len); // encode/decode png data to data
 NLboolean nlConvertAndHandlePNGFile(const char *from, const char *to); // encode/decode png file to file
 NLboolean nlSaveAndHandlePNGData(const char *data, NLint len, const char *to); // encode/decode png data to file
 
@@ -520,18 +542,18 @@ NLboolean nlConvertTextureV3CompressFileToImageFile(const char *from, const char
 NLboolean nlSaveTextureV3CompressDataToImageFile(const NETLizard_Texture *tex, const char *to, int img_type); // save 3D texture v3 data to normal png/jpg file
 
 /* OpenGL util */
-NLuchar * nlMakePixelDataRGBACompress(const NETLizard_Texture *tex, NLint *rlen);
-NLuchar * nlMakePixelDataRGB(const NETLizard_Texture *tex, NLint *rlen);
-NLuchar * nlMakePixelDataRGBA(const NETLizard_Texture *tex, NLint *rlen);
-NLuchar * nlMakePixelData(const NETLizard_Texture *tex, NLint *rlen);
+NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelDataRGBACompress(const NETLizard_Texture *tex, NLint *rlen);
+NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelDataRGB(const NETLizard_Texture *tex, NLint *rlen);
+NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelDataRGBA(const NETLizard_Texture *tex, NLint *rlen);
+NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelData(const NETLizard_Texture *tex, NLint *rlen);
 
-#define NL_LOG 1
+#define NL_LOG 0x1
 
-#define NL_LOG_OUT 1
-#define NL_LOG_ERR 2
+#define NL_LOG_OUT 0x1
+#define NL_LOG_ERR 0x2
 
-#define NL_LOG_STD 1
-#define NL_LOG_USER 2
+#define NL_LOG_STD 0x1
+#define NL_LOG_USER 0x2
 
 #define NL_NO_ERROR                             0x0
 #define NL_INVALID_VALUE                        0x0501
@@ -540,12 +562,19 @@ NLuchar * nlMakePixelData(const NETLizard_Texture *tex, NLint *rlen);
 #define NL_STACK_OVERFLOW                       0x0503
 #define NL_STACK_UNDERFLOW                      0x0504
 #define NL_OUT_OF_MEMORY                        0x0505
+
+#define NL_VENDOR                               0x1F00
+#define NL_VERSION                              0x1F02
+#define NL_ERROR                              0x1F10
+
 /* misc */
 void nlEnable(NLenum e);
 void nlDisable(NLenum e);
 NLboolean nlIsEnabled(NLenum e);
 NLenum nlGetError(void);
-const char * nlErrorString(NLenum error);
+NL_RET_PTR_CONST(char *) const char * nlErrorString(NLenum error);
+NL_RET_PTR_CONST(char *) const char * nlGetString(NLenum name);
+
 void nlLogFunc(NLenum type, NLenum way, void *f);
 
 #ifdef __cplusplus

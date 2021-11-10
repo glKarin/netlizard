@@ -57,7 +57,10 @@
     </category>
 
     <category name="Debug" alias="DEBUG" group="Others">
-        <item alias="DEBUG/noclip" name="No clip" widget="checkbox" type="bool" default-value="false">
+        <item alias="DEBUG/noclip" name="Collision testing in map" widget="combobox" type="int" default-value="0">
+            <option name="option" label="No clip" value="0"></option>
+            <option name="option" label="Collision testing with scene" value="1"></option>
+            <option name="option" label="Collision testing with scene and item" value="2"></option>
         </item>
         <item alias="DEBUG/render" name="Render map model debug" widget="checkbox" type="int" default-value="0">
             <option name="option" label="Render map bound" value="1"></option>

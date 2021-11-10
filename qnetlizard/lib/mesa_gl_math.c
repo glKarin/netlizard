@@ -201,6 +201,24 @@ void Mesa_InverseMatrix(GLmatrix *mat)
     _math_matrix_analyse(mat);
 }
 
+void Mesa_InverseTransposeMatrix(GLmatrix *mat)
+{
+    GLfloat tmp[16];
+    GLfloat mv[16] = {
+        GL_MATRIXV_M(mat)[0], GL_MATRIXV_M(mat)[1], GL_MATRIXV_M(mat)[2], 0.0,
+        GL_MATRIXV_M(mat)[4], GL_MATRIXV_M(mat)[5], GL_MATRIXV_M(mat)[6], 0.0,
+        GL_MATRIXV_M(mat)[8], GL_MATRIXV_M(mat)[9], GL_MATRIXV_M(mat)[10], 0.0,
+        0.0, 0.0, 0.0, 1.0
+    };
+
+    _math_matrix_loadf(mat, mv);
+    _math_matrix_analyse(mat);
+    arrcpy16(mv, mat->inv);
+    _math_transposef(tmp, mv);
+
+    _math_matrix_loadf(mat, tmp);
+}
+
 
 // GLU
 #define __glPi 3.14159265358979323846

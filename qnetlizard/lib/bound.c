@@ -173,3 +173,13 @@ float bound_sqrt(const bound_t *b)
     bound_diff(b, &v);
     return vector3_length(&v);
 }
+
+float bound_expand(bound_t *b, const vector3_t *a)
+{
+    BOUNDV_MIN_X(b) -= VECTOR3V_X(a);
+    BOUNDV_MIN_Y(b) -= VECTOR3V_Y(a);
+    BOUNDV_MIN_Z(b) -= VECTOR3V_Z(a);
+    BOUNDV_MAX_X(b) += VECTOR3V_X(a);
+    BOUNDV_MAX_Y(b) += VECTOR3V_Y(a);
+    BOUNDV_MAX_Z(b) += VECTOR3V_Z(a);
+}

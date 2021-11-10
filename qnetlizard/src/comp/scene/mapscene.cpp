@@ -57,7 +57,7 @@ MapScene::MapScene(QWidget *parent)
       m_skyCamera(0),
       m_sky3DCamera(0),
       m_control(0),
-      m_noclip(true),
+      m_noclip(0),
       m_fog(false),
       m_singleScene(false)
 {
@@ -120,7 +120,7 @@ MapScene::MapScene(QWidget *parent)
 
     m_shadowRenderer->SetLightSourceType(lightSource->LightSource()->IsDirectionLighting());
 
-    SetNoclip(settings->GetSetting<bool>("DEBUG/noclip"));
+    SetNoclip(settings->GetSetting<int>("DEBUG/noclip"));
     SetFog(settings->GetSetting<int>("RENDER/fog") > 0);
     SetSingleScene(settings->GetSetting<bool>("DEBUG/single_scene"));
     connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
@@ -175,43 +175,43 @@ void MapScene::Update(float delta)
     m_shadowRenderer->SetLightSourcePosition(GetActor(7)->Position());
 
     int scene = -1;
-    if(!m_noclip && m_model->game != NL_RACING_EVOLUTION_3D)
+    int item = -1;
+    if(m_noclip != 0 && m_model->game != NL_RACING_EVOLUTION_3D)
     {
         nl_vector3_t pos = m_mainCameraActor->Position();
+        unsigned include_item = m_noclip == 2;
 
         ConvToAlgoVector3(oldPos);
         ConvToAlgoVector3(pos);
 
-        fprintf(stderr,"Old pos : %f %f %f\n", oldPos.v[0], oldPos.v[1], oldPos.v[2]);fflush(stderr);
-        fprintf(stderr,"Tmp pos : %f %f %f\n", pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
+        //fprintf(stderr,"Old pos : %f %f %f\n", oldPos.v[0], oldPos.v[1], oldPos.v[2]);fflush(stderr);
+        //fprintf(stderr,"Tmp pos : %f %f %f\n", pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
         collision_object_t obj = {oldPos, OBJ_RADIUS, OBJ_HEIGHT};
-        int res = NETLizard_MapCollisionTesting(m_model, &obj, &pos, &scene);
-        //qDebug() << res << scene;
-        fprintf(stderr,"new_pos : %f %f %f\n", pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
+        int res = NETLizard_MapCollisionTesting(m_model, &obj, &pos, &scene, include_item, &item);
+        //fprintf(stderr,"new_pos : %f %f %f\n", pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
         vector3_t p;
         bool clear = false;
-        if(res == 4)
+        if(res == NETLizard_Collision_Testing_Scene_Movement)
         {
             p = pos;
             //clear = true;
         }
-        else if(res == 2)
+        else if(res == NETLizard_Collision_Testing_Scene_Pass)
         {
             p = pos;
         }
         else
         {
+            //fprintf(stderr,"<>  : %d : %d| \n\n", res, item);fflush(stderr);
             p = oldPos;
             NLForce_gravity *gravity = m_mainCameraActor->GetTypeForce<NLForce_gravity>();
             if(gravity && gravity->GetProperty_T("force", 0) != 0) // is jump
                 clear = true;
         }
-        fprintf(stderr,"NETLizard_MapCollisionTesting : %d\n###########\n\n\n", res);fflush(stderr);
+        //fprintf(stderr,"NETLizard_MapCollisionTesting : %d\n###########\n\n\n", res);fflush(stderr);
         float rglz = 0;
-        //qDebug() << "NETLizard_MapCollisionTesting: "<<  res;
-        res = NETLizard_GetScenePointZCoord(m_model, &p, scene, &scene, &rglz);
-        //qDebug() << "NETLizard_GetScenePointZCoord: "<<  res << VECTOR3_Z(p)<< rglz << " = " << OBJ_HEIGHT + rglz;
-        //fprintf(stderr,"res222 : %d %f %f\n\n", res, VECTOR3_Z(p), rglz);fflush(stderr);
+        res = NETLizard_GetScenePointZCoord(m_model, &p, scene, include_item, &scene, &rglz);
+        //fprintf(stderr,"NETLizard_GetScenePointZCoord : %d %f %f\n\n", res, VECTOR3_Z(p), rglz);fflush(stderr);
         if(clear)
             m_mainCameraActor->Collision();
 
@@ -241,7 +241,6 @@ void MapScene::Update(float delta)
             }
         }
 
-        //qDebug() << "##############" << "\n";
         ConvToRenderVector3(p);
         m_mainCameraActor->SetPosition(p);
         m_mainCameraActor->UpdateCamera();
@@ -252,7 +251,7 @@ void MapScene::Update(float delta)
     if(scenes)
     {
         int count;
-        if(!m_noclip && m_singleScene)
+        if(m_noclip != 0 && m_singleScene)
         {
             if(scene >= 0)
             {
@@ -536,7 +535,7 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
     else if(name == "DEBUG/render")
         m_renderer->SetDebug(value.toInt());
     else if(name == "DEBUG/noclip")
-        SetNoclip(value.toBool());
+        SetNoclip(value.toInt());
     else if(name == "RENDER/fog")
     {
         int fog = value.toInt();
@@ -577,12 +576,12 @@ void MapScene::ConvToRenderVector3(vector3_t &v)
 //    VECTOR3_Z(pos) = -z;
 }
 
-void MapScene::SetNoclip(bool b)
+void MapScene::SetNoclip(int b)
 {
     if(m_noclip != b)
     {
         m_noclip = b;
-        m_mainCameraActor->SetFree(m_noclip);
+        m_mainCameraActor->SetFree(m_noclip == 0);
     }
 }
 

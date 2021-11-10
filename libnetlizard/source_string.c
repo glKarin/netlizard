@@ -19,7 +19,7 @@ static char * append_char(char *str, NLsizei *len, char ch)
 
 char * nlDecodeStringi(const NLint *arr, NLsizei length)
 {
-    size_t len = 0;
+    NLsizei len = 0;
     char *str;
     int i2;
 
@@ -62,7 +62,7 @@ char * nlDecodeStringi(const NLint *arr, NLsizei length)
 
 char * nlDecodeStringCi(const NLint *arr, NLsizei length)
 {
-    size_t len = 0;
+    NLsizei len = 0;
     char *str = NEW(char);
     ZERO(str, char);
     int i2;

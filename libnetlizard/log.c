@@ -40,7 +40,7 @@ void nlLogFunc(NLenum type, NLenum way, void *f)
 
     if(way != NL_LOG_STD && way != NL_LOG_USER)
     {
-        E_INVALID_ENUM;
+        ES_INVALID_ENUM("nlLogFunc(NLenum type=0x%x,NLenum way=<0x%x>,void *f=0x%p)", type, way, f);
         return;
     }
     switch(type)
@@ -52,7 +52,7 @@ void nlLogFunc(NLenum type, NLenum way, void *f)
             state = &_log.err;
             break;
         default:
-            E_INVALID_ENUM;
+        ES_INVALID_ENUM("nlLogFunc(NLenum type=<0x%x>,NLenum way=0x%x,void *f=0x%p)", type, way, f);
             return;
     }
     state->type = way;
