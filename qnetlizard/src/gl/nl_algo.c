@@ -257,11 +257,12 @@ static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *
   获取点new_pos下的场景索引scene的地板Z坐标rglz
   */
 #define GET_FLOOR_INVERT_NORMAL 3 // 1 2 3
-int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_pos, int scene, unsigned include_item, float *rglz)
+int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netlizard_3d_model, const collision_object_t *obj, int scene, unsigned include_item, float *rglz)
 {
-    if(!netlizard_3d_model || !new_pos)
+    if(!netlizard_3d_model || !obj)
         return 0;
     const GL_NETLizard_3D_Mesh *mesh = netlizard_3d_model->meshes + scene;
+    const nl_vector3_t *new_pos = &obj->position;
 
     unsigned has = 0;
     float zcoord;
@@ -274,7 +275,7 @@ int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netli
             if(NETLizard_IgnoreCollisionTestingItem(im->item_type))
                 continue;
             bound_t aabb = SCENE_BOUND(im);
-            nl_vector3_t expand = VECTOR3(50, 50, 0);
+            nl_vector3_t expand = VECTOR3(obj->radius, obj->radius, 0);
             bound_expand(&aabb, &expand);
             if(!bound_point_in_box2d(&aabb, new_pos))
                 continue;
@@ -305,17 +306,19 @@ int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netli
 /*
   获取点new_pos下的所有场景的地板Z坐标rglz, 返回场景索引scene
   */
-int NETLizard_GetSceneFloorZCoordUnderPoint(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_pos, unsigned include_item, int *scene, float *rglz)
+int NETLizard_GetSceneFloorZCoordUnderPoint(const GL_NETLizard_3D_Model *netlizard_3d_model, const collision_object_t *obj, unsigned include_item, int *scene, float *rglz)
 {
-    if(!netlizard_3d_model || !new_pos)
+    if(!netlizard_3d_model || !obj)
         return 0;
+    const nl_vector3_t *new_pos = &obj->position;
     int gress_scene;
     float gress_z;
     int res = NETLizard_GetTopSceneUnderPoint(netlizard_3d_model, new_pos, 1, &gress_scene, &gress_z);
     if(!res)
         return 0;
-    nl_vector3_t pos = VECTOR3(VECTOR3V_X(new_pos), VECTOR3V_Y(new_pos), gress_z);
-    res = NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, &pos, gress_scene, include_item, &gress_z);
+    //nl_vector3_t pos = VECTOR3(VECTOR3V_X(new_pos), VECTOR3V_Y(new_pos), gress_z);
+    collision_object_t nco = {VECTOR3(VECTOR3V_X(new_pos), VECTOR3V_Y(new_pos), gress_z), obj->radius, obj->height};
+    res = NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, &nco, gress_scene, include_item, &gress_z);
     if(res)
     {
         if(scene)
@@ -329,15 +332,15 @@ int NETLizard_GetSceneFloorZCoordUnderPoint(const GL_NETLizard_3D_Model *netliza
 /*
   获取点new_pos下的场景索引scene的地板Z坐标rglz, 如果没有地板, 则继续向下寻找, 如果一直没有地板, 则获取整个场景盒子的最小Z, 返回新的场景索引rscene
   */
-int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_pos, int scene, unsigned include_item, int *rscene, float *rglz)
+int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_model, const collision_object_t *obj, int scene, unsigned include_item, int *rscene, float *rglz)
 {
-    if(!netlizard_3d_model || !new_pos)
+    if(!netlizard_3d_model || !obj)
         return 0;
     int res = 0;
 
     if(scene >= 0)
     {
-        res = NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, new_pos, scene, include_item, rglz);
+        res = NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, obj, scene, include_item, rglz);
         if(res)
         {
             if(rscene)
@@ -345,11 +348,12 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
             return 1;
         }
     }
-    res = NETLizard_GetSceneFloorZCoordUnderPoint(netlizard_3d_model, new_pos, include_item, rscene, rglz);
+    res = NETLizard_GetSceneFloorZCoordUnderPoint(netlizard_3d_model, obj, include_item, rscene, rglz);
     if(res)
         return 1;
     bound_t bound;
     NETLizard_GetNETLizard3DMapBound(netlizard_3d_model, 0, 0, &bound);
+    const nl_vector3_t *new_pos = &obj->position;
     vector3_t pos = *new_pos;
     VECTOR3_Z(pos) = BOUND_MIN_Z(bound);
     res = NETLizard_FindScenePointIn(netlizard_3d_model, &pos);

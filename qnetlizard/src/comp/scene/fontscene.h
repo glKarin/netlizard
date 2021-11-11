@@ -2,7 +2,7 @@
 #define _KARIN_FONTSCENE_H
 
 #include "nlscene.h"
-#include "gl/nl_font.h"
+#include "gl/nl_gl.h"
 
 class QColor;
 class NETLizardFontRenderer;
@@ -37,7 +37,7 @@ public slots:
 
 private:
     NETLizardFontRenderer *m_renderer;
-    font_s *m_font;
+    GL_NETLizard_Font *m_font;
     QString m_text;
     int m_lineCount;
     int m_paddingWidth;

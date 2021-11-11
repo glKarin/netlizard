@@ -210,7 +210,8 @@ void MapScene::Update(float delta)
         }
         //fprintf(stderr,"NETLizard_MapCollisionTesting : %d\n###########\n\n\n", res);fflush(stderr);
         float rglz = 0;
-        res = NETLizard_GetScenePointZCoord(m_model, &p, scene, include_item, &scene, &rglz);
+        obj.position = p;
+        res = NETLizard_GetScenePointZCoord(m_model, &obj, scene, include_item, &scene, &rglz);
         //fprintf(stderr,"NETLizard_GetScenePointZCoord : %d %f %f\n\n", res, VECTOR3_Z(p), rglz);fflush(stderr);
         if(clear)
             m_mainCameraActor->Collision();

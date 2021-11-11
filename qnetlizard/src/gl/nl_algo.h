@@ -36,8 +36,8 @@ typedef struct collision_object_s
     float height;
 } collision_object_t;
 
-int NETLizard_FindScenePointIn(const GL_NETLizard_3D_Model *map_model, const nl_vector3_t *p);
-int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_model, const nl_vector3_t *new_pos, int scene, unsigned include_item, int *rscene, float *rglz);
+int NETLizard_FindScenePointIn(const GL_NETLizard_3D_Model *map, const nl_vector3_t *p);
+int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, int scene, unsigned include_item, int *rscene, float *rglz);
 int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, nl_vector3_t *new_pos, int *scene, unsigned include_item, int *collision_item);
 
 #ifdef __cplusplus

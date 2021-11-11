@@ -168,12 +168,25 @@ typedef struct _GL_NETLizard_Font
     GLboolean private_m;
 
     texture_s tex;
+
+    GLfloat width;
+    GLfloat height;
 } GL_NETLizard_Font;
 
 GLboolean NETLizard_ReadFont(GL_NETLizard_Font * fnt, const char *map_file, const char *tex_file);
 GLvoid delete_GL_NETLizard_Font(GL_NETLizard_Font *fnt);
 GLvoid NETLizard_RenderFontChar(const GL_NETLizard_Font *fnt, GLuint i);
 GLint NETLizard_GetFontIndex(const GL_NETLizard_Font *fnt, int ch);
+
+void NETLizard_FontRenderString(const GL_NETLizard_Font *f, GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b, GLfloat a, const char *str);
+void NETLizard_FontRenderDigit(const GL_NETLizard_Font *f, GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b, GLfloat a, GLint num);
+void NETLizard_FontRenderChar(const GL_NETLizard_Font *f, GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b, GLfloat a, char ch);
+
+GLfloat NETLizard_FontGetStringWidth(const GL_NETLizard_Font *f, const char *str);
+GLint NETLizard_FontGetCharCountOfWidth(const GL_NETLizard_Font *f, GLfloat width, const char *str);
+
+int NETLizard_FontGetDigitCenterPosition(const GL_NETLizard_Font *fnt, GLfloat x, GLfloat y, GLfloat w, GLfloat h, int num, GLfloat *rx, GLfloat *ry);
+int NETLizard_FontGetStringCenterPosition(const GL_NETLizard_Font *fnt, GLfloat x, GLfloat y, GLfloat w, GLfloat h, const char *str, GLfloat *rx, GLfloat *ry);
 
 typedef struct _GL_NETLizard_Sprite_Cell
 {

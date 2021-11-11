@@ -7,6 +7,27 @@
 #include "nl_texture.h"
 #include "gl_texture.h"
 
+static char * itostr(int i)
+{
+    int o = 1;
+    int num = i;
+    if(i < 0)
+    {
+        o = 0;
+        num = -num;
+    }
+    int size = 1;
+    int base = 10;
+    for(; num / base; base *= 10)
+        size++;
+    if(o == 0)
+        size++;
+    char *str = (char *)malloc(size + 1);
+    memset(str, '\0', size + 1);
+    sprintf(str, "%d", i);
+    return str;
+}
+
 GLboolean NETLizard_ReadFont(GL_NETLizard_Font *fnt, const char *map_file, const char *tex_file)
 {
 	if(!map_file || !tex_file)
@@ -35,6 +56,8 @@ GLboolean NETLizard_ReadFont(GL_NETLizard_Font *fnt, const char *map_file, const
     fnt->offset = calloc(o.offset.count, sizeof(GLbyte));
     int8_t *offset = (int8_t *)(o.offset.data);
 	int i;
+    GLfloat w = 0;
+    GLfloat h = 0;
     for(i = 0; i < o.offset.count; i++)
 	{
 		fnt->offset[i] = offset[i];
@@ -86,7 +109,23 @@ GLboolean NETLizard_ReadFont(GL_NETLizard_Font *fnt, const char *map_file, const
         c->index_data.index = indexes;
         c->index_data.index_count = 6;
         c->index_data.mode = GL_TRIANGLES;
+
+        if(i == 0)
+        {
+            w = c->width;
+            h = c->height;
+        }
+        else
+        {
+            if(w < c->width)
+                w = c->width;
+            if(h < c->height)
+                h = c->height;
+        }
     }
+    fnt->width = /*(GLuint)*/w;
+    fnt->height = /*(GLuint)*/h;
+
     nlDeleteNETLizardFont(&o);
     return GL_TRUE;
 }
@@ -194,4 +233,128 @@ GLint NETLizard_GetFontIndex(const GL_NETLizard_Font *fnt, int paramInt)
 		n = 0;
 	}
 	return n;
+}
+
+// render
+void NETLizard_FontRenderString(const GL_NETLizard_Font *fnt, GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b, GLfloat a, const char *str)
+{
+    if(!fnt || !str)
+        return;
+
+    glPushAttrib(GL_CURRENT_BIT);
+    {
+        glColor4f(r, g, b, a);
+        glPushMatrix();
+        {
+            glTranslatef(x, y, 0.0);
+            size_t len = strlen(str);
+            unsigned int i;
+            for(i = 0; i < len; i++)
+            {
+                GLint index = NETLizard_GetFontIndex(fnt, str[i]);
+                if(index == -1)
+                    index = 0;
+                NETLizard_RenderFontChar(fnt, index);
+                glTranslatef(fnt->char_map[index].width + fnt->char_map[index].x_stride, 0.0, 0.0);
+            }
+        }
+        glPopMatrix();
+    }
+    glPopAttrib();
+}
+
+void NETLizard_FontRenderDigit(const GL_NETLizard_Font *fnt, GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b, GLfloat a, GLint num)
+{
+    if(!fnt)
+        return;
+    char *str = itostr(num);
+    NETLizard_FontRenderString(fnt, x, y, r, g, b, a, str);
+    free(str);
+}
+
+void NETLizard_FontRenderChar(const GL_NETLizard_Font *fnt, GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b, GLfloat a, char ch)
+{
+    if(!fnt)
+        return;
+
+    glPushAttrib(GL_CURRENT_BIT);
+    {
+        glColor4f(r, g, b, a);
+        glPushMatrix();
+        {
+            glTranslatef(x, y, 0.0);
+            GLint index = NETLizard_GetFontIndex(fnt, ch);
+            if(index == -1)
+                index = 0;
+            NETLizard_RenderFontChar(fnt, index);
+        }
+        glPopMatrix();
+    }
+    glPopAttrib();
+}
+
+GLfloat NETLizard_FontGetStringWidth(const GL_NETLizard_Font *fnt, const char *str)
+{
+    if(!fnt || !str)
+        return 0;
+    size_t len = strlen(str);
+    GLfloat w = 0.0;
+    size_t i;
+    for(i = 0; i < len; i++)
+    {
+        GLint index = NETLizard_GetFontIndex(fnt, str[i]);
+        if(index == -1)
+            index = 0;
+        w += fnt->char_map[index].width;
+        if(i < len - 1)
+            w += fnt->char_map[index].x_stride;
+    }
+    return w;
+}
+
+GLint NETLizard_FontGetCharCountOfWidth(const GL_NETLizard_Font *fnt, GLfloat width, const char *str)
+{
+    if(!fnt || !str)
+        return -1;
+    if(width <= 0.0)
+        return -1;
+    size_t len = strlen(str);
+    GLfloat w = 0.0;
+    size_t i;
+    for(i = 0; i < len; i++)
+    {
+        GLint index = NETLizard_GetFontIndex(fnt, str[i]);
+        if(index == -1)
+            index = 0;
+        w += fnt->char_map[index].width;
+        if(i < len - 1)
+            w += fnt->char_map[index].x_stride;
+        if(w >= width)
+            break;
+    }
+    return i;
+}
+
+int NETLizard_FontGetDigitCenterPosition(const GL_NETLizard_Font *fnt, GLfloat x, GLfloat y, GLfloat w, GLfloat h, int num, GLfloat *rx, GLfloat *ry)
+{
+    if(!fnt || !rx || !ry)
+        return 0;
+    char *str = itostr(num);
+    int r = NETLizard_FontGetStringCenterPosition(fnt, x, y, w, h, str, rx, ry);
+    free(str);
+    return r;
+}
+
+int NETLizard_FontGetStringCenterPosition(const GL_NETLizard_Font *fnt, GLfloat x, GLfloat y, GLfloat w, GLfloat h, const char *str, GLfloat *rx, GLfloat *ry)
+{
+    if(!fnt || !str || (!rx && !ry))
+        return 0;
+    GLfloat len = NETLizard_FontGetStringWidth(fnt, str);
+    if(len <= 0.0)
+        return 0;
+    if(rx)
+        *rx = x + (w / 2 - len / 2);
+    if(ry)
+        *ry = y + (h / 2 - fnt->height / 2);
+    return 1;
 }

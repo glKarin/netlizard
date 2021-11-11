@@ -2,7 +2,7 @@
 #define _KARIN_SPRITESCENE_H
 
 #include "nlscene.h"
-#include "gl/nl_font.h"
+#include "gl/nl_gl.h"
 
 class QColor;
 class NETLizardSpriteRenderer;

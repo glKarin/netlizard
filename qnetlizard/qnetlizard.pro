@@ -210,7 +210,6 @@ DEPENDPATH += ./src/gl
 INCLUDEPATH += ./src/gl
 
 HEADERS += \
-    src/gl/nl_font.h \
     src/gl/gl_texture.h \
     src/gl/nl_texture.h \
     src/gl/nl_gl.h \
@@ -225,7 +224,6 @@ SOURCES += \
     src/gl/gl_texture.c \
     src/gl/nl_texture.c \
     src/gl/nl_gl_font.c \
-    src/gl/nl_font.c \
     src/gl/nl_gl_reader.c \
     src/gl/nl_gl_render.c \
     src/gl/nl_gl.c \

@@ -56,7 +56,7 @@ void NETLizardFontRenderer::UpdateLayout()
     GLint line_count = 0;
     while(count < (GLint)len)
     {
-        GLint c = Font_GetCharCountOfWidth(m_font, width - 2 * m_paddingWidth, p);
+        GLint c = NETLizard_FontGetCharCountOfWidth(m_font, width - 2 * m_paddingWidth, p);
         if(c == -1)
             break;
         GLint i;
@@ -98,12 +98,12 @@ void NETLizardFontRenderer::DeinitRender()
     m_font = 0;
 }
 
-font_s * NETLizardFontRenderer::Font()
+GL_NETLizard_Font * NETLizardFontRenderer::Font()
 {
     return m_font;
 }
 
-void NETLizardFontRenderer::SetFont(font_s *f)
+void NETLizardFontRenderer::SetFont(GL_NETLizard_Font *f)
 {
     m_font = f;
 }
@@ -123,7 +123,7 @@ void NETLizardFontRenderer::RenderText()
         glPushMatrix();
         {
             glRotatef(180, 1, 0, 0);
-            Font_RenderString(m_font, 0, 0, 1, 1, 1, 1, str);
+            NETLizard_FontRenderString(m_font, 0, 0, 1, 1, 1, 1, str);
         }
         glPopMatrix();
         h += m_lineSpacing;
