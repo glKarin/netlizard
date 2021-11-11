@@ -137,14 +137,26 @@ int NETLizard_FindScenePointIn(const GL_NETLizard_3D_Model *map_model, const nl_
 {
     if(!map_model || !p)
         return -1;
+    int scenes[4] = {-1, -1, -1, -1}; // 1 2 3 0
     unsigned int i;
     for(i = 0; i < map_model->count; i++)
     {
         const GL_NETLizard_3D_Mesh *mesh = map_model->meshes + i;
         bound_t aabb = SCENE_BOUND(mesh);
-        if(bound_point_in_box(&aabb, p))
-            return i;
+        if(!bound_point_in_box(&aabb, p))
+            continue;
+        int index = mesh->plane_type == 0 ? 3 : mesh->plane_type - 1;
+        if(scenes[index] == -1) // Only get first
+            scenes[index] = i;
     }
+    // 筛选场景: 可能有场景重叠, 优先选择有自带碰撞面的, 然后是通过顶点数据计算出碰撞面的, 然后是通过包围盒计算出碰撞面的
+    // 1 > 2 > 3 > 0
+    for(i = 0; i < 4; i++)
+    {
+        if(scenes[i] != -1)
+            return scenes[i];
+    }
+
     return -1;
 }
 
@@ -299,7 +311,6 @@ int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netli
         if(rglz)
             *rglz = zcoord;
     }
-    fprintf(stderr,"iii : %d %d %f\n\n", has ? 1 : 0, has, f);fflush(stderr);
     return has ? 1 : 0;
 }
 

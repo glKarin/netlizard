@@ -208,11 +208,11 @@ void MapScene::Update(float delta)
             if(gravity && gravity->GetProperty_T("force", 0) != 0) // is jump
                 clear = true;
         }
-        //fprintf(stderr,"NETLizard_MapCollisionTesting : %d\n###########\n\n\n", res);fflush(stderr);
+        fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
         float rglz = 0;
         obj.position = p;
         res = NETLizard_GetScenePointZCoord(m_model, &obj, scene, include_item, &scene, &rglz);
-        //fprintf(stderr,"NETLizard_GetScenePointZCoord : %d %f %f\n\n", res, VECTOR3_Z(p), rglz);fflush(stderr);
+        fprintf(stderr,"NETLizard_GetScenePointZCoord : %d - scene(%d): %f <> %f\n\n", res, scene, VECTOR3_Z(p), rglz);fflush(stderr);
         if(clear)
             m_mainCameraActor->Collision();
 
@@ -460,12 +460,27 @@ bool MapScene::KeyEventHandler(int key, bool pressed, int modifier)
     switch(key)
     {
         case Qt::Key_Control:
-        break;
-            //if(!m_mainCameraActor->HasTypeForce<NLForce_push>())
+        {
+            bound_t bound = BOUND(0, 0, 0, 0, 0, 0);
+            NETLizard_GetNETLizard3DMapBound(m_model, 0, 0, &bound);
+
+            // RE3D using java MSG 3D, like OpenGL, y is up
+            NLVector3 pos = m_mainCameraActor->Position();
+            if(m_model->game == NL_RACING_EVOLUTION_3D)
             {
-                NLVector3 dir = m_mainCameraActor->MoveDirection();
-                m_mainCameraActor->AddForce(new NLForce_push(NLProperties("drag_force", -3000)("force", 2000)("direction_x", VECTOR3_X(dir))("direction_y", VECTOR3_Y(dir))("direction_z", VECTOR3_Z(dir)), m_mainCameraActor));
+                VECTOR3_Y(pos) = BOUND_MAX_Y(bound);
             }
+            else
+            {
+                conv_nl_vector3(&pos);
+                VECTOR3_Z(pos) = BOUND_MAX_Z(bound);
+                conv_gl_vector3(&pos);
+            }
+            m_mainCameraActor->SetPosition(pos);
+            m_mainCameraActor->UpdateCamera();
+        }
+                //NLVector3 dir = m_mainCameraActor->MoveDirection();
+                //m_mainCameraActor->AddForce(new NLForce_push(NLProperties("drag_force", -3000)("force", 2000)("direction_x", VECTOR3_X(dir))("direction_y", VECTOR3_Y(dir))("direction_z", VECTOR3_Z(dir)), m_mainCameraActor));
             break;
         case Qt::Key_Space:
             if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())

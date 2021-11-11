@@ -55,7 +55,7 @@ void ItemScene::paintGL()
         return;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    glDisable(GL_CULL_FACE);
+    //glDisable(GL_CULL_FACE);
     NLScene::paintGL();
 
     glFlush();
@@ -151,7 +151,7 @@ bool ItemScene::LoadFile(const QString &file, const QString &resourcePath, int g
         camera->UpdateCamera();
     }
 
-    GrabMouseCursor(true);
+    //GrabMouseCursor(true);
 
     return true;
 }

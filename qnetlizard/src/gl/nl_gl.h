@@ -62,6 +62,7 @@ typedef struct _GL_NETLizard_3D_Mesh
     GLint *tex_index;
 	GL_NETLizard_3D_Plane *plane;
     GLuint plane_count;
+    GLuint plane_type; // 0 no plane, 1 has plane, 2 from vertex, 3 from bound
     struct {
         GLfloat min[3];
         GLfloat max[3];

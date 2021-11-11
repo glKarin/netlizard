@@ -624,6 +624,8 @@ int nlGetItemType(NETLizard_Game game, int index)
 				return NL_3D_ITEM_TYPE_FAN_VERTICAL | NL_3D_ITEM_TYPE_PORTAL;
 			else if(index == 8)
 				return NL_3D_ITEM_TYPE_FAN_VERTICAL;
+            else if(index == 22) // tower
+                return NL_3D_ITEM_TYPE_THIN;
 			break;
 
         case NL_CONTR_TERRORISM_3D:

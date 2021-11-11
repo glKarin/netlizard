@@ -8,9 +8,7 @@
 extern "C" {
 #endif
 
-#define NL_VERSION_1_0 0x01000101
-#define NL_VERSION_LASTEST NL_VERSION_1_0
-
+////////// internal macros //////////
 #define NL_ARG_MIN_LEN(len) // array/string param min length, if string include '\0'
 #define NL_ARG_DEF_VAL(val) // param default value if set null or 0
 #define NL_ARG_VAL_UNUSED() // param is unused
@@ -26,6 +24,7 @@ extern "C" {
 #define NL_RET_PTR_CONST(T) // return pointer is constant, do not modify
 #define NL_RET_PTR_REF_ARG(T, arg_name) // return pointer is a in-param
 
+////////// macros //////////
 /* NETLizard 3D game v2 texture header. 3D CT - 3D CT2 */
 #define NL_TEXTURE_V2_HEADER_MAGIC "&&&"
 /* NETLizard 3D game v3 texture header. 3D Egypt - 3D Clone */
@@ -35,9 +34,33 @@ extern "C" {
 /* NETLizard game png encode/decode factor. exam: a_byte = a_byte ^ 100 */
 #define NL_ENCODE_DECODE_FACTOR 100
 
+#define NL_VERSION_1_0 0x01000101
+#define NL_VERSION_LASTEST NL_VERSION_1_0
+
 #define NL_TRUE 1
 #define NL_FALSE 0
 
+#define NL_LOG 0x1
+
+#define NL_LOG_OUT 0x1
+#define NL_LOG_ERR 0x2
+
+#define NL_LOG_STD 0x1
+#define NL_LOG_USER 0x2
+
+#define NL_NO_ERROR                             0x0
+#define NL_INVALID_VALUE                        0x0501
+#define NL_INVALID_ENUM                         0x0500
+#define NL_INVALID_OPERATION                    0x0502
+#define NL_STACK_OVERFLOW                       0x0503
+#define NL_STACK_UNDERFLOW                      0x0504
+#define NL_OUT_OF_MEMORY                        0x0505
+
+#define NL_VENDOR                               0x1F00
+#define NL_VERSION                              0x1F02
+#define NL_ERROR                              0x1F10
+
+////////// typedef //////////
 /* Basic type define */
 typedef void NLvoid;
 typedef uint8_t NLubyte;
@@ -66,23 +89,24 @@ typedef void * NLfunc;
 
 //typedef char byte; // unsigned
 
+////////// enum //////////
 /* NETLizard game define */
 enum NETLizard_Game_e
 {
-	NL_RACING_EVOLUTION_3D = 0,
-	NL_CONTR_TERRORISM_3D,
-	NL_ARMY_RANGER_3D,
-	NL_CONTR_TERRORISM_3D_EPISODE_2,
-	NL_SHADOW_OF_EGYPT_3D,
-	NL_CLONE_3D,
-    NL_CONTR_TERRORISM_3D_EPISODE_3,
+    NL_RACING_EVOLUTION_3D = 0, // Racing Evolution 3D
+    NL_CONTR_TERRORISM_3D, // Contr Terrorism 3D
+    NL_ARMY_RANGER_3D, // 3D Army Ranger : Operation Arctic
+    NL_CONTR_TERRORISM_3D_EPISODE_2, // 3D Contr Terrorism : Episode-2
+    NL_SHADOW_OF_EGYPT_3D, // 3D Shadows of Egypt
+    NL_CLONE_3D, // Clone 3D
+    NL_CONTR_TERRORISM_3D_EPISODE_3, // 3D Contr Terrorism : Episode-3
     NL_TOTAL_GAME, // Total 3D game
     NL_2D_GAME, // In 2D game and old 3D game, `png` file need decode.
     NL_OLD_GAME // In old game, `png` file not need decode.
 };
 typedef enum NETLizard_Game_e NETLizard_Game;
 
-/* Texture format */
+/* Texture pixel format */
 typedef enum NETLizard_Texture_format_e
 {
     NL_RGB = 0,
@@ -100,48 +124,7 @@ typedef enum NETLizard_Texture_Type_e
     NL_TEXTURE_UNKNOWN
 } NETLizard_Texture_Type;
 
-/* Texture structure */
-typedef struct NETLizard_Texture_s
-{
-    NETLizard_Texture_Type type; // type
-    NETLizard_Texture_format format; // format
-    NLint width; // width
-    NLint height; // height
-    NLint depth; // depth
-    struct {
-        NLint *data;
-        NLsizei count;
-    } color_map; // color table
-    struct {
-        NLuchar *data;
-        NLsizei count;
-    } color_index; // color index table, every element is a pixel and a index of `color table`
-} NETLizard_Texture;
-
-// model
-// 变量命名规则
-/*
- * array 数组
- * int int型
- * short short型
- * byte byte型
- *
- * scene 场景
- * item 物品
- * role 角色动画
- *
- * vertex 顶点坐标
- * primitive 图元（顶点索引，纹理坐标索引，纹理索引，法线）
- * plane 平面（法线索引，顶点索引）
- * aabb AABB盒子（最大， 最小）
- * begin 场景中物品起始索引
- * end 场景中物品最后索引
- * translation 位置移动
- * rotation 角度旋转
- * obj 物品索引
- */
-
-/* NETLizard 3D game item category */
+/* NETLizard 3D game item model category */
 typedef enum NETLizard_3D_Item_Type_e
 {
     NL_3D_ITEM_TYPE_GENERAL = 0,
@@ -197,6 +180,25 @@ typedef enum NETLizard_3D_Model_Type_e
     NL_RE_3D_MAP_MODEL,
     NL_RE_3D_CAR_MODEL
 } NETLizard_3D_Model_Type;
+
+////////// structure //////////
+/* Texture structure */
+typedef struct NETLizard_Texture_s
+{
+    NETLizard_Texture_Type type; // type
+    NETLizard_Texture_format format; // format
+    NLint width; // width
+    NLint height; // height
+    NLint depth; // depth
+    struct {
+        NLint *data;
+        NLsizei count;
+    } color_map; // color table
+    struct {
+        NLuchar *data;
+        NLsizei count;
+    } color_index; // color index table, every element is a pixel and a index of `color table`
+} NETLizard_Texture;
 
 /* NETLizard 3D map BSP??? node */
 typedef struct NETLizard_BSP_Tree_Node_s
@@ -381,9 +383,6 @@ typedef struct NETLizard_Font_s
 } NETLizard_Font;
 
 /* NETLizard 3D model data config */
-#define NL_SKYFILE_LENGTH 10
-#define NL_SUBFIX_LENGTH 12
-#define NL_OBJ_SUBFIX_LENGTH 14
 typedef struct NETLizard_3D_Model_Config_s
 {
     NETLizard_Game game; // game
@@ -393,14 +392,12 @@ typedef struct NETLizard_3D_Model_Config_s
     NLuint item_index_factory; // item vertex index factory
     NLboolean invert_texcoord_y; // invert scene texcoord'y: 1.0 - x
     NLboolean item_invert_texcoord_y; // invert item texcoord'y: 1.0 - x
-    char sky_file[NL_SKYFILE_LENGTH];
-    char tex_path_format[NL_SUBFIX_LENGTH];
-    char obj_path_format[NL_OBJ_SUBFIX_LENGTH];
+    char sky_file[10];
+    char tex_path_format[12];
+    char obj_path_format[14];
 } NETLizard_3D_Model_Config;
-#undef NL_SKYFILE_LENGTH
-#undef NL_SUBFIX_LENGTH
-#undef NL_OBJ_SUBFIX_LENGTH
 
+////////// function //////////
 /* PNG util */
 NLboolean nlIsPNGFile(const char *name); // check file is normal png
 NLboolean nlIsPNG(const char *data, NLsizei len); // check data is normal png
@@ -546,26 +543,6 @@ NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelDataRGBACompress(const NETLizar
 NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelDataRGB(const NETLizard_Texture *tex, NLint *rlen);
 NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelDataRGBA(const NETLizard_Texture *tex, NLint *rlen);
 NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelData(const NETLizard_Texture *tex, NLint *rlen);
-
-#define NL_LOG 0x1
-
-#define NL_LOG_OUT 0x1
-#define NL_LOG_ERR 0x2
-
-#define NL_LOG_STD 0x1
-#define NL_LOG_USER 0x2
-
-#define NL_NO_ERROR                             0x0
-#define NL_INVALID_VALUE                        0x0501
-#define NL_INVALID_ENUM                         0x0500
-#define NL_INVALID_OPERATION                    0x0502
-#define NL_STACK_OVERFLOW                       0x0503
-#define NL_STACK_UNDERFLOW                      0x0504
-#define NL_OUT_OF_MEMORY                        0x0505
-
-#define NL_VENDOR                               0x1F00
-#define NL_VERSION                              0x1F02
-#define NL_ERROR                              0x1F10
 
 /* misc */
 void nlEnable(NLenum e);

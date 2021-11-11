@@ -53,29 +53,6 @@ void delete_GL_NETLizard_3D_Mesh(GL_NETLizard_3D_Mesh *mesh)
 //    delete_GL_NETLizard_3D_Mesh(mesh);
 //}
 
-#if 0
-void delete_GL_NETLizard_3D_Animation_Model(GL_NETLizard_3D_Animation_Model *model)
-{
-	if(!model)
-		return;
-	if(model->meshes)
-	{
-		unsigned int i;
-		for(i = 0; i < model->count; i++)
-			delete_GL_NETLizard_3D_Mesh(model->meshes + i);
-		free(model->meshes);
-	}
-	if(model->tex)
-	{
-		if(glIsTexture(model->tex->texid))
-			glDeleteTextures(1, &model->tex->texid);
-		free(model->tex);
-	}
-	if(model->animations)
-		free(model->animations);
-}
-#endif
-
 void delete_GL_NETLizard_3D_Model(GL_NETLizard_3D_Model *model)
 {
 	if(!model)
@@ -345,8 +322,9 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 				}
 				m->plane_count = plane_count;
 				m->plane = planes;
+                m->plane_type = 1;
 			}
-            else if(mesh->primitive.data)
+            else if(mesh->primitive.data) // If not plane data, make a floor plane with vertex data.
 			{
 				GLuint c = 0;
 				GLuint j;
@@ -372,10 +350,11 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 				}
 				m->plane_count = plane_count;
 				m->plane = planes;
-			}
-			else
+                m->plane_type = 2;
+            }
+            else // If not plane data, make a floor plane with bound data.
 			{
-				GLuint plane_count = 1;
+                GLuint plane_count = 1;
                 plane_t ps[6];
 				bound_t item_box = {
                     VECTOR3(
@@ -395,8 +374,8 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 				int q = 0;
 				for(o = 0; o < 6; o++)
 				{
-					if(o != 0)
-						continue;
+                    if(o != 0)
+                        continue; // only floor plane
                     planes[q].position[0] = VECTOR3_X(ps[o].position);
                     planes[q].position[1] = VECTOR3_Y(ps[o].position);
                     planes[q].position[2] = VECTOR3_Z(ps[o].position);
@@ -407,7 +386,8 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 				}
 				m->plane_count = plane_count;
 				m->plane = planes;
-			}
+                m->plane_type = 3;
+            }
 
             m->box.min[0] = (GLfloat)mesh->box.min[0];
             m->box.min[1] = (GLfloat)mesh->box.min[1];
@@ -615,6 +595,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                 m->vertex_data.vertex = vertex;
                 m->plane_count = plane_count;
                 m->plane = planes;
+                m->plane_type = 2;
 //                m->vertex_data.index_count = index_count;
 //                m->vertex_data.index = indexs;
                 free(indexs);
