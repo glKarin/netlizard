@@ -1,8 +1,11 @@
 #include "simplecameracomponent.h"
 
 #include <QDebug>
+#include <QMetaObject>
+#include <QMetaProperty>
 
 #include "nlscene.h"
+#include "nlfuncs.h"
 
 #include "nlsceneperspectivecamera.h"
 #include "nlsceneorthocamera.h"
@@ -22,7 +25,7 @@ SimpleCameraComponent::~SimpleCameraComponent()
 
 void SimpleCameraComponent::InitProperty()
 {
-    SetType(GetProperty_T<int>("type", static_cast<int>(NLSceneCamera::Type_Perspective)));
+    SetType(GetInitProperty_T<int>("type", static_cast<int>(NLSceneCamera::Type_Perspective)));
 }
 
 void SimpleCameraComponent::Init()
@@ -99,7 +102,13 @@ void SimpleCameraComponent::SetType(int type)
         if(GetProperty_T<bool>("camera_z_is_up", false))
             m_camera->SetZIsUp(true); // z_is_up
         m_camera->SetScene(Scene());
+        emit propertyChanged("type", m_type);
     }
+}
+
+int SimpleCameraComponent::Type() const
+{
+    return m_type;
 }
 
 NLSceneCamera * SimpleCameraComponent::Camera()

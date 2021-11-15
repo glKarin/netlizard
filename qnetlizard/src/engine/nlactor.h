@@ -14,6 +14,10 @@ class NLComponent;
 class NLActor : public NLObject
 {
     Q_OBJECT
+    Q_PROPERTY(NLVector3 position READ Position WRITE SetPosition NOTIFY positionChanged FINAL)
+    Q_PROPERTY(NLVector3 rotation READ Rotation WRITE SetRotation NOTIFY rotationChanged FINAL)
+    Q_PROPERTY(NLVector3 scale READ Scale WRITE SetScale NOTIFY scaleChanged FINAL)
+
 public:
     explicit NLActor(NLActor *parent = 0);
     explicit NLActor(const NLProperties &prop, NLActor *parent = 0);

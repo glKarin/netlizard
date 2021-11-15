@@ -407,6 +407,7 @@ void NLActor::SetPosition(const vector3_t &v)
     m_position = v;
     UpdateMatrix();
     emit positionChanged(m_position);
+    emit propertyChanged("position", NLProperty::fromValue<NLVector3>(m_position));
 }
 
 void NLActor::SetRotation(const vector3_t &v)
@@ -417,6 +418,7 @@ void NLActor::SetRotation(const vector3_t &v)
     UpdateMatrix();
     UpdateDirection();
     emit rotationChanged(m_rotation);
+    emit propertyChanged("rotation", NLProperty::fromValue<NLVector3>(m_rotation));
 }
 
 void NLActor::SetScale(const vector3_t &v)
@@ -426,6 +428,7 @@ void NLActor::SetScale(const vector3_t &v)
     m_scale = v;
     UpdateMatrix();
     emit scaleChanged(m_scale);
+    emit propertyChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
 }
 
 NLVector3 NLActor::Position() const
@@ -463,17 +466,11 @@ NLActor * NLActor::Move(const NLVector3 &unit)
     if(vector3_iszero(&unit))
         return this;
 
-    vector3_moveve(&m_position, &m_right, VECTOR3_X(unit));
-    vector3_moveve(&m_position, &m_up, VECTOR3_Y(unit));
-    vector3_moveve(&m_position, &m_direction, VECTOR3_Z(unit));
-
-    UpdateMatrix();
-    emit positionChanged(m_position);
-//    NLDEBUG_VECTOR3(m_position);
-//    NLDEBUG_VECTOR3(m_direction);
-//    NLDEBUG_VECTOR3(m_right);
-//    NLDEBUG_VECTOR3(m_up);
-//    NLDEBUG_VECTOR3(unit);
+    NLVector3 pos = m_position;
+    vector3_moveve(&pos, &m_right, VECTOR3_X(unit));
+    vector3_moveve(&pos, &m_up, VECTOR3_Y(unit));
+    vector3_moveve(&pos, &m_direction, VECTOR3_Z(unit));
+    SetPosition(pos);
     return this;
 }
 
@@ -482,20 +479,14 @@ NLActor * NLActor::MoveOriginal(const NLVector3 &unit)
     if(vector3_iszero(&unit))
         return this;
 
+    NLVector3 pos = m_position;
     NLVector3 right = InitRight;
     NLVector3 up = InitUp_y;
     NLVector3 direction = InitDirection_y;
     vector3_moveve(&m_position, &right, VECTOR3_X(unit));
     vector3_moveve(&m_position, &up, VECTOR3_Y(unit));
     vector3_moveve(&m_position, &direction, VECTOR3_Z(unit));
-
-    UpdateMatrix();
-    emit positionChanged(m_position);
-//    NLDEBUG_VECTOR3(m_position);
-//    NLDEBUG_VECTOR3(m_direction);
-//    NLDEBUG_VECTOR3(m_right);
-//    NLDEBUG_VECTOR3(m_up);
-//    NLDEBUG_VECTOR3(unit);
+    SetPosition(pos);
     return this;
 }
 
@@ -504,10 +495,9 @@ NLActor * NLActor::MoveDirectionOriginal(float len, const NLVector3 &dir)
     if(vector3_iszero(&dir) || len == 0.0)
         return this;
 
-    vector3_moveve(&m_position, &dir, len);
-
-    UpdateMatrix();
-    emit positionChanged(m_position);
+    NLVector3 pos = m_position;
+    vector3_moveve(&pos, &dir, len);
+    SetPosition(pos);
     return this;
 }
 
@@ -516,12 +506,11 @@ NLActor * NLActor::MoveDirection(float len, const NLVector3 &dir)
     if(vector3_iszero(&dir) || len == 0.0)
         return this;
 
+    NLVector3 pos = m_position;
     NLVector3 nd;
     Mesa_glTransform_row(VECTOR3_V(nd), VECTOR3_V(dir), &m_normalMatrix);
-    vector3_moveve(&m_position, &nd, len);
-
-    UpdateMatrix();
-    emit positionChanged(m_position);
+    vector3_moveve(&pos, &nd, len);
+    SetPosition(pos);
     return this;
 }
 
@@ -529,12 +518,13 @@ NLActor * NLActor::Turn(const NLVector3 &v)
 {
     if(vector3_iszero(&v))
         return this;
-    VECTOR3_X(m_rotation) = NL::clamp_angle(VECTOR3_X(m_rotation) + VECTOR3_X(v));
-    VECTOR3_Y(m_rotation) = NL::clamp_angle(VECTOR3_Y(m_rotation) + VECTOR3_Y(v));
-    VECTOR3_Z(m_rotation) = NL::clamp_angle(VECTOR3_Z(m_rotation) + VECTOR3_Z(v));
-    UpdateMatrix();
-    UpdateDirection();
-    emit rotationChanged(m_rotation);
+
+    NLVector3 rot = VECTOR3(
+                NL::clamp_angle(VECTOR3_X(m_rotation) + VECTOR3_X(v)),
+                NL::clamp_angle(VECTOR3_Y(m_rotation) + VECTOR3_Y(v)),
+                NL::clamp_angle(VECTOR3_Z(m_rotation) + VECTOR3_Z(v))
+                );
+    SetRotation(rot);
     return this;
 }
 
@@ -636,19 +626,14 @@ void NLActor::UpdateUp()
 void NLActor::InitProperty()
 {
     NLObject::InitProperty();
-    NLVector3 v = VECTOR3(
-                GetProperty_T<float>("x", 0),
-                GetProperty_T<float>("y", 0),
-                GetProperty_T<float>("z", 0)
-                );
+    NLVector3 v = GetInitProperty_T<NLVector3>("position", InitPosition);
     SetPosition(v);
-    VECTOR3_X(v) = GetProperty_T<float>("scale_x", 1);
-    VECTOR3_Y(v) = GetProperty_T<float>("scale_y", 1);
-    VECTOR3_Z(v) = GetProperty_T<float>("scale_z", 1);
+    v = GetInitProperty_T<NLVector3>("scale", InitScale);
     SetScale(v);
-    VECTOR3_X(v) = GetProperty_T<float>("pitch", 0);
-    VECTOR3_Y(v) = GetProperty_T<float>("yaw", 0);
-    VECTOR3_Z(v) = GetProperty_T<float>("roll", 0);
+    v = GetInitProperty_T<NLVector3>("rotation", InitRotation);
+    //VECTOR3_X(v) = GetProperty_T<float>("pitch", 0);
+    //VECTOR3_Y(v) = GetProperty_T<float>("yaw", 0);
+    //VECTOR3_Z(v) = GetProperty_T<float>("roll", 0);
     SetRotation(v);
 }
 

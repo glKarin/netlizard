@@ -6,6 +6,7 @@
 #include "mainwindow.h"
 #include "logoutput.h"
 #include "qdef.h"
+#include "nlglobals.h"
 
 #include "nlactor.h"
 #include "nlobject.h"
@@ -26,6 +27,8 @@ int main(int argc, char *argv[])
     app.setOrganizationName(APP_DEV);
 
     Q_INIT_RESOURCE(qnetlizard);
+
+    NL::init_engine();
 
 #ifdef _DEV_TEST
     int test = Test(argc, argv);

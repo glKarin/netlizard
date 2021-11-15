@@ -128,7 +128,7 @@ void SimpleControl2DComponent::Transform(float delta)
 void SimpleControl2DComponent::InitProperty()
 {
     NLProperty v;
-    v = GetProperty("moveSens");
+    v = GetInitProperty("moveSens");
     if(v.isValid())
         SetMoveSens(v.toFloat());
 }
@@ -136,7 +136,10 @@ void SimpleControl2DComponent::InitProperty()
 void SimpleControl2DComponent::SetMoveSens(float moveSens)
 {
     if(m_moveSens != moveSens)
+    {
         m_moveSens = moveSens;
+        emit propertyChanged("moveSens", m_moveSens);
+    }
 }
 
 float SimpleControl2DComponent::MoveSens() const
@@ -147,13 +150,19 @@ float SimpleControl2DComponent::MoveSens() const
 void SimpleControl2DComponent::SetInvertX(bool b)
 {
     if(m_invertX != b)
+    {
         m_invertX = b;
+        emit propertyChanged("invertX", m_invertX);
+    }
 }
 
 void SimpleControl2DComponent::SetInvertY(bool b)
 {
     if(m_invertY != b)
+    {
         m_invertY = b;
+        emit propertyChanged("invertY", m_invertY);
+    }
 }
 
 bool SimpleControl2DComponent::InvertX() const

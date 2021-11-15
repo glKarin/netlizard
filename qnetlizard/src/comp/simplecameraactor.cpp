@@ -29,10 +29,10 @@ void SimpleCameraActor::Init()
     if(IsInited())
         return;
     NLProperties prop;
-    QVariant type = GetProperty("type");
+    QVariant type = GetInitProperty("type");
     if(type.isValid())
         prop.insert("type", type);
-    QVariant z_is_up = GetProperty("camera_z_is_up");
+    QVariant z_is_up = GetInitProperty("camera_z_is_up");
     if(z_is_up.isValid())
         prop.insert("camera_z_is_up", z_is_up);
     m_camera = new SimpleCameraComponent(prop, this);
@@ -42,7 +42,7 @@ void SimpleCameraActor::Init()
     else
         m_control = new SimpleControlComponent(NLProperties(), this);
     m_control->SetScene(Scene());
-    SetEnableControl(GetProperty_T("enable_control", true));
+    SetEnableControl(GetInitProperty_T<bool>("enable_control", true));
     AddComponent(m_camera);
     AddComponent(m_control);
 

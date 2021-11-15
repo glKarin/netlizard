@@ -97,4 +97,6 @@ typedef GLmatrix NLMatrix4;
 .arg(GL_MATRIX_M_CR4(v, 1, 3), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 2, 3), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 3, 3), 16, 'g', 6)\
 ;
 
+Q_DECLARE_METATYPE(vector3_t)
+
 #endif // _KARIN_NLDEF_H

@@ -31,6 +31,11 @@ public:
     int ActorCount() const;
 
     NLSceneCamera * CurrentCamera();
+    NLActor * GetActor(int index);
+    template <class T>
+    T * GetActor_T(int index);
+    NLActor * operator[](int index);
+    NLScene & operator<<(NLActor *actor);
     
 signals:
     void sizeChanged(const QSize &s);
@@ -53,11 +58,6 @@ protected:
     void AddActor(NLActor *actor);
     void RemoveActor(NLActor *actor);
     void RemoveActor(int index);
-    NLActor * GetActor(int index);
-    template <class T>
-    T * GetActor_T(int index);
-    NLActor * operator[](int index);
-    NLScene & operator<<(NLActor *actor);
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);

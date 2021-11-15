@@ -13,7 +13,8 @@ BaseViewer::BaseViewer(QWidget *parent) :
     m_mainLayout(0),
     m_toolLayout(0),
     m_centralWidget(0),
-    m_titleLabel(0)
+    m_titleLabel(0),
+    m_toolBar(0)
 {
     setObjectName("BaseViewer");
     Init();
@@ -114,4 +115,14 @@ void BaseViewer::Init()
     setLayout(m_mainLayout);
     setWindowTitle(m_title);
     resize(480, 360);
+}
+
+QToolBar * BaseViewer::ToolBar()
+{
+    return m_toolBar;
+}
+
+void BaseViewer::SetToolBar(QToolBar *toolbar)
+{
+    m_toolBar = toolbar;
 }

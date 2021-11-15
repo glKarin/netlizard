@@ -50,3 +50,41 @@ NLboolean nlIsEnabled(NLenum e)
     }
     return res;
 }
+
+void nlGetIntegerv(NLenum name, NLint *ret)
+{
+    switch(name)
+    {
+        case NL_LOG_OUT:
+        case NL_LOG_ERR:
+            *ret = log_get_func(name, NULL);
+            break;
+        default:
+            ES_INVALID_ENUM("nlGetIntegerv(NLenum e=<0x%x>,NLint *ret=ox%P)", name, ret);
+            break;
+    }
+}
+
+void nlGetFloatv(NLenum name, NLfloat *ret)
+{
+
+}
+
+void nlGetBooleanv(NLenum name, NLboolean *ret)
+{
+
+}
+
+void nlGetPointerv(NLenum name, NLvoid **ret)
+{
+    switch(name)
+    {
+        case NL_LOG_OUT:
+        case NL_LOG_ERR:
+            log_get_func(name, ret);
+            break;
+        default:
+            ES_INVALID_ENUM("nlGetPointerv(NLenum e=<0x%x>,NLvoid **ret=ox%P)", name, ret);
+            break;
+    }
+}

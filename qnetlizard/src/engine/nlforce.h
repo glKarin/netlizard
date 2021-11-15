@@ -10,6 +10,9 @@ class NLForceContainer;
 class NLForce : public NLObject
 {
     Q_OBJECT
+    Q_PROPERTY(float force READ Force FINAL)
+    Q_PROPERTY(NLVector3 direction READ Direction FINAL)
+    Q_PROPERTY(bool once READ Once WRITE SetOnce FINAL)
 public:
     enum State
     {

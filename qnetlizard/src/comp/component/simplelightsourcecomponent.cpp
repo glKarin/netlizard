@@ -44,7 +44,7 @@ void SimpleLightSourceComponent::Reset()
 void SimpleLightSourceComponent::InitProperty()
 {
     NLProperty v;
-    v = GetProperty("type");
+    v = GetInitProperty("type");
     if(v.isValid())
         SetType(static_cast<SimpleLightSourceComponent::LightSourceType>(v.toInt()));
 }
@@ -79,17 +79,15 @@ void SimpleLightSourceComponent::SetPosition(const NLVector3 &pos)
 {
     if(!vector3_equals(&m_position, &pos))
     {
-        VECTOR3_X(m_position) = VECTOR3_X(pos);
-        VECTOR3_Y(m_position) = VECTOR3_Y(pos);
-        VECTOR3_Z(m_position) = VECTOR3_Z(pos);
+        m_position = pos;
         if(IsDirectionLighting())
         {
             NLVector3 dir = m_position;
             vector3_normalize(&dir);
-            VECTOR3_X(m_direction) = VECTOR3_X(dir);
-            VECTOR3_Y(m_direction) = VECTOR3_Y(dir);
-            VECTOR3_Z(m_direction) = VECTOR3_Z(dir);
+            m_direction = dir;
+            emit propertyChanged("direction", NLProperty::fromValue<NLVector3>(m_direction));
         }
+        emit propertyChanged("position",  NLProperty::fromValue<NLVector3>(m_position));
     }
 }
 
@@ -99,8 +97,7 @@ void SimpleLightSourceComponent::SetDirecton(const NLVector3 &dir)
         return;
     if(!vector3_equals(&m_direction, &dir))
     {
-        VECTOR3_X(m_direction) = VECTOR3_X(dir);
-        VECTOR3_Y(m_direction) = VECTOR3_Y(dir);
-        VECTOR3_Z(m_direction) = VECTOR3_Z(dir);
+        m_direction = dir;
+        emit propertyChanged("direction", NLProperty::fromValue<NLVector3>(m_direction));
     }
 }

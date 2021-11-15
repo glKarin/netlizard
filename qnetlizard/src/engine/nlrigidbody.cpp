@@ -197,6 +197,7 @@ void NLRigidbody::SetFree(bool b)
     {
         m_free = b;
         UpdateDirection();
+        emit propertyChanged("free", m_free);
     }
 }
 
@@ -205,6 +206,24 @@ bool NLRigidbody::Free() const
     return m_free;
 }
 
+bool NLRigidbody::ZIsUp() const
+{
+    return m_zIsUp;
+}
+
+bool NLRigidbody::FixedUp() const
+{
+    return m_fixedUp;
+}
+
+void NLRigidbody::SetMass(NL::Physics::m m)
+{
+    if(m_mass != m)
+    {
+        m_mass = m;
+        emit propertyChanged("mass", m_mass);
+    }
+}
 
 void NLRigidbody::SetZIsUp(bool b)
 {
@@ -214,6 +233,7 @@ void NLRigidbody::SetZIsUp(bool b)
         SetUp(m_zIsUp ? InitUp_z : InitUp_y);
         //UpdateMatrix();
         UpdateDirection();
+        emit propertyChanged("z_is_up", m_zIsUp);
     }
 }
 
@@ -228,6 +248,7 @@ void NLRigidbody::SetFixedUp(bool b)
         }
         //UpdateMatrix();
         UpdateDirection();
+        emit propertyChanged("fixed_up", m_fixedUp);
     }
 }
 
@@ -243,10 +264,10 @@ void NLRigidbody::UpdateUp()
 void NLRigidbody::InitProperty()
 {
     NLActor::InitProperty();
-    SetZIsUp(GetProperty_T<bool>("z_is_up", false));
-    SetFixedUp(GetProperty_T<bool>("fixed_up", true));
-    SetFree(GetProperty_T<bool>("free", true));
-    SetMass(GetProperty_T<float>("mass", 1));
+    SetZIsUp(GetInitProperty_T<bool>("z_is_up", false));
+    SetFixedUp(GetInitProperty_T<bool>("fixed_up", true));
+    SetFree(GetInitProperty_T<bool>("free", true));
+    SetMass(GetInitProperty_T<float>("mass", 1));
 }
 
 bool NLRigidbody::AddForce(NLForce *item)
@@ -378,11 +399,4 @@ void NLRigidbody::Collision()
 NL::Physics::m NLRigidbody::Mass() const
 {
     return m_mass;
-}
-
-
-void NLRigidbody::SetMass(NL::Physics::m m)
-{
-    if(m_mass != m)
-        m_mass = m;
 }

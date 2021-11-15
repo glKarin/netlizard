@@ -6,6 +6,7 @@
 class QLabel;
 class QVBoxLayout;
 class QHBoxLayout;
+class QToolBar;
 
 class BaseViewer : public QWidget
 {
@@ -16,6 +17,7 @@ public:
     QString Title() const;
     QString StatusText() const;
     QWidget * CentralWidget();
+    QToolBar * ToolBar();
     
 signals:
     void titleChanged(const QString &title);
@@ -33,6 +35,7 @@ protected:
     void SetCentralWidget(QWidget *widget = 0);
     QHBoxLayout * ToolLayout();
     QLabel * TitleLabel();
+    void SetToolBar(QToolBar *toolbar);
 
 private:
     void Init();
@@ -44,6 +47,7 @@ private:
     QLabel *m_titleLabel;
     QString m_title;
     QString m_statusText;
+    QToolBar *m_toolBar;
 
     Q_DISABLE_COPY(BaseViewer)
 };

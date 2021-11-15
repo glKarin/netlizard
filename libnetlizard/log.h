@@ -27,6 +27,8 @@ int nlflogf(int type, const char *fmt, ...);
 int nllogf(const char *fmt, ...);
 int nllogfln(const char *fmt, ...);
 
+int log_get_func(int name, void **ptr);
+
 #ifdef __cplusplus
 }
 #endif

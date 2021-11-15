@@ -12,6 +12,8 @@ class NLScene;
 class NLObject : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool enabled READ IsEnabled WRITE SetEnabled NOTIFY enabledChanged FINAL)
+
 public:
     enum NLObject_Type
     {
@@ -53,6 +55,8 @@ protected:
     virtual void Destroy();
     virtual void Update(float delta);
     virtual void InitProperty();
+    NLProperty GetInitProperty(const QString &name, const NLProperty &def = QVariant()) const;
+    template<class T> T GetInitProperty_T(const QString &name, const T &def = T());
 
 signals:
     void enabledChanged(bool enabled);
@@ -85,14 +89,25 @@ typedef QList<NLObject *> NLObjectList;
 
 template <class T> T NLObject::GetProperty_T(const QString &name, const T &def)
 {
-    return m_property.Get_T<T>(name, def);
+    QByteArray ba = name.toLocal8Bit();
+    NLProperty p = property(ba.constData());
+    if(!p.isValid())
+        return def;
+    return p.value<T>();
 }
 
 template<class T> void NLObject::SetProperty_T(const QString &name, const T &value)
 {
-    int r = m_property.Set_T<T>(name, value);
+    QByteArray ba = name.toLocal8Bit();
+    setProperty(ba.constData(), value);
+    int r = 2;
     if(r == 2)
         emit propertyChanged(name, NLProperty::fromValue(value));
+}
+
+template <class T> T NLObject::GetInitProperty_T(const QString &name, const T &def)
+{
+    return m_property.Get_T<T>(name, def);
 }
 
 #endif // _KARIN_NLOBJECT_H

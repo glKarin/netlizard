@@ -7,16 +7,20 @@ NLCOMPONENT(SimpleControlComponent)
 class SimpleControlComponent : public NLComponent
 {
     Q_OBJECT
+    Q_PROPERTY(float moveSens READ MoveSens WRITE SetMoveSens FINAL)
+    Q_PROPERTY(float turnSens READ TurnSens WRITE SetTurnSens FINAL)
+    Q_PROPERTY(float freelookSens READ FreelookSens WRITE SetFreelookSens FINAL)
+    Q_PROPERTY(float fovySens READ FovySens WRITE SetFovySens FINAL)
 public:
     explicit SimpleControlComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleControlComponent();
     virtual void Reset();
-    NLSETTER(moveSens) void SetMoveSens(int moveSens);
-    NLSETTER(turnSens) void SetTurnSens(int turnSens);
+    NLSETTER(moveSens) void SetMoveSens(float moveSens);
+    NLSETTER(turnSens) void SetTurnSens(float turnSens);
     NLSETTER(freelookSens) void SetFreelookSens(float freelookSens);
     NLSETTER(fovySens) void SetFovySens(float fovySens);
-    NLGETTER(moveSens) int MoveSens() const;
-    NLGETTER(turnSens) int TurnSens() const;
+    NLGETTER(moveSens) float MoveSens() const;
+    NLGETTER(turnSens) float TurnSens() const;
     NLGETTER(freelookSens) float FreelookSens() const;
     NLGETTER(fovySens) float FovySens() const;
     
@@ -36,8 +40,8 @@ protected:
     virtual void InitProperty();
 
 private:
-    NLPROPERTY(int, moveSens) float m_moveSens;
-    NLPROPERTY(int, turnSens) float m_turnSens;
+    NLPROPERTY(float, moveSens) float m_moveSens;
+    NLPROPERTY(float, turnSens) float m_turnSens;
     NLPROPERTY(float, freelookSens)float m_freelookSens;
     NLPROPERTY(float, fovySens) float m_fovySens;
     bool m_action[NLAction_Total];

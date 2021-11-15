@@ -7,6 +7,11 @@ NLCOMPONENT(SimpleImageControlComponent)
 class SimpleImageControlComponent : public NLComponent
 {
     Q_OBJECT
+    Q_PROPERTY(float transSens READ TransSens WRITE SetTransSens FINAL)
+    Q_PROPERTY(float rotSens READ RotSens WRITE SetRotSens FINAL)
+    Q_PROPERTY(float zoomSens READ ZoomSens WRITE SetZoomSens FINAL)
+    Q_PROPERTY(float invertX READ InvertX WRITE SetInvertX FINAL)
+    Q_PROPERTY(float invertY READ InvertY WRITE SetInvertY FINAL)
 public:
     explicit SimpleImageControlComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleImageControlComponent();
@@ -39,9 +44,9 @@ private:
     NLPROPERTY(float, transSens) float m_transSens;
     NLPROPERTY(float, rotSens) float m_rotSens;
     NLPROPERTY(float, zoomSens) float m_zoomSens;
-    bool m_action[NLAction_Total];
     NLPROPERTY(bool, invertX) bool m_invertX;
     NLPROPERTY(bool, invertY)bool m_invertY;
+    bool m_action[NLAction_Total];
 
     static const float M_Trans_Sens;
     static const float M_Rot_Sens;

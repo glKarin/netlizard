@@ -5,6 +5,7 @@
 #include <QVariant>
 
 #include <QLabel>
+#include <QToolBar>
 #include <QPushButton>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -43,6 +44,7 @@ void MapViewer::Init()
     m_mapScene = new MapScene;
     QHBoxLayout *toolLayout = ToolLayout();
     m_levelSpinBox = new QSpinBox;
+    QToolBar *toolbar = new QToolBar(this);
 
     for(int i = 0; i <= NL_CONTR_TERRORISM_3D_EPISODE_3; i++)
     {
@@ -54,29 +56,30 @@ void MapViewer::Init()
     m_openLvlButton = new QPushButton;
     connect(m_openLvlButton, SIGNAL(clicked()), this, SLOT(OpenFileChooser()));
     m_openLvlButton->setText("lvl/dm/track file");
-    toolLayout->addWidget(m_openLvlButton);
-    toolLayout->addStretch();
+    toolbar->addWidget(m_openLvlButton);
+    //toolLayout->addStretch();
 
     m_openResourcePathButton = new QPushButton;
     connect(m_openResourcePathButton, SIGNAL(clicked()), this, SLOT(OpenResourceDirChooser()));
     m_openResourcePathButton->setText("Resource path");
-    toolLayout->addWidget(m_openResourcePathButton);
-    toolLayout->addStretch();
+    toolbar->addWidget(m_openResourcePathButton);
+    //toolLayout->addStretch();
 
-    toolLayout->addWidget(new QLabel("Game: "));
-    toolLayout->addWidget(m_gameComboBox);
-    toolLayout->addStretch();
-    toolLayout->addWidget(new QLabel("Level: "));
-    toolLayout->addWidget(m_levelSpinBox);
+    toolbar->addWidget(new QLabel("Game: "));
+    toolbar->addWidget(m_gameComboBox);
+    //toolLayout->addStretch();
+    toolbar->addWidget(new QLabel("Level: "));
+    toolbar->addWidget(m_levelSpinBox);
 
-    toolLayout->addStretch();
+    //toolLayout->addStretch();
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenFile()));
     button->setText("Load");
-    toolLayout->addWidget(button);
+    toolbar->addWidget(button);
 
     connect(m_gameComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));
 
+    SetToolBar(toolbar);
     SetCentralWidget(m_mapScene);
     SetTitle("NETLizard 3D FPS map viewer");
 }

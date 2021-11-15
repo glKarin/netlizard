@@ -54,13 +54,13 @@ void SimpleImageControlComponent::Reset()
 void SimpleImageControlComponent::InitProperty()
 {
     NLProperty v;
-    v = GetProperty("transSens");
+    v = GetInitProperty("transSens");
     if(v.isValid())
         SetTransSens(v.toFloat());
-    v = GetProperty("rotSens");
+    v = GetInitProperty("rotSens");
     if(v.isValid())
         SetRotSens(v.toFloat());
-    v = GetProperty("zoomSens");
+    v = GetInitProperty("zoomSens");
     if(v.isValid())
         SetZoomSens(v.toFloat());
 }
@@ -269,19 +269,28 @@ void SimpleImageControlComponent::Transform(float delta)
 void SimpleImageControlComponent::SetTransSens(float transSens)
 {
     if(m_transSens != transSens)
+    {
         m_transSens = transSens;
+        emit propertyChanged("transSens", m_transSens);
+    }
 }
 
 void SimpleImageControlComponent::SetRotSens(float rotSens)
 {
     if(m_rotSens != rotSens)
+    {
         m_rotSens = rotSens;
+        emit propertyChanged("rotSens", m_rotSens);
+    }
 }
 
 void SimpleImageControlComponent::SetZoomSens(float zoomSens)
 {
     if(m_zoomSens != zoomSens)
+    {
         m_zoomSens = zoomSens;
+        emit propertyChanged("zoomSens", m_zoomSens);
+    }
 }
 
 float SimpleImageControlComponent::TransSens() const
@@ -302,13 +311,19 @@ float SimpleImageControlComponent::ZoomSens() const
 void SimpleImageControlComponent::SetInvertX(bool b)
 {
     if(m_invertX != b)
+    {
         m_invertX = b;
+        emit propertyChanged("invertX", m_invertX);
+    }
 }
 
 void SimpleImageControlComponent::SetInvertY(bool b)
 {
     if(m_invertY != b)
+    {
         m_invertY = b;
+        emit propertyChanged("invertY", m_invertY);
+    }
 }
 
 bool SimpleImageControlComponent::InvertX() const

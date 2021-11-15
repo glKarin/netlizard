@@ -7,6 +7,9 @@ NLCOMPONENT(SimpleControl2DComponent)
 class SimpleControl2DComponent : public NLComponent
 {
     Q_OBJECT
+    Q_PROPERTY(float moveSens READ MoveSens WRITE SetMoveSens FINAL)
+    Q_PROPERTY(float invertX READ InvertX WRITE SetInvertX FINAL)
+    Q_PROPERTY(float invertY READ InvertY WRITE SetInvertY FINAL)
 public:
     explicit SimpleControl2DComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleControl2DComponent();
@@ -31,9 +34,9 @@ protected:
 
 private:
     NLPROPERTY(float, moveSens) float m_moveSens;
-    bool m_action[NLAction_Total];
     NLPROPERTY(bool, invertX) bool m_invertX;
     NLPROPERTY(bool, invertY)bool m_invertY;
+    bool m_action[NLAction_Total];
 
     static const float M_Move_Sens;
 };

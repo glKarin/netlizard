@@ -40,7 +40,7 @@ void nlLogFunc(NLenum type, NLenum way, void *f)
 
     if(way != NL_LOG_STD && way != NL_LOG_USER)
     {
-        ES_INVALID_ENUM("nlLogFunc(NLenum type=0x%x,NLenum way=<0x%x>,void *f=0x%p)", type, way, f);
+        ES_INVALID_ENUM("nlLogFunc(NLenum type=0x%x,NLenum way=<0x%x>,void *f=0x%P)", type, way, f);
         return;
     }
     switch(type)
@@ -52,7 +52,7 @@ void nlLogFunc(NLenum type, NLenum way, void *f)
             state = &_log.err;
             break;
         default:
-        ES_INVALID_ENUM("nlLogFunc(NLenum type=<0x%x>,NLenum way=0x%x,void *f=0x%p)", type, way, f);
+        ES_INVALID_ENUM("nlLogFunc(NLenum type=<0x%x>,NLenum way=0x%x,void *f=0x%P)", type, way, f);
             return;
     }
     state->type = way;
@@ -60,6 +60,19 @@ void nlLogFunc(NLenum type, NLenum way, void *f)
         state->user.callback = f;
     else
         state->std.file = f;
+}
+
+int log_get_func(int name, void **ptr)
+{
+    LogState *state = name == NL_LOG_ERR ? &_log.err : &_log.out;
+    if(ptr)
+    {
+        if(state->type == NL_LOG_USER)
+            *ptr = state->user.callback;
+        else
+            *ptr = state->std.file;
+    }
+    return state->type;
 }
 
 int nlflogfln(int type, const char *fmt, ...)

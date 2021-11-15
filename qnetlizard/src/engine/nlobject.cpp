@@ -75,13 +75,13 @@ void NLObject::CopyProperty(const NLProperties &prop)
 {
     Q_FOREACH(const QString &name, prop.keys())
     {
-        SetProperty(name, prop.value(name));
+        m_property.Insert(name, prop.value(name));
     }
 }
 
 void NLObject::InitProperty()
 {
-    SetEnabled(GetProperty_T<bool>("enabled", true));
+    SetEnabled(GetInitProperty_T<bool>("enabled", true));
 }
 
 NLObject::NLObject_Type NLObject::Type() const
@@ -159,18 +159,26 @@ void NLObject::SetContainer(NLObjectContainer *container)
 
 NLProperty NLObject::GetProperty(const QString &name, const NLProperty &def) const
 {
-    return m_property.Get(name, def);
+    QByteArray ba = name.toLocal8Bit();
+    NLProperty p = property(ba.constData());
+    if(!p.isValid())
+        return def;
+    return p;
 }
 
 void NLObject::SetProperty(const QString &name, const NLProperty &value)
 {
-    int r = m_property.Set(name, value);
+    QByteArray ba = name.toLocal8Bit();
+    setProperty(ba.constData(), value);
+    int r = 2;
     if(r == 2)
         emit propertyChanged(name, value);
 }
 
 NLProperty & NLObject::operator[](const QString &name)
 {
+    //QByteArray ba = name.toLocal8Bit();
+    //return property(ba.constData());
     return m_property[name];
 }
 
@@ -200,10 +208,16 @@ void NLObject::SetEnabled(bool enabled)
     {
         m_enabled = enabled;
         emit enabledChanged(m_enabled);
+        emit propertyChanged("enabled", m_enabled);
     }
 }
 
 bool NLObject::IsActived() const
 {
     return m_inited && m_enabled;
+}
+
+NLProperty NLObject::GetInitProperty(const QString &name, const NLProperty &def) const
+{
+    return m_property.Get(name, def);
 }

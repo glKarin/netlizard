@@ -21,7 +21,7 @@ void SimpleLightSourceActor::Init()
     if(IsInited())
         return;
     NLProperties prop;
-    QVariant type = GetProperty("type");
+    QVariant type = GetInitProperty("type");
     if(type.isValid())
         prop.insert("type", type);
     m_lightSource = new SimpleLightSourceComponent(prop, this);

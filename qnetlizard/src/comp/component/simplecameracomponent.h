@@ -11,11 +11,13 @@ NLCOMPONENT(SimpleCameraComponent)
 class SimpleCameraComponent : public NLComponent
 {
     Q_OBJECT
+    Q_PROPERTY(int type READ Type WRITE SetType FINAL)
 public:
     explicit SimpleCameraComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleCameraComponent();
     virtual void Reset();
     NLINTERFACE void Render();
+    NLGETTER(type) int Type() const;
     NLSETTER(type) void SetType(int type);
     NLSceneCamera * Camera();
     

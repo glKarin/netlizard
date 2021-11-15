@@ -11,6 +11,10 @@ class NLForce;
 class NLRigidbody : public NLActor
 {
     Q_OBJECT
+    Q_PROPERTY(bool free READ Free WRITE SetFree FINAL)
+    Q_PROPERTY(bool z_is_up READ ZIsUp WRITE SetZIsUp FINAL)
+    Q_PROPERTY(bool fixed_up READ FixedUp WRITE SetFixedUp FINAL)
+    Q_PROPERTY(float mass READ Mass WRITE SetMass FINAL)
 public:
     explicit NLRigidbody(NLActor *parent = 0);
     explicit NLRigidbody(const NLProperties &prop, NLActor *parent = 0);
@@ -35,6 +39,9 @@ public:
     virtual NLActor * Turn(const NLVector3 &v);
     void SetFree(bool b);
     bool Free() const;
+    bool ZIsUp() const;
+    bool FixedUp() const;
+    void SetMass(int m);
     int ForceCount() const;
     bool HasForce() const;
     NLGETTER(mass) NL::Physics::m Mass() const;

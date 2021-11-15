@@ -86,6 +86,7 @@ typedef float NLclamp;
 typedef uint32_t NLsize;
 typedef void * NLdata;
 typedef void * NLfunc;
+typedef NLboolean NLbool;
 
 //typedef char byte; // unsigned
 
@@ -551,6 +552,10 @@ NLboolean nlIsEnabled(NLenum e);
 NLenum nlGetError(void);
 NL_RET_PTR_CONST(char *) const char * nlErrorString(NLenum error);
 NL_RET_PTR_CONST(char *) const char * nlGetString(NLenum name);
+void nlGetIntegerv(NLenum name, NLint *ret);
+void nlGetFloatv(NLenum name, NLfloat *ret);
+void nlGetBooleanv(NLenum name, NLboolean *ret);
+void nlGetPointerv(NLenum name, NLvoid **ret);
 
 void nlLogFunc(NLenum type, NLenum way, void *f);
 

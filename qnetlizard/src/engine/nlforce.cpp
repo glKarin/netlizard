@@ -65,7 +65,10 @@ void NLForce::Construct()
 void NLForce::SetOnce(bool b)
 {
     if(m_once != b)
+    {
         m_once = b;
+        emit propertyChanged("once", m_once);
+    }
 }
 
 bool NLForce::Once() const
@@ -156,10 +159,8 @@ NLRigidbody * NLForce::Rigidbody()
 void NLForce::InitProperty()
 {
     NLObject::InitProperty();
-    m_force = GetProperty_T<float>("force", 0);
-    VECTOR3_X(m_direction) = GetProperty_T<float>("direction_x", 0);
-    VECTOR3_Y(m_direction) = GetProperty_T<float>("direction_y", 0);
-    VECTOR3_Z(m_direction) = GetProperty_T<float>("direction_z", 0);
+    m_force = GetInitProperty_T<float>("force", 0);
+    m_direction = GetInitProperty_T<NLVector3>("direction");
 }
 
 void NLForce::Destroy()
@@ -256,7 +257,7 @@ NLForce_gravity::~NLForce_gravity()
 void NLForce_gravity::InitProperty()
 {
     NLForce::InitProperty();
-    m_g = GetProperty_T<float>("g", NL::Physics::EARTH_G);
+    m_g = GetInitProperty_T<float>("g", NL::Physics::EARTH_G);
     m_initialSpeed = Acceleration();
     m_speed = m_initialSpeed;
 }
@@ -369,7 +370,7 @@ NLForce_push::~NLForce_push()
 void NLForce_push::InitProperty()
 {
     NLForce::InitProperty();
-    m_dragForce = GetProperty_T<float>("drag_force", 0);
+    m_dragForce = GetInitProperty_T<float>("drag_force", 0);
     m_initialSpeed = Acceleration();
     m_speed = m_initialSpeed;
     m_acceleration = NL::Physics::acceleration(m_force + m_dragForce, Mass());

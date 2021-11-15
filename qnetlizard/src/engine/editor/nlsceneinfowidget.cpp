@@ -1,4 +1,4 @@
-#include "scenedialog.h"
+#include "nlsceneinfowidget.h"
 
 #include <QDebug>
 #include <QDateTime>
@@ -32,49 +32,22 @@
 
 #endif
 
-SceneDialog::SceneDialog(QWidget *parent) :
-    QDialog(parent),
-    m_scene(0),
-    m_textViewer(0)
+NLSceneInfoWidget::NLSceneInfoWidget(QWidget *parent) :
+    QTextBrowser(parent),
+    m_scene(0)
 {
-    setObjectName("SceneDialog");
+    setObjectName("NLSceneInfoWidget");
     Init();
 }
 
-SceneDialog::~SceneDialog()
+NLSceneInfoWidget::~NLSceneInfoWidget()
 {
     DEBUG_DESTROY_Q
 }
 
-void SceneDialog::Init()
+void NLSceneInfoWidget::Init()
 {
-    QVBoxLayout *layout = new QVBoxLayout;
-    //QHBoxLayout *toolLayout = new QHBoxLayout;
-    m_textViewer = new QTextBrowser;
-    //QPushButton *button = new QPushButton;
-
-    m_textViewer->setAcceptRichText(RICH_TEXT);
-    layout->addWidget(m_textViewer, 1);
-    //button->setText("Clear");
-    //toolLayout->addStretch();
-    //toolLayout->addWidget(button);
-    //layout->addLayout(toolLayout);
-
-    setLayout(layout);
-
-    setWindowTitle("Scene infomation");
-}
-
-void SceneDialog::ResetPosAndSize()
-{
-    QWidget *p = parentWidget();
-    if(!p)
-        return;
-    QRect rect = p->frameGeometry();
-    move(rect.x() + rect.width(), rect.y());
-    resize(p->height(), p->height());
-    //m_textViewer->verticalScrollBar()->setValue(0);
-    m_textViewer->horizontalScrollBar()->setValue(0);
+    setAcceptRichText(RICH_TEXT);
 }
 
 #define _DBG_VEC3(label, v) QString(_B(" "label": ")"[%1, %2, %3]").arg(VECTOR3_X(v), 0, 'g', 6).arg(VECTOR3_Y(v), 0, 'g', 6).arg(VECTOR3_Z(v), 0, 'g', 6)
@@ -87,11 +60,11 @@ void SceneDialog::ResetPosAndSize()
         .arg(GL_MATRIXV_M_CR4(v, 1, 1), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 2, 1), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 3, 1), 12, 'g', 6)\
         .arg(GL_MATRIXV_M_CR4(v, 1, 2), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 2, 2), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 3, 2), 12, 'g', 6)\
         .arg(GL_MATRIXV_M_CR4(v, 1, 3), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 2, 3), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 3, 3), 12, 'g', 6)
-void SceneDialog::UpdateSceneInfo()
+void NLSceneInfoWidget::UpdateSceneInfo()
 {
     if(!m_scene)
     {
-        m_textViewer->SETTEXT("No active scene!");
+        SETTEXT("No active scene!");
         return;
     }
 
@@ -141,10 +114,10 @@ void SceneDialog::UpdateSceneInfo()
         list << _DBG_MAT3("Render matrix", m);
     }
 
-    m_textViewer->SETTEXT(list.join(_ENDL));
+    SETTEXT(list.join(_ENDL));
 }
 
-void SceneDialog::SetScene(NLScene *scene)
+void NLSceneInfoWidget::SetScene(NLScene *scene)
 {
     if(m_scene != scene)
     {
@@ -159,12 +132,12 @@ void SceneDialog::SetScene(NLScene *scene)
     }
 }
 
-NLScene * SceneDialog::Scene()
+NLScene * NLSceneInfoWidget::Scene()
 {
     return m_scene;
 }
 
-void SceneDialog::Reset()
+void NLSceneInfoWidget::Reset()
 {
     disconnect();
     m_scene = 0;

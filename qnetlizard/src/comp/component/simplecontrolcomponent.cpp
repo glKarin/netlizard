@@ -54,15 +54,18 @@ void SimpleControlComponent::Reset()
 void SimpleControlComponent::InitProperty()
 {
     NLProperty v;
-    v = GetProperty("moveSens");
+    v = GetInitProperty("moveSens");
     if(v.isValid())
-        SetMoveSens(v.toInt());
-    v = GetProperty("turnSens");
+        SetMoveSens(v.toFloat());
+    v = GetInitProperty("turnSens");
     if(v.isValid())
-        SetTurnSens(v.toInt());
-    v = GetProperty("freelookSens");
+        SetTurnSens(v.toFloat());
+    v = GetInitProperty("freelookSens");
     if(v.isValid())
         SetFreelookSens(v.toFloat());
+    v = GetInitProperty("fovySens");
+    if(v.isValid())
+        SetFovySens(v.toFloat());
 }
 
 bool SimpleControlComponent::keyev(int key, bool pressed, int modifier)
@@ -261,36 +264,48 @@ void SimpleControlComponent::Transform(float delta)
     }
 }
 
-void SimpleControlComponent::SetMoveSens(int moveSens)
+void SimpleControlComponent::SetMoveSens(float moveSens)
 {
     if(m_moveSens != moveSens)
+    {
         m_moveSens = moveSens;
+        emit propertyChanged("moveSens", m_moveSens);
+    }
 }
 
-void SimpleControlComponent::SetTurnSens(int turnSens)
+void SimpleControlComponent::SetTurnSens(float turnSens)
 {
     if(m_turnSens != turnSens)
+    {
         m_turnSens = turnSens;
+        emit propertyChanged("turnSens", m_turnSens);
+    }
 }
 
 void SimpleControlComponent::SetFreelookSens(float freelookSens)
 {
     if(m_freelookSens != freelookSens)
+    {
         m_freelookSens = freelookSens;
+        emit propertyChanged("freelookSens", m_freelookSens);
+    }
 }
 
 void SimpleControlComponent::SetFovySens(float fovySens)
 {
     if(m_fovySens != fovySens)
+    {
         m_fovySens = fovySens;
+        emit propertyChanged("fovySens", m_fovySens);
+    }
 }
 
-int SimpleControlComponent::MoveSens() const
+float SimpleControlComponent::MoveSens() const
 {
     return m_moveSens;
 }
 
-int SimpleControlComponent::TurnSens() const
+float SimpleControlComponent::TurnSens() const
 {
     return m_turnSens;
 }

@@ -7,6 +7,10 @@ NLCOMPONENT(SimpleLightSourceComponent)
 class SimpleLightSourceComponent : public NLComponent
 {
     Q_OBJECT
+    Q_ENUMS(LightSourceType)
+    Q_PROPERTY(LightSourceType transSens READ Type WRITE SetType FINAL)
+    Q_PROPERTY(NLVector3 position READ Position WRITE SetPosition FINAL)
+    Q_PROPERTY(NLVector3 direction READ Direction WRITE SetDirecton FINAL)
     public:
     enum LightSourceType
     {

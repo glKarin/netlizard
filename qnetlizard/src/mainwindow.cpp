@@ -24,8 +24,8 @@
 #include "settings.h"
 #include "settingdialog.h"
 #include "changelogdialog.h"
-#include "scenedialog.h"
 #include "nlscene.h"
+#include "scenetreeinfowidget.h"
 
 #ifdef _DEV_TEST
 #include "testviewer.h"
@@ -34,7 +34,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     m_logDialog(0),
-    m_sceneDialog(0)
+    m_sceneWidget(0)
 {
     setObjectName("MainWindow");
     Init();
@@ -47,11 +47,6 @@ MainWindow::~MainWindow()
         m_logDialog->close();
         m_logDialog->deleteLater();
     }
-    if(m_sceneDialog)
-    {
-        m_sceneDialog->close();
-        m_sceneDialog->deleteLater();
-    }
     DEBUG_DESTROY_Q;
 }
 
@@ -60,6 +55,8 @@ void MainWindow::Init()
     QMenuBar *menuBar;
     QMenu *menu;
     QAction *menuItem;
+    m_sceneWidget = new SceneTreeInfoWidget;
+    addDockWidget(Qt::RightDockWidgetArea, m_sceneWidget);
 
     menuBar = new QMenuBar(this);
 
@@ -106,18 +103,26 @@ void MainWindow::Init()
     MenuActionSlot(0);
 }
 
+void MainWindow::CloseCurrentWidget()
+{
+    BaseViewer *viewer = dynamic_cast<BaseViewer *>(centralWidget());
+    if(viewer)
+    {
+        QToolBar *toolbar = viewer->ToolBar();
+        if(toolbar)
+            removeToolBar(toolbar);
+    }
+}
+
 void MainWindow::MenuActionSlot(QAction *action)
 {
+    CloseCurrentWidget();
+
     if(!action)
     {
         BaseViewer *viewer = GenViewer("home_viewer");
         setCentralWidget(viewer);
         return;
-    }
-
-    if(m_sceneDialog)
-    {
-        m_sceneDialog->SetScene(0);
     }
 
     QString type = action->data().toString();
@@ -146,14 +151,11 @@ void MainWindow::MenuActionSlot(QAction *action)
     }
     else if(type == "scene")
     {
-        ToggleSceneDialog();
     }
     else
     {
         BaseViewer *viewer = GenViewer(type);
         setCentralWidget(viewer);
-
-        SetupSceneDialog();
     }
 }
 
@@ -192,9 +194,15 @@ BaseViewer * MainWindow::GenViewer(const QString &type)
 
     if(viewer)
     {
-        setCentralWidget(viewer);
+        //setCentralWidget(viewer);
         connect(viewer, SIGNAL(titleChanged(const QString &)), this, SLOT(setWindowTitle(const QString &)));
         setWindowTitle(viewer->Title());
+        NLScene *scene = dynamic_cast<NLScene *>(viewer->CentralWidget());
+        if(scene)
+            m_sceneWidget->SetScene(scene);
+        QToolBar *toolbar = viewer->ToolBar();
+        if(toolbar)
+            addToolBar(toolbar);
     }
     else
     {
@@ -251,38 +259,17 @@ void MainWindow::moveEvent(QMoveEvent *event)
     }
 }
 
-void MainWindow::ToggleSceneDialog()
-{
-    if(!m_sceneDialog)
-    {
-        m_sceneDialog = new SceneDialog(this);
-    }
-    if(m_sceneDialog->isVisible())
-    {
-        m_sceneDialog->hide();
-        m_sceneDialog->SetScene(0);
-    }
-    else
-    {
-        m_sceneDialog->ResetPosAndSize();
-        m_sceneDialog->show();
-        setFocus(Qt::MouseFocusReason);
-
-        SetupSceneDialog();
-    }
-}
-
-void MainWindow::SetupSceneDialog()
-{
-    if(!m_sceneDialog)
-        return;
-    m_sceneDialog->UpdateSceneInfo();
-    if(!m_sceneDialog->isVisible())
-        return;
-    BaseViewer *viewer = dynamic_cast<BaseViewer *>(centralWidget());
-    if(viewer)
-    {
-        NLScene *scene = dynamic_cast<NLScene *>(viewer->CentralWidget());
-        m_sceneDialog->SetScene(scene);
-    }
-}
+//void MainWindow::SetupSceneDialog()
+//{
+//    if(!m_sceneDialog)
+//        return;
+//    m_sceneDialog->UpdateSceneInfo();
+//    if(!m_sceneDialog->isVisible())
+//        return;
+//    BaseViewer *viewer = dynamic_cast<BaseViewer *>(centralWidget());
+//    if(viewer)
+//    {
+//        NLScene *scene = dynamic_cast<NLScene *>(viewer->CentralWidget());
+//        m_sceneDialog->SetScene(scene);
+//    }
+//}

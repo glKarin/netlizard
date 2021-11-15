@@ -20,13 +20,21 @@ HEADERS += \
     src/qdef.h \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
-    src/misc/settings.h
+    src/misc/settings.h \
+    src/engine/nlglobals.h \
+    src/engine/editor/nlscenetreewidget.h \
+    src/engine/editor/nlsceneinfowidget.h \
+    src/comp/editor_widget/scenetreeinfowidget.h
 
 SOURCES += \
     main.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
-    src/misc/settings.cpp
+    src/misc/settings.cpp \
+    src/engine/nlglobals.cpp \
+    src/engine/editor/nlscenetreewidget.cpp \
+    src/engine/editor/nlsceneinfowidget.cpp \
+    src/comp/editor_widget/scenetreeinfowidget.cpp
 
 # Widget
 HEADERS += \
@@ -46,8 +54,7 @@ HEADERS += \
     src/settingdialog.h \
     src/indexviewer.h \
     src/spriteviewer.h \
-    src/changelogdialog.h \
-    src/scenedialog.h
+    src/changelogdialog.h
 
 SOURCES += \
     src/widget/baseviewer.cpp \
@@ -66,12 +73,11 @@ SOURCES += \
     src/settingdialog.cpp \
     src/indexviewer.cpp \
     src/spriteviewer.cpp \
-    src/changelogdialog.cpp \
-    src/scenedialog.cpp
+    src/changelogdialog.cpp
 
 # Component
-DEPENDPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer
-INCLUDEPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer
+DEPENDPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer ./src/comp/editor_widget
+INCLUDEPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer ./src/comp/editor_widget
 
 HEADERS += \
     src/comp/simplecameraactor.h \
@@ -126,8 +132,8 @@ SOURCES += \
     src/comp/scene/spritescene.cpp
 
 # Engine
-DEPENDPATH += ./src/engine
-INCLUDEPATH += ./src/engine
+DEPENDPATH += ./src/engine ./src/engine/editor
+INCLUDEPATH += ./src/engine ./src/engine/editor
 
 HEADERS += \
     src/engine/nldef.h \

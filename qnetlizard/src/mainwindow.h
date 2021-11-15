@@ -5,7 +5,7 @@
 
 class BaseViewer;
 class LogDialog;
-class SceneDialog;
+class SceneTreeInfoWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -24,19 +24,18 @@ protected:
 
 private:
     void Init();
-    void SetupSceneDialog();
 
 private slots:
     void MenuActionSlot(QAction *action);
     void ToggleLogDialog();
-    void ToggleSceneDialog();
 
 private:
     BaseViewer * GenViewer(const QString &type);
+    void CloseCurrentWidget();
 
 private:
     LogDialog *m_logDialog;
-    SceneDialog *m_sceneDialog;
+    SceneTreeInfoWidget *m_sceneWidget;
 
     Q_DISABLE_COPY(MainWindow)
     

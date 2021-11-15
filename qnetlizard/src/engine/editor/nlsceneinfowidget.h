@@ -1,0 +1,35 @@
+#ifndef _KARIN_NLNLSceneInfoWidget_H
+#define _KARIN_NLNLSceneInfoWidget_H
+
+#include <QTextBrowser>
+
+class NLScene;
+
+class NLSceneInfoWidget : public QTextBrowser
+{
+    Q_OBJECT
+public:
+    explicit NLSceneInfoWidget(QWidget *parent = 0);
+    virtual ~NLSceneInfoWidget();
+    void SetScene(NLScene *scene);
+    NLScene * Scene();
+    
+signals:
+    
+public slots:
+    void UpdateSceneInfo();
+
+private:
+    void Init();
+
+private slots:
+    void Reset();
+
+private:
+    NLScene *m_scene;
+
+    Q_DISABLE_COPY(NLSceneInfoWidget)
+    
+};
+
+#endif // _KARIN_NLNLSceneInfoWidget_H

@@ -35,6 +35,18 @@ extern "C" {
 
 #define printfln(fmt, args...) printf(fmt"\n", ##args)
 
+#define PUSH_BACK(T, arr, count, t) \
+{ \
+    T *_narr = (T *)calloc(count + 1, sizeof(T)); \
+    if(arr) { \
+        memcpy(_narr, arr, count * sizeof(T)); \
+        free(arr); \
+    } \
+    _narr[count] = t; \
+    count++; \
+    arr = _narr; \
+}
+
 #ifdef __cplusplus
 }
 #endif
