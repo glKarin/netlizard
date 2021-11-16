@@ -121,7 +121,7 @@ void NLSceneInfoWidget::SetScene(NLScene *scene)
 {
     if(m_scene != scene)
     {
-        disconnect();
+        Reset();
         m_scene = scene;
         if(m_scene)
         {

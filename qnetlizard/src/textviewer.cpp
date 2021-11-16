@@ -38,12 +38,12 @@ void TextViewer::Init()
 
     button = new QPushButton;
     button->setText("Open file");
-    toolLayout->addStretch();
-    toolLayout->addWidget(button);
+    AddTool();
+    AddTool(button);
     m_saveButton = new QPushButton;
     m_saveButton->setText("Save data");
     m_saveButton->setEnabled(false);
-    toolLayout->addWidget(m_saveButton);
+    AddTool(m_saveButton);
     connect(m_saveButton, SIGNAL(clicked()), this, SLOT(OpenSaveChooser()));
 
     connect(button, SIGNAL(clicked()), this, SLOT(OpenFileChooser()));

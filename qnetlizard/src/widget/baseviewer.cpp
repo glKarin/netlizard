@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QToolBar>
 
 #include "qdef.h"
 
@@ -13,8 +14,7 @@ BaseViewer::BaseViewer(QWidget *parent) :
     m_mainLayout(0),
     m_toolLayout(0),
     m_centralWidget(0),
-    m_titleLabel(0),
-    m_toolBar(0)
+    m_titleLabel(0)
 {
     setObjectName("BaseViewer");
     Init();
@@ -117,12 +117,39 @@ void BaseViewer::Init()
     resize(480, 360);
 }
 
-QToolBar * BaseViewer::ToolBar()
+void BaseViewer::SetupToolBar(QToolBar *toolbar)
 {
-    return m_toolBar;
+    Q_FOREACH(QWidget *w, m_tools)
+    {
+        if(w)
+            toolbar->addWidget(w);
+        else
+            toolbar->addSeparator();
+    }
 }
 
-void BaseViewer::SetToolBar(QToolBar *toolbar)
+void BaseViewer::SetupToolBar(QHBoxLayout *toolbar)
 {
-    m_toolBar = toolbar;
+    Q_FOREACH(QWidget *w, m_tools)
+    {
+        if(w)
+            toolbar->addWidget(w);
+        else
+            toolbar->addStretch();
+    }
+}
+
+void BaseViewer::AddTool(QWidget *w)
+{
+    m_tools.push_back(w);
+}
+
+void BaseViewer::ClearTools()
+{
+    m_tools.clear();
+}
+
+int BaseViewer::ToolsCount() const
+{
+    return m_tools.size();
 }

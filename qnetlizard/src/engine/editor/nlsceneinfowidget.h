@@ -17,13 +17,11 @@ public:
 signals:
     
 public slots:
+    void Reset();
     void UpdateSceneInfo();
 
 private:
     void Init();
-
-private slots:
-    void Reset();
 
 private:
     NLScene *m_scene;

@@ -124,31 +124,31 @@ void AnimationViewer::Init()
     m_openObjButton = new QPushButton;
     connect(m_openObjButton, SIGNAL(clicked()), this, SLOT(OpenObjFileChooser()));
     m_openObjButton->setText("un file");
-    toolLayout->addWidget(m_openObjButton);
-    toolLayout->addStretch();
+    AddTool(m_openObjButton);
+    AddTool();
 
     m_openResourcePathButton = new QPushButton;
     connect(m_openResourcePathButton, SIGNAL(clicked()), this, SLOT(OpenResourceDirChooser()));
     m_openResourcePathButton->setText("Resource path");
-    toolLayout->addWidget(m_openResourcePathButton);
-    toolLayout->addStretch();
+    AddTool(m_openResourcePathButton);
+    AddTool();
 
-    toolLayout->addWidget(new QLabel("Game: "));
-    toolLayout->addWidget(m_gameComboBox);
-    toolLayout->addStretch();
-    toolLayout->addWidget(new QLabel("Index: "));
-    toolLayout->addWidget(m_indexSpinBox);
+    AddTool(new QLabel("Game: "));
+    AddTool(m_gameComboBox);
+    AddTool();
+    AddTool(new QLabel("Index: "));
+    AddTool(m_indexSpinBox);
 
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenBackgroundColorChooser()));
     button->setText("Color");
-    toolLayout->addWidget(button);
+    AddTool(button);
 
-    toolLayout->addStretch();
+    AddTool();
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenFile()));
     button->setText("Load");
-    toolLayout->addWidget(button);
+    AddTool(button);
 
     connect(m_animComboBox, SIGNAL(currentIndexChanged(int)), m_animationScene, SLOT(SetAnim(int)));
     connect(m_frameSlider, SIGNAL(sliderMoved(int)), m_animationScene, SLOT(SetFrame(int)));

@@ -18,6 +18,7 @@ public:
     NLScene * Scene();
     
 signals:
+    void actorSelected(NLActor *a);
     
 public slots:
     virtual void Reset();

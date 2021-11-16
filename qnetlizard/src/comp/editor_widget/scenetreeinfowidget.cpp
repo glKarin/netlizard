@@ -33,6 +33,7 @@ void SceneTreeInfoWidget::SetScene(NLScene *scene)
 {
     if(m_scene != scene)
     {
+        Reset();
         m_scene = scene;
         m_treeWidget->SetScene(m_scene);
         m_infoWidget->SetScene(m_scene);
@@ -51,6 +52,9 @@ NLScene * SceneTreeInfoWidget::Scene()
 
 void SceneTreeInfoWidget::Reset()
 {
+    m_scene = 0;
+    m_treeWidget->Reset();
+    m_infoWidget->Reset();
 }
 
 void SceneTreeInfoWidget::Init()
@@ -78,7 +82,10 @@ void SceneTreeInfoWidget::Init()
     box->setLayout(layout);
     mainLayout->addWidget(box);
 
+    connect(m_treeWidget, SIGNAL(actorSelected(NLActor*)), this, SIGNAL(actorSelected(NLActor*)));
+
     root->setLayout(mainLayout);
     setWidget(root);
+    setWindowTitle("Scene tree viewer");
     setMaximumWidth(360);
 }

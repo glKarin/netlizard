@@ -156,7 +156,6 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
             widget = w;
         }
 
-
         if(widget)
         {
             if(label.isEmpty())

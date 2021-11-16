@@ -44,7 +44,6 @@ void MapViewer::Init()
     m_mapScene = new MapScene;
     QHBoxLayout *toolLayout = ToolLayout();
     m_levelSpinBox = new QSpinBox;
-    QToolBar *toolbar = new QToolBar(this);
 
     for(int i = 0; i <= NL_CONTR_TERRORISM_3D_EPISODE_3; i++)
     {
@@ -56,30 +55,29 @@ void MapViewer::Init()
     m_openLvlButton = new QPushButton;
     connect(m_openLvlButton, SIGNAL(clicked()), this, SLOT(OpenFileChooser()));
     m_openLvlButton->setText("lvl/dm/track file");
-    toolbar->addWidget(m_openLvlButton);
-    //toolLayout->addStretch();
+    AddTool(m_openLvlButton);
+    AddTool();
 
     m_openResourcePathButton = new QPushButton;
     connect(m_openResourcePathButton, SIGNAL(clicked()), this, SLOT(OpenResourceDirChooser()));
     m_openResourcePathButton->setText("Resource path");
-    toolbar->addWidget(m_openResourcePathButton);
-    //toolLayout->addStretch();
+    AddTool(m_openResourcePathButton);
+    AddTool();
 
-    toolbar->addWidget(new QLabel("Game: "));
-    toolbar->addWidget(m_gameComboBox);
-    //toolLayout->addStretch();
-    toolbar->addWidget(new QLabel("Level: "));
-    toolbar->addWidget(m_levelSpinBox);
+    AddTool(new QLabel("Game: "));
+    AddTool(m_gameComboBox);
+    AddTool();
+    AddTool(new QLabel("Level: "));
+    AddTool(m_levelSpinBox);
 
-    //toolLayout->addStretch();
+    AddTool();
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenFile()));
     button->setText("Load");
-    toolbar->addWidget(button);
+    AddTool(button);
 
     connect(m_gameComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));
 
-    SetToolBar(toolbar);
     SetCentralWidget(m_mapScene);
     SetTitle("NETLizard 3D FPS map viewer");
 }

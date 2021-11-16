@@ -2,6 +2,7 @@
 #define _KARIN_BASEVIEWER_H
 
 #include <QWidget>
+#include <QList>
 
 class QLabel;
 class QVBoxLayout;
@@ -17,7 +18,8 @@ public:
     QString Title() const;
     QString StatusText() const;
     QWidget * CentralWidget();
-    QToolBar * ToolBar();
+    void SetupToolBar(QToolBar *toolbar);
+    int ToolsCount() const;
     
 signals:
     void titleChanged(const QString &title);
@@ -35,7 +37,9 @@ protected:
     void SetCentralWidget(QWidget *widget = 0);
     QHBoxLayout * ToolLayout();
     QLabel * TitleLabel();
-    void SetToolBar(QToolBar *toolbar);
+    void AddTool(QWidget *w = 0);
+    void ClearTools();
+    void SetupToolBar(QHBoxLayout *toolbar);
 
 private:
     void Init();
@@ -47,7 +51,7 @@ private:
     QLabel *m_titleLabel;
     QString m_title;
     QString m_statusText;
-    QToolBar *m_toolBar;
+    QList<QWidget *> m_tools;
 
     Q_DISABLE_COPY(BaseViewer)
 };

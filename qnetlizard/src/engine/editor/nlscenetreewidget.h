@@ -14,10 +14,11 @@ class NLSceneTreeWidget : public QTreeWidget
     Q_OBJECT
 
 public:
-    NLSceneTreeWidget(QWidget *widget = 0);
+    explicit NLSceneTreeWidget(QWidget *widget = 0);
     virtual ~NLSceneTreeWidget();
     NLScene * Scene();
     void SetScene(NLScene *scene);
+    void Reset();
 
 Q_SIGNALS:
     void actorSelected(NLActor *actor);

@@ -62,21 +62,21 @@ void FontViewer::Init()
 
     m_openCfButton = new QPushButton;
     m_openCfButton->setText("config file(cf.png)");
-    toolLayout->addWidget(m_openCfButton);
+    AddTool(m_openCfButton);
     connect(m_openCfButton, SIGNAL(clicked()), this, SLOT(OpenCfFileChooser()));
     m_openFntButton = new QPushButton(this);
     m_openFntButton->setText("image file(fnt.png)");
     connect(m_openFntButton, SIGNAL(clicked()), this, SLOT(OpenFntFileChooser()));
-    toolLayout->addWidget(m_openFntButton);
+    AddTool(m_openFntButton);
     toolLayout->addStretch();
     button = new QPushButton;
     button->setText("background color");
     connect(button, SIGNAL(clicked()), this, SLOT(OpenBackgroundColorChooser()));
-    toolLayout->addWidget(button);
+    AddTool(button);
     button = new QPushButton;
     button->setText("Load");
     connect(button, SIGNAL(clicked()), this, SLOT(LoadFont()));
-    toolLayout->addWidget(button);
+    AddTool(button);
 
     CentralWidget()->setLayout(layout);
     SetTitle("NETLizard font viewer");

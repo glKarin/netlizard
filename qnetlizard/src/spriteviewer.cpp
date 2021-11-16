@@ -48,21 +48,21 @@ void SpriteViewer::Init()
     // ccc - ccu
     m_openCuButton = new QPushButton;
     m_openCuButton->setText("config file(cu|ccc.png)");
-    toolLayout->addWidget(m_openCuButton);
+    AddTool(m_openCuButton);
     connect(m_openCuButton, SIGNAL(clicked()), this, SLOT(openCuFileChooser()));
     m_openUButton = new QPushButton(this);
     m_openUButton->setText("image file(u0|ccu.png)");
     connect(m_openUButton, SIGNAL(clicked()), this, SLOT(OpenUFileChooser()));
-    toolLayout->addWidget(m_openUButton);
-    toolLayout->addStretch();
+    AddTool(m_openUButton);
+    AddTool();
     button = new QPushButton;
     button->setText("background color");
     connect(button, SIGNAL(clicked()), this, SLOT(OpenBackgroundColorChooser()));
-    toolLayout->addWidget(button);
+    AddTool(button);
     button = new QPushButton;
     button->setText("Load");
     connect(button, SIGNAL(clicked()), this, SLOT(LoadSprite()));
-    toolLayout->addWidget(button);
+    AddTool(button);
     connect(m_indexList, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(RenderIndex(QListWidgetItem *)));
 
     CentralWidget()->setLayout(layout);

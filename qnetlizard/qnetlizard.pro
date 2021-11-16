@@ -24,7 +24,9 @@ HEADERS += \
     src/engine/nlglobals.h \
     src/engine/editor/nlscenetreewidget.h \
     src/engine/editor/nlsceneinfowidget.h \
-    src/comp/editor_widget/scenetreeinfowidget.h
+    src/comp/editor_widget/scenetreeinfowidget.h \
+    src/engine/editor/nlactorwidget.h \
+    src/comp/editor_widget/actorpropertywidget.h
 
 SOURCES += \
     main.cpp \
@@ -34,7 +36,9 @@ SOURCES += \
     src/engine/nlglobals.cpp \
     src/engine/editor/nlscenetreewidget.cpp \
     src/engine/editor/nlsceneinfowidget.cpp \
-    src/comp/editor_widget/scenetreeinfowidget.cpp
+    src/comp/editor_widget/scenetreeinfowidget.cpp \
+    src/engine/editor/nlactorwidget.cpp \
+    src/comp/editor_widget/actorpropertywidget.cpp
 
 # Widget
 HEADERS += \

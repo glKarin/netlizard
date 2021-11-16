@@ -5,6 +5,35 @@
 #include <QPair>
 
 typedef QVariant NLProperty;
+
+struct NLPropertyInfo
+{
+    QString name;
+    NLProperty value;
+    QString type;
+    QString widget;
+    bool readonly;
+    NLProperty default_value;
+    QVariantMap prop;
+
+    NLPropertyInfo(const QString &name, const NLProperty &value, const QString &type, const QString &widget, bool readonly = true, const NLProperty &def_value = NLProperty())
+        : name(name),
+          value(value),
+          type(type),
+          widget(widget),
+          readonly(readonly),
+          default_value(def_value)
+    {
+    }
+
+    NLPropertyInfo & operator()(const QString &name, const QVariant &val)
+    {
+        prop.insert(name, val);
+        return *this;
+    }
+};
+typedef QList<NLPropertyInfo> NLPropertyInfoList;
+
 class NLPropertyPair : public QPair<QString, NLProperty>
 {
 public:

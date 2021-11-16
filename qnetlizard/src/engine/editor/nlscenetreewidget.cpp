@@ -12,6 +12,7 @@ NLSceneTreeWidget::NLSceneTreeWidget(QWidget *widget)
       m_scene(0)
 {
     setObjectName("NLSceneTreeWidget");
+    Init();
 }
 
 NLSceneTreeWidget::~NLSceneTreeWidget()
@@ -27,6 +28,13 @@ void NLSceneTreeWidget::Init()
     //setMinimumWidth(128);
 }
 
+void NLSceneTreeWidget::Reset()
+{
+    m_scene = 0;
+    clear();
+    setHeaderLabel("No scene");
+}
+
 NLScene * NLSceneTreeWidget::Scene()
 {
     return m_scene;
@@ -36,6 +44,7 @@ void NLSceneTreeWidget::SetScene(NLScene *scene)
 {
     if(m_scene != scene)
     {
+        Reset();
         m_scene = scene;
         UpdateTreeData();
     }
@@ -43,10 +52,8 @@ void NLSceneTreeWidget::SetScene(NLScene *scene)
 
 void NLSceneTreeWidget::UpdateTreeData()
 {
-    clear();
     if(!m_scene)
     {
-        setHeaderLabel("No scene");
         return;
     }
 

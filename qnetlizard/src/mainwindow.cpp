@@ -7,6 +7,7 @@
 #include <QMoveEvent>
 
 #include <QMenuBar>
+#include <QToolBar>
 
 #include "imageviewer.h"
 #include "textviewer.h"
@@ -26,6 +27,7 @@
 #include "changelogdialog.h"
 #include "nlscene.h"
 #include "scenetreeinfowidget.h"
+#include "actorpropertywidget.h"
 
 #ifdef _DEV_TEST
 #include "testviewer.h"
@@ -33,8 +35,10 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    m_toolBar(0),
     m_logDialog(0),
-    m_sceneWidget(0)
+    m_sceneWidget(0),
+    m_actorWidget(0)
 {
     setObjectName("MainWindow");
     Init();
@@ -55,8 +59,6 @@ void MainWindow::Init()
     QMenuBar *menuBar;
     QMenu *menu;
     QAction *menuItem;
-    m_sceneWidget = new SceneTreeInfoWidget;
-    addDockWidget(Qt::RightDockWidgetArea, m_sceneWidget);
 
     menuBar = new QMenuBar(this);
 
@@ -108,10 +110,18 @@ void MainWindow::CloseCurrentWidget()
     BaseViewer *viewer = dynamic_cast<BaseViewer *>(centralWidget());
     if(viewer)
     {
-        QToolBar *toolbar = viewer->ToolBar();
-        if(toolbar)
-            removeToolBar(toolbar);
     }
+    if(m_toolBar)
+    {
+        removeToolBar(m_toolBar);
+        m_toolBar->clear();
+        delete m_toolBar;
+        m_toolBar = 0;
+    }
+    if(m_sceneWidget)
+        m_sceneWidget->Reset();
+    if(m_actorWidget)
+        m_actorWidget->Reset();
 }
 
 void MainWindow::MenuActionSlot(QAction *action)
@@ -151,11 +161,18 @@ void MainWindow::MenuActionSlot(QAction *action)
     }
     else if(type == "scene")
     {
+        OpenSceneEditor();
     }
     else
     {
         BaseViewer *viewer = GenViewer(type);
         setCentralWidget(viewer);
+        if(viewer->ToolsCount())
+        {
+            m_toolBar = new QToolBar(this);
+            viewer->SetupToolBar(m_toolBar);
+            addToolBar(m_toolBar);
+        }
     }
 }
 
@@ -198,11 +215,8 @@ BaseViewer * MainWindow::GenViewer(const QString &type)
         connect(viewer, SIGNAL(titleChanged(const QString &)), this, SLOT(setWindowTitle(const QString &)));
         setWindowTitle(viewer->Title());
         NLScene *scene = dynamic_cast<NLScene *>(viewer->CentralWidget());
-        if(scene)
+        if(scene && m_sceneWidget)
             m_sceneWidget->SetScene(scene);
-        QToolBar *toolbar = viewer->ToolBar();
-        if(toolbar)
-            addToolBar(toolbar);
     }
     else
     {
@@ -224,6 +238,46 @@ void MainWindow::ToggleLogDialog()
         m_logDialog->ResetPosAndSize();
         m_logDialog->show();
         setFocus(Qt::MouseFocusReason);
+    }
+}
+
+BaseViewer * MainWindow::CentralViewer()
+{
+    QWidget *w = centralWidget();
+    if(!w)
+        return 0;
+    return dynamic_cast<BaseViewer *>(w);
+}
+
+void MainWindow::OpenSceneEditor()
+{
+    BaseViewer *viewer = CentralViewer();
+    NLScene *scene = viewer ? dynamic_cast<NLScene *>(viewer->CentralWidget()) : 0;
+    if(!m_sceneWidget)
+    {
+        m_sceneWidget = new SceneTreeInfoWidget(this);
+        if(scene)
+            m_sceneWidget->SetScene(scene);
+        addDockWidget(Qt::RightDockWidgetArea, m_sceneWidget, Qt::Vertical);
+    }
+    if(!m_actorWidget)
+    {
+        m_actorWidget = new ActorPropertyWidget;
+        addDockWidget(Qt::RightDockWidgetArea, m_actorWidget, Qt::Vertical);
+        connect(m_sceneWidget, SIGNAL(actorSelected(NLActor *)), m_actorWidget, SLOT(SetActor(NLActor *)));
+    }
+    if(!m_sceneWidget->isVisible())
+    {
+        if(scene)
+            m_sceneWidget->SetScene(scene);
+        m_sceneWidget->setFloating(false);
+        m_sceneWidget->setVisible(true);
+    }
+    if(!m_actorWidget->isVisible())
+    {
+        m_actorWidget->Reset();
+        m_actorWidget->setFloating(false);
+        m_actorWidget->setVisible(true);
     }
 }
 
