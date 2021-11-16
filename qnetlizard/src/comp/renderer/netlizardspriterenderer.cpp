@@ -13,6 +13,7 @@ NETLizardSpriteRenderer::NETLizardSpriteRenderer(NLActor *actor) :
     m_sprite(0),
     m_index(-1)
 {
+    SetName("NETLizardSpriteRenderer");
 }
 
 NETLizardSpriteRenderer::~NETLizardSpriteRenderer()

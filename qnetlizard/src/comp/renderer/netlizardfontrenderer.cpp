@@ -14,6 +14,7 @@ NETLizardFontRenderer::NETLizardFontRenderer(NLActor *actor) :
       m_paddingWidth(2),
       m_lineSpacing(1)
 {
+    SetName("NETLizardFontRenderer");
 }
 
 NETLizardFontRenderer::~NETLizardFontRenderer()

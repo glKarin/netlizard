@@ -25,16 +25,24 @@ NLPropertyInfoList ObjectPropertics(const NLObject *obj)
                 type = "NLVector3";
             widget = "vector3";
         }
-        else if(type == "int" || type == "float")
+        else if(type == "int")
+        {
             widget = "spinbox";
+        }
+        else if(type == "double" || type == "float")
+        {
+            if(type != "float")
+                type = "float";
+            widget = "spinbox";
+        }
         else if(type == "bool")
             widget = "checkbox";
         else
             widget = "lineedit";
 
-        bool readonly = (name == "objectName");
+        bool readonly = (name == "objectName" || name == "renderable");
 
-        ret.push_back(NLPropertyInfo(p.name(), p.read(obj), type, widget, readonly));
+        ret.push_back(NLPropertyInfo(name, p.read(obj), type, widget, readonly, obj->GetInitProperty(name)));
     }
     return ret;
 }

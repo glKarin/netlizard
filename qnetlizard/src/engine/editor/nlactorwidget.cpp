@@ -15,6 +15,7 @@
 #include "qdef.h"
 #include "nlfuncs.h"
 #include "nlscene.h"
+#include "nlcomponent.h"
 #include "nlactor.h"
 #include "nlactorcontainer.h"
 
@@ -29,6 +30,7 @@ static bool NLPropertyInfoCmp(const NLPropertyInfo &a, const NLPropertyInfo &b)
          << "position"
          << "rotation"
          << "scale"
+         << "renderable"
         ;
 
     int ai = list.indexOf(a.name);
@@ -164,7 +166,7 @@ void NLActorWidget::Init()
     QWidget *root = new QWidget;
     QVBoxLayout *mainLayout = new QVBoxLayout;
 
-    label = new QLabel("Actor");
+    label = new QLabel("Actor: ");
     mainLayout->addWidget(label);
     mainLayout->addSpacing(1);
 
@@ -174,14 +176,11 @@ void NLActorWidget::Init()
     mainLayout->addWidget(groupBox);
     mainLayout->addSpacing(2);
 
-    label = new QLabel("Component");
+    label = new QLabel("Component: ");
     mainLayout->addWidget(label);
     mainLayout->addSpacing(1);
 
-    groupBox = new QGroupBox;
-    groupBox->setLayout(m_componentLayout);
-    groupBox->setTitle("Properties");
-    mainLayout->addWidget(groupBox);
+    mainLayout->addLayout(m_componentLayout);
 
     mainLayout->addStretch(1);
 
@@ -201,12 +200,27 @@ void NLActorWidget::SetActor(NLActor *actor)
     {
         Reset();
         m_actor = actor;
+        if(m_actor)
+        {
+            connect(m_actor, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
+            connect(m_actor, SIGNAL(destroyed()), this, SLOT(Reset()));
+        }
         UpdateActorData();
     }
 }
 
 void NLActorWidget::Reset()
 {
+    if(m_actor)
+    {
+        m_actor->disconnect(this);
+        const int Count = m_actor->ComponentCount();
+        for(int i = 0; i < Count; i++)
+        {
+            NLComponent *comp = m_actor->GetComponent(i);
+            comp->disconnect(this);
+        }
+    }
     QLayoutItem *item;
     while(!m_actorLayout->isEmpty())
     {
@@ -220,6 +234,8 @@ void NLActorWidget::Reset()
         delete item->widget();
         delete item;
     }
+    m_propWidgetMap.clear();
+    m_actor = 0;
 }
 
 void NLActorWidget::UpdateActorData()
@@ -229,7 +245,7 @@ void NLActorWidget::UpdateActorData()
         return;
     }
     SetupActorProperty();
-    SetupComponentProperty();
+    SetupComponentProperties();
 }
 
 void NLActorWidget::SetupActorProperty()
@@ -239,6 +255,8 @@ void NLActorWidget::SetupActorProperty()
     Q_FOREACH(const NLPropertyInfo &item, list)
     {
         QWidget *widget = GenWidget(m_actor, item);
+        qDebug() << item.name;
+        m_propWidgetMap[m_actor].insert(item.name, widget);
         m_actorLayout->addRow(item.name, widget);
     }
 }
@@ -248,9 +266,35 @@ void NLActorWidget::SortProperties(NLPropertyInfoList &list)
     qSort(list.begin(), list.end(), NLPropertyInfoCmp);
 }
 
-void NLActorWidget::SetupComponentProperty()
+void NLActorWidget::SetupComponentProperty(NLComponent *comp)
 {
+    QFormLayout *layout = new QFormLayout;
+    QGroupBox *groupBox = new QGroupBox;
+    groupBox->setTitle(comp->objectName() + "(" + comp->Name() + ")");
+    NLPropertyInfoList list = NL::ObjectPropertics(comp);
+    SortProperties(list);
+    Q_FOREACH(const NLPropertyInfo &item, list)
+    {
+        QWidget *widget = GenWidget(comp, item);
+        m_propWidgetMap[comp].insert(item.name, widget);
+        layout->addRow(item.name, widget);
+    }
+    connect(comp, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
+    groupBox->setLayout(layout);
+    m_componentLayout->addWidget(groupBox);
+    m_componentLayout->addSpacing(1);
+}
 
+void NLActorWidget::SetupComponentProperties()
+{
+    const int Count = m_actor->ComponentCount();
+    if(Count == 0)
+        return;
+    for(int i = 0; i < Count; i++)
+    {
+        NLComponent *comp = m_actor->GetComponent(i);
+        SetupComponentProperty(comp);
+    }
 }
 
 QWidget * NLActorWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
@@ -264,6 +308,8 @@ QWidget * NLActorWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
             QSpinBox *w = new QSpinBox;
             w->setObjectName(item.name);
             w->setSingleStep(1);
+            w->setMaximum(std::numeric_limits<int>::max());
+            w->setMinimum(-std::numeric_limits<int>::max());
             w->setReadOnly(item.readonly);
             w->setValue(item.value.toInt());
             //connect(w, SIGNAL(valueChanged(const QString &)), this, SLOT(OnValueChanged(const QString &)));
@@ -275,6 +321,8 @@ QWidget * NLActorWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
             w->setObjectName(item.name);
             w->setSingleStep(0.01);
             w->setDecimals(6);
+            w->setMaximum(std::numeric_limits<float>::max());
+            w->setMinimum(-std::numeric_limits<float>::max());
             w->setReadOnly(item.readonly);
             w->setValue(item.value.toFloat());
             //connect(w, SIGNAL(valueChanged(const QString &)), this, SLOT(OnValueChanged(const QString &)));
@@ -367,4 +415,28 @@ QWidget * NLActorWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
     }
 
     return widget;
+}
+
+void NLActorWidget::OnPropertyChanged(const QString &name, const NLProperty &value)
+{
+    NLObject *obj = static_cast<NLObject *>(sender());
+    QWidget *widget = m_propWidgetMap[obj].value(name);
+    if(!widget)
+        return;
+    if(instanceofv(widget, QSpinBox))
+    {
+        static_cast<QSpinBox *>(widget)->setValue(value.toInt());
+    }
+    else if(instanceofv(widget, QDoubleSpinBox))
+    {
+        static_cast<QDoubleSpinBox *>(widget)->setValue(value.toFloat());
+    }
+    else if(instanceofv(widget, NLVector3Widget))
+    {
+        static_cast<NLVector3Widget *>(widget)->SetVector3(value.value<NLVector3>());
+    }
+    else if(instanceofv(widget, QLineEdit))
+    {
+        static_cast<QLineEdit *>(widget)->setText(value.toString());
+    }
 }

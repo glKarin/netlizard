@@ -13,6 +13,7 @@ NETLizardMapModelRenderer::NETLizardMapModelRenderer(NLActor *actor) :
     m_sceneCount(0),
     m_debug(NETLIZARD_DEBUG_RENDER_NONE)
 {
+    SetName("NETLizardMapModelRenderer");
 }
 
 NETLizardMapModelRenderer::~NETLizardMapModelRenderer()

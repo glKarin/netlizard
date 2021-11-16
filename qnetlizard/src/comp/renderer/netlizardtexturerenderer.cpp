@@ -10,6 +10,7 @@ NETLizardTextureRenderer::NETLizardTextureRenderer(NLActor *actor) :
     NLRenderable(actor),
     m_tex(0)
 {
+    SetName("NETLizardTextureRenderer");
 }
 
 NETLizardTextureRenderer::~NETLizardTextureRenderer()

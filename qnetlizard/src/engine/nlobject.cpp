@@ -170,9 +170,19 @@ void NLObject::SetProperty(const QString &name, const NLProperty &value)
 {
     QByteArray ba = name.toLocal8Bit();
     setProperty(ba.constData(), value);
+    qDebug() << name << property(ba.constData());
     int r = 2;
     if(r == 2)
         emit propertyChanged(name, value);
+}
+
+void NLObject::RemoveProperty(const QString &name)
+{
+    QByteArray ba = name.toLocal8Bit();
+    setProperty(ba.constData(), NLProperty());
+    int r = 2;
+    if(r == 2)
+        emit propertyChanged(name);
 }
 
 NLProperty & NLObject::operator[](const QString &name)

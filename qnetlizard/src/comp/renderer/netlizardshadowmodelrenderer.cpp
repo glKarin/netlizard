@@ -15,6 +15,7 @@ NETLizardShadowModelRenderer::NETLizardShadowModelRenderer(int method, NLActor *
     m_stencilShadowMethod(method),
     m_shadowObject(NETLIZARD_SHADOW_RENDER_ITEM)
 {
+    SetName("NETLizardShadowModelRenderer");
     SetLightSource();
 }
 

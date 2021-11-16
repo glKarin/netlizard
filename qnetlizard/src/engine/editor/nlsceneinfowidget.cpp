@@ -139,7 +139,8 @@ NLScene * NLSceneInfoWidget::Scene()
 
 void NLSceneInfoWidget::Reset()
 {
-    disconnect();
+    if(m_scene)
+        m_scene->disconnect(this);
     m_scene = 0;
     UpdateSceneInfo();
 }

@@ -372,6 +372,7 @@ void NLActor::SetRenderable(NLRenderable *renderable)
         if(m_renderable)
             m_renderable->SetActor(0);
         m_renderable = renderable;
+        SetProperty("renderable", m_renderable ? m_renderable->Name() : QVariant());
         if(m_renderable)
             m_renderable->SetActor(this);
     }

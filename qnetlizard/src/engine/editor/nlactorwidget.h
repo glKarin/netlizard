@@ -11,6 +11,7 @@ class NLObject;
 class QFormLayout;
 class QVBoxLayout;
 class QDoubleSpinBox;
+class NLComponent;
 
 class NLVector3Widget : public QWidget
 {
@@ -66,13 +67,20 @@ private:
     void Init();
     QWidget * GenWidget(NLObject *obj, const NLPropertyInfo &prop);
     void SetupActorProperty();
-    void SetupComponentProperty();
+    void SetupComponentProperties();
+    void SetupComponentProperty(NLComponent *comp);
     void SortProperties(NLPropertyInfoList &list);
 
+private Q_SLOTS:
+    void OnPropertyChanged(const QString &name, const NLProperty &value);
+
 private:
+    typedef QHash<QString, QWidget *> PropWidgetHash;
+    typedef QHash<NLObject *, PropWidgetHash> ComponentPropWidgetHash;
     NLActor *m_actor;
     QFormLayout *m_actorLayout;
     QVBoxLayout *m_componentLayout;
+    ComponentPropWidgetHash m_propWidgetMap;
 
     Q_DISABLE_COPY(NLActorWidget)
 };

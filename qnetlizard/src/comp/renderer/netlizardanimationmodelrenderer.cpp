@@ -11,6 +11,7 @@ NETLizardAnimationModelRenderer::NETLizardAnimationModelRenderer(NLActor *actor)
     m_anim(-1),
     m_frame(-1)
 {
+    SetName("NETLizardAnimationModelRenderer");
 }
 
 NETLizardAnimationModelRenderer::~NETLizardAnimationModelRenderer()

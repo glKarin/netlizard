@@ -10,6 +10,7 @@ NETLizardItemModelRenderer::NETLizardItemModelRenderer(NLActor *actor) :
     m_tex(0),
     m_index(0)
 {
+    SetName("NETLizardItemModelRenderer");
 }
 
 NETLizardItemModelRenderer::~NETLizardItemModelRenderer()
