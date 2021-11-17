@@ -70,7 +70,7 @@ typedef QVariantHash NLProperties;
 typedef QVariant NLProperty;
 #endif
 
-typedef vector3_t NLVector3;
+typedef struct vector3_s NLVector3;
 typedef GLmatrix NLMatrix4;
 
 #define NLINTERFACE
@@ -97,6 +97,6 @@ typedef GLmatrix NLMatrix4;
 .arg(GL_MATRIX_M_CR4(v, 1, 3), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 2, 3), 16, 'g', 6).arg(GL_MATRIX_M_CR4(v, 3, 3), 16, 'g', 6)\
 ;
 
-Q_DECLARE_METATYPE(vector3_t)
+Q_DECLARE_METATYPE(NLVector3)
 
 #endif // _KARIN_NLDEF_H

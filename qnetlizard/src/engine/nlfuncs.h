@@ -9,7 +9,8 @@ namespace NL
 {
 template <class T> T clamp(T t, T min, T max);
 
-NLPropertyInfoList ObjectPropertics(const NLObject *obj);
+NLPropertyInfoList object_propertics(const NLObject *obj);
+bool property_equals(const NLProperty &a, const NLProperty &b);
 }
 
 template <class T> T NL::clamp(T t, T min, T max)

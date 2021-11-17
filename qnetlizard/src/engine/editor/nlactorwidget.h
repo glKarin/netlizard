@@ -73,6 +73,10 @@ private:
 
 private Q_SLOTS:
     void OnPropertyChanged(const QString &name, const NLProperty &value);
+    void OnIntChanged(int i);
+    void OnBoolChanged(bool b);
+    void OnDoubleChanged(double f);
+    void OnVector3Changed(const NLVector3 &v);
 
 private:
     typedef QHash<QString, QWidget *> PropWidgetHash;

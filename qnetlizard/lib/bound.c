@@ -174,7 +174,7 @@ float bound_sqrt(const bound_t *b)
     return vector3_length(&v);
 }
 
-float bound_expand(bound_t *b, const vector3_t *a)
+void bound_expand(bound_t *b, const vector3_t *a)
 {
     BOUNDV_MIN_X(b) -= VECTOR3V_X(a);
     BOUNDV_MIN_Y(b) -= VECTOR3V_Y(a);

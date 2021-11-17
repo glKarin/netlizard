@@ -9,7 +9,7 @@
 namespace NL
 {
 
-NLPropertyInfoList ObjectPropertics(const NLObject *obj)
+NLPropertyInfoList object_propertics(const NLObject *obj)
 {
     const QMetaObject *metaObj = obj->metaObject();
     NLPropertyInfoList ret;
@@ -42,9 +42,31 @@ NLPropertyInfoList ObjectPropertics(const NLObject *obj)
 
         bool readonly = (name == "objectName" || name == "renderable");
 
+        //qDebug() << name << p.read(obj).type() << p.read(obj).userType();
         ret.push_back(NLPropertyInfo(name, p.read(obj), type, widget, readonly, obj->GetInitProperty(name)));
     }
     return ret;
+}
+
+bool property_equals(const NLProperty &a, const NLProperty &b)
+{
+    QVariant::Type at = a.type();
+    QVariant::Type bt = b.type();
+    if(at == bt && at == QVariant::UserType)
+    {
+        QString atype(a.typeName());
+        QString btype(b.typeName());
+        if(atype == btype)
+        {
+            if(atype == "NLVector3" || atype == "vector3_t" || atype == "vector3_s")
+            {
+                NLVector3 av = a.value<NLVector3>();
+                NLVector3 bv = b.value<NLVector3>();
+                return vector3_equals(&av, &bv) ? true : false;
+            }
+        }
+    }
+    return a == b; // TODO
 }
 
 }

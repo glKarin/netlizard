@@ -401,7 +401,7 @@ void NLActor::Reset()
     NLObject::Reset();
 }
 
-void NLActor::SetPosition(const vector3_t &v)
+void NLActor::SetPosition(const NLVector3 &v)
 {
     if(vector3_equals(&m_position, &v))
         return;
@@ -411,7 +411,7 @@ void NLActor::SetPosition(const vector3_t &v)
     emit propertyChanged("position", NLProperty::fromValue<NLVector3>(m_position));
 }
 
-void NLActor::SetRotation(const vector3_t &v)
+void NLActor::SetRotation(const NLVector3 &v)
 {
     if(vector3_equals(&m_rotation, &v))
         return;
@@ -422,7 +422,7 @@ void NLActor::SetRotation(const vector3_t &v)
     emit propertyChanged("rotation", NLProperty::fromValue<NLVector3>(m_rotation));
 }
 
-void NLActor::SetScale(const vector3_t &v)
+void NLActor::SetScale(const NLVector3 &v)
 {
     if(vector3_equals(&m_scale, &v))
         return;
@@ -484,9 +484,9 @@ NLActor * NLActor::MoveOriginal(const NLVector3 &unit)
     NLVector3 right = InitRight;
     NLVector3 up = InitUp_y;
     NLVector3 direction = InitDirection_y;
-    vector3_moveve(&m_position, &right, VECTOR3_X(unit));
-    vector3_moveve(&m_position, &up, VECTOR3_Y(unit));
-    vector3_moveve(&m_position, &direction, VECTOR3_Z(unit));
+    vector3_moveve(&pos, &right, VECTOR3_X(unit));
+    vector3_moveve(&pos, &up, VECTOR3_Y(unit));
+    vector3_moveve(&pos, &direction, VECTOR3_Z(unit));
     SetPosition(pos);
     return this;
 }

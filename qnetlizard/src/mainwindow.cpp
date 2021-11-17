@@ -46,11 +46,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    if(m_logDialog)
-    {
-        m_logDialog->close();
-        m_logDialog->deleteLater();
-    }
     DEBUG_DESTROY_Q;
 }
 
@@ -230,12 +225,13 @@ void MainWindow::ToggleLogDialog()
     if(!m_logDialog)
     {
         m_logDialog = new LogDialog(this);
+        addDockWidget(Qt::BottomDockWidgetArea, m_logDialog, Qt::Horizontal);
     }
     if(m_logDialog->isVisible())
         m_logDialog->hide();
     else
     {
-        m_logDialog->ResetPosAndSize();
+        //m_logDialog->ResetPosAndSize();
         m_logDialog->show();
         setFocus(Qt::MouseFocusReason);
     }
@@ -286,7 +282,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     QMainWindow::resizeEvent(event);
     if(m_logDialog && m_logDialog->isVisible())
     {
-        m_logDialog->ResetPosAndSize();
+        //m_logDialog->ResetPosAndSize();
     }
     if(isVisible())
     {
@@ -302,7 +298,7 @@ void MainWindow::moveEvent(QMoveEvent *event)
     QMainWindow::moveEvent(event);
     if(m_logDialog && m_logDialog->isVisible())
     {
-        m_logDialog->ResetPosAndSize();
+        //m_logDialog->ResetPosAndSize();
     }
     if(isVisible())
     {

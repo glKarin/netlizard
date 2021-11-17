@@ -19,6 +19,10 @@
 #include "nlactor.h"
 #include "nlactorcontainer.h"
 
+#define NLOBJECT_PTR_PROPERTY_NAME "NLObject"
+#define DOUBLE_SPINBOX_SINGLE_STEP 0.1
+#define DOUBLE_SPINBOX_DECIMAL 6
+
 static bool NLPropertyInfoCmp(const NLPropertyInfo &a, const NLPropertyInfo &b)
 {
     if(a.name == b.name)
@@ -74,9 +78,12 @@ void NLVector3Widget::Init()
     m_xSpinBox->setMinimum(-std::numeric_limits<float>::max());
     m_ySpinBox->setMinimum(-std::numeric_limits<float>::max());
     m_zSpinBox->setMinimum(-std::numeric_limits<float>::max());
-    m_xSpinBox->setDecimals(6);
-    m_ySpinBox->setDecimals(6);
-    m_zSpinBox->setDecimals(6);
+    m_xSpinBox->setDecimals(DOUBLE_SPINBOX_DECIMAL);
+    m_ySpinBox->setDecimals(DOUBLE_SPINBOX_DECIMAL);
+    m_zSpinBox->setDecimals(DOUBLE_SPINBOX_DECIMAL);
+    m_xSpinBox->setSingleStep(DOUBLE_SPINBOX_SINGLE_STEP);
+    m_ySpinBox->setSingleStep(DOUBLE_SPINBOX_SINGLE_STEP);
+    m_zSpinBox->setSingleStep(DOUBLE_SPINBOX_SINGLE_STEP);
 
     layout = new QFormLayout;
     m_xSpinBox->setObjectName("X");
@@ -250,7 +257,7 @@ void NLActorWidget::UpdateActorData()
 
 void NLActorWidget::SetupActorProperty()
 {
-    NLPropertyInfoList list = NL::ObjectPropertics(m_actor);
+    NLPropertyInfoList list = NL::object_propertics(m_actor);
     SortProperties(list);
     Q_FOREACH(const NLPropertyInfo &item, list)
     {
@@ -271,7 +278,7 @@ void NLActorWidget::SetupComponentProperty(NLComponent *comp)
     QFormLayout *layout = new QFormLayout;
     QGroupBox *groupBox = new QGroupBox;
     groupBox->setTitle(comp->objectName() + "(" + comp->Name() + ")");
-    NLPropertyInfoList list = NL::ObjectPropertics(comp);
+    NLPropertyInfoList list = NL::object_propertics(comp);
     SortProperties(list);
     Q_FOREACH(const NLPropertyInfo &item, list)
     {
@@ -306,26 +313,25 @@ QWidget * NLActorWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
         if(item.type == "int")
         {
             QSpinBox *w = new QSpinBox;
-            w->setObjectName(item.name);
             w->setSingleStep(1);
             w->setMaximum(std::numeric_limits<int>::max());
             w->setMinimum(-std::numeric_limits<int>::max());
             w->setReadOnly(item.readonly);
             w->setValue(item.value.toInt());
-            //connect(w, SIGNAL(valueChanged(const QString &)), this, SLOT(OnValueChanged(const QString &)));
+            connect(w, SIGNAL(valueChanged(int)), this, SLOT(OnIntChanged(int)));
             widget = w;
         }
         else
         {
             QDoubleSpinBox *w = new QDoubleSpinBox;
-            w->setObjectName(item.name);
-            w->setSingleStep(0.01);
-            w->setDecimals(6);
+            w->setSingleStep(DOUBLE_SPINBOX_SINGLE_STEP);
+            w->setDecimals(DOUBLE_SPINBOX_DECIMAL);
             w->setMaximum(std::numeric_limits<float>::max());
             w->setMinimum(-std::numeric_limits<float>::max());
             w->setReadOnly(item.readonly);
             w->setValue(item.value.toFloat());
             //connect(w, SIGNAL(valueChanged(const QString &)), this, SLOT(OnValueChanged(const QString &)));
+            connect(w, SIGNAL(valueChanged(double)), this, SLOT(OnDoubleChanged(double)));
             widget = w;
         }
     }
@@ -334,17 +340,15 @@ QWidget * NLActorWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
         if(item.type == "bool")
         {
             QCheckBox *w = new QCheckBox;
-            w->setObjectName(item.name);
             w->setChecked(item.value.toBool());
             w->setCheckable(!item.readonly);
-            //connect(w, SIGNAL(clicked(bool)), this, SLOT(OnBoolChanged(bool)));
+            connect(w, SIGNAL(clicked(bool)), this, SLOT(OnBoolChanged(bool)));
             widget = w;
         }
 #if 0
         else if(item.type == "int")
         {
             QGroupBox *w = new QGroupBox;
-            w->setObjectName(item.name);
             QButtonGroup *g = new QButtonGroup(w);
             g->setObjectName(item.name);
             g->setExclusive(false);
@@ -378,7 +382,6 @@ QWidget * NLActorWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
     {
 #if 0
         QComboBox *w = new QComboBox;
-        w->setObjectName(item.name);
         const QVariantList & items = item.prop.value("option").toList();
         int cur = 0;
         int target = settings->GetSetting<int>(item.name, item.value.toInt());
@@ -398,28 +401,32 @@ QWidget * NLActorWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
     else if(item.widget == "vector3")
     {
         NLVector3Widget *w = new NLVector3Widget;
-        w->setObjectName(item.name);
         w->SetVector3(item.value.value<NLVector3>());
         w->SetReadOnly(item.readonly);
-        //connect(obj, SIGNAL(clicked(bool)), this, SLOT(OnBoolChanged(bool)));
+        connect(w, SIGNAL(vector3Changed(const NLVector3 &)), this, SLOT(OnVector3Changed(const NLVector3 &)));
         widget = w;
     }
     else// if(item.widget == "lineedit")
     {
         QLineEdit *w = new QLineEdit;
-        w->setObjectName(item.name);
         w->setText(item.value.toString());
         w->setReadOnly(item.readonly);
         //connect(w, SIGNAL(clicked(bool)), this, SLOT(OnBoolChanged(bool)));
         widget = w;
     }
 
+    widget->setObjectName(item.name);
+    widget->setProperty(NLOBJECT_PTR_PROPERTY_NAME, QVariant::fromValue<QObject *>(obj));
+
     return widget;
 }
 
 void NLActorWidget::OnPropertyChanged(const QString &name, const NLProperty &value)
 {
-    NLObject *obj = static_cast<NLObject *>(sender());
+    QObject *s = sender();
+    if(!s)
+        return;
+    NLObject *obj = static_cast<NLObject *>(s);
     QWidget *widget = m_propWidgetMap[obj].value(name);
     if(!widget)
         return;
@@ -439,4 +446,60 @@ void NLActorWidget::OnPropertyChanged(const QString &name, const NLProperty &val
     {
         static_cast<QLineEdit *>(widget)->setText(value.toString());
     }
+}
+
+void NLActorWidget::OnIntChanged(int i)
+{
+    QObject *s = sender();
+    if(!s)
+        return;
+    QObject *o = s->property(NLOBJECT_PTR_PROPERTY_NAME).value<QObject *>();
+    if(!o)
+        return;
+    NLObject *obj = static_cast<NLObject *>(o);
+    if(!obj)
+        return;
+    obj->SetProperty(s->objectName(), i);
+}
+
+void NLActorWidget::OnDoubleChanged(double f)
+{
+    QObject *s = sender();
+    if(!s)
+        return;
+    QObject *o = s->property(NLOBJECT_PTR_PROPERTY_NAME).value<QObject *>();
+    if(!o)
+        return;
+    NLObject *obj = static_cast<NLObject *>(o);
+    if(!obj)
+        return;
+    obj->SetProperty(s->objectName(), (float)f);
+}
+
+void NLActorWidget::OnBoolChanged(bool b)
+{
+    QObject *s = sender();
+    if(!s)
+        return;
+    QObject *o = s->property(NLOBJECT_PTR_PROPERTY_NAME).value<QObject *>();
+    if(!o)
+        return;
+    NLObject *obj = static_cast<NLObject *>(o);
+    if(!obj)
+        return;
+    obj->SetProperty(s->objectName(), b);
+}
+
+void NLActorWidget::OnVector3Changed(const NLVector3 &v)
+{
+    QObject *s = sender();
+    if(!s)
+        return;
+    QObject *o = s->property(NLOBJECT_PTR_PROPERTY_NAME).value<QObject *>();
+    if(!o)
+        return;
+    NLObject *obj = static_cast<NLObject *>(o);
+    if(!obj)
+        return;
+    obj->SetProperty(s->objectName(), NLProperty::fromValue<NLVector3>(v));
 }

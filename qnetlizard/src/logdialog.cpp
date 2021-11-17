@@ -12,7 +12,7 @@
 #include "qdef.h"
 
 LogDialog::LogDialog(QWidget *parent) :
-    QDialog(parent),
+    QDockWidget(parent),
     m_log(0),
     m_textViewer(0)
 {
@@ -33,6 +33,7 @@ void LogDialog::Init()
     QHBoxLayout *toolLayout = new QHBoxLayout;
     m_textViewer = new QTextBrowser;
     QPushButton *button = new QPushButton;
+    QWidget *root = new QWidget;
 
     m_textViewer->setAcceptRichText(true);
     layout->addWidget(m_textViewer, 1);
@@ -44,9 +45,11 @@ void LogDialog::Init()
 
     connect(m_log, SIGNAL(outputLog(int, const QString &)), this, SLOT(PushLog(int, const QString &)));
 
-    setLayout(layout);
+    root->setLayout(layout);
 
     m_textViewer->setHtml(m_log->LogText().replace("\n", "<br/>"));
+
+    setWidget(root);
 
     setWindowTitle("Log output");
 }
@@ -85,12 +88,12 @@ void LogDialog::ClearLog()
 
 void LogDialog::hideEvent(QHideEvent *e)
 {
-    QDialog::hideEvent(e);
+    QDockWidget::hideEvent(e);
     m_log->Finish();
 }
 
 void LogDialog::showEvent(QShowEvent *e)
 {
-    QDialog::showEvent(e);
+    QDockWidget::showEvent(e);
     m_log->Start();
 }

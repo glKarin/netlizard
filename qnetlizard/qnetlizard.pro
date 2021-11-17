@@ -20,25 +20,13 @@ HEADERS += \
     src/qdef.h \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
-    src/misc/settings.h \
-    src/engine/nlglobals.h \
-    src/engine/editor/nlscenetreewidget.h \
-    src/engine/editor/nlsceneinfowidget.h \
-    src/comp/editor_widget/scenetreeinfowidget.h \
-    src/engine/editor/nlactorwidget.h \
-    src/comp/editor_widget/actorpropertywidget.h
+    src/misc/settings.h
 
 SOURCES += \
     main.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
-    src/misc/settings.cpp \
-    src/engine/nlglobals.cpp \
-    src/engine/editor/nlscenetreewidget.cpp \
-    src/engine/editor/nlsceneinfowidget.cpp \
-    src/comp/editor_widget/scenetreeinfowidget.cpp \
-    src/engine/editor/nlactorwidget.cpp \
-    src/comp/editor_widget/actorpropertywidget.cpp
+    src/misc/settings.cpp
 
 # Widget
 HEADERS += \
@@ -135,6 +123,13 @@ SOURCES += \
     src/comp/scene/itemscene.cpp \
     src/comp/scene/spritescene.cpp
 
+HEADERS += \
+    src/comp/editor_widget/scenetreeinfowidget.h \
+    src/comp/editor_widget/actorpropertywidget.h
+SOURCES += \
+    src/comp/editor_widget/scenetreeinfowidget.cpp \
+    src/comp/editor_widget/actorpropertywidget.cpp
+
 # Engine
 DEPENDPATH += ./src/engine ./src/engine/editor
 INCLUDEPATH += ./src/engine ./src/engine/editor
@@ -159,7 +154,13 @@ HEADERS += \
     src/engine/nlphysics.h \
     src/engine/nlforce.h \
     src/engine/nlforcecontainer.h \
-    src/engine/nlproperties.h
+    src/engine/nlproperties.h \
+    src/engine/nlglobals.h
+
+HEADERS += \
+    src/engine/editor/nlscenetreewidget.h \
+    src/engine/editor/nlsceneinfowidget.h \
+    src/engine/editor/nlactorwidget.h
 
 SOURCES += \
     src/engine/nlscene.cpp \
@@ -180,7 +181,13 @@ SOURCES += \
     src/engine/nlphysics.cpp \
     src/engine/nlforce.cpp \
     src/engine/nlforcecontainer.cpp \
-    src/engine/nlproperties.cpp
+    src/engine/nlproperties.cpp \
+    src/engine/nlglobals.cpp
+
+SOURCES += \
+    src/engine/editor/nlscenetreewidget.cpp \
+    src/engine/editor/nlsceneinfowidget.cpp \
+    src/engine/editor/nlactorwidget.cpp
 
 # Lib
 DEPENDPATH += ./lib

@@ -1,12 +1,12 @@
 #ifndef _KARIN_LOGDIALOG_H
 #define _KARIN_LOGDIALOG_H
 
-#include <QDialog>
+#include <QDockWidget>
 
 class QTextBrowser;
 class LogOutput;
 
-class LogDialog : public QDialog
+class LogDialog : public QDockWidget
 {
     Q_OBJECT
 public:

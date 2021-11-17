@@ -5,6 +5,7 @@
 
 #include "nldef.h"
 #include "nlproperties.h"
+#include "nlfuncs.h"
 
 class NLObjectContainer;
 class NLScene;
@@ -47,6 +48,7 @@ public:
     bool IsEnabled() const;
     void SetEnabled(bool enabled);
     void RemoveProperty(const QString &name);
+    bool HasProperty(const QString &name);
     NLProperty GetInitProperty(const QString &name, const NLProperty &def = QVariant()) const;
     template<class T> T GetInitProperty_T(const QString &name, const T &def = T());
 
@@ -90,7 +92,7 @@ typedef QList<NLObject *> NLObjectList;
 
 template <class T> T NLObject::GetProperty_T(const QString &name, const T &def)
 {
-    QByteArray ba = name.toLocal8Bit();
+    const QByteArray ba = name.toLocal8Bit();
     NLProperty p = property(ba.constData());
     if(!p.isValid())
         return def;
@@ -99,16 +101,33 @@ template <class T> T NLObject::GetProperty_T(const QString &name, const T &def)
 
 template<class T> void NLObject::SetProperty_T(const QString &name, const T &value)
 {
-    QByteArray ba = name.toLocal8Bit();
+    bool has = HasProperty(name);
+    if(has && GetProperty(name) == value)
+    {
+        return;
+    }
+    const QByteArray ba = name.toLocal8Bit();
     setProperty(ba.constData(), value);
-    int r = 2;
-    if(r == 2)
-        emit propertyChanged(name, NLProperty::fromValue(value));
+    emit propertyChanged(name, NLProperty::fromValue(value));
 }
 
 template <class T> T NLObject::GetInitProperty_T(const QString &name, const T &def)
 {
     return m_property.Get_T<T>(name, def);
 }
+
+//void NLObject::SetProperty_T(const QString &name, const NLVector3 &value)
+//{
+//    bool has = HasProperty(name);
+//    NLVector3 old = GetProperty(name).value<NLVector3>();
+//    if(has && vector3_equals(&old, &value))
+//    {
+//        return;
+//    }
+//    QByteArray ba = name.toLocal8Bit();
+//    NLProperty n = NLProperty::fromValue<NLVector3>(value);
+//    setProperty(ba.constData(), n);
+//    emit propertyChanged(name, n);
+//}
 
 #endif // _KARIN_NLOBJECT_H

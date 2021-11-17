@@ -1,6 +1,8 @@
 #include "nlobject.h"
 
 #include <QDebug>
+#include <QMetaProperty>
+#include <QMetaObject>
 
 #include "qdef.h"
 #include "nlobjectpool.h"
@@ -159,7 +161,7 @@ void NLObject::SetContainer(NLObjectContainer *container)
 
 NLProperty NLObject::GetProperty(const QString &name, const NLProperty &def) const
 {
-    QByteArray ba = name.toLocal8Bit();
+    const QByteArray ba = name.toLocal8Bit();
     NLProperty p = property(ba.constData());
     if(!p.isValid())
         return def;
@@ -168,21 +170,39 @@ NLProperty NLObject::GetProperty(const QString &name, const NLProperty &def) con
 
 void NLObject::SetProperty(const QString &name, const NLProperty &value)
 {
-    QByteArray ba = name.toLocal8Bit();
-    setProperty(ba.constData(), value);
-    qDebug() << name << property(ba.constData());
-    int r = 2;
-    if(r == 2)
-        emit propertyChanged(name, value);
+    bool has = HasProperty(name);
+    //qDebug() << has << NL::property_equals(GetProperty(name), value) << value.typeName();
+    if(has && NL::property_equals(GetProperty(name), value))
+    {
+        return;
+    }
+    const QByteArray ba = name.toLocal8Bit();
+    /*qDebug() << */setProperty(ba.constData(), value);
+    emit propertyChanged(name, value);
 }
 
 void NLObject::RemoveProperty(const QString &name)
 {
-    QByteArray ba = name.toLocal8Bit();
+    bool has = HasProperty(name);
+    if(has)
+    {
+        return;
+    }
+    const QByteArray ba = name.toLocal8Bit();
     setProperty(ba.constData(), NLProperty());
-    int r = 2;
-    if(r == 2)
-        emit propertyChanged(name);
+    emit propertyChanged(name);
+}
+
+bool NLObject::HasProperty(const QString &name)
+{
+    const QMetaObject *metaObj = metaObject();
+    for(int i = 0 /*metaObj->propertyOffset()*/; i < metaObj->propertyCount(); i++)
+    {
+        QMetaProperty p = metaObj->property(i);
+        if(name == p.name())
+            return true;
+    }
+    return false;
 }
 
 NLProperty & NLObject::operator[](const QString &name)
