@@ -5,16 +5,25 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#define NLSCENEORTHOCAMERA_DEFAULT_FACTORY 1
+#define NLSCENEORTHOCAMERA_DEFAULT_VALUE(x) ((x) * NLSCENEORTHOCAMERA_DEFAULT_FACTORY)
+#define NLSCENEORTHOCAMERA_DEFAULT_LEFT NLSCENEORTHOCAMERA_DEFAULT_VALUE(-1)
+#define NLSCENEORTHOCAMERA_DEFAULT_RIGHT NLSCENEORTHOCAMERA_DEFAULT_VALUE(1)
+#define NLSCENEORTHOCAMERA_DEFAULT_BOTTOM NLSCENEORTHOCAMERA_DEFAULT_VALUE(-1)
+#define NLSCENEORTHOCAMERA_DEFAULT_TOP NLSCENEORTHOCAMERA_DEFAULT_VALUE(1)
+#define NLSCENEORTHOCAMERA_DEFAULT_Z_NEAR NLSCENEORTHOCAMERA_DEFAULT_VALUE(-1)
+#define NLSCENEORTHOCAMERA_DEFAULT_Z_FAR NLSCENEORTHOCAMERA_DEFAULT_VALUE(1)
+
 NLSceneOrthoCamera::NLSceneOrthoCamera(NLScene *scene)
-    : NLSceneCamera(scene),
+    : NLSceneCameraBase(scene),
       //m_align(Qt::AlignLeft | Qt::AlignBottom),
       m_align(Qt::AlignCenter),
-      m_left(-1),
-      m_right(1),
-      m_bottom(-1),
-      m_top(1),
-      m_zNear(-1),
-      m_zFar(1)
+      m_left(NLSCENEORTHOCAMERA_DEFAULT_LEFT),
+      m_right(NLSCENEORTHOCAMERA_DEFAULT_RIGHT),
+      m_bottom(NLSCENEORTHOCAMERA_DEFAULT_BOTTOM),
+      m_top(NLSCENEORTHOCAMERA_DEFAULT_TOP),
+      m_zNear(NLSCENEORTHOCAMERA_DEFAULT_Z_NEAR),
+      m_zFar(NLSCENEORTHOCAMERA_DEFAULT_Z_FAR)
 {
     UpdateMatrix();
 }
@@ -166,7 +175,7 @@ void NLSceneOrthoCamera::Projection()
 {
     //glOrtho(m_left, m_right, m_bottom, m_top, m_zNear, m_zFar);
     //glMultMatrixf(GL_MATRIXV_M(ProjectionMatrix()));
-    NLSceneCamera::Projection();
+    NLSceneCameraBase::Projection();
 }
 
 void NLSceneOrthoCamera::UpdateProjectionMatrix(NLMatrix4 *mat)
@@ -233,4 +242,17 @@ float NLSceneOrthoCamera::YDistance() const
 float NLSceneOrthoCamera::ZDistance() const
 {
     return m_zFar - m_zNear;
+}
+
+void NLSceneOrthoCamera::Reset()
+{
+    NLSceneCameraBase::Reset();
+    m_align = Qt::AlignCenter;
+    m_left = NLSCENEORTHOCAMERA_DEFAULT_LEFT;
+    m_right = NLSCENEORTHOCAMERA_DEFAULT_RIGHT;
+    m_bottom = NLSCENEORTHOCAMERA_DEFAULT_BOTTOM;
+    m_top = NLSCENEORTHOCAMERA_DEFAULT_TOP;
+    m_zNear = NLSCENEORTHOCAMERA_DEFAULT_Z_NEAR;
+    m_zFar = NLSCENEORTHOCAMERA_DEFAULT_Z_FAR;
+    UpdateMatrix();
 }

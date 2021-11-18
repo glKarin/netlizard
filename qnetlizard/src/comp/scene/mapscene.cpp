@@ -14,6 +14,7 @@
 #include "simplelightsourcecomponent.h"
 #include "nlsceneorthocamera.h"
 #include "nlsceneperspectivecamera.h"
+#include "nlscenecamera.h"
 #include "netlizardtexturerenderer.h"
 #include "settings.h"
 #include "matrix.h"

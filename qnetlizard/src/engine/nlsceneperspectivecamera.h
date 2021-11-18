@@ -1,9 +1,9 @@
 #ifndef _KARIN_NLSCENEPERSPECTIVECAMERA_H
 #define _KARIN_NLSCENEPERSPECTIVECAMERA_H
 
-#include "nlscenecamera.h"
+#include "nlscenecamerabase.h"
 
-class NLScenePerspectiveCamera : public NLSceneCamera
+class NLScenePerspectiveCamera : virtual public NLSceneCameraBase
 {
 public:
     NLScenePerspectiveCamera(NLScene *scene = 0);
@@ -12,16 +12,17 @@ public:
     void SetFovy(float fovy);
     void SetWidthAndHeight(float width, float height);
     void SetAspect(float aspect);
-    void SetZNear(float near);
-    void SetZFar(float far);
+    virtual void SetZNear(float near);
+    virtual void SetZFar(float far);
     void Set(float fovy, float width, float height, float near, float far);
     void Set(float fovy, float aspect, float near, float far);
     float Fovy() const;
     float Aspect() const;
-    float ZNear() const;
-    float ZFar() const;
-    float ZDistance() const;
+    virtual float ZNear() const;
+    virtual float ZFar() const;
+    virtual float ZDistance() const;
     void ResetFovy();
+    virtual void Reset();
 
 protected:
     virtual void Projection();
@@ -37,6 +38,8 @@ private:
     //float m_height;
     float m_zNear;
     float m_zFar;
+
+    Q_DISABLE_COPY(NLScenePerspectiveCamera)
 };
 
 #endif // _KARIN_NLSCENEPERSPECTIVECAMERA_H

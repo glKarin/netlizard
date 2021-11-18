@@ -1,11 +1,11 @@
 #ifndef _KARIN_NLSCENEORTHOCAMERA_H
 #define _KARIN_NLSCENEORTHOCAMERA_H
 
-#include <Qt>
+#include <QtGlobal>
 
-#include "nlscenecamera.h"
+#include "nlscenecamerabase.h"
 
-class NLSceneOrthoCamera : public NLSceneCamera
+class NLSceneOrthoCamera : virtual public NLSceneCameraBase
 {
 public:
     NLSceneOrthoCamera(NLScene *scene = 0);
@@ -17,19 +17,20 @@ public:
     void SetRight(float right);
     void SetBottom(float bottom);
     void SetTop(float top);
-    void SetZNear(float near);
-    void SetZFar(float far);
+    virtual void SetZNear(float near);
+    virtual void SetZFar(float far);
     void Set2D();
     void Set(float left, float right, float bottom, float top, float near = -1, float far = 1);
     float Left() const;
     float Right() const;
     float Bottom() const;
     float Top() const;
-    float ZNear() const;
-    float ZFar() const;
+    virtual float ZNear() const;
+    virtual float ZFar() const;
     float XDistance() const;
     float YDistance() const;
-    float ZDistance() const;
+    virtual float ZDistance() const;
+    virtual void Reset();
 
 protected:
     virtual void Projection();
@@ -43,6 +44,8 @@ private:
     float m_top;
     float m_zNear;
     float m_zFar;
+
+    Q_DISABLE_COPY(NLSceneOrthoCamera)
 };
 
 #endif // _KARIN_NLSCENEORTHOCAMERA_H

@@ -40,7 +40,7 @@ ImageScene::ImageScene(QWidget *parent)
     actor->AddComponent(m_imageControl);
     m_renderer = new NETLizardTextureRenderer;
     actor->SetRenderable(m_renderer);
-    NLSceneOrthoCamera *orthoCam = static_cast<NLSceneOrthoCamera *>(camera->Camera());
+    NLSceneCamera *orthoCam = camera->Camera();
     orthoCam->SetAlignment(m_align);
     SetCurrentCamera(orthoCam);
 

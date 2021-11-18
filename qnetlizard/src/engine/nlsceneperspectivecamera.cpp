@@ -13,7 +13,7 @@
 #define NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_FAR 99999
 
 NLScenePerspectiveCamera::NLScenePerspectiveCamera(NLScene *scene)
-    : NLSceneCamera(scene),
+    : NLSceneCameraBase(scene),
       m_fovy(NLSCENEPERSPECTIVECAMERA_DEFAULT_FOVY),
       m_aspect(NLSCENEPERSPECTIVECAMERA_DEFAULT_ASPECT),
       m_zNear(NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_NEAR),
@@ -146,7 +146,7 @@ void NLScenePerspectiveCamera::Projection()
 {
     //gluPerspective(m_fovy, m_aspect, m_zNear, m_zFar);
     //glMultMatrixf(GL_MATRIXV_M(ProjectionMatrix()));
-    NLSceneCamera::Projection();
+    NLSceneCameraBase::Projection();
 }
 
 void NLScenePerspectiveCamera::UpdateProjectionMatrix(NLMatrix4 *mat)
@@ -180,3 +180,12 @@ float NLScenePerspectiveCamera::ZDistance() const
     return m_zFar - m_zNear;
 }
 
+void NLScenePerspectiveCamera::Reset()
+{
+    NLSceneCameraBase::Reset();
+    m_fovy = NLSCENEPERSPECTIVECAMERA_DEFAULT_FOVY;
+    m_aspect = NLSCENEPERSPECTIVECAMERA_DEFAULT_ASPECT;
+    m_zNear = NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_NEAR;
+    m_zFar = NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_FAR;
+    UpdateMatrix();
+}

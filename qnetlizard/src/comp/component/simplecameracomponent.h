@@ -20,6 +20,7 @@ public:
     NLGETTER(type) int Type() const;
     NLSETTER(type) void SetType(int type);
     NLSceneCamera * Camera();
+    void SetScene(NLScene *scene);
     
 signals:
     

@@ -32,7 +32,7 @@ FontScene::FontScene(QWidget *parent) :
     AddActor(actor);
     m_renderer = new NETLizardFontRenderer;
     actor->SetRenderable(m_renderer);
-    NLSceneOrthoCamera *orthoCam = static_cast<NLSceneOrthoCamera *>(camera->Camera());
+    NLSceneCamera *orthoCam = camera->Camera();
     orthoCam->SetAlignment(align);
     SetCurrentCamera(orthoCam);
     connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));

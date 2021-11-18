@@ -87,5 +87,5 @@ void SceneTreeInfoWidget::Init()
     root->setLayout(mainLayout);
     setWidget(root);
     setWindowTitle("Scene tree viewer");
-    setMaximumWidth(360);
+    //setMaximumWidth(360);
 }

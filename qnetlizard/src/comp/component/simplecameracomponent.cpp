@@ -9,11 +9,12 @@
 
 #include "nlsceneperspectivecamera.h"
 #include "nlsceneorthocamera.h"
+#include "nlscenecamera.h"
 
 SimpleCameraComponent::SimpleCameraComponent(const NLProperties &prop, NLActor *parent) :
     NLComponent(prop, parent),
-      m_type(0),
-      m_camera(0)
+      m_type(NLSceneCamera::Type_Perspective),
+      m_camera(new NLSceneCamera)
 {
     setObjectName("SimpleCameraComponent");
 }
@@ -47,45 +48,33 @@ void SimpleCameraComponent::Update(float delta)
 
 void SimpleCameraComponent::Reset()
 {
-    if(m_camera)
-        m_camera->Reset();
+    m_camera->Reset();
 }
 
 void SimpleCameraComponent::Destroy()
 {
     m_type = 0;
-    if(m_camera)
-    {
-        delete m_camera;
-        m_camera = 0;
-    }
+    delete m_camera;
     NLComponent::Destroy();
 }
 
 void SimpleCameraComponent::Render()
 {
-    if(m_camera)
-        m_camera->Render();
+    m_camera->Render();
 }
 
 void SimpleCameraComponent::OnPositionChanged(const NLVector3 &pos)
 {
-    if(m_camera)
-    {
-        NLActor *actor = Actor();
-        if(actor)
-            m_camera->SetPosition(actor->Position());
-    }
+    //NLActor *actor = Actor();
+    //if(actor)
+        m_camera->SetPosition(pos);
 }
 
 void SimpleCameraComponent::OnRotationChanged(const NLVector3 &rot)
 {
-    if(m_camera)
-    {
-        NLActor *actor = Actor();
-        if(actor)
-            m_camera->SetRotation(actor->Rotation());
-    }
+    //NLActor *actor = Actor();
+    //if(actor)
+        m_camera->SetRotation(rot);
 }
 
 void SimpleCameraComponent::SetType(int type)
@@ -93,15 +82,10 @@ void SimpleCameraComponent::SetType(int type)
     if(m_type != type)
     {
         m_type = type;
-        if(m_camera)
-        {
-            delete m_camera;
-            m_camera = 0;
-        }
-        m_camera = m_type == NLSceneCamera::Type_Ortho ? (NLSceneCamera *)new NLSceneOrthoCamera : (NLSceneCamera *)new NLScenePerspectiveCamera;
-        if(GetProperty_T<bool>("camera_z_is_up", false))
+        m_camera->SetType(static_cast<NLSceneCamera::SceneCamera_Type>(m_type));
+        if(GetProperty_T<bool>("camera_z_is_up", GetInitProperty_T<bool>("camera_z_is_up")))
             m_camera->SetZIsUp(true); // z_is_up
-        m_camera->SetScene(Scene());
+        //m_camera->SetScene(Scene());
         emit propertyChanged("type", m_type);
     }
 }
@@ -118,8 +102,6 @@ NLSceneCamera * SimpleCameraComponent::Camera()
 
 void SimpleCameraComponent::UpdateCamera()
 {
-    if(!m_camera)
-        return;
     NLScene *scene = Scene();
     if(scene)
         m_camera->Update(scene->width(), scene->height());
@@ -132,4 +114,10 @@ void SimpleCameraComponent::UpdateCamera()
         m_camera->SetPosition(actor->Position());
         m_camera->SetRotation(actor->Rotation());
     }
+}
+
+void SimpleCameraComponent::SetScene(NLScene *scene)
+{
+    NLComponent::SetScene(scene);
+    m_camera->SetScene(scene);
 }

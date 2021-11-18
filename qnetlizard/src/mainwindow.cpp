@@ -54,6 +54,7 @@ void MainWindow::Init()
     QMenuBar *menuBar;
     QMenu *menu;
     QAction *menuItem;
+    m_toolBar = new QToolBar(this);
 
     menuBar = new QMenuBar(this);
 
@@ -86,6 +87,7 @@ void MainWindow::Init()
     }
 
     connect(menuBar, SIGNAL(triggered(QAction *)), this, SLOT(MenuActionSlot(QAction *)));
+    addToolBar(m_toolBar);
 
     setMenuBar(menuBar);
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
@@ -106,13 +108,7 @@ void MainWindow::CloseCurrentWidget()
     if(viewer)
     {
     }
-    if(m_toolBar)
-    {
-        removeToolBar(m_toolBar);
-        m_toolBar->clear();
-        delete m_toolBar;
-        m_toolBar = 0;
-    }
+    m_toolBar->clear();
     if(m_sceneWidget)
         m_sceneWidget->Reset();
     if(m_actorWidget)
@@ -121,16 +117,9 @@ void MainWindow::CloseCurrentWidget()
 
 void MainWindow::MenuActionSlot(QAction *action)
 {
-    CloseCurrentWidget();
-
-    if(!action)
-    {
-        BaseViewer *viewer = GenViewer("home_viewer");
-        setCentralWidget(viewer);
-        return;
-    }
-
-    QString type = action->data().toString();
+    QString type;
+    if(action)
+        type = action->data().toString();
 
     if(type == "exit")
         qApp->quit();
@@ -160,13 +149,12 @@ void MainWindow::MenuActionSlot(QAction *action)
     }
     else
     {
+        CloseCurrentWidget();
         BaseViewer *viewer = GenViewer(type);
         setCentralWidget(viewer);
         if(viewer->ToolsCount())
         {
-            m_toolBar = new QToolBar(this);
             viewer->SetupToolBar(m_toolBar);
-            addToolBar(m_toolBar);
         }
     }
 }
@@ -262,6 +250,7 @@ void MainWindow::OpenSceneEditor()
         addDockWidget(Qt::RightDockWidgetArea, m_actorWidget, Qt::Vertical);
         connect(m_sceneWidget, SIGNAL(actorSelected(NLActor *)), m_actorWidget, SLOT(SetActor(NLActor *)));
     }
+    splitDockWidget(m_sceneWidget, m_actorWidget, Qt::Horizontal);
     if(!m_sceneWidget->isVisible())
     {
         if(scene)
@@ -308,18 +297,3 @@ void MainWindow::moveEvent(QMoveEvent *event)
         settings->SetSetting("WINDOW/y", pos.y());
     }
 }
-
-//void MainWindow::SetupSceneDialog()
-//{
-//    if(!m_sceneDialog)
-//        return;
-//    m_sceneDialog->UpdateSceneInfo();
-//    if(!m_sceneDialog->isVisible())
-//        return;
-//    BaseViewer *viewer = dynamic_cast<BaseViewer *>(centralWidget());
-//    if(viewer)
-//    {
-//        NLScene *scene = dynamic_cast<NLScene *>(viewer->CentralWidget());
-//        m_sceneDialog->SetScene(scene);
-//    }
-//}

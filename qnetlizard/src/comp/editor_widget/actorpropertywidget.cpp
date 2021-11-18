@@ -57,5 +57,5 @@ void ActorPropertyWidget::Init()
     m_actorWidget = new NLActorWidget;
     setWidget(m_actorWidget);
     setWindowTitle("Actor property viewer");
-    setMaximumWidth(360);
+    //setMaximumWidth(360);
 }

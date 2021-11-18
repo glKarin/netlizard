@@ -98,7 +98,7 @@ void NLSceneInfoWidget::UpdateSceneInfo()
         list << _DBG_VEC3("Direction", v);
         v = camera->Up();
         list << _DBG_VEC3("Up", v);
-        v = camera->Right();
+        v = camera->Right_XPositive();
         list << _DBG_VEC3("Right", v);
 
         const NLMatrix4 *m = camera->ViewMatrix();

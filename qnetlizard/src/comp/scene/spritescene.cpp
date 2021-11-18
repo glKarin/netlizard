@@ -34,7 +34,7 @@ SpriteScene::SpriteScene(QWidget *parent) :
     actor->SetRenderable(m_renderer);
     m_control = new SimpleImageControlComponent(NLProperties(), actor);
     actor->AddComponent(m_control);
-    NLSceneOrthoCamera *orthoCam = static_cast<NLSceneOrthoCamera *>(camera->Camera());
+    NLSceneCamera *orthoCam = camera->Camera();
     orthoCam->SetAlignment(align);
     SetCurrentCamera(orthoCam);
     connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));

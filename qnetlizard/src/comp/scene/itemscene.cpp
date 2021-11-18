@@ -9,6 +9,7 @@
 #include "netlizardmapmodelrenderer.h"
 #include "simplecontrolcomponent.h"
 #include "nlsceneorthocamera.h"
+#include "nlscenecamera.h"
 #include "settings.h"
 
 ItemScene::ItemScene(QWidget *parent)

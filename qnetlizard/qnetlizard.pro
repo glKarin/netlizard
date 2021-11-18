@@ -20,13 +20,15 @@ HEADERS += \
     src/qdef.h \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
-    src/misc/settings.h
+    src/misc/settings.h \
+    src/engine/nlscenecamerabase.h
 
 SOURCES += \
     main.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
-    src/misc/settings.cpp
+    src/misc/settings.cpp \
+    src/engine/nlscenecamerabase.cpp
 
 # Widget
 HEADERS += \
