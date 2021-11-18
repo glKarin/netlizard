@@ -121,3 +121,157 @@ void SimpleCameraComponent::SetScene(NLScene *scene)
     NLComponent::SetScene(scene);
     m_camera->SetScene(scene);
 }
+
+void SimpleCameraComponent::SetLeft(float left)
+{
+    if(m_camera->Left() != left)
+    {
+        m_camera->SetLeft(left);
+        emit propertyChanged("left", m_camera->Left());
+    }
+}
+
+void SimpleCameraComponent::SetRight(float right)
+{
+    if(m_camera->Right() != right)
+    {
+        m_camera->SetRight(right);
+        emit propertyChanged("right", m_camera->Right());
+    }
+}
+
+void SimpleCameraComponent::SetTop(float top)
+{
+    if(m_camera->Top() != top)
+    {
+        m_camera->SetTop(top);
+        emit propertyChanged("top", m_camera->Top());
+    }
+}
+
+void SimpleCameraComponent::SetBottom(float bottom)
+{
+    if(m_camera->Bottom() != bottom)
+    {
+        m_camera->SetBottom(bottom);
+        emit propertyChanged("bottom", m_camera->Bottom());
+    }
+}
+
+void SimpleCameraComponent::SetZNear(float n)
+{
+    if(m_camera->ZNear() != n)
+    {
+        m_camera->SetZNear(n);
+        emit propertyChanged("zNear", m_camera->ZNear());
+    }
+}
+
+void SimpleCameraComponent::SetZFar(float f)
+{
+    if(m_camera->ZFar() != f)
+    {
+        m_camera->SetZFar(f);
+        emit propertyChanged("zFar", m_camera->ZFar());
+    }
+}
+
+void SimpleCameraComponent::SetAlignment(int align)
+{
+    Qt::Alignment a = static_cast<Qt::Alignment>(align);
+    if(m_camera->Alignment() != a)
+    {
+        m_camera->SetAlignment(a);
+        emit propertyChanged("alignment", NLProperty::fromValue<int>(m_camera->Alignment()));
+    }
+}
+
+void SimpleCameraComponent::SetAspect(float aspect)
+{
+    if(m_camera->Aspect() != aspect)
+    {
+        m_camera->SetAspect(aspect);
+        emit propertyChanged("aspect", m_camera->Aspect());
+    }
+}
+
+void SimpleCameraComponent::SetFovy(float fovy)
+{
+    if(m_camera->Fovy() != fovy)
+    {
+        m_camera->SetFovy(fovy);
+        float f = m_camera->Fovy();
+        if(f != fovy)
+            emit propertyChanged("fovy", f);
+    }
+}
+
+int SimpleCameraComponent::Alignment() const
+{
+    return m_camera->Alignment();
+}
+
+float SimpleCameraComponent::Left() const
+{
+    return m_camera->Left();
+}
+
+float SimpleCameraComponent::Right() const
+{
+    return m_camera->Right();
+}
+
+float SimpleCameraComponent::Bottom() const
+{
+    return m_camera->Bottom();
+}
+
+float SimpleCameraComponent::Top() const
+{
+    return m_camera->Top();
+}
+
+float SimpleCameraComponent::ZNear() const
+{
+    return m_camera->ZNear();
+}
+
+float SimpleCameraComponent::ZFar() const
+{
+    return m_camera->ZFar();
+}
+
+float SimpleCameraComponent::Fovy() const
+{
+    return m_camera->Fovy();
+}
+
+float SimpleCameraComponent::Aspect() const
+{
+    return m_camera->Aspect();
+}
+
+void SimpleCameraComponent::SetEnabled(bool enabled)
+{
+    SetRender(enabled);
+    NLComponent::SetEnabled(enabled);
+}
+
+bool SimpleCameraComponent::IsEnabled() const
+{
+    return NLComponent::IsEnabled() && m_camera->IsEnabled();
+}
+
+void SimpleCameraComponent::SetRender(bool enabled)
+{
+    if(m_camera->IsEnabled() != enabled)
+    {
+        m_camera->SetEnabled(enabled);
+        emit propertyChanged("render", enabled);
+    }
+}
+
+bool SimpleCameraComponent::IsRender() const
+{
+    return m_camera->IsEnabled();
+}

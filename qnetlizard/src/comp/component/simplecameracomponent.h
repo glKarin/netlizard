@@ -12,6 +12,16 @@ class SimpleCameraComponent : public NLComponent
 {
     Q_OBJECT
     Q_PROPERTY(int type READ Type WRITE SetType FINAL)
+    Q_PROPERTY(bool render READ IsRender WRITE SetRender FINAL)
+    Q_PROPERTY(float fovy READ Fovy WRITE SetFovy FINAL)
+    Q_PROPERTY(float aspect READ Aspect WRITE SetAspect FINAL)
+    Q_PROPERTY(float zNear READ ZNear WRITE SetZNear FINAL)
+    Q_PROPERTY(float zFar READ ZFar WRITE SetZFar FINAL)
+    Q_PROPERTY(float left READ Left WRITE SetLeft FINAL)
+    Q_PROPERTY(float right READ Right WRITE SetRight FINAL)
+    Q_PROPERTY(float bottom READ Bottom WRITE SetBottom FINAL)
+    Q_PROPERTY(float top READ Top WRITE SetTop FINAL)
+    Q_PROPERTY(int alignment READ Alignment WRITE SetAlignment FINAL)
 public:
     explicit SimpleCameraComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleCameraComponent();
@@ -21,6 +31,30 @@ public:
     NLSETTER(type) void SetType(int type);
     NLSceneCamera * Camera();
     void SetScene(NLScene *scene);
+    void SetEnabled(bool enabled);
+    bool IsEnabled() const;
+    void SetRender(bool enabled);
+    bool IsRender() const;
+
+    float Left() const;
+    float Right() const;
+    float Bottom() const;
+    float Top() const;
+    float ZNear() const;
+    float ZFar() const;
+    float Fovy() const;
+    float Aspect() const;
+    int Alignment() const;
+
+    void SetLeft(float left);
+    void SetRight(float right);
+    void SetBottom(float bottom);
+    void SetTop(float top);
+    void SetZNear(float near);
+    void SetZFar(float far);
+    void SetFovy(float fovy);
+    void SetAspect(float aspect);
+    void SetAlignment(int align);
     
 signals:
     

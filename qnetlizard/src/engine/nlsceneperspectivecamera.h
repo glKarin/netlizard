@@ -10,8 +10,8 @@ public:
     virtual ~NLScenePerspectiveCamera();
     virtual void Update(float width, float height);
     void SetFovy(float fovy);
-    void SetWidthAndHeight(float width, float height);
     void SetAspect(float aspect);
+    void SetWidthAndHeight(float width, float height);
     virtual void SetZNear(float near);
     virtual void SetZFar(float far);
     void Set(float fovy, float width, float height, float near, float far);

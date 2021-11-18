@@ -20,6 +20,7 @@ public:
     virtual void SetZNear(float near);
     virtual void SetZFar(float far);
     void Set2D();
+    void Set2D(float left, float right, float bottom, float top);
     void Set(float left, float right, float bottom, float top, float near = -1, float far = 1);
     float Left() const;
     float Right() const;

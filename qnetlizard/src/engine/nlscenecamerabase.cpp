@@ -21,7 +21,8 @@ static const NLVector3 InitScale = VECTOR3(1, 1, 1);
 
 NLSceneCameraBase::NLSceneCameraBase(NLScene *widget)
     : m_scene(widget),
-      m_zIsUp(false)
+      m_zIsUp(false),
+      m_enabled(true)
 {
     Mesa_AllocGLMatrix(&m_viewMatrix);
     Mesa_AllocGLMatrix(&m_normalMatrix);
@@ -247,6 +248,8 @@ void NLSceneCameraBase::EndRender(const NLSceneCameraBase::GL_matrix_status &sta
 
 void NLSceneCameraBase::Render()
 {
+    if(!m_enabled)
+        return;
     if(!m_scene)
         return;
     CAMERA_RENDER(m_scene->Render())
@@ -254,6 +257,8 @@ void NLSceneCameraBase::Render()
 
 void NLSceneCameraBase::Render(NLScene *scene)
 {
+    if(!m_enabled)
+        return;
     if(!scene)
         return;
     CAMERA_RENDER(scene->Render())
@@ -261,6 +266,8 @@ void NLSceneCameraBase::Render(NLScene *scene)
 
 void NLSceneCameraBase::Render(NLActor *actor)
 {
+    if(!m_enabled)
+        return;
     if(!actor)
         return;
     CAMERA_RENDER(actor->Render())
@@ -268,6 +275,8 @@ void NLSceneCameraBase::Render(NLActor *actor)
 
 void NLSceneCameraBase::Render(NLActorContainer *actors)
 {
+    if(!m_enabled)
+        return;
     if(!actors)
         return;
     CAMERA_RENDER(actors->Render())
@@ -275,6 +284,8 @@ void NLSceneCameraBase::Render(NLActorContainer *actors)
 
 void NLSceneCameraBase::Render(NLSceneCameraRenderFunc func)
 {
+    if(!m_enabled)
+        return;
     if(!func)
         return;
     CAMERA_RENDER(func(GL_MATRIX_M(m_viewMatrix), GL_MATRIX_M(m_projectionMatrix), GL_MATRIX_M(m_mvpMatrix)))
@@ -396,4 +407,15 @@ void NLSceneCameraBase::SetZIsUp(bool b)
 const NLMatrix4 * NLSceneCameraBase::RenderMatrix() const
 {
     return &m_renderMatrix;
+}
+
+void NLSceneCameraBase::SetEnabled(bool b)
+{
+    if(m_enabled != b)
+        m_enabled = b;
+}
+
+bool NLSceneCameraBase::IsEnabled() const
+{
+    return m_enabled;
 }

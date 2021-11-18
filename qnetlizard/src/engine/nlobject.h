@@ -45,8 +45,8 @@ public:
     NLProperty operator[](const QString &name) const;
     void SetScene(NLScene *scene);
     NLScene * Scene();
-    bool IsEnabled() const;
-    void SetEnabled(bool enabled);
+    virtual bool IsEnabled() const;
+    virtual void SetEnabled(bool enabled);
     void RemoveProperty(const QString &name);
     bool HasProperty(const QString &name);
     NLProperty GetInitProperty(const QString &name, const NLProperty &def = QVariant()) const;

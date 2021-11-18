@@ -7,6 +7,7 @@
 
 #define NLSCENEORTHOCAMERA_DEFAULT_FACTORY 1
 #define NLSCENEORTHOCAMERA_DEFAULT_VALUE(x) ((x) * NLSCENEORTHOCAMERA_DEFAULT_FACTORY)
+
 #define NLSCENEORTHOCAMERA_DEFAULT_LEFT NLSCENEORTHOCAMERA_DEFAULT_VALUE(-1)
 #define NLSCENEORTHOCAMERA_DEFAULT_RIGHT NLSCENEORTHOCAMERA_DEFAULT_VALUE(1)
 #define NLSCENEORTHOCAMERA_DEFAULT_BOTTOM NLSCENEORTHOCAMERA_DEFAULT_VALUE(-1)
@@ -60,7 +61,7 @@ void NLSceneOrthoCamera::Update(float width, float height)
         ortho[2] = -height / 2;
         ortho[3] = height / 2;
     }
-    Set(ortho[0], ortho[1], ortho[2], ortho[3]);
+    Set(ortho[0], ortho[1], ortho[2], ortho[3], m_zNear, m_zFar);
 }
 
 void NLSceneOrthoCamera::SetLeft(float left)
@@ -169,6 +170,11 @@ void NLSceneOrthoCamera::Set(float left, float right, float bottom, float top, f
     }
     if(b)
         UpdateMatrix();
+}
+
+void NLSceneOrthoCamera::Set2D(float left, float right, float bottom, float top)
+{
+    Set(left, right, bottom, top);
 }
 
 void NLSceneOrthoCamera::Projection()

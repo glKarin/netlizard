@@ -262,7 +262,6 @@ void NLActorWidget::SetupActorProperty()
     Q_FOREACH(const NLPropertyInfo &item, list)
     {
         QWidget *widget = GenWidget(m_actor, item);
-        qDebug() << item.name;
         m_propWidgetMap[m_actor].insert(item.name, widget);
         m_actorLayout->addRow(item.name, widget);
     }
@@ -441,6 +440,10 @@ void NLActorWidget::OnPropertyChanged(const QString &name, const NLProperty &val
     else if(instanceofv(widget, NLVector3Widget))
     {
         static_cast<NLVector3Widget *>(widget)->SetVector3(value.value<NLVector3>());
+    }
+    else if(instanceofv(widget, QCheckBox))
+    {
+        static_cast<QCheckBox *>(widget)->setChecked(value.toBool());
     }
     else if(instanceofv(widget, QLineEdit))
     {

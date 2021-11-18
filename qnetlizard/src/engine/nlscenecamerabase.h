@@ -60,6 +60,8 @@ public:
     NLSceneCameraBase * Turn(const NLVector3 &v);
     NLSceneCameraBase * Zoom(const NLVector3 &v);
     void SetZIsUp(bool b);
+    void SetEnabled(bool b);
+    bool IsEnabled() const;
 
 protected:
     virtual void Projection();
@@ -85,6 +87,7 @@ private:
 private:
     NLScene *m_scene;
     bool m_zIsUp;
+    bool m_enabled;
     NLVector3 m_position;
     NLVector3 m_rotation;
     NLVector3 m_scale;
