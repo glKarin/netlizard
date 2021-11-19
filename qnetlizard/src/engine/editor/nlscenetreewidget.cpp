@@ -72,6 +72,12 @@ void NLSceneTreeWidget::UpdateTreeData()
     expandAll();
 }
 
+void NLSceneTreeWidget::OnActorChanged()
+{
+    Reset();
+    UpdateTreeData();
+}
+
 void NLSceneTreeWidget::AddActorNode(NLActor *actor, QTreeWidgetItem *parent)
 {
     const int Count = actor->ChildrenCount();

@@ -236,7 +236,9 @@ bool NLActor::AddComponent(NLComponent *item)
         m_components = new NLComponentContainer(this);
         m_components->SetScene(Scene());
     }
-    return m_components->Add(item);
+    bool res = m_components->Add(item);
+    emit componentChanged(item);
+    return res;
 }
 
 bool NLActor::RemoveComponent(NLComponent *item)
@@ -250,6 +252,7 @@ bool NLActor::RemoveComponent(NLComponent *item)
     {
         item->Destroy();
         delete item;
+        emit componentChanged();
     }
     return res;
 }
@@ -281,7 +284,9 @@ bool NLActor::AddChild(NLActor *actor)
         m_children = new NLActorContainer(this);
         m_children->SetScene(Scene());
     }
-    return m_children->Add(actor);
+    bool res = m_children->Add(actor);
+    emit childChanged(actor);
+    return res;
 }
 
 bool NLActor::RemoveChild(NLActor *actor)
@@ -295,6 +300,7 @@ bool NLActor::RemoveChild(NLActor *actor)
     {
         actor->Destroy();
         delete actor;
+        emit childChanged();
     }
     return res;
 }

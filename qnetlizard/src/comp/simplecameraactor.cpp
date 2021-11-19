@@ -100,3 +100,10 @@ void SimpleCameraActor::UpdateCamera()
         return;
     m_camera->UpdateCamera();
 }
+
+void SimpleCameraActor::SetEnabled(bool enabled)
+{
+    NLActor::SetEnabled(enabled);
+    if(m_camera)
+        m_camera->SetRender(enabled);
+}

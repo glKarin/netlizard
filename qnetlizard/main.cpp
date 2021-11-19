@@ -13,6 +13,7 @@
 #include "nlobjectcontainer.h"
 #include "nlactorcontainer.h"
 #include "test/testscene.h"
+#include "nlrendermodel.h"
 
 static int Test(int argc, char **argv);
 
@@ -52,9 +53,6 @@ int main(int argc, char *argv[])
 #ifdef _DEV_TEST
 int Test(int argc, char **argv)
 {
-    //NETLizard_Sprite sp;
-    //nlReadSpiritMapFile("E:\\qobject\\netlizard-game\\resource\\cu.png", &sp);
-    //qDebug() << sp.count;
     return 0;
     NLVector3 nor = VECTOR3(0, 1, 0);
     NLVector3 nor2 = VECTOR3(0, 0, 0);

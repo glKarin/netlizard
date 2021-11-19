@@ -68,6 +68,9 @@ public:
     template <class T>
     int RemoveTypeForces();
 
+Q_SIGNALS:
+    void forceChanged(const NLForce *force = 0);
+
 protected:
     void SetZIsUp(bool b);
     void SetFixedUp(bool b);

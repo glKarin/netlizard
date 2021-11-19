@@ -279,7 +279,9 @@ bool NLRigidbody::AddForce(NLForce *item)
         m_forces = new NLForceContainer(this);
         m_forces->SetScene(Scene());
     }
-    return m_forces->Add(item);
+    bool res = m_forces->Add(item);
+    emit forceChanged(item);
+    return res;
 }
 
 bool NLRigidbody::RemoveForce(NLForce *item)
@@ -293,6 +295,7 @@ bool NLRigidbody::RemoveForce(NLForce *item)
     {
         item->Destroy();
         delete item;
+        emit forceChanged();
     }
     return res;
 }
@@ -386,14 +389,20 @@ void NLRigidbody::ClearAllForces()
 {
     if(!m_forces)
         return;
+    bool c = m_forces->Count() > 0;
     m_forces->Clean();
+    if(c)
+        emit forceChanged();
 }
 
 void NLRigidbody::Collision()
 {
     if(!m_forces)
         return;
+    bool c = m_forces->Count() > 0;
     m_forces->Clean();
+    if(c)
+        emit forceChanged();
 }
 
 NL::Physics::m NLRigidbody::Mass() const

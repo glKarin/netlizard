@@ -19,6 +19,7 @@ public:
     NLSceneCamera * Camera();
     NLComponent * Control();
     NLINTERFACE void SetEnableControl(bool b);
+    void SetEnabled(bool enabled);
 
 protected:
     virtual void Init();

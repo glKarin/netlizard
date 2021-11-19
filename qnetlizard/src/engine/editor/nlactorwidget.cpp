@@ -210,6 +210,8 @@ void NLActorWidget::SetActor(NLActor *actor)
         if(m_actor)
         {
             connect(m_actor, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
+            connect(m_actor, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
+            connect(m_actor, SIGNAL(componentChanged(const NLComponent *)), this, SLOT(OnActorChanged()));
             connect(m_actor, SIGNAL(destroyed()), this, SLOT(Reset()));
         }
         UpdateActorData();
@@ -253,6 +255,12 @@ void NLActorWidget::UpdateActorData()
     }
     SetupActorProperty();
     SetupComponentProperties();
+}
+
+void NLActorWidget::OnActorChanged()
+{
+    Reset();
+    UpdateActorData();
 }
 
 void NLActorWidget::SetupActorProperty()

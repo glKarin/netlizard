@@ -20,9 +20,6 @@ protected:
     virtual void DeinitRender();
 
 private:
-    void RenderSky();
-
-private:
     GL_NETLizard_3D_Mesh *m_itemMesh;
     texture_s **m_tex;
     int m_index;

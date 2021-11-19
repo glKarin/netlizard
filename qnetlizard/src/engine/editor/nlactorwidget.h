@@ -58,10 +58,11 @@ public:
 public Q_SLOTS:
     void Reset();
 
-Q_SIGNALS:
-
 protected:
     void UpdateActorData();
+
+private Q_SLOTS:
+    void OnActorChanged();
 
 private:
     void Init();

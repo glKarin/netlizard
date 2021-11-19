@@ -21,14 +21,18 @@ HEADERS += \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
     src/misc/settings.h \
-    src/engine/nlscenecamerabase.h
+    src/engine/nlscenecamerabase.h \
+    src/engine/nlrendermodel.h \
+    src/engine/nlmodelrenderer.h
 
 SOURCES += \
     main.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
-    src/engine/nlscenecamerabase.cpp
+    src/engine/nlscenecamerabase.cpp \
+    src/engine/nlrendermodel.cpp \
+    src/engine/nlmodelrenderer.cpp
 
 # Widget
 HEADERS += \

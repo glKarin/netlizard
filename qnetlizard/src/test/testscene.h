@@ -3,7 +3,7 @@
 
 #include "nlscene.h"
 
-class TestRenderer;
+class NLModelRenderer;
 
 NLSCENE(TestScene)
 class TestScene : public NLScene
@@ -23,7 +23,7 @@ protected:
     virtual void Deinit();
 
 private:
-    TestRenderer *m_renderer;
+    NLModelRenderer *m_renderer;
 
     Q_DISABLE_COPY(TestScene)
 };

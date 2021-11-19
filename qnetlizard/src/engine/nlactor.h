@@ -135,6 +135,8 @@ signals:
     void positionChanged(const NLVector3 &pos);
     void rotationChanged(const NLVector3 &rot);
     void scaleChanged(const NLVector3 &scale);
+    void childChanged(const NLActor *actor = 0);
+    void componentChanged(const NLComponent *comp = 0);
     
 public slots:
 
