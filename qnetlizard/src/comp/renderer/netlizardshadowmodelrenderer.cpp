@@ -62,11 +62,6 @@ void NETLizardShadowModelRenderer::DeinitRender()
     SetupScenes(false);
 }
 
-GL_NETLizard_3D_Model * NETLizardShadowModelRenderer::Model()
-{
-    return m_model;
-}
-
 void NETLizardShadowModelRenderer::SetModel(GL_NETLizard_3D_Model *model)
 {
     m_model = model;
@@ -100,16 +95,6 @@ void NETLizardShadowModelRenderer::SetupScenes(bool b)
         m_scenes = 0;
         m_sceneCount = 0;
     }
-}
-
-bool NETLizardShadowModelRenderer::Cull() const
-{
-    return m_cull;
-}
-
-int * NETLizardShadowModelRenderer::Scenes()
-{
-    return m_scenes;
 }
 
 void NETLizardShadowModelRenderer::SetSceneCount(int i)
@@ -178,20 +163,10 @@ void NETLizardShadowModelRenderer::SetRenderScenes(int scenes[], int count)
         memcpy(m_scenes, scenes, count * sizeof(int));
 }
 
-int NETLizardShadowModelRenderer::StencilShadowMethod() const
-{
-    return m_stencilShadowMethod;
-}
-
 void NETLizardShadowModelRenderer::SetStencilShadowMethod(int method)
 {
     if(m_stencilShadowMethod != method)
         m_stencilShadowMethod = method;
-}
-
-int NETLizardShadowModelRenderer::ShadowObject() const
-{
-    return m_shadowObject;
 }
 
 void NETLizardShadowModelRenderer::SetShadowObject(int obj)

@@ -8,20 +8,20 @@ class NLScenePerspectiveCamera : virtual public NLSceneCameraBase
 public:
     NLScenePerspectiveCamera(NLScene *scene = 0);
     virtual ~NLScenePerspectiveCamera();
-    virtual void Update(float width, float height);
+    virtual void Update(float width, float height) { SetWidthAndHeight(width, height); }
     void SetFovy(float fovy);
     void SetAspect(float aspect);
-    void SetWidthAndHeight(float width, float height);
+    void SetWidthAndHeight(float width, float height) { SetAspect(CaleAspect(width, height)); }
     virtual void SetZNear(float near);
     virtual void SetZFar(float far);
     void Set(float fovy, float width, float height, float near, float far);
     void Set(float fovy, float aspect, float near, float far);
-    float Fovy() const;
-    float Aspect() const;
-    virtual float ZNear() const;
-    virtual float ZFar() const;
-    virtual float ZDistance() const;
-    void ResetFovy();
+    float Fovy() const { return m_fovy; }
+    float Aspect() const { return m_aspect; }
+    virtual float ZNear() const { return m_zNear; }
+    virtual float ZFar() const { return m_zFar; }
+    virtual float ZDistance() const { return m_zFar - m_zNear; }
+    void ResetFovy() { SetFovy(45); }
     virtual void Reset();
 
 protected:
@@ -29,7 +29,11 @@ protected:
     virtual void UpdateProjectionMatrix(NLMatrix4 *mat);
 
 private:
-    float CaleAspect(float width, float height);
+    float CaleAspect(float width, float height) {
+        float h = height == 0 ? 1 : height;
+        float a = width / h;
+        return a;
+    }
 
 private:
     float m_fovy;

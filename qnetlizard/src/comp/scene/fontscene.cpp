@@ -112,11 +112,6 @@ bool FontScene::LoadFile(const QString &file, const QString &texFile)
     return true;
 }
 
-bool FontScene::IsValid() const
-{
-    return m_font != 0;
-}
-
 void FontScene::SetText(const QString &str)
 {
     if(m_text != str)

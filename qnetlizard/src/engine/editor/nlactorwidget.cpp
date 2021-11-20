@@ -127,11 +127,6 @@ void NLVector3Widget::OnValueChanged(double d)
     emit vector3Changed(m_vector3);
 }
 
-NLVector3 NLVector3Widget::Vector3()
-{
-    return m_vector3;
-}
-
 void NLVector3Widget::SetVector3(const NLVector3 &v)
 {
     if(!vector3_equals(&v, &m_vector3))
@@ -148,6 +143,8 @@ void NLVector3Widget::SetReadOnly(bool b)
     m_ySpinBox->setReadOnly(b);
     m_zSpinBox->setReadOnly(b);
 }
+
+
 
 NLActorWidget::NLActorWidget(QWidget *widget)
     : QScrollArea(widget),
@@ -194,11 +191,6 @@ void NLActorWidget::Init()
     root->setLayout(mainLayout);
     setWidgetResizable(true);
     setWidget(root);
-}
-
-NLActor * NLActorWidget::Actor()
-{
-    return m_actor;
 }
 
 void NLActorWidget::SetActor(NLActor *actor)

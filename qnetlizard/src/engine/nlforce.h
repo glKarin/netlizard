@@ -27,21 +27,21 @@ public:
     explicit NLForce(NLScene *scene, NLRigidbody *parent = 0);
     explicit NLForce(NLScene *scene, const NLProperties &prop, NLRigidbody *parent = 0);
     virtual ~NLForce();
-    NL::Physics::t Time() const;
-    NL::Physics::F Force() const;
+    NL::Physics::t Time() const { return m_time; }
+    NL::Physics::F Force() const { return m_force; }
     NL::Physics::m Mass() const;
-    bool IsForcing() const;
-    bool IsFinished() const;
-    bool IsStarted() const;
-    State ForceState() const;
+    bool IsForcing() const { return m_state == NLForce::State_Forcing; }
+    bool IsFinished() const { return m_state == NLForce::State_Finish; }
+    bool IsStarted() const { return m_state != NLForce::State_Ready; }
+    State ForceState() const { return m_state; }
     virtual void Reset();
     virtual void Start();
     virtual void Finish();
     void SetRigidbody(NLRigidbody *o);
     NLRigidbody * Rigidbody();
     void SetOnce(bool b);
-    bool Once() const;
-    NLVector3 Direction() const;
+    bool Once() const { return m_once; }
+    NLVector3 Direction() const { return m_direction; }
     virtual bool IsActived() const;
 
 signals:
@@ -86,9 +86,9 @@ public:
     explicit NLForce_gravity(NLScene *scene, const NLProperties &prop, NLRigidbody *parent = 0);
     virtual ~NLForce_gravity();
     virtual void Reset();
-    NL::Physics::g Gravity() const;
-    NL::Physics::d Distance() const;
-    NL::Physics::v Speed() const;
+    NL::Physics::g Gravity() const { return m_g; }
+    NL::Physics::d Distance() const { return m_distance; }
+    NL::Physics::v Speed() const { return m_speed; }
 
 protected:
     virtual void InitProperty();
@@ -114,9 +114,9 @@ public:
     explicit NLForce_push(NLScene *scene, const NLProperties &prop, NLRigidbody *parent = 0);
     virtual ~NLForce_push();
     virtual void Reset();
-    NL::Physics::F FragForce() const;
-    NL::Physics::d Distance() const;
-    NL::Physics::v Speed() const;
+    NL::Physics::F FragForce() const { return m_dragForce; }
+    NL::Physics::d Distance() const { return m_distance; }
+    NL::Physics::v Speed() const { return m_speed; }
 
 protected:
     virtual void InitProperty();

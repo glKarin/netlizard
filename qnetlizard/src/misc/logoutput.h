@@ -25,9 +25,9 @@ class LogOutput : public QObject
 public:
     virtual ~LogOutput();
     static LogOutput * Instance();
-    const LogOutputList & LogList() const;
-    QString LogText() const;
-    uint Count() const;
+    const LogOutputList & LogList() const { return m_logList; }
+    QString LogText() const { return m_logText; }
+    uint Count() const { return m_logList.size(); }
     
 signals:
     void outputLog(int type, const QString &msg);

@@ -26,22 +26,22 @@ public:
     virtual ~NLActor();
     virtual void Reset();
     void SetRenderable(NLRenderable *renderable);
-    NLRenderable * Renderable();
+    NLRenderable * Renderable() { return m_renderable; }
     NLActor * ParentActor();
     void SetParentActor(NLActor *actor);
     NLActorContainer * Container();
     NLSETTER(position) virtual void SetPosition(const NLVector3 &v);
     NLSETTER(rotation) virtual void SetRotation(const NLVector3 &v);
     NLSETTER(scale) virtual void SetScale(const NLVector3 &v);
-    NLGETTER(position) NLVector3 Position() const;
-    NLGETTER(rotation) NLVector3 Rotation() const;
-    NLGETTER(scale) NLVector3 Scale() const;
-    NLGETTER(direction) NLVector3 Direction() const;
-    NLGETTER(up) NLVector3 Up() const;
-    NLGETTER(right) NLVector3 Right() const;
-    NLGETTER(matrix) const NLMatrix4 * LocalMatrix() const;
-    NLGETTER(globalMatrix) const NLMatrix4 * GlobalMatrix() const;
-    NLGETTER(normalMatrix) const NLMatrix4 * NormalMatrix() const;
+    NLGETTER(position) NLVector3 Position() const { return m_position; }
+    NLGETTER(rotation) NLVector3 Rotation() const { return m_rotation; }
+    NLGETTER(scale) NLVector3 Scale() const { return m_scale; }
+    NLGETTER(direction) NLVector3 Direction() const { return m_direction; }
+    NLGETTER(up) NLVector3 Up() const { return m_up; }
+    NLGETTER(right) NLVector3 Right() const { return m_right; }
+    NLGETTER(matrix) const NLMatrix4 * LocalMatrix() const { return &m_matrix; }
+    NLGETTER(globalMatrix) const NLMatrix4 * GlobalMatrix() const { return &m_globalMatrix; }
+    NLGETTER(normalMatrix) const NLMatrix4 * NormalMatrix() const { return &m_normalMatrix; }
     NLGETTER(matrix) const NLMatrix4 * Matrix() const { return LocalMatrix(); }
     NLINTERFACE virtual NLActor * Move(const NLVector3 &v);
     NLINTERFACE virtual NLActor * Turn(const NLVector3 &v);
@@ -59,8 +59,8 @@ public:
     NLComponent * GetComponent(const NLName &name);
     NLComponent * GetComponent(int index);
     NLActor & operator<<(NLActor *actor);
-    NLActor * operator[](int index);
-    NLActor * operator[](const NLName &name);
+    NLActor * operator[](int index) { return GetChild(index); }
+    NLActor * operator[](const NLName &name) { return GetChild(name); }
     template <class T>
     T * GetChild_T(const NLName &name);
     template <class T>
@@ -69,14 +69,14 @@ public:
     T * GetComponent_T(const NLName &name);
     template <class T>
     T * GetComponent_T(int index);
-    friend NLActor & operator+(NLActor &actor, NLComponent *item);
-    friend NLActor & operator-(NLActor &actor, NLComponent *item);
+    friend NLActor & operator+(NLActor &actor, NLComponent *item) { actor.AddComponent(item); return actor; }
+    friend NLActor & operator-(NLActor &actor, NLComponent *item) { actor.RemoveComponent(item); return actor; }
     virtual void Render();
     int ChildrenCount() const;
     int ComponentCount() const;
-    bool HasChildren() const;
-    bool HasComponents() const;
-    bool CanRender() const;
+    bool HasChildren() const { return ChildrenCount() > 0; }
+    bool HasComponents() const { return ComponentCount() > 0; }
+    bool CanRender() const { return m_renderable != 0; }
     NLINTERFACE virtual NLActor * MoveOriginal(const NLVector3 &v); // original
     NLINTERFACE virtual NLActor * MoveDirection(float len, const NLVector3 &dir); // local
     NLINTERFACE virtual NLActor * MoveDirectionOriginal(float len, const NLVector3 &dir); // original

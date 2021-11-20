@@ -9,7 +9,7 @@ class NLModelRenderer : public NLRenderable
 public:
     explicit NLModelRenderer(NLActor *actor = 0);
     virtual ~NLModelRenderer();
-    NLRenderModelGLGeneral * Model();
+    NLRenderModelGLGeneral * Model() { return m_model; }
     NLRenderModelGLGeneral * Take();
     void SetModel(NLRenderModelGLGeneral *model);
 

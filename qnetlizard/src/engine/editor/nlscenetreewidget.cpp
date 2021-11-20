@@ -35,11 +35,6 @@ void NLSceneTreeWidget::Reset()
     setHeaderLabel("No scene");
 }
 
-NLScene * NLSceneTreeWidget::Scene()
-{
-    return m_scene;
-}
-
 void NLSceneTreeWidget::SetScene(NLScene *scene)
 {
     if(m_scene != scene)

@@ -18,10 +18,10 @@ public:
     explicit ImageScene(QWidget *parent = 0);
     virtual ~ImageScene();
     bool IsValid() const;
-    const texture_s * Texture() const;
+    const texture_s * Texture() const { return m_tex; }
     QString GetSaveTextureSuffix() const;
     void SetAlignment(Qt::Alignment align);
-    Qt::Alignment Alignment() const;
+    Qt::Alignment Alignment() const { return m_align; }
 
 public Q_SLOTS:
     bool LoadFile(const QString &file, int type = NL_TEXTURE_UNKNOWN, int index = -1);

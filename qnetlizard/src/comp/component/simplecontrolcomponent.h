@@ -19,10 +19,10 @@ public:
     NLSETTER(turnSens) void SetTurnSens(float turnSens);
     NLSETTER(freelookSens) void SetFreelookSens(float freelookSens);
     NLSETTER(fovySens) void SetFovySens(float fovySens);
-    NLGETTER(moveSens) float MoveSens() const;
-    NLGETTER(turnSens) float TurnSens() const;
-    NLGETTER(freelookSens) float FreelookSens() const;
-    NLGETTER(fovySens) float FovySens() const;
+    NLGETTER(moveSens) float MoveSens() const{ return m_moveSens; }
+    NLGETTER(turnSens) float TurnSens() const { return m_turnSens; }
+    NLGETTER(freelookSens) float FreelookSens() const { return m_freelookSens; }
+    NLGETTER(fovySens) float FovySens() const { return m_fovySens; }
     
 signals:
     void fovyChanged(float f);

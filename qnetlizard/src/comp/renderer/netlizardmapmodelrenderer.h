@@ -10,16 +10,16 @@ class NETLizardMapModelRenderer : public NLRenderable
 public:
     explicit NETLizardMapModelRenderer(NLActor *actor = 0);
     virtual ~NETLizardMapModelRenderer();
-    GL_NETLizard_3D_Model * Model();
+    GL_NETLizard_3D_Model * Model() { return m_model; }
     void SetModel(GL_NETLizard_3D_Model *model);
     void SetScenes(bool b);
-    int * Scenes();
+    int * Scenes() { return m_scenes; }
     void SetCull(bool b);
-    bool Cull() const;
+    bool Cull() const { return m_cull; }
     void SetSceneCount(int i);
-    int SceneCount() const;
+    int SceneCount() const { return m_sceneCount; }
     void SetDebug(int i);
-    int Debug() const;
+    int Debug() const { return m_debug; }
 
 protected:
     virtual void InitRender();

@@ -99,14 +99,10 @@ void NETLizardFontRenderer::DeinitRender()
     m_font = 0;
 }
 
-GL_NETLizard_Font * NETLizardFontRenderer::Font()
-{
-    return m_font;
-}
-
 void NETLizardFontRenderer::SetFont(GL_NETLizard_Font *f)
 {
-    m_font = f;
+    if(m_font != f)
+        m_font = f;
 }
 
 void NETLizardFontRenderer::RenderText()

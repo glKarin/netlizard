@@ -17,17 +17,8 @@ NLRenderable::~NLRenderable()
 
 void NLRenderable::SetActor(NLActor *actor)
 {
-    m_actor = actor;
-}
-
-NLActor * NLRenderable::Actor()
-{
-    return m_actor;
-}
-
-QString NLRenderable::Name() const
-{
-    return m_name;
+    if(m_actor != actor)
+        m_actor = actor;
 }
 
 void NLRenderable::SetName(const QString &name)

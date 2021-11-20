@@ -15,15 +15,15 @@ public:
     explicit AnimationScene(QWidget *parent = 0);
     virtual ~AnimationScene();
     bool IsValid() const;
-    const GL_NETLizard_3D_Model * Model() const;
-    const NETLizard_3D_Frame_Animation * Config() const;
+    const GL_NETLizard_3D_Model * Model() const { return m_model; }
+    const NETLizard_3D_Frame_Animation * Config() const { return m_frameAnim; }
     const NETLizard_3D_Frame_Animation * CurrentAnimation() const;
     int CurrentAnimationFrames() const;
-    int Anim() const;
-    int Frame() const;
-    int AnimFPS() const;
-    bool IsPlaying() const;
-    bool PlaySequence() const;
+    int Anim() const { return m_anim; }
+    int Frame() const { return m_frame; }
+    int AnimFPS() const { return m_animFPS; }
+    bool IsPlaying() const { return m_playing; }
+    bool PlaySequence() const { return m_playSequence; }
 
 public Q_SLOTS:
     bool LoadFile(const QString &file, const QString &resourcePath, int game, int index);

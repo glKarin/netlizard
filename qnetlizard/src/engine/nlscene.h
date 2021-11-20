@@ -14,28 +14,28 @@ class NLScene : public QGLWidget
 public:
     explicit NLScene(QWidget *parent = 0);
     virtual ~NLScene();
-    QColor ClearColor() const;
+    QColor ClearColor() const { return m_clearColor; }
     void Render();
     void MoveCursorToCenter();
     void SetCursorVisible(bool b);
     void GrabMouseCursor(bool b);
-    bool IsGrabMouseCursor() const;
-    bool IsCursorVisible() const;
-    bool IsLoop() const;
-    QPoint MousePointerPosition() const;
-    float CurrendDelta() const;
-    qint64 UpdateTime() const;
-    float FPS() const;
+    bool IsGrabMouseCursor() const { return m_grabMouse; }
+    bool IsCursorVisible() const { return m_cursorVisible; }
+    bool IsLoop() const { return m_loop; }
+    QPoint MousePointerPosition() const { return m_lastPos; }
+    float CurrendDelta() const { return m_delta; }
+    qint64 UpdateTime() const { return m_lastTime; }
+    float FPS() const { return m_fps; }
     void SetFPS(float fps);
-    float CurrentFPS() const;
-    int ActorCount() const;
+    float CurrentFPS() const { return m_currentFps; }
+    int ActorCount() const { return m_actors.Count(); }
 
-    NLSceneCamera * CurrentCamera();
-    NLActor * GetActor(int index);
+    NLSceneCamera * CurrentCamera() { return m_currentCamera; }
+    NLActor * GetActor(int index) { return m_actors.Get(index); }
     template <class T>
     T * GetActor_T(int index);
-    NLActor * operator[](int index);
-    NLScene & operator<<(NLActor *actor);
+    NLActor * operator[](int index) { return GetActor(index); }
+    NLScene & operator<<(NLActor *actor) { AddActor(actor); return *this; }
     
 signals:
     void sizeChanged(const QSize &s);
@@ -54,10 +54,10 @@ protected:
     virtual void Init();
     virtual void Deinit();
     void SetCurrentCamera(NLSceneCamera *camera);
-    bool MousePressed() const;
+    bool MousePressed() const { return m_pressed; }
     void AddActor(NLActor *actor);
     void RemoveActor(NLActor *actor);
-    void RemoveActor(int index);
+    void RemoveActor(int index) { m_actors.Remove(index); }
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);

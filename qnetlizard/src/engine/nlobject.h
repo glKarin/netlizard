@@ -30,26 +30,26 @@ public:
     explicit NLObject(NLScene *scene, QObject *parent = 0);
     explicit NLObject(NLScene *scene, const NLProperties &prop, QObject *parent = 0);
     virtual ~NLObject();
-    virtual bool IsActived() const;
+    virtual bool IsActived() const { return m_inited && m_enabled; }
     virtual void Reset();
-    NLObject_Type Type() const;
-    QString Name() const;
+    NLObject_Type Type() const { return m_type; }
+    QString Name() const { return m_name; }
     NLObject * ParentObject();
-    bool IsInited() const;
-    NLObjectContainer * Container();
+    bool IsInited() const { return m_inited; }
+    NLObjectContainer * Container() { return m_container; }
     NLProperty GetProperty(const QString &name, const NLProperty &def = QVariant()) const;
     template<class T> T GetProperty_T(const QString &name, const T &def = T());
     void SetProperty(const QString &name, const NLProperty &value);
     template<class T> void SetProperty_T(const QString &name, const T &value);
-    NLProperty & operator[](const QString &name);
-    NLProperty operator[](const QString &name) const;
+    NLProperty & operator[](const QString &name) { return m_property[name]; } // init property
+    NLProperty operator[](const QString &name) const { return GetProperty(name); }
     void SetScene(NLScene *scene);
-    NLScene * Scene();
-    virtual bool IsEnabled() const;
+    NLScene * Scene() { return m_scene; }
+    virtual bool IsEnabled() const { return m_enabled; }
     virtual void SetEnabled(bool enabled);
     void RemoveProperty(const QString &name);
     bool HasProperty(const QString &name);
-    NLProperty GetInitProperty(const QString &name, const NLProperty &def = QVariant()) const;
+    NLProperty GetInitProperty(const QString &name, const NLProperty &def = QVariant()) const { return m_property.Get(name, def); }
     template<class T> T GetInitProperty_T(const QString &name, const T &def = T());
 
 protected:

@@ -27,24 +27,24 @@ public:
     bool RemoveForce(const NLName &name);
     NLForce * GetForce(const NLName &name);
     NLForce * GetForce(int index);
-    friend NLRigidbody & operator+(NLRigidbody &actor, NLForce *item);
-    friend NLRigidbody & operator-(NLRigidbody &actor, NLForce *item);
+    friend NLRigidbody & operator+(NLRigidbody &actor, NLForce *item) { actor.AddForce(item); return actor; }
+    friend NLRigidbody & operator-(NLRigidbody &actor, NLForce *item) { actor.RemoveForce(item); return actor; }
     template <class T>
     T * GetForce_T(const NLName &name);
     template <class T>
     T * GetForce_T(int index);
-    NLVector3 MoveDirection() const;
+    NLVector3 MoveDirection() const { return m_moveDirection; }
     virtual void SetRotation(const NLVector3 &v);
     virtual NLActor * Move(const NLVector3 &v);
     virtual NLActor * Turn(const NLVector3 &v);
     void SetFree(bool b);
-    bool Free() const;
-    bool ZIsUp() const;
-    bool FixedUp() const;
+    bool Free() const { return m_free; }
+    bool ZIsUp() const { return m_zIsUp; }
+    bool FixedUp() const { return m_fixedUp; }
     void SetMass(int m);
     int ForceCount() const;
-    bool HasForce() const;
-    NLGETTER(mass) NL::Physics::m Mass() const;
+    bool HasForce() const { return ForceCount() > 0; }
+    NLGETTER(mass) NL::Physics::m Mass() const { return m_mass; }
     NLSETTER(mass) void SetMass(NL::Physics::m m);
     NLActor * MoveSelfOriginal(const NLVector3 &v);
     NLINTERFACE void ClearAllForces();

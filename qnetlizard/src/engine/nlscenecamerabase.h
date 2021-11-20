@@ -31,7 +31,7 @@ public:
 public:
     NLSceneCameraBase(NLScene *widget = 0);
     virtual ~NLSceneCameraBase();
-    NLScene * Scene();
+    NLScene * Scene() { return m_scene; }
     void SetScene(NLScene *scene);
     void Render();
     void Render(NLScene *scene);
@@ -41,27 +41,27 @@ public:
     void SetGlobalMatrix(const NLMatrix4 *mat);
     virtual void Reset();
     virtual void Update(float width, float height) = 0;
-    const NLMatrix4 * ViewMatrix() const;
-    const NLMatrix4 * ProjectionMatrix() const;
-    const NLMatrix4 * NormalMatrix() const;
-    const NLMatrix4 * GlobalMatrix() const;
-    const NLMatrix4 * ViewProjectionMatrix() const;
-    const NLMatrix4 * RenderMatrix() const;
+    const NLMatrix4 * ViewMatrix() const { return &m_viewMatrix; }
+    const NLMatrix4 * ProjectionMatrix() const { return &m_projectionMatrix; }
+    const NLMatrix4 * NormalMatrix() const { return &m_normalMatrix; }
+    const NLMatrix4 * GlobalMatrix() const { return &m_globalMatrix; }
+    const NLMatrix4 * ViewProjectionMatrix() const { return &m_mvpMatrix; }
+    const NLMatrix4 * RenderMatrix() const { return &m_renderMatrix; }
     void SetPosition(const NLVector3 &v);
     void SetRotation(const NLVector3 &v);
     void SetScale(const NLVector3 &v);
-    NLVector3 Position() const;
-    NLVector3 Rotation() const;
-    NLVector3 Scale() const;
-    NLVector3 Direction() const;
-    NLVector3 Up() const;
-    NLVector3 Right_XPositive() const;
+    NLVector3 Position() const { return m_position; }
+    NLVector3 Rotation() const { return m_rotation; }
+    NLVector3 Scale() const { return m_scale; }
+    NLVector3 Direction() const { return m_direction; }
+    NLVector3 Up() const { return m_up; }
+    NLVector3 Right_XPositive() const { return m_right_x_positive; }
     NLSceneCameraBase * Move(const NLVector3 &v);
     NLSceneCameraBase * Turn(const NLVector3 &v);
     NLSceneCameraBase * Zoom(const NLVector3 &v);
     void SetZIsUp(bool b);
     void SetEnabled(bool b);
-    bool IsEnabled() const;
+    bool IsEnabled() const { return m_enabled; }
 
 protected:
     virtual void Projection();

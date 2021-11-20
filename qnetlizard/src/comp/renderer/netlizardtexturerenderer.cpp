@@ -93,14 +93,10 @@ void NETLizardTextureRenderer::DeinitRender()
     m_tex = 0;
 }
 
-texture_s * NETLizardTextureRenderer::Texture()
-{
-    return m_tex;
-}
-
 void NETLizardTextureRenderer::SetTexture(texture_s *tex)
 {
-    m_tex = tex;
+    if(m_tex != tex)
+        m_tex = tex;
 }
 
 void NETLizardTextureRenderer::SetAlignment(Qt::Alignment align)
@@ -111,9 +107,4 @@ void NETLizardTextureRenderer::SetAlignment(Qt::Alignment align)
     {
         m_align = (Qt::Alignment)a;
     }
-}
-
-Qt::Alignment NETLizardTextureRenderer::Alignment() const
-{
-    return m_align;
 }

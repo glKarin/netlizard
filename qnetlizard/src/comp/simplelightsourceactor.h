@@ -12,7 +12,7 @@ class SimpleLightSourceActor : public NLActor
 public:
     explicit SimpleLightSourceActor(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleLightSourceActor();
-    SimpleLightSourceComponent * LightSource();
+    SimpleLightSourceComponent * LightSource() { return m_lightSource; }
     NLVector3 LightSourceDirection() const;
     NLVector3 LightSourcePosition() const;
 

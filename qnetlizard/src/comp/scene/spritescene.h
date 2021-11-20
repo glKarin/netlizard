@@ -15,7 +15,8 @@ class SpriteScene : public NLScene
 public:
     explicit SpriteScene(QWidget *parent = 0);
     virtual ~SpriteScene();
-    bool IsValid() const;
+    bool IsValid() const { return m_sprite != 0; }
+    GL_NETLizard_Sprite * Sprite() { return m_sprite; }
     int Count() const;
 
 public Q_SLOTS:

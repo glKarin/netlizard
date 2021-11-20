@@ -15,11 +15,11 @@ class BaseViewer : public QWidget
 public:
     explicit BaseViewer(QWidget *parent = 0);
     virtual ~BaseViewer();
-    QString Title() const;
-    QString StatusText() const;
-    QWidget * CentralWidget();
+    QString Title() const { return m_title; }
+    QString StatusText() const { return m_statusText; }
+    QWidget * CentralWidget() { return m_centralWidget; }
     void SetupToolBar(QToolBar *toolbar);
-    int ToolsCount() const;
+    int ToolsCount() const { return m_tools.size(); }
     
 signals:
     void titleChanged(const QString &title);
@@ -35,10 +35,10 @@ protected Q_SLOTS:
 
 protected:
     void SetCentralWidget(QWidget *widget = 0);
-    QHBoxLayout * ToolLayout();
-    QLabel * TitleLabel();
-    void AddTool(QWidget *w = 0);
-    void ClearTools();
+    QHBoxLayout * ToolLayout() { return m_toolLayout; }
+    QLabel * TitleLabel() { return m_titleLabel; }
+    void AddTool(QWidget *w = 0) { m_tools.push_back(w); }
+    void ClearTools() { m_tools.clear(); }
     void SetupToolBar(QHBoxLayout *toolbar);
 
 private:

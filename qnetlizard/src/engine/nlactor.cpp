@@ -349,28 +349,6 @@ NLComponent * NLActor::GetComponent(int index)
     return m_components->Get(index);
 }
 
-NLActor * NLActor::operator[](int index)
-{
-    return GetChild(index);
-}
-
-NLActor * NLActor::operator[](const NLName &name)
-{
-    return GetChild(name);
-}
-
-NLActor & operator+(NLActor &actor, NLComponent *item)
-{
-    actor.AddComponent(item);
-    return actor;
-}
-
-NLActor & operator-(NLActor &actor, NLComponent *item)
-{
-    actor.RemoveComponent(item);
-    return actor;
-}
-
 void NLActor::SetRenderable(NLRenderable *renderable)
 {
     if(m_renderable != renderable)
@@ -382,11 +360,6 @@ void NLActor::SetRenderable(NLRenderable *renderable)
         if(m_renderable)
             m_renderable->SetActor(this);
     }
-}
-
-NLRenderable * NLActor::Renderable()
-{
-    return m_renderable;
 }
 
 void NLActor::Reset()
@@ -436,36 +409,6 @@ void NLActor::SetScale(const NLVector3 &v)
     UpdateMatrix();
     emit scaleChanged(m_scale);
     emit propertyChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
-}
-
-NLVector3 NLActor::Position() const
-{
-    return m_position;
-}
-
-NLVector3 NLActor::Rotation() const
-{
-    return m_rotation;
-}
-
-NLVector3 NLActor::Scale() const
-{
-    return m_scale;
-}
-
-NLVector3 NLActor::Direction() const
-{
-    return m_direction;
-}
-
-NLVector3 NLActor::Up() const
-{
-    return m_up;
-}
-
-NLVector3 NLActor::Right() const
-{
-    return m_right;
 }
 
 NLActor * NLActor::Move(const NLVector3 &unit)
@@ -542,21 +485,6 @@ NLActor * NLActor::Zoom(const NLVector3 &v)
     UpdateMatrix();
     emit scaleChanged(m_scale);
     return this;
-}
-
-const NLMatrix4 * NLActor::LocalMatrix() const
-{
-    return &m_matrix;
-}
-
-const NLMatrix4 * NLActor::GlobalMatrix() const
-{
-    return &m_globalMatrix;
-}
-
-const NLMatrix4 * NLActor::NormalMatrix() const
-{
-    return &m_normalMatrix;
 }
 
 void NLActor::UpdateMatrix()
@@ -686,19 +614,4 @@ int NLActor::ComponentCount() const
     if(m_components)
         return m_components->Count();
     return 0;
-}
-
-bool NLActor::HasChildren() const
-{
-    return ChildrenCount() > 0;
-}
-
-bool NLActor::HasComponents() const
-{
-    return ComponentCount() > 0;
-}
-
-bool NLActor::CanRender() const
-{
-    return m_renderable != 0;
 }

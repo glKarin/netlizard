@@ -11,20 +11,20 @@ class NETLizardShadowModelRenderer : public NLRenderable
 public:
     explicit NETLizardShadowModelRenderer(int method = SHADOW_Z_FAIL, NLActor *actor = 0);
     virtual ~NETLizardShadowModelRenderer();
-    GL_NETLizard_3D_Model * Model();
+    GL_NETLizard_3D_Model * Model() { return m_model; }
     void SetModel(GL_NETLizard_3D_Model *model);
-    int * Scenes();
+    int * Scenes() { return m_scenes; }
     void SetCull(bool b);
-    bool Cull() const;
+    bool Cull() const { return m_cull; }
     void SetSceneCount(int i);
     int SceneCount() const;
     void SetLightSource(const NLVector3 *pos = 0, bool dirlight = false);
     void SetRenderScenes(int scenes[], int count);
-    int StencilShadowMethod() const;
+    int StencilShadowMethod() const { return m_stencilShadowMethod; }
     void SetStencilShadowMethod(int method);
     void SetLightSourcePosition(const NLVector3 &pos);
     void SetLightSourceType(bool dirlight);
-    int ShadowObject() const;
+    int ShadowObject() const { return m_shadowObject; }
     void SetShadowObject(int obj);
 
 protected:

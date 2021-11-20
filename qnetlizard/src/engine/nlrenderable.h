@@ -10,8 +10,8 @@ class NLRenderable
 public:
     explicit NLRenderable(NLActor *actor = 0);
     virtual ~NLRenderable();
-    NLActor * Actor();
-    QString Name() const;
+    NLActor * Actor() { return m_actor; }
+    QString Name() const { return m_name; }
 
 protected:
     void SetActor(NLActor *actor);

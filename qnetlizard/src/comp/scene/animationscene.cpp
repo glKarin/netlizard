@@ -156,11 +156,6 @@ bool AnimationScene::IsValid() const
     return m_model && m_frameAnim;
 }
 
-const GL_NETLizard_3D_Model * AnimationScene::Model() const
-{
-    return m_model;
-}
-
 void AnimationScene::SetAnim(int anim)
 {
     if(anim >= 0 && !m_frameAnim)
@@ -195,11 +190,6 @@ void AnimationScene::LoadAnimFrame(int index)
     m_frameAnim = nlGet3DModelFrameAnimationConfig(static_cast<NETLizard_Game>(game), index);
 }
 
-const NETLizard_3D_Frame_Animation * AnimationScene::Config() const
-{
-    return m_frameAnim;
-}
-
 const NETLizard_3D_Frame_Animation * AnimationScene::CurrentAnimation() const
 {
     if(!m_frameAnim)
@@ -216,16 +206,6 @@ int AnimationScene::CurrentAnimationFrames() const
         return config->count;
     else
         return 0;
-}
-
-int AnimationScene::Anim() const
-{
-    return m_anim;
-}
-
-int AnimationScene::Frame() const
-{
-    return m_frame;
 }
 
 void AnimationScene::NextFrame()
@@ -256,11 +236,6 @@ void AnimationScene::PrevFrame()
     else
         frame--;
     SetFrame(frame);
-}
-
-bool AnimationScene::IsPlaying() const
-{
-    return m_playing;
 }
 
 void AnimationScene::Play()
@@ -304,11 +279,6 @@ void AnimationScene::SetPlaying(bool playing)
     }
 }
 
-int AnimationScene::AnimFPS() const
-{
-    return m_animFPS;
-}
-
 void AnimationScene::SetAnimFPS(int fps)
 {
     if(m_animFPS != fps)
@@ -321,11 +291,6 @@ void AnimationScene::SetAnimFPS(int fps)
             m_frameInterval = qRound(1000.0 / (float)m_animFPS);
         }
     }
-}
-
-bool AnimationScene::PlaySequence() const
-{
-    return m_playSequence;
 }
 
 void AnimationScene::SetPlaySequence(bool invert)

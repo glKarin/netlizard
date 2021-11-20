@@ -55,26 +55,6 @@ void SimpleLightSourceComponent::SetType(SimpleLightSourceComponent::LightSource
         m_type = type;
 }
 
-SimpleLightSourceComponent::LightSourceType SimpleLightSourceComponent::Type() const
-{
-    return m_type;
-}
-
-bool SimpleLightSourceComponent::IsDirectionLighting() const
-{
-    return m_type == SimpleLightSourceComponent::LightSourceType_Direction;
-}
-
-NLVector3 SimpleLightSourceComponent::Direction() const
-{
-    return m_direction;
-}
-
-NLVector3 SimpleLightSourceComponent::Position() const
-{
-    return m_position;
-}
-
 void SimpleLightSourceComponent::SetPosition(const NLVector3 &pos)
 {
     if(!vector3_equals(&m_position, &pos))

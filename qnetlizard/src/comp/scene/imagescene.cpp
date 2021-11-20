@@ -95,11 +95,6 @@ void ImageScene::SetAlignment(Qt::Alignment align)
     }
 }
 
-Qt::Alignment ImageScene::Alignment() const
-{
-    return m_align;
-}
-
 void ImageScene::Deinit()
 {
     Reset();
@@ -363,11 +358,6 @@ void ImageScene::SetData(int type, void *data, int len, const QString &ext)
         m_data.len = len;
         m_data.ext = ext;
     }
-}
-
-const texture_s * ImageScene::Texture() const
-{
-    return m_tex;
 }
 
 void ImageScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)

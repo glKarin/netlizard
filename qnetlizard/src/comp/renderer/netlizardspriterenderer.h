@@ -10,7 +10,7 @@ class NETLizardSpriteRenderer : public NLRenderable
 public:
     explicit NETLizardSpriteRenderer(NLActor *actor = 0);
     virtual ~NETLizardSpriteRenderer();
-    GL_NETLizard_Sprite * Sprite();
+    GL_NETLizard_Sprite * Sprite() { return m_sprite; }
     void SetSprite(GL_NETLizard_Sprite *sprite);
     void SetIndex(int i);
 

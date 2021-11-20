@@ -86,16 +86,6 @@ void NLObject::InitProperty()
     SetEnabled(GetInitProperty_T<bool>("enabled", true));
 }
 
-NLObject::NLObject_Type NLObject::Type() const
-{
-    return m_type;
-}
-
-QString NLObject::Name() const
-{
-    return m_name;
-}
-
 void NLObject::SetName(const QString &name)
 {
     if(m_name != name)
@@ -136,11 +126,6 @@ void NLObject::Destroy()
     m_inited = false;
 }
 
-bool NLObject::IsInited() const
-{
-    return m_inited;
-}
-
 NLObject * NLObject::ParentObject()
 {
     QObject *p = parent();
@@ -149,14 +134,10 @@ NLObject * NLObject::ParentObject()
     return 0;
 }
 
-NLObjectContainer * NLObject::Container()
-{
-    return m_container;
-}
-
 void NLObject::SetContainer(NLObjectContainer *container)
 {
-    m_container = container;
+    if(m_container != container)
+        m_container = container;
 }
 
 NLProperty NLObject::GetProperty(const QString &name, const NLProperty &def) const
@@ -205,31 +186,10 @@ bool NLObject::HasProperty(const QString &name)
     return false;
 }
 
-NLProperty & NLObject::operator[](const QString &name)
-{
-    //QByteArray ba = name.toLocal8Bit();
-    //return property(ba.constData());
-    return m_property[name];
-}
-
-NLProperty NLObject::operator[](const QString &name) const
-{
-    return GetProperty(name);
-}
-
-NLScene * NLObject::Scene()
-{
-    return m_scene;
-}
-
 void NLObject::SetScene(NLScene *scene)
 {
-    m_scene = scene;
-}
-
-bool NLObject::IsEnabled() const
-{
-    return m_enabled;
+    if(m_scene != scene)
+        m_scene = scene;
 }
 
 void NLObject::SetEnabled(bool enabled)
@@ -240,14 +200,4 @@ void NLObject::SetEnabled(bool enabled)
         emit enabledChanged(m_enabled);
         emit propertyChanged("enabled", m_enabled);
     }
-}
-
-bool NLObject::IsActived() const
-{
-    return m_inited && m_enabled;
-}
-
-NLProperty NLObject::GetInitProperty(const QString &name, const NLProperty &def) const
-{
-    return m_property.Get(name, def);
 }

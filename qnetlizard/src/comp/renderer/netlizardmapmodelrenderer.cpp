@@ -148,11 +148,6 @@ void NETLizardMapModelRenderer::RenderDebug()
     glPopMatrix();
 }
 
-GL_NETLizard_3D_Model * NETLizardMapModelRenderer::Model()
-{
-    return m_model;
-}
-
 void NETLizardMapModelRenderer::SetModel(GL_NETLizard_3D_Model *model)
 {
     m_model = model;
@@ -188,16 +183,6 @@ void NETLizardMapModelRenderer::SetScenes(bool b)
     }
 }
 
-bool NETLizardMapModelRenderer::Cull() const
-{
-    return m_cull;
-}
-
-int * NETLizardMapModelRenderer::Scenes()
-{
-    return m_scenes;
-}
-
 void NETLizardMapModelRenderer::SetSceneCount(int i)
 {
     if(!m_cull && i > 0)
@@ -206,18 +191,8 @@ void NETLizardMapModelRenderer::SetSceneCount(int i)
         m_sceneCount = i;
 }
 
-int NETLizardMapModelRenderer::SceneCount() const
-{
-    return m_sceneCount;
-}
-
 void NETLizardMapModelRenderer::SetDebug(int i)
 {
     if(m_debug != i)
         m_debug = i;
-}
-
-int NETLizardMapModelRenderer::Debug() const
-{
-    return m_debug;
 }

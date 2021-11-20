@@ -64,11 +64,6 @@ void NLObjectContainer::Reset()
     }
 }
 
-int NLObjectContainer::Count() const
-{
-    return m_objectList.count();
-}
-
 bool NLObjectContainer::Exists(const NLName &name) const
 {
     Q_FOREACH(NLObject *obj, m_objectList)
@@ -84,11 +79,6 @@ bool NLObjectContainer::Exists(const NLObject *item) const
     if(!item)
         return false;
     return m_objectList.contains((NLObject *)item);
-}
-
-bool NLObjectContainer::IsEmpty() const
-{
-    return m_objectList.isEmpty();
 }
 
 NLName NLObjectContainer::Find(const NLObject *item)
@@ -113,12 +103,6 @@ bool NLObjectContainer::Add(NLObject *item)
     item->Init();
     m_objectList.push_back(item);
     return true;
-}
-
-NLObjectContainer * NLObjectContainer::operator<<(NLObject *item)
-{
-    Add(item);
-    return this;
 }
 
 bool NLObjectContainer::Remove(NLObject *item)
@@ -163,21 +147,11 @@ NLObject * NLObjectContainer::Get(const NLName &name)
     return 0;
 }
 
-NLObject * NLObjectContainer::operator[](const NLName &name)
-{
-    return Get(name);
-}
-
 NLObject * NLObjectContainer::Get(int index)
 {
     if(index < 0 || index >= m_objectList.count())
         return 0;
     return m_objectList[index];
-}
-
-NLObject * NLObjectContainer::operator[](int index)
-{
-    return Get(index);
 }
 
 void NLObjectContainer::Clear()
@@ -199,16 +173,6 @@ void NLObjectContainer::Clean()
         obj->Destroy();
         delete obj;
     }
-}
-
-NLObjectList & NLObjectContainer::ObjectList()
-{
-    return m_objectList;
-}
-
-NLScene * NLObjectContainer::Scene()
-{
-    return m_scene;
 }
 
 void NLObjectContainer::SetScene(NLScene *scene)

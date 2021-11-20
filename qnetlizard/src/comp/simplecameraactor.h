@@ -17,7 +17,7 @@ public:
     explicit SimpleCameraActor(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleCameraActor();
     NLSceneCamera * Camera();
-    NLComponent * Control();
+    NLComponent * Control() { return m_control; }
     NLINTERFACE void SetEnableControl(bool b);
     void SetEnabled(bool enabled);
 

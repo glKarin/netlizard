@@ -218,16 +218,6 @@ void NLScene::GrabMouseCursor(bool b)
     }
 }
 
-bool NLScene::IsGrabMouseCursor() const
-{
-    return m_grabMouse;
-}
-
-bool NLScene::IsCursorVisible() const
-{
-    return m_cursorVisible;
-}
-
 void NLScene::RunLoop(bool b)
 {
     if(m_loop == b)
@@ -270,7 +260,8 @@ void NLScene::IdleTimer_slot()
     else
     {
         updateGL();
-        UpdateCurrentFPS(ts);
+        UpdateCurrentFPS(delta);
+        emit rendered(m_currentFps);
     }
 
     ExecLoop();
@@ -290,11 +281,6 @@ void NLScene::SetClearColor(const QColor &color)
         qglClearColor(m_clearColor);
         updateGL();
     }
-}
-
-QColor NLScene::ClearColor() const
-{
-    return m_clearColor;
 }
 
 void NLScene::Reset()
@@ -319,16 +305,6 @@ void NLScene::SetCurrentCamera(NLSceneCamera *camera)
         m_currentCamera->SetScene(this);
 }
 
-NLSceneCamera * NLScene::CurrentCamera()
-{
-    return m_currentCamera;
-}
-
-bool NLScene::MousePressed() const
-{
-    return m_pressed;
-}
-
 void NLScene::AddActor(NLActor *actor)
 {
     if(!actor)
@@ -336,57 +312,11 @@ void NLScene::AddActor(NLActor *actor)
     m_actors.Add(actor);
 }
 
-NLScene & NLScene::operator<<(NLActor *actor)
-{
-    AddActor(actor);
-    return *this;
-}
-
 void NLScene::RemoveActor(NLActor *actor)
 {
     if(!actor)
         return;
     m_actors.Remove(actor);
-}
-
-void NLScene::RemoveActor(int index)
-{
-    m_actors.Remove(index);
-}
-
-NLActor * NLScene::GetActor(int index)
-{
-    return m_actors.Get(index);
-}
-
-NLActor * NLScene::operator[](int index)
-{
-    return GetActor(index);
-}
-
-bool NLScene::IsLoop() const
-{
-    return m_loop;
-}
-
-QPoint NLScene::MousePointerPosition() const
-{
-    return m_lastPos;
-}
-
-float NLScene::CurrendDelta() const
-{
-    return m_delta;
-}
-
-qint64 NLScene::UpdateTime() const
-{
-    return m_lastTime;
-}
-
-float NLScene::FPS() const
-{
-    return m_fps;
 }
 
 void NLScene::SetFPS(float fps)
@@ -402,11 +332,6 @@ void NLScene::SetFPS(float fps)
             qDebug() << "SetFPS" << m_fps << "UpdateGLInterval" << m_updateGLInterval;
         }
     }
-}
-
-float NLScene::CurrentFPS() const
-{
-    return m_currentFps;
 }
 
 void NLScene::UpdateCurrentFPS(qint64 delta)
@@ -454,9 +379,4 @@ bool NLScene::WheelEventHandler(int mouse, int orientation, int delta, int x, in
     Q_UNUSED(y);
     Q_UNUSED(modifier);
     return false;
-}
-
-int NLScene::ActorCount() const
-{
-    return m_actors.Count();
 }

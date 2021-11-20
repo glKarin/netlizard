@@ -45,11 +45,6 @@ void SimpleLightSourceActor::Update(float delta)
         m_lightSource->SetPosition(Position());
 }
 
-SimpleLightSourceComponent * SimpleLightSourceActor::LightSource()
-{
-    return m_lightSource;
-}
-
 NLVector3 SimpleLightSourceActor::LightSourceDirection() const
 {
     if(!m_lightSource)

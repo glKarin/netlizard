@@ -300,26 +300,6 @@ void SimpleControlComponent::SetFovySens(float fovySens)
     }
 }
 
-float SimpleControlComponent::MoveSens() const
-{
-    return m_moveSens;
-}
-
-float SimpleControlComponent::TurnSens() const
-{
-    return m_turnSens;
-}
-
-float SimpleControlComponent::FreelookSens() const
-{
-    return m_freelookSens;
-}
-
-float SimpleControlComponent::FovySens() const
-{
-    return m_fovySens;
-}
-
 bool SimpleControlComponent::wheelev(int mouse, int orientation, int delta, int x, int y, int modifier)
 {
     NLActor *actor = Actor();

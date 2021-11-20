@@ -14,7 +14,8 @@ class FontScene : public NLScene
 public:
     explicit FontScene(QWidget *parent = 0);
     virtual ~FontScene();
-    bool IsValid() const;
+    GL_NETLizard_Font * Font() { return m_font; }
+    bool IsValid() const { return m_font != 0; }
 
 public Q_SLOTS:
     bool LoadFile(const QString &cfFile, const QString &fntFile);

@@ -12,7 +12,7 @@ public:
     virtual ~NLSceneOrthoCamera();
     virtual void Update(float width, float height);
     void SetAlignment(Qt::Alignment align);
-    Qt::Alignment Alignment() const;
+    Qt::Alignment Alignment() const { return m_align; }
     void SetLeft(float left);
     void SetRight(float right);
     void SetBottom(float bottom);
@@ -22,15 +22,15 @@ public:
     void Set2D();
     void Set2D(float left, float right, float bottom, float top);
     void Set(float left, float right, float bottom, float top, float near = -1, float far = 1);
-    float Left() const;
-    float Right() const;
-    float Bottom() const;
-    float Top() const;
-    virtual float ZNear() const;
-    virtual float ZFar() const;
-    float XDistance() const;
-    float YDistance() const;
-    virtual float ZDistance() const;
+    float Left() const { return m_left; }
+    float Right() const { return m_right; }
+    float Bottom() const { return m_bottom; }
+    float Top() const { return m_top; }
+    virtual float ZNear() const { return m_zNear; }
+    virtual float ZFar() const { return m_zFar; }
+    float XDistance() const { return m_right - m_left; }
+    float YDistance() const { return m_top - m_bottom; }
+    virtual float ZDistance() const { return m_zFar - m_zNear; }
     virtual void Reset();
 
 protected:

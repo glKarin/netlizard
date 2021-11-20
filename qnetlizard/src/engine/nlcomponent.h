@@ -15,11 +15,11 @@ public:
     explicit NLComponent(NLScene *scene, NLActor *parent = 0);
     explicit NLComponent(NLScene *scene, const NLProperties &prop, NLActor *parent = 0);
     virtual ~NLComponent();
-    bool IsMounted() const;
+    bool IsMounted() const { return m_mounted; }
     NLActor * Actor();
     void SetActor(NLActor *actor);
     NLComponentContainer * Container();
-    virtual bool IsActived() const;
+    virtual bool IsActived() const { return NLObject::IsActived() && m_mounted; }
 
 protected:
     virtual bool keyev(int key, bool pressed, int modifier);

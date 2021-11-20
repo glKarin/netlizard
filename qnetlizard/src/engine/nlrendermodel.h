@@ -257,19 +257,19 @@ NLRenderModelData<T> & NLRenderModelData<T>::Add(const T items[], int count)
 }
 
 template <class T>
-NLRenderModelData<T> & NLRenderModelData<T>::operator<<(const T &item)
+inline NLRenderModelData<T> & NLRenderModelData<T>::operator<<(const T &item)
 {
     return Add(item);
 }
 
 template <class T>
-NLRenderModelData<T> & NLRenderModelData<T>::operator<<(const NLRenderModelDataItemList &items)
+inline NLRenderModelData<T> & NLRenderModelData<T>::operator<<(const NLRenderModelDataItemList &items)
 {
     return Add(items);
 }
 
 template <class T>
-NLRenderModelData<T> & NLRenderModelData<T>::operator()(const T items[], int count)
+inline NLRenderModelData<T> & NLRenderModelData<T>::operator()(const T items[], int count)
 {
     return Add(items, count);
 }
@@ -284,7 +284,7 @@ T * NLRenderModelData<T>::operator[](int i)
 }
 
 template <class T>
-T NLRenderModelData<T>::operator[](int i) const
+inline T NLRenderModelData<T>::operator[](int i) const
 {
     return At(i);
 }
@@ -299,31 +299,31 @@ T NLRenderModelData<T>::At(int i) const
 }
 
 template <class T>
-int NLRenderModelData<T>::Count() const
+inline int NLRenderModelData<T>::Count() const
 {
     return m_count;
 }
 
 template <class T>
-NLRenderModelData<T>::operator QVector<T> &()
+inline NLRenderModelData<T>::operator QVector<T> &()
 {
     return m_data;
 }
 
 template <class T>
-NLRenderModelData<T>::operator const QVector<T> &() const
+inline NLRenderModelData<T>::operator const QVector<T> &() const
 {
     return m_data;
 }
 
 template <class T>
-char * NLRenderModelData<T>::Data()
+inline char * NLRenderModelData<T>::Data()
 {
     return m_data.data();
 }
 
 template <class T>
-const char * NLRenderModelData<T>::Data() const
+inline const char * NLRenderModelData<T>::Data() const
 {
     return m_data.constData();
 }
@@ -336,13 +336,13 @@ void NLRenderModelData<T>::Clear()
 }
 
 template <class T>
-T * NLRenderModelData<T>::ElementData()
+inline T * NLRenderModelData<T>::ElementData()
 {
     return reinterpret_cast<T *>(m_data.data());
 }
 
 template <class T>
-const T * NLRenderModelData<T>::ElementData() const
+inline const T * NLRenderModelData<T>::ElementData() const
 {
     return reinterpret_cast<const T *>(m_data.constData());
 }
@@ -355,7 +355,7 @@ uint NLRenderModelData<T>::DataSize() const
 }
 
 template <class T>
-uint NLRenderModelData<T>::ElementSize() const
+inline uint NLRenderModelData<T>::ElementSize() const
 {
     return sizeof(T);
 }
@@ -395,13 +395,13 @@ NLRenderModelVertex<T> & NLRenderModelVertex<T>::Add(const QList<NLRenderModelVe
 }
 
 template <class T>
-NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator<<(const NLRenderModelVertexItem<T> &item)
+inline NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator<<(const NLRenderModelVertexItem<T> &item)
 {
     return Add(item);
 }
 
 template <class T>
-NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator<<(const QList<NLRenderModelVertexItem<T> > &items)
+inline NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator<<(const QList<NLRenderModelVertexItem<T> > &items)
 {
     return Add(items);
 }
@@ -441,7 +441,7 @@ NLRenderModelVertex<T> & NLRenderModelVertex<T>::Add(const T vertex[VERTEX_ELEME
 }
 
 template <class T>
-NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator()(const T vertex[VERTEX_ELEMENT], const T texcoord[TEXCOORD_ELEMENT], const T normal[3]
+inline NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator()(const T vertex[VERTEX_ELEMENT], const T texcoord[TEXCOORD_ELEMENT], const T normal[3]
 #if(COLOR_ELEMENT > 0)
                                                             , const T color[COLOR_ELEMENT]
 #endif
@@ -451,48 +451,48 @@ NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator()(const T vertex[VERTE
 }
 
 template <class T>
-int NLRenderModelVertex<T>::VertexCount() const
+inline int NLRenderModelVertex<T>::VertexCount() const
 {
     return NLRenderModelVertex<T>::Count() / ELEMENT_SIZE;
 }
 
 template <class T>
-NLRenderModelVertex<T> & NLRenderModelVertex<T>::Add(const T &item)
+inline NLRenderModelVertex<T> & NLRenderModelVertex<T>::Add(const T &item)
 {
     NLRenderModelData<T>::Add(item);
     return *this;
 }
 
 template <class T>
-NLRenderModelVertex<T> & NLRenderModelVertex<T>::Add(const QList<T> &items)
+inline NLRenderModelVertex<T> & NLRenderModelVertex<T>::Add(const QList<T> &items)
 {
     NLRenderModelData<T>::Add(items);
     return *this;
 }
 
 template <class T>
-NLRenderModelVertex<T> & NLRenderModelVertex<T>::Add(const T item[], int count)
+inline NLRenderModelVertex<T> & NLRenderModelVertex<T>::Add(const T item[], int count)
 {
     NLRenderModelData<T>::Add(item, count);
     return *this;
 }
 
 template <class T>
-NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator<<(const T &item)
+inline NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator<<(const T &item)
 {
     NLRenderModelData<T>::operator<<(item);
     return *this;
 }
 
 template <class T>
-NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator<<(const QList<T> &items)
+inline NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator<<(const QList<T> &items)
 {
     NLRenderModelData<T>::operator<<(items);
     return *this;
 }
 
 template <class T>
-NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator()(const T item[], int count)
+inline NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator()(const T item[], int count)
 {
     NLRenderModelData<T>::operator()(item, count);
     return *this;
@@ -516,7 +516,7 @@ NLRenderModelPrimitive<T, TextureT, ModeT>::~NLRenderModelPrimitive()
 }
 
 template <class T, class TextureT, class ModeT>
-ModeT NLRenderModelPrimitive<T, TextureT, ModeT>::Mode() const
+inline ModeT NLRenderModelPrimitive<T, TextureT, ModeT>::Mode() const
 {
     return m_mode;
 }
@@ -529,7 +529,7 @@ void NLRenderModelPrimitive<T, TextureT, ModeT>::SetMode(const ModeT &t)
 }
 
 template <class T, class TextureT, class ModeT>
-TextureT NLRenderModelPrimitive<T, TextureT, ModeT>::Texture() const
+inline TextureT NLRenderModelPrimitive<T, TextureT, ModeT>::Texture() const
 {
     return m_texture;
 }
@@ -542,31 +542,31 @@ void NLRenderModelPrimitive<T, TextureT, ModeT>::SetTexture(const TextureT &t)
 }
 
 template <class T, class TextureT, class ModeT>
-NLRenderModelPrimitive<T, TextureT, ModeT>::operator NLRenderModelData<T> &()
+inline NLRenderModelPrimitive<T, TextureT, ModeT>::operator NLRenderModelData<T> &()
 {
     return m_index;
 }
 
 template <class T, class TextureT, class ModeT>
-NLRenderModelPrimitive<T, TextureT, ModeT>::operator const NLRenderModelData<T> &() const
+inline NLRenderModelPrimitive<T, TextureT, ModeT>::operator const NLRenderModelData<T> &() const
 {
     return m_index;
 }
 
 template <class T, class TextureT, class ModeT>
-NLRenderModelData<T> & NLRenderModelPrimitive<T, TextureT, ModeT>::Index()
+inline NLRenderModelData<T> & NLRenderModelPrimitive<T, TextureT, ModeT>::Index()
 {
     return m_index;
 }
 
 template <class T, class TextureT, class ModeT>
-const NLRenderModelData<T> & NLRenderModelPrimitive<T, TextureT, ModeT>::Index() const
+inline const NLRenderModelData<T> & NLRenderModelPrimitive<T, TextureT, ModeT>::Index() const
 {
     return m_index;
 }
 
 template <class T, class TextureT, class ModeT>
-QColor NLRenderModelPrimitive<T, TextureT, ModeT>::Color() const
+inline QColor NLRenderModelPrimitive<T, TextureT, ModeT>::Color() const
 {
     return m_color;
 }
@@ -593,56 +593,56 @@ NLRenderModel<VertexT, IndexT, TextureT, ModeT>::~NLRenderModel()
 }
 
 template <class VertexT, class IndexT, class TextureT, class ModeT>
-NLRenderModel<VertexT, IndexT, TextureT, ModeT>::operator NLRenderModel<VertexT, IndexT, TextureT, ModeT>::NLRenderModelVertexData &()
+inline NLRenderModel<VertexT, IndexT, TextureT, ModeT>::operator NLRenderModel<VertexT, IndexT, TextureT, ModeT>::NLRenderModelVertexData &()
 {
     return m_vertex;
 }
 
 template <class VertexT, class IndexT, class TextureT, class ModeT>
-NLRenderModel<VertexT, IndexT, TextureT, ModeT>::operator NLRenderModel<VertexT, IndexT, TextureT, ModeT>::NLRenderModelPrimitiveDataList &()
+inline NLRenderModel<VertexT, IndexT, TextureT, ModeT>::operator NLRenderModel<VertexT, IndexT, TextureT, ModeT>::NLRenderModelPrimitiveDataList &()
 {
     return m_primitive;
 }
 
 template <class VertexT, class IndexT, class TextureT, class ModeT>
-NLRenderModel<VertexT, IndexT, TextureT, ModeT>::operator const NLRenderModel<VertexT, IndexT, TextureT, ModeT>::NLRenderModelVertexData &() const
+inline NLRenderModel<VertexT, IndexT, TextureT, ModeT>::operator const NLRenderModel<VertexT, IndexT, TextureT, ModeT>::NLRenderModelVertexData &() const
 {
     return m_vertex;
 }
 
 template <class VertexT, class IndexT, class TextureT, class ModeT>
-NLRenderModel<VertexT, IndexT, TextureT, ModeT>::operator const NLRenderModel<VertexT, IndexT, TextureT, ModeT>::NLRenderModelPrimitiveDataList &() const
+inline NLRenderModel<VertexT, IndexT, TextureT, ModeT>::operator const NLRenderModel<VertexT, IndexT, TextureT, ModeT>::NLRenderModelPrimitiveDataList &() const
 {
     return m_primitive;
 }
 
 template <class VertexT, class IndexT, class TextureT, class ModeT>
-int NLRenderModel<VertexT, IndexT, TextureT, ModeT>::PrimitiveCount() const
+inline int NLRenderModel<VertexT, IndexT, TextureT, ModeT>::PrimitiveCount() const
 {
     return m_primitive.count();
 }
 
 template <class VertexT, class IndexT, class TextureT, class ModeT>
-NLRenderModelVertex<VertexT> &
+inline NLRenderModelVertex<VertexT> &
 NLRenderModel<VertexT, IndexT, TextureT, ModeT>::Vertex()
 {
     return m_vertex;
 }
 
 template <class VertexT, class IndexT, class TextureT, class ModeT>
-QList<NLRenderModelPrimitive<IndexT, TextureT, ModeT> > & NLRenderModel<VertexT, IndexT, TextureT, ModeT>::Primitives()
+inline QList<NLRenderModelPrimitive<IndexT, TextureT, ModeT> > & NLRenderModel<VertexT, IndexT, TextureT, ModeT>::Primitives()
 {
     return m_primitive;
 }
 
 template <class VertexT, class IndexT, class TextureT, class ModeT>
-const NLRenderModelVertex<VertexT> & NLRenderModel<VertexT, IndexT, TextureT, ModeT>::Vertex() const
+inline const NLRenderModelVertex<VertexT> & NLRenderModel<VertexT, IndexT, TextureT, ModeT>::Vertex() const
 {
     return m_vertex;
 }
 
 template <class VertexT, class IndexT, class TextureT, class ModeT>
-const QList<NLRenderModelPrimitive<IndexT, TextureT, ModeT> > & NLRenderModel<VertexT, IndexT, TextureT, ModeT>::Primitives() const
+inline const QList<NLRenderModelPrimitive<IndexT, TextureT, ModeT> > & NLRenderModel<VertexT, IndexT, TextureT, ModeT>::Primitives() const
 {
     return m_primitive;
 }

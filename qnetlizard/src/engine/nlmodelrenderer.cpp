@@ -43,11 +43,6 @@ void NLModelRenderer::DeinitRender()
     }
 }
 
-NLRenderModelGLGeneral * NLModelRenderer::Model()
-{
-    return m_model;
-}
-
 void NLModelRenderer::SetModel(NLRenderModelGLGeneral *model)
 {
     if(m_model != model)

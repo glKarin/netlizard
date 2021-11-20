@@ -136,22 +136,6 @@ NLComponent * NLComponentContainer::Get(int index)
     return static_cast<NLComponent *>(NLObjectContainer::Get(index));
 }
 
-NLComponent * NLComponentContainer::operator[](const NLName &name)
-{
-    return Get(name);
-}
-
-NLComponent * NLComponentContainer::operator[](int index)
-{
-    return Get(index);
-}
-
-NLComponentContainer * NLComponentContainer::operator<<(NLComponent *item)
-{
-    Add(item);
-    return this;
-}
-
 NLActor * NLComponentContainer::Actor()
 {
     QObject *p = parent();

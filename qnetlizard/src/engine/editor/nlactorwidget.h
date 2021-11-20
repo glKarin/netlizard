@@ -20,7 +20,7 @@ class NLVector3Widget : public QWidget
 public:
     explicit NLVector3Widget(QWidget *widget = 0);
     virtual ~NLVector3Widget();
-    NLVector3 Vector3();
+    NLVector3 Vector3() const { return m_vector3; }
 
 public Q_SLOTS:
     void SetVector3(const NLVector3 &v);
@@ -52,7 +52,7 @@ class NLActorWidget : public QScrollArea
 public:
     explicit NLActorWidget(QWidget *widget = 0);
     virtual ~NLActorWidget();
-    NLActor * Actor();
+    NLActor * Actor() { return m_actor; }
     void SetActor(NLActor *sctor);
 
 public Q_SLOTS:

@@ -293,21 +293,6 @@ void SimpleImageControlComponent::SetZoomSens(float zoomSens)
     }
 }
 
-float SimpleImageControlComponent::TransSens() const
-{
-    return m_transSens;
-}
-
-float SimpleImageControlComponent::RotSens() const
-{
-    return m_rotSens;
-}
-
-float SimpleImageControlComponent::ZoomSens() const
-{
-    return m_zoomSens;
-}
-
 void SimpleImageControlComponent::SetInvertX(bool b)
 {
     if(m_invertX != b)
@@ -324,14 +309,4 @@ void SimpleImageControlComponent::SetInvertY(bool b)
         m_invertY = b;
         emit propertyChanged("invertY", m_invertY);
     }
-}
-
-bool SimpleImageControlComponent::InvertX() const
-{
-    return m_invertX;
-}
-
-bool SimpleImageControlComponent::InvertY() const
-{
-    return m_invertY;
 }

@@ -127,11 +127,6 @@ void NLComponent::SetActor(NLActor *actor)
     setParent(actor);
 }
 
-bool NLComponent::IsMounted() const
-{
-    return m_mounted;
-}
-
 void NLComponent::Mount(NLActor *actor)
 {
     if(!actor)
@@ -164,9 +159,4 @@ NLComponentContainer * NLComponent::Container()
 void NLComponent::SetContainer(NLComponentContainer *container)
 {
     NLObject::SetContainer(container);
-}
-
-bool NLComponent::IsActived() const
-{
-    return NLObject::IsActived() && m_mounted;
 }

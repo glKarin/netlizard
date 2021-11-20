@@ -72,11 +72,6 @@ NLSceneCamera * SimpleCameraActor::Camera()
     return m_camera ? m_camera->Camera() : 0;
 }
 
-NLComponent * SimpleCameraActor::Control()
-{
-    return m_control;
-}
-
 void SimpleCameraActor::SetEnableControl(bool b)
 {
     if(m_control)

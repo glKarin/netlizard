@@ -12,7 +12,7 @@ class NETLizardFontRenderer : public NLRenderable
 public:
     explicit NETLizardFontRenderer(NLActor *actor = 0);
     virtual ~NETLizardFontRenderer();
-    GL_NETLizard_Font * Font();
+    GL_NETLizard_Font * Font() { return m_font; }
     void SetFont(GL_NETLizard_Font *tex);
     void SetText(const QString &str);
     void UpdateLayout();

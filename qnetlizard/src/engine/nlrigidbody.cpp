@@ -73,11 +73,6 @@ void NLRigidbody::Construct()
     m_moveDirection = Direction();
 }
 
-NLVector3 NLRigidbody::MoveDirection() const
-{
-    return m_moveDirection;
-}
-
 // limit x to [-90, 90]: [270, 360] | [0, 90]
 // limit z to [-90, 90]: [270, 360] | [0, 90]
 NLActor * NLRigidbody::Turn(const NLVector3 &v)
@@ -201,21 +196,6 @@ void NLRigidbody::SetFree(bool b)
     }
 }
 
-bool NLRigidbody::Free() const
-{
-    return m_free;
-}
-
-bool NLRigidbody::ZIsUp() const
-{
-    return m_zIsUp;
-}
-
-bool NLRigidbody::FixedUp() const
-{
-    return m_fixedUp;
-}
-
 void NLRigidbody::SetMass(NL::Physics::m m)
 {
     if(m_mass != m)
@@ -330,18 +310,6 @@ NLForce * NLRigidbody::GetForce(int index)
     return m_forces->Get(index);
 }
 
-NLRigidbody & operator+(NLRigidbody &actor, NLForce *item)
-{
-    actor.AddForce(item);
-    return actor;
-}
-
-NLRigidbody & operator-(NLRigidbody &actor, NLForce *item)
-{
-    actor.RemoveForce(item);
-    return actor;
-}
-
 void NLRigidbody::Init()
 {
     if(IsInited())
@@ -380,11 +348,6 @@ int NLRigidbody::ForceCount() const
     return 0;
 }
 
-bool NLRigidbody::HasForce() const
-{
-    return ForceCount() > 0;
-}
-
 void NLRigidbody::ClearAllForces()
 {
     if(!m_forces)
@@ -403,9 +366,4 @@ void NLRigidbody::Collision()
     m_forces->Clean();
     if(c)
         emit forceChanged();
-}
-
-NL::Physics::m NLRigidbody::Mass() const
-{
-    return m_mass;
 }

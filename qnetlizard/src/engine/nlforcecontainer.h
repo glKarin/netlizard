@@ -24,9 +24,9 @@ public:
     virtual void Clear();
     void ClearInvalid();
 
-    NLForce * operator[](const NLName &name);
-    NLForce * operator[](int index);
-    NLForceContainer * operator<<(NLForce *item);
+    NLForce * operator[](const NLName &name) { return Get(name); }
+    NLForce * operator[](int index) { return Get(index); }
+    NLForceContainer & operator<<(NLForce *item) { Add(item); return *this; }
     NLRigidbody * Rigidbody();
 
 protected:

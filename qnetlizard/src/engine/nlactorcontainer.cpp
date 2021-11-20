@@ -135,22 +135,6 @@ NLActor * NLActorContainer::Get(int index)
     return static_cast<NLActor *>(NLObjectContainer::Get(index));
 }
 
-NLActor * NLActorContainer::operator[](const NLName &name)
-{
-    return Get(name);
-}
-
-NLActor * NLActorContainer::operator[](int index)
-{
-    return Get(index);
-}
-
-NLActorContainer * NLActorContainer::operator<<(NLActor *item)
-{
-    Add(item);
-    return this;
-}
-
 void NLActorContainer::Render()
 {
     NLObjectList &list = ObjectList();

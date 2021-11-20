@@ -10,10 +10,10 @@ class NETLizardTextureRenderer : public NLRenderable
 public:
     explicit NETLizardTextureRenderer(NLActor *actor = 0);
     virtual ~NETLizardTextureRenderer();
-    texture_s * Texture();
+    texture_s * Texture() { return m_tex; }
     void SetTexture(texture_s *tex);
     void SetAlignment(Qt::Alignment align);
-    Qt::Alignment Alignment() const;
+    Qt::Alignment Alignment() const { return m_align; }
 
 protected:
     virtual void InitRender();

@@ -170,16 +170,6 @@ void ItemScene::Reset()
     NLScene::Reset();
 }
 
-bool ItemScene::IsValid() const
-{
-    return m_model != 0;
-}
-
-const GL_NETLizard_3D_Model * ItemScene::Model() const
-{
-    return m_model;
-}
-
 void ItemScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)
 {
     if(name == "RENDER/fps")

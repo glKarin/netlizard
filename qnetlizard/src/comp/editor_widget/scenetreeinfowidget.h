@@ -15,7 +15,7 @@ public:
     explicit SceneTreeInfoWidget(QWidget *parent = 0);
     virtual ~SceneTreeInfoWidget();
     void SetScene(NLScene *scene);
-    NLScene * Scene();
+    NLScene * Scene() { return m_scene; }
     
 signals:
     void actorSelected(NLActor *a);

@@ -16,7 +16,7 @@ class NLSceneTreeWidget : public QTreeWidget
 public:
     explicit NLSceneTreeWidget(QWidget *widget = 0);
     virtual ~NLSceneTreeWidget();
-    NLScene * Scene();
+    NLScene * Scene() { return m_scene; }
     void SetScene(NLScene *scene);
     void Reset();
 

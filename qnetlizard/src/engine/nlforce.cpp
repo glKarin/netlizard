@@ -71,25 +71,10 @@ void NLForce::SetOnce(bool b)
     }
 }
 
-bool NLForce::Once() const
-{
-    return m_once;
-}
-
 void NLForce::Reset()
 {
     m_time = 0;
     SetState(NLForce::State_Ready);
-}
-
-NL::Physics::t NLForce::Time() const
-{
-    return m_time;
-}
-
-NL::Physics::F NLForce::Force() const
-{
-    return m_force;
 }
 
 void NLForce::SetRigidbody(NLRigidbody *o)
@@ -99,26 +84,6 @@ void NLForce::SetRigidbody(NLRigidbody *o)
         Finish();
         setParent(o);
     }
-}
-
-bool NLForce::IsForcing() const
-{
-    return m_state == NLForce::State_Forcing;
-}
-
-bool NLForce::IsFinished() const
-{
-    return m_state == NLForce::State_Finish;
-}
-
-bool NLForce::IsStarted() const
-{
-    return m_state != NLForce::State_Ready;
-}
-
-NLForce::State NLForce::ForceState() const
-{
-    return m_state;
 }
 
 void NLForce::Update(float delta)
@@ -167,11 +132,6 @@ void NLForce::Destroy()
 {
     NLObject::Destroy();
     Finish();
-}
-
-NLVector3 NLForce::Direction() const
-{
-    return m_direction;
 }
 
 void NLForce::SetContainer(NLForceContainer *container)
@@ -270,21 +230,6 @@ void NLForce_gravity::Construct()
     m_direction = down;
 }
 
-NL::Physics::g NLForce_gravity::Gravity() const
-{
-    return m_g;
-}
-
-NL::Physics::d NLForce_gravity::Distance() const
-{
-    return m_distance;
-}
-
-NL::Physics::v NLForce_gravity::Speed() const
-{
-    return m_speed;
-}
-
 void NLForce_gravity::Reset()
 {
     NLForce::Reset();
@@ -379,21 +324,6 @@ void NLForce_push::InitProperty()
 void NLForce_push::Construct()
 {
     setObjectName("NLForce_push");
-}
-
-NL::Physics::F NLForce_push::FragForce() const
-{
-    return m_dragForce;
-}
-
-NL::Physics::d NLForce_push::Distance() const
-{
-    return m_distance;
-}
-
-NL::Physics::v NLForce_push::Speed() const
-{
-    return m_speed;
 }
 
 void NLForce_push::Reset()

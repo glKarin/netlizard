@@ -45,11 +45,6 @@ void SceneTreeInfoWidget::SetScene(NLScene *scene)
     }
 }
 
-NLScene * SceneTreeInfoWidget::Scene()
-{
-    return m_scene;
-}
-
 void SceneTreeInfoWidget::Reset()
 {
     m_scene = 0;

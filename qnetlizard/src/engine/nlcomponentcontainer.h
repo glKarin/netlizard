@@ -27,9 +27,9 @@ public:
     virtual bool MouseMotionHandler(int button, bool pressed, int x, int y, int oldx, int oldy, int modifier);
     virtual bool WheelEventHandler(int mouse, int orientation, int delta, int x, int y, int modifier);
 
-    NLComponent * operator[](const NLName &name);
-    NLComponent * operator[](int index);
-    NLComponentContainer * operator<<(NLComponent *item);
+    NLComponent * operator[](const NLName &name) { return Get(name); }
+    NLComponent * operator[](int index) { return Get(index); }
+    NLComponentContainer & operator<<(NLComponent *item) { Add(item); return *this; }
     NLActor * Actor();
 
 signals:

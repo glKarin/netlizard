@@ -37,11 +37,6 @@ HomeCell::~HomeCell()
     DEBUG_DESTROY_Q;
 }
 
-QAction * HomeCell::Action()
-{
-    return m_action;
-}
-
 void HomeCell::TriggerAction()
 {
     emit actionTrigger(m_action);

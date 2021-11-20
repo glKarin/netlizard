@@ -90,16 +90,6 @@ void SimpleCameraComponent::SetType(int type)
     }
 }
 
-int SimpleCameraComponent::Type() const
-{
-    return m_type;
-}
-
-NLSceneCamera * SimpleCameraComponent::Camera()
-{
-    return m_camera;
-}
-
 void SimpleCameraComponent::UpdateCamera()
 {
     NLScene *scene = Scene();

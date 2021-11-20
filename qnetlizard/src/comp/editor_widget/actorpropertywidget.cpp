@@ -42,11 +42,6 @@ void ActorPropertyWidget::SetActor(NLActor *actor)
     }
 }
 
-NLActor * ActorPropertyWidget::Actor()
-{
-    return m_actor;
-}
-
 void ActorPropertyWidget::Reset()
 {
     m_actorWidget->Reset();

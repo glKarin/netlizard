@@ -47,11 +47,6 @@ void NETLizardItemModelRenderer::DeinitRender()
     m_index = 0;
 }
 
-GL_NETLizard_3D_Mesh * NETLizardItemModelRenderer::Model()
-{
-    return m_itemMesh;
-}
-
 void NETLizardItemModelRenderer::SetModel(GL_NETLizard_3D_Mesh *model, texture_s **tex)
 {
     m_itemMesh = model;

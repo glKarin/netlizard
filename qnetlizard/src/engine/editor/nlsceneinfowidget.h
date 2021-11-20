@@ -12,7 +12,7 @@ public:
     explicit NLSceneInfoWidget(QWidget *parent = 0);
     virtual ~NLSceneInfoWidget();
     void SetScene(NLScene *scene);
-    NLScene * Scene();
+    NLScene * Scene() { return m_scene; }
     
 signals:
     

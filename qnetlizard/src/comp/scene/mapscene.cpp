@@ -510,17 +510,6 @@ void MapScene::Reset()
     NLScene::Reset();
 }
 
-
-bool MapScene::IsValid() const
-{
-    return m_model != 0;
-}
-
-const GL_NETLizard_3D_Model * MapScene::Model() const
-{
-    return m_model;
-}
-
 void MapScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)
 {
     if(name == "RENDER/fps")

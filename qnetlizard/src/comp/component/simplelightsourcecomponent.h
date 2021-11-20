@@ -23,12 +23,12 @@ public:
     explicit SimpleLightSourceComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleLightSourceComponent();
     NLSETTER(type) void SetType(LightSourceType type);
-    NLGETTER(type) LightSourceType Type() const;
-    NLGETTER(direction) NLVector3 Direction() const;
-    NLGETTER(position) NLVector3 Position() const;
+    NLGETTER(type) LightSourceType Type() const { return m_type; }
+    NLGETTER(direction) NLVector3 Direction() const { return m_direction; }
+    NLGETTER(position) NLVector3 Position() const { return m_position; }
     NLSETTER(position) void SetPosition(const NLVector3 &pos);
     NLSETTER(direction) void SetDirecton(const NLVector3 &dir);
-    bool IsDirectionLighting() const;
+    bool IsDirectionLighting() const { return m_type == SimpleLightSourceComponent::LightSourceType_Direction; }
     virtual void Reset();
     
 public slots:

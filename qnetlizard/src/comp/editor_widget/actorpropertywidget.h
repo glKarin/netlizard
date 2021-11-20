@@ -12,7 +12,7 @@ class ActorPropertyWidget : public QDockWidget
 public:
     explicit ActorPropertyWidget(QWidget *parent = 0);
     virtual ~ActorPropertyWidget();
-    NLActor * Actor();
+    NLActor * Actor() { return m_actor; }
     void Reset();
     
 signals:

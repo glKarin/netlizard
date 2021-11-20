@@ -41,54 +41,6 @@ void NLSceneCamera::SetZFar(float far)
         NLScenePerspectiveCamera::SetZFar(far);
 }
 
-float NLSceneCamera::ZNear() const
-{
-    if(m_type == NLSceneCamera::Type_Ortho)
-        return NLSceneOrthoCamera::ZNear();
-    else
-        return NLScenePerspectiveCamera::ZNear();
-}
-
-float NLSceneCamera::ZFar() const
-{
-    if(m_type == NLSceneCamera::Type_Ortho)
-        return NLSceneOrthoCamera::ZFar();
-    else
-        return NLScenePerspectiveCamera::ZFar();
-}
-
-float NLSceneCamera::ZDistance() const
-{
-    if(m_type == NLSceneCamera::Type_Ortho)
-        return NLSceneOrthoCamera::ZDistance();
-    else
-        return NLScenePerspectiveCamera::ZDistance();
-}
-
-void NLSceneCamera::Update(float width, float height)
-{
-    if(m_type == NLSceneCamera::Type_Ortho)
-        return NLSceneOrthoCamera::Update(width, height);
-    else
-        return NLScenePerspectiveCamera::Update(width, height);
-}
-
-void NLSceneCamera::Projection()
-{
-    if(m_type == NLSceneCamera::Type_Ortho)
-        return NLSceneOrthoCamera::Projection();
-    else
-        return NLScenePerspectiveCamera::Projection();
-}
-
-void NLSceneCamera::UpdateProjectionMatrix(NLMatrix4 *mat)
-{
-    if(m_type == NLSceneCamera::Type_Ortho)
-        return NLSceneOrthoCamera::UpdateProjectionMatrix(mat);
-    else
-        return NLScenePerspectiveCamera::UpdateProjectionMatrix(mat);
-}
-
 void NLSceneCamera::SetType(SceneCamera_Type type)
 {
     if(m_type != type)
@@ -96,18 +48,4 @@ void NLSceneCamera::SetType(SceneCamera_Type type)
         m_type = type;
         Reset();
     }
-}
-
-NLSceneCamera::SceneCamera_Type NLSceneCamera::Type() const
-{
-    return m_type;
-}
-
-
-void NLSceneCamera::Reset()
-{
-    if(m_type == NLSceneCamera::Type_Ortho)
-        NLSceneOrthoCamera::Reset();
-    else
-        NLScenePerspectiveCamera::Reset();
 }

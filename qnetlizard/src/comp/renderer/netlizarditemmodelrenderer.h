@@ -10,7 +10,7 @@ class NETLizardItemModelRenderer : public NLRenderable
 public:
     explicit NETLizardItemModelRenderer(NLActor *actor = 0);
     virtual ~NETLizardItemModelRenderer();
-    GL_NETLizard_3D_Mesh * Model();
+    GL_NETLizard_3D_Mesh * Model() { return m_itemMesh; }
     void SetModel(GL_NETLizard_3D_Mesh *model, texture_s **tex);
     void SetIndex(int index);
 

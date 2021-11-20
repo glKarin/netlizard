@@ -15,11 +15,11 @@ public:
     virtual ~SimpleControl2DComponent();
     virtual void Reset();
     NLSETTER(moveSens) void SetMoveSens(float moveSens);
-    NLGETTER(moveSens) float MoveSens() const;
+    NLGETTER(moveSens) float MoveSens() const { return m_moveSens; }
     NLSETTER(invertX) void SetInvertX(bool b);
     NLSETTER(invertY) void SetInvertY(bool b);
-    NLGETTER(invertX) bool InvertX() const;
-    NLGETTER(invertY) bool InvertY() const;
+    NLGETTER(invertX) bool InvertX() const { return m_invertX; }
+    NLGETTER(invertY) bool InvertY() const { return m_invertY; }
     
 signals:
     

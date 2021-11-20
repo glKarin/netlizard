@@ -142,11 +142,6 @@ void SimpleControl2DComponent::SetMoveSens(float moveSens)
     }
 }
 
-float SimpleControl2DComponent::MoveSens() const
-{
-    return m_moveSens;
-}
-
 void SimpleControl2DComponent::SetInvertX(bool b)
 {
     if(m_invertX != b)
@@ -163,14 +158,4 @@ void SimpleControl2DComponent::SetInvertY(bool b)
         m_invertY = b;
         emit propertyChanged("invertY", m_invertY);
     }
-}
-
-bool SimpleControl2DComponent::InvertX() const
-{
-    return m_invertX;
-}
-
-bool SimpleControl2DComponent::InvertY() const
-{
-    return m_invertY;
 }

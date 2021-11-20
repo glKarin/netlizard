@@ -47,16 +47,6 @@ void NETLizardAnimationModelRenderer::DeinitRender()
     m_frame = -1;
 }
 
-GL_NETLizard_3D_Model * NETLizardAnimationModelRenderer::Model()
-{
-    return m_model;
-}
-
-const NETLizard_3D_Frame_Animation *  NETLizardAnimationModelRenderer::Config() const
-{
-    return m_config;
-}
-
 void NETLizardAnimationModelRenderer::SetModel(GL_NETLizard_3D_Model *model, const NETLizard_3D_Frame_Animation *config)
 {
     m_model = model;
@@ -76,14 +66,4 @@ void NETLizardAnimationModelRenderer::SetAnim(int anim, int frame)
         m_anim = anim;
         SetFrame(frame);
     }
-}
-
-int NETLizardAnimationModelRenderer::Anim() const
-{
-    return m_anim;
-}
-
-int NETLizardAnimationModelRenderer::Frame() const
-{
-    return m_frame;
 }

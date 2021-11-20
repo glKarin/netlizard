@@ -14,8 +14,8 @@ public:
     explicit NLObjectContainer(QObject *parent = 0);
     explicit NLObjectContainer(NLScene *scene, QObject *parent = 0);
     virtual ~NLObjectContainer();
-    int Count() const;
-    bool IsEmpty() const;
+    int Count() const { return m_objectList.count(); }
+    bool IsEmpty() const { return m_objectList.isEmpty(); }
     bool Exists(const NLName &name) const;
     bool Exists(const NLObject *item) const;
     NLName Find(const NLObject *item);
@@ -36,11 +36,11 @@ public:
     virtual void Update(float delta);
     virtual void Reset();
     void SetScene(NLScene *scene);
-    NLScene * Scene();
+    NLScene * Scene() { return m_scene; }
 
-    NLObject * operator[](const NLName &name);
-    NLObject * operator[](int index);
-    NLObjectContainer * operator<<(NLObject *item);
+    NLObject * operator[](const NLName &name) { return Get(name); }
+    NLObject * operator[](int index) { return Get(index); }
+    NLObjectContainer & operator<<(NLObject *item) { Add(item); return *this; }
 
     template <class T>
     bool IsType(int index) const;
@@ -64,7 +64,7 @@ signals:
 public slots:
 
 protected:
-    NLObjectList & ObjectList();
+    NLObjectList & ObjectList() { return m_objectList; }
 
 private:
     void Construct();

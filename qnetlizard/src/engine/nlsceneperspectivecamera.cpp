@@ -26,11 +26,6 @@ NLScenePerspectiveCamera::~NLScenePerspectiveCamera()
 
 }
 
-void NLScenePerspectiveCamera::Update(float width, float height)
-{
-    SetWidthAndHeight(width, height);
-}
-
 #define FOVY_P 0.1
 void NLScenePerspectiveCamera::SetFovy(float fovy)
 {
@@ -42,23 +37,6 @@ void NLScenePerspectiveCamera::SetFovy(float fovy)
     }
 }
 #undef FOVY_P
-
-void NLScenePerspectiveCamera::ResetFovy()
-{
-    SetFovy(45);
-}
-
-float NLScenePerspectiveCamera::CaleAspect(float width, float height)
-{
-    float h = height == 0 ? 1 : height;
-    float a = width / h;
-    return a;
-}
-
-void NLScenePerspectiveCamera::SetWidthAndHeight(float width, float height)
-{
-    SetAspect(CaleAspect(width, height));
-}
 
 void NLScenePerspectiveCamera::SetAspect(float aspect)
 {
@@ -153,31 +131,6 @@ void NLScenePerspectiveCamera::UpdateProjectionMatrix(NLMatrix4 *mat)
 {
     Mesa_glLoadIdentity(mat);
     Mesa_gluPerspective(mat, m_fovy, m_aspect, m_zNear, m_zFar);
-}
-
-float NLScenePerspectiveCamera::Fovy() const
-{
-    return m_fovy;
-}
-
-float NLScenePerspectiveCamera::Aspect() const
-{
-    return m_aspect;
-}
-
-float NLScenePerspectiveCamera::ZNear() const
-{
-    return m_zNear;
-}
-
-float NLScenePerspectiveCamera::ZFar() const
-{
-    return m_zFar;
-}
-
-float NLScenePerspectiveCamera::ZDistance() const
-{
-    return m_zFar - m_zNear;
 }
 
 void NLScenePerspectiveCamera::Reset()

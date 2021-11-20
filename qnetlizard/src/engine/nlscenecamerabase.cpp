@@ -112,36 +112,6 @@ void NLSceneCameraBase::SetScale(const NLVector3 &v)
     UpdateMatrix();
 }
 
-NLVector3 NLSceneCameraBase::Position() const
-{
-    return m_position;
-}
-
-NLVector3 NLSceneCameraBase::Rotation() const
-{
-    return m_rotation;
-}
-
-NLVector3 NLSceneCameraBase::Scale() const
-{
-    return m_scale;
-}
-
-NLVector3 NLSceneCameraBase::Direction() const
-{
-    return m_direction;
-}
-
-NLVector3 NLSceneCameraBase::Up() const
-{
-    return m_up;
-}
-
-NLVector3 NLSceneCameraBase::Right_XPositive() const
-{
-    return m_right_x_positive;
-}
-
 NLSceneCameraBase * NLSceneCameraBase::Move(const NLVector3 &unit)
 {
     if(vector3_iszero(&unit))
@@ -174,31 +144,6 @@ NLSceneCameraBase * NLSceneCameraBase::Zoom(const NLVector3 &v)
     vector3_addve(&m_scale, &v);
     UpdateMatrix();
     return this;
-}
-
-const NLMatrix4 * NLSceneCameraBase::ViewMatrix() const
-{
-    return &m_viewMatrix;
-}
-
-const NLMatrix4 * NLSceneCameraBase::ProjectionMatrix() const
-{
-    return &m_projectionMatrix;
-}
-
-const NLMatrix4 * NLSceneCameraBase::ViewProjectionMatrix() const
-{
-    return &m_mvpMatrix;
-}
-
-const NLMatrix4 * NLSceneCameraBase::NormalMatrix() const
-{
-    return &m_normalMatrix;
-}
-
-const NLMatrix4 * NLSceneCameraBase::GlobalMatrix() const
-{
-    return &m_globalMatrix;
 }
 
 void NLSceneCameraBase::View()
@@ -291,14 +236,10 @@ void NLSceneCameraBase::Render(NLSceneCameraRenderFunc func)
     CAMERA_RENDER(func(GL_MATRIX_M(m_viewMatrix), GL_MATRIX_M(m_projectionMatrix), GL_MATRIX_M(m_mvpMatrix)))
 }
 
-NLScene * NLSceneCameraBase::Scene()
-{
-    return m_scene;
-}
-
 void NLSceneCameraBase::SetScene(NLScene *scene)
 {
-    m_scene = scene;
+    if(m_scene != scene)
+        m_scene = scene;
 }
 
 void NLSceneCameraBase::Reset()
@@ -404,18 +345,8 @@ void NLSceneCameraBase::SetZIsUp(bool b)
     }
 }
 
-const NLMatrix4 * NLSceneCameraBase::RenderMatrix() const
-{
-    return &m_renderMatrix;
-}
-
 void NLSceneCameraBase::SetEnabled(bool b)
 {
     if(m_enabled != b)
         m_enabled = b;
-}
-
-bool NLSceneCameraBase::IsEnabled() const
-{
-    return m_enabled;
 }

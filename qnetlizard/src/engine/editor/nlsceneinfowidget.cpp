@@ -132,11 +132,6 @@ void NLSceneInfoWidget::SetScene(NLScene *scene)
     }
 }
 
-NLScene * NLSceneInfoWidget::Scene()
-{
-    return m_scene;
-}
-
 void NLSceneInfoWidget::Reset()
 {
     if(m_scene)

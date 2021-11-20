@@ -63,16 +63,6 @@ typedef quint64 index_t;
     return name;
 }
 
-int NLObjectPool::Count() const
-{
-    return m_pool.count();
-}
-
-bool NLObjectPool::Exists(const NLName &name) const
-{
-    return m_pool.contains(name);
-}
-
 bool NLObjectPool::Exists(const NLObject *item) const
 {
     Q_FOREACH(const NLName &name, m_pool.keys())
@@ -83,21 +73,11 @@ bool NLObjectPool::Exists(const NLObject *item) const
     return false;
 }
 
-bool NLObjectPool::IsEmpty() const
-{
-    return m_pool.isEmpty();
-}
-
 NLObject * NLObjectPool::Get(const NLName &name)
 {
     if(!m_pool.contains(name))
         return 0;
     return m_pool[name];
-}
-
-NLObject * NLObjectPool::operator[](const NLName &name)
-{
-    return Get(name);
 }
 
 NLName NLObjectPool::Find(const NLObject *item)
@@ -124,12 +104,6 @@ NLName NLObjectPool::Attach(NLObject *item)
     return name;
 }
 
-NLObjectPool * NLObjectPool::operator<<(NLObject *item)
-{
-    Attach(item);
-    return this;
-}
-
 NLObjectPool * NLObjectPool::Detach(NLObject *item)
 {
     if(!item)
@@ -152,13 +126,14 @@ NLObject * NLObjectPool::Detach(const NLName &name)
     return res;
 }
 
-void NLObjectPool::Clear()
-{
-    m_pool.clear();
-}
-
 NLObjectPool * NLObjectPool::Instance()
 {
     static NLObjectPool _instance;
     return &_instance;
+}
+
+void NLObjectPool::Reset()
+{
+    Clear();
+    m_namePool.clear();
 }

@@ -19,13 +19,13 @@ public:
     NLSETTER(transSens) void SetTransSens(float transSens);
     NLSETTER(rotSens) void SetRotSens(float rotSens);
     NLSETTER(zoomSens) void SetZoomSens(float zoomSens);
-    NLGETTER(transSens) float TransSens() const;
-    NLGETTER(rotSens) float RotSens() const;
-    NLGETTER(zoomSens) float ZoomSens() const;
+    NLGETTER(transSens) float TransSens() const { return m_transSens; }
+    NLGETTER(rotSens) float RotSens() const { return m_rotSens; }
+    NLGETTER(zoomSens) float ZoomSens() const { return m_zoomSens; }
     NLSETTER(invertX) void SetInvertX(bool b);
     NLSETTER(invertY) void SetInvertY(bool b);
-    NLGETTER(invertX) bool InvertX() const;
-    NLGETTER(invertY) bool InvertY() const;
+    NLGETTER(invertX) bool InvertX() const { return m_invertX; }
+    NLGETTER(invertY) bool InvertY() const { return m_invertY; }
     
 signals:
     

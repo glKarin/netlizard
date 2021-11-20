@@ -114,11 +114,6 @@ bool SpriteScene::LoadFile(const QString &file, const QString &texFile)
     return true;
 }
 
-bool SpriteScene::IsValid() const
-{
-    return m_sprite != 0;
-}
-
 int SpriteScene::Count() const
 {
     if(!IsValid())

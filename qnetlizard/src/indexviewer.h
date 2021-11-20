@@ -31,7 +31,7 @@ class HomeCell : public QPushButton
 public:
     explicit HomeCell(const QString &text = QString(), const QVariant &data = QVariant(), QWidget *parent = 0);
     virtual ~HomeCell();
-    QAction * Action();
+    QAction * Action() { return m_action; }
 
 Q_SIGNALS:
     void actionTrigger(QAction *action);

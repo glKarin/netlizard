@@ -48,14 +48,10 @@ void NETLizardSpriteRenderer::DeinitRender()
     m_sprite = 0;
 }
 
-GL_NETLizard_Sprite * NETLizardSpriteRenderer::Sprite()
-{
-    return m_sprite;
-}
-
 void NETLizardSpriteRenderer::SetSprite(GL_NETLizard_Sprite *f)
 {
-    m_sprite = f;
+    if(m_sprite != f)
+        m_sprite = f;
 }
 
 void NETLizardSpriteRenderer::RenderSprite()

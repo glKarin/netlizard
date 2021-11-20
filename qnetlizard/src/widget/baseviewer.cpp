@@ -25,11 +25,6 @@ BaseViewer::~BaseViewer()
     DEBUG_DESTROY_Q;
 }
 
-QString BaseViewer::Title() const
-{
-    return m_title;
-}
-
 void BaseViewer::SetTitle(const QString &str)
 {
     if(m_title != str)
@@ -37,11 +32,6 @@ void BaseViewer::SetTitle(const QString &str)
         m_title = str;
         emit titleChanged(m_title);
     }
-}
-
-QString BaseViewer::StatusText() const
-{
-    return m_statusText;
 }
 
 void BaseViewer::SetStatusText(const QString &str)
@@ -58,11 +48,6 @@ void BaseViewer::SetTitleLabel(const QString &str)
     m_titleLabel->setText(str);
 }
 
-QWidget * BaseViewer::CentralWidget()
-{
-    return m_centralWidget;
-}
-
 void BaseViewer::SetCentralWidget(QWidget *widget)
 {
     if(m_centralWidget)
@@ -75,16 +60,6 @@ void BaseViewer::SetCentralWidget(QWidget *widget)
         m_centralWidget = widget;
         m_mainLayout->insertWidget(1, m_centralWidget);
     }
-}
-
-QHBoxLayout * BaseViewer::ToolLayout()
-{
-    return m_toolLayout;
-}
-
-QLabel * BaseViewer::TitleLabel()
-{
-    return m_titleLabel;
 }
 
 void BaseViewer::Reset()
@@ -137,19 +112,4 @@ void BaseViewer::SetupToolBar(QHBoxLayout *toolbar)
         else
             toolbar->addStretch();
     }
-}
-
-void BaseViewer::AddTool(QWidget *w)
-{
-    m_tools.push_back(w);
-}
-
-void BaseViewer::ClearTools()
-{
-    m_tools.clear();
-}
-
-int BaseViewer::ToolsCount() const
-{
-    return m_tools.size();
 }

@@ -84,22 +84,6 @@ NLForce * NLForceContainer::Get(int index)
     return static_cast<NLForce *>(NLObjectContainer::Get(index));
 }
 
-NLForce * NLForceContainer::operator[](const NLName &name)
-{
-    return Get(name);
-}
-
-NLForce * NLForceContainer::operator[](int index)
-{
-    return Get(index);
-}
-
-NLForceContainer * NLForceContainer::operator<<(NLForce *item)
-{
-    Add(item);
-    return this;
-}
-
 NLRigidbody * NLForceContainer::Rigidbody()
 {
     QObject *p = parent();

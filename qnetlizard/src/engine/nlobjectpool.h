@@ -12,19 +12,20 @@ class NLObjectPool : public QObject
 public:
     virtual ~NLObjectPool();
     static NLObjectPool * Instance();
-    int Count() const;
-    bool Exists(const NLName &name) const;
+    int Count() const { return m_pool.count(); }
+    bool Exists(const NLName &name) const { return m_pool.contains(name); }
     bool Exists(const NLObject *item) const;
-    bool IsEmpty() const;
+    bool IsEmpty() const { return m_pool.isEmpty(); }
     NLName Find(const NLObject *item);
     NLName Attach(NLObject *item);
     NLObjectPool * Detach(NLObject *item);
     NLObject * Detach(const NLName &name);
     NLObject * Get(const NLName &name);
-    void Clear();
+    void Clear() { m_pool.clear(); }
+    void Reset();
 
-    NLObject * operator[](const NLName &name);
-    NLObjectPool * operator<<(NLObject *item);
+    NLObject * operator[](const NLName &name) { return Get(name); }
+    NLObjectPool & operator<<(NLObject *item) { Attach(item); return *this; }
 
 private:
     NLName GenName(const NLObject *item);

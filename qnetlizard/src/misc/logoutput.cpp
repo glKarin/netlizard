@@ -35,21 +35,6 @@ LogOutput::~LogOutput()
     DEBUG_DESTROY_Q
 }
 
-const LogOutputList & LogOutput::LogList() const
-{
-    return m_logList;
-}
-
-QString LogOutput::LogText() const
-{
-    return m_logText;
-}
-
-uint LogOutput::Count() const
-{
-    return m_logList.size();
-}
-
 void LogOutput::Clear()
 {
     m_logList.clear();

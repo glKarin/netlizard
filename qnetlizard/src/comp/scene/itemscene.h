@@ -14,8 +14,8 @@ class ItemScene : public NLScene
 public:
     explicit ItemScene(QWidget *parent = 0);
     virtual ~ItemScene();
-    bool IsValid() const;
-    const GL_NETLizard_3D_Model * Model() const;
+    bool IsValid() const { return m_model != 0; }
+    const GL_NETLizard_3D_Model * Model() const { return m_model; }
 
 public Q_SLOTS:
     bool LoadFile(const QString &file, const QString &resourcePath, int game, int index);

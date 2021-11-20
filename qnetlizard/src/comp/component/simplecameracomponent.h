@@ -27,9 +27,9 @@ public:
     virtual ~SimpleCameraComponent();
     virtual void Reset();
     NLINTERFACE void Render();
-    NLGETTER(type) int Type() const;
+    NLGETTER(type) int Type() const { return m_type; }
     NLSETTER(type) void SetType(int type);
-    NLSceneCamera * Camera();
+    NLSceneCamera * Camera() { return m_camera; }
     void SetScene(NLScene *scene);
     void SetEnabled(bool enabled);
     bool IsEnabled() const;
