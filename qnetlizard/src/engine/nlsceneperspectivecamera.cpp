@@ -12,6 +12,11 @@
 #define NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_NEAR 0.01
 #define NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_FAR 99999
 
+#define PERSPECTIVE_FOVY 1
+#define PERSPECTIVE_ASPECT (1 << 1)
+#define PERSPECTIVE_ZNEAR (1 << 2)
+#define PERSPECTIVE_ZFAR (1 << 3)
+
 NLScenePerspectiveCamera::NLScenePerspectiveCamera(NLScene *scene)
     : NLSceneCameraBase(scene),
       m_fovy(NLSCENEPERSPECTIVECAMERA_DEFAULT_FOVY),
@@ -34,6 +39,7 @@ void NLScenePerspectiveCamera::SetFovy(float fovy)
     {
         m_fovy = f;
         UpdateMatrix();
+        PropertyChanged("fovy", m_fovy);
     }
 }
 #undef FOVY_P
@@ -44,6 +50,7 @@ void NLScenePerspectiveCamera::SetAspect(float aspect)
     {
         m_aspect = aspect;
         UpdateMatrix();
+        PropertyChanged("aspect", m_aspect);
     }
 }
 
@@ -53,6 +60,7 @@ void NLScenePerspectiveCamera::SetZNear(float near)
     {
         m_zNear = near;
         UpdateMatrix();
+        PropertyChanged("zNear", m_zNear);
     }
 }
 
@@ -62,62 +70,69 @@ void NLScenePerspectiveCamera::SetZFar(float far)
     {
         m_zFar = far;
         UpdateMatrix();
+        PropertyChanged("zFar", m_zFar);
     }
 }
 
 void NLScenePerspectiveCamera::Set(float fovy, float width, float height, float near, float far)
 {
     float aspect = CaleAspect(width, height);
-    bool b = false;
+    int b = false;
     if(m_fovy != fovy)
     {
         m_fovy = fovy;
-        b = true;
+        b |= PERSPECTIVE_FOVY;
     }
     if(m_aspect != aspect)
     {
         m_aspect = aspect;
-        b = true;
+        b |= PERSPECTIVE_ASPECT;
     }
     if(m_zNear != near)
     {
         m_zNear = near;
-        b = true;
+        b |= PERSPECTIVE_ZNEAR;
     }
     if(m_zFar != far)
     {
         m_zFar = far;
-        b = true;
+        b |= PERSPECTIVE_ZFAR;
     }
     if(b)
+    {
         UpdateMatrix();
+        EmitPropertyChanged(b);
+    }
 }
 
 void NLScenePerspectiveCamera::Set(float fovy, float aspect, float near, float far)
 {
-    bool b = false;
+    int b = false;
     if(m_fovy != fovy)
     {
         m_fovy = fovy;
-        b = true;
+        b |= PERSPECTIVE_FOVY;
     }
     if(m_aspect != aspect)
     {
         m_aspect = aspect;
-        b = true;
+        b |= PERSPECTIVE_ASPECT;
     }
     if(m_zNear != near)
     {
         m_zNear = near;
-        b = true;
+        b |= PERSPECTIVE_ZNEAR;
     }
     if(m_zFar != far)
     {
         m_zFar = far;
-        b = true;
+        b |= PERSPECTIVE_ZFAR;
     }
     if(b)
+    {
         UpdateMatrix();
+        EmitPropertyChanged(b);
+    }
 }
 
 void NLScenePerspectiveCamera::Projection()
@@ -141,4 +156,16 @@ void NLScenePerspectiveCamera::Reset()
     m_zNear = NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_NEAR;
     m_zFar = NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_FAR;
     UpdateMatrix();
+}
+
+void NLScenePerspectiveCamera::EmitPropertyChanged(int b)
+{
+    if(b & PERSPECTIVE_FOVY)
+        PropertyChanged("fovy", m_fovy);
+    if(b & PERSPECTIVE_ASPECT)
+        PropertyChanged("aspect", m_aspect);
+    if(b & PERSPECTIVE_ZNEAR)
+        PropertyChanged("zNear", m_zNear);
+    if(b & PERSPECTIVE_ZFAR)
+        PropertyChanged("zFar", m_zFar);
 }

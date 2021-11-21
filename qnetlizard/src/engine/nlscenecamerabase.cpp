@@ -22,7 +22,8 @@ static const NLVector3 InitScale = VECTOR3(1, 1, 1);
 NLSceneCameraBase::NLSceneCameraBase(NLScene *widget)
     : m_scene(widget),
       m_zIsUp(false),
-      m_enabled(true)
+      m_enabled(true),
+      m_propertyChangedFunc(0)
 {
     Mesa_AllocGLMatrix(&m_viewMatrix);
     Mesa_AllocGLMatrix(&m_normalMatrix);
@@ -89,6 +90,7 @@ void NLSceneCameraBase::SetPosition(const NLVector3 &v)
     VECTOR3_Y(m_position) = VECTOR3_Y(v);
     VECTOR3_Z(m_position) = VECTOR3_Z(v);
     UpdateMatrix();
+    PropertyChanged("position", NLProperty::fromValue<NLVector3>(m_position));
 }
 
 void NLSceneCameraBase::SetRotation(const NLVector3 &v)
@@ -100,6 +102,7 @@ void NLSceneCameraBase::SetRotation(const NLVector3 &v)
     VECTOR3_Z(m_rotation) = VECTOR3_Z(v);
     UpdateMatrix();
     UpdateDirection();
+    PropertyChanged("rotation", NLProperty::fromValue<NLVector3>(m_rotation));
 }
 
 void NLSceneCameraBase::SetScale(const NLVector3 &v)
@@ -110,6 +113,7 @@ void NLSceneCameraBase::SetScale(const NLVector3 &v)
     VECTOR3_Y(m_scale) = VECTOR3_Y(v);
     VECTOR3_Z(m_scale) = VECTOR3_Z(v);
     UpdateMatrix();
+    PropertyChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
 }
 
 NLSceneCameraBase * NLSceneCameraBase::Move(const NLVector3 &unit)
@@ -117,12 +121,12 @@ NLSceneCameraBase * NLSceneCameraBase::Move(const NLVector3 &unit)
     if(vector3_iszero(&unit))
         return this;
 
-    vector3_moveve(&m_position, &m_right_x_positive, VECTOR3_X(unit));
-    vector3_moveve(&m_position, &m_up, VECTOR3_Y(unit));
-    vector3_moveve(&m_position, &m_direction, VECTOR3_Z(unit));
+    NLVector3 pos = m_position;
+    vector3_moveve(&pos, &m_right_x_positive, VECTOR3_X(unit));
+    vector3_moveve(&pos, &m_up, VECTOR3_Y(unit));
+    vector3_moveve(&pos, &m_direction, VECTOR3_Z(unit));
 
-    UpdateMatrix();
-    //qDebug() << "position: " << m_position.v[0] << m_position.v[1] << m_position.v[2];
+    SetPosition(pos);
     return this;
 }
 
@@ -130,11 +134,12 @@ NLSceneCameraBase * NLSceneCameraBase::Turn(const NLVector3 &v)
 {
     if(vector3_iszero(&v))
         return this;
-    VECTOR3_X(m_rotation) = NL::clamp_angle(VECTOR3_X(m_rotation) + VECTOR3_X(v));
-    VECTOR3_Y(m_rotation) = NL::clamp_angle(VECTOR3_Y(m_rotation) + VECTOR3_Y(v));
-    VECTOR3_Z(m_rotation) = NL::clamp_angle(VECTOR3_Z(m_rotation) + VECTOR3_Z(v));
-    UpdateMatrix();
-    UpdateDirection();
+
+    NLVector3 rot = m_rotation;
+    VECTOR3_X(rot) = NL::clamp_angle(VECTOR3_X(rot) + VECTOR3_X(v));
+    VECTOR3_Y(rot) = NL::clamp_angle(VECTOR3_Y(rot) + VECTOR3_Y(v));
+    VECTOR3_Z(rot) = NL::clamp_angle(VECTOR3_Z(rot) + VECTOR3_Z(v));
+    SetRotation(rot);
     return this;
 }
 
@@ -143,6 +148,7 @@ NLSceneCameraBase * NLSceneCameraBase::Zoom(const NLVector3 &v)
     //vector3_multiplyve(&m_scale, &v);
     vector3_addve(&m_scale, &v);
     UpdateMatrix();
+    PropertyChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
     return this;
 }
 
@@ -227,7 +233,7 @@ void NLSceneCameraBase::Render(NLActorContainer *actors)
     CAMERA_RENDER(actors->Render())
 }
 
-void NLSceneCameraBase::Render(NLSceneCameraRenderFunc func)
+void NLSceneCameraBase::Render(NLSceneCameraBase::NLSceneCameraRenderFunc func)
 {
     if(!m_enabled)
         return;
@@ -246,8 +252,11 @@ void NLSceneCameraBase::Reset()
 {
     SetGlobalMatrix(0);
     m_position = InitPosition;
+    PropertyChanged("position", NLProperty::fromValue<NLVector3>(m_position));
     m_rotation = InitRotation;
+    PropertyChanged("rotation", NLProperty::fromValue<NLVector3>(m_rotation));
     m_scale = InitScale;
+    PropertyChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
     m_up = m_zIsUp ? InitUp_z : InitUp_y;
     if(m_zIsUp)
     {
@@ -349,4 +358,16 @@ void NLSceneCameraBase::SetEnabled(bool b)
 {
     if(m_enabled != b)
         m_enabled = b;
+}
+
+void NLSceneCameraBase::SetPropertyChanged(NLSceneCameraBase::NLSceneCameraPropertyChangedFunc func)
+{
+    m_propertyChangedFunc = func;
+}
+
+
+void NLSceneCameraBase::PropertyChanged(const QString &name, const NLProperty &value)
+{
+    if(m_propertyChangedFunc)
+        m_propertyChangedFunc(name, value);
 }

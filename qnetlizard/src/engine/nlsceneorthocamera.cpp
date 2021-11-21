@@ -15,6 +15,13 @@
 #define NLSCENEORTHOCAMERA_DEFAULT_Z_NEAR NLSCENEORTHOCAMERA_DEFAULT_VALUE(-1)
 #define NLSCENEORTHOCAMERA_DEFAULT_Z_FAR NLSCENEORTHOCAMERA_DEFAULT_VALUE(1)
 
+#define ORTHO_LEFT 1
+#define ORTHO_RIGHT (1 << 1)
+#define ORTHO_BOTTOM (1 << 2)
+#define ORTHO_TOP (1 << 3)
+#define ORTHO_ZNEAR (1 << 4)
+#define ORTHO_ZFAR (1 << 5)
+
 NLSceneOrthoCamera::NLSceneOrthoCamera(NLScene *scene)
     : NLSceneCameraBase(scene),
       //m_align(Qt::AlignLeft | Qt::AlignBottom),
@@ -70,6 +77,7 @@ void NLSceneOrthoCamera::SetLeft(float left)
     {
         m_left = left;
         UpdateMatrix();
+        PropertyChanged("left", m_left);
     }
 }
 
@@ -79,6 +87,7 @@ void NLSceneOrthoCamera::SetRight(float right)
     {
         m_right = right;
         UpdateMatrix();
+        PropertyChanged("right", m_right);
     }
 }
 
@@ -88,6 +97,7 @@ void NLSceneOrthoCamera::SetTop(float top)
     {
         m_top = top;
         UpdateMatrix();
+        PropertyChanged("top", m_top);
     }
 }
 
@@ -97,6 +107,7 @@ void NLSceneOrthoCamera::SetBottom(float bottom)
     {
         m_bottom = bottom;
         UpdateMatrix();
+        PropertyChanged("bottom", m_bottom);
     }
 }
 
@@ -106,6 +117,7 @@ void NLSceneOrthoCamera::SetZNear(float near)
     {
         m_zNear = near;
         UpdateMatrix();
+        PropertyChanged("zNear", m_zNear);
     }
 }
 
@@ -115,61 +127,68 @@ void NLSceneOrthoCamera::SetZFar(float far)
     {
         m_zFar = far;
         UpdateMatrix();
+        PropertyChanged("zFar", m_zFar);
     }
 }
 
 void NLSceneOrthoCamera::Set2D()
 {
-    bool b = false;
+    int b = 0;
     if(m_zNear != -1)
     {
         m_zNear = -1;
-        b = true;
+        b |= ORTHO_ZNEAR;
     }
     if(m_zFar != 1)
     {
         m_zFar = 1;
-        b = true;
+        b |= ORTHO_ZFAR;
     }
     if(b)
+    {
         UpdateMatrix();
+        EmitPropertyChanged(b);
+    }
 }
 
 void NLSceneOrthoCamera::Set(float left, float right, float bottom, float top, float near, float far)
 {
-    bool b = false;
+    int b = 0;
     if(m_left != left)
     {
         m_left = left;
-        b = true;
+        b |= ORTHO_LEFT;
     }
     if(m_right != right)
     {
         m_right = right;
-        b = true;
+        b |= ORTHO_RIGHT;
     }
     if(m_bottom != bottom)
     {
         m_bottom = bottom;
-        b = true;
+        b |= ORTHO_BOTTOM;
     }
     if(m_top != top)
     {
         m_top = top;
-        b = true;
+        b |= ORTHO_TOP;
     }
     if(m_zNear != near)
     {
         m_zNear = near;
-        b = true;
+        b |= ORTHO_ZNEAR;
     }
     if(m_zFar != far)
     {
         m_zFar = far;
-        b = true;
+        b |= ORTHO_ZFAR;
     }
     if(b)
+    {
         UpdateMatrix();
+        EmitPropertyChanged(b);
+    }
 }
 
 void NLSceneOrthoCamera::Set2D(float left, float right, float bottom, float top)
@@ -197,6 +216,7 @@ void NLSceneOrthoCamera::SetAlignment(Qt::Alignment align)
     if(m_align != a)
     {
         m_align = (Qt::Alignment)a;
+        PropertyChanged("alignment", static_cast<int>(m_align));
     }
 }
 
@@ -211,4 +231,20 @@ void NLSceneOrthoCamera::Reset()
     m_zNear = NLSCENEORTHOCAMERA_DEFAULT_Z_NEAR;
     m_zFar = NLSCENEORTHOCAMERA_DEFAULT_Z_FAR;
     UpdateMatrix();
+}
+
+void NLSceneOrthoCamera::EmitPropertyChanged(int b)
+{
+    if(b & ORTHO_LEFT)
+        PropertyChanged("left", m_left);
+    if(b & ORTHO_RIGHT)
+        PropertyChanged("right", m_right);
+    if(b & ORTHO_BOTTOM)
+        PropertyChanged("bottom", m_bottom);
+    if(b & ORTHO_TOP)
+        PropertyChanged("top", m_top);
+    if(b & ORTHO_ZNEAR)
+        PropertyChanged("zNear", m_zNear);
+    if(b & ORTHO_ZFAR)
+        PropertyChanged("zFar", m_zFar);
 }

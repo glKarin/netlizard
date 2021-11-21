@@ -36,6 +36,9 @@ private:
     }
 
 private:
+    void EmitPropertyChanged(int mask);
+
+private:
     float m_fovy;
     float m_aspect;
     //float m_width;

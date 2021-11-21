@@ -38,6 +38,9 @@ protected:
     virtual void UpdateProjectionMatrix(NLMatrix4 *mat);
 
 private:
+    void EmitPropertyChanged(int mask);
+
+private:
     Qt::Alignment m_align;
     float m_left;
     float m_right;

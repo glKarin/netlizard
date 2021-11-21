@@ -2,6 +2,7 @@
 #define _KARIN_NLSCENECAMERABASE_H
 
 #include "nldef.h"
+#include "nlproperties.h"
 
 class NLScene;
 class NLActor;
@@ -17,8 +18,6 @@ enum GL_matrix_e
     TotalMatrix
 };
 
-typedef void (*NLSceneCameraRenderFunc)(const float view_mat[16], const float proj_mat[16], const float mvp_mat[16]);
-
 class NLSceneCameraBase
 {
 public:
@@ -27,6 +26,8 @@ public:
         Type_Perspective = 1,
         Type_Ortho = 2
     };
+    typedef void (*NLSceneCameraRenderFunc)(const float view_mat[16], const float proj_mat[16], const float mvp_mat[16]);
+    typedef void (*NLSceneCameraPropertyChangedFunc)(const QString &name, const NLProperty &value);
 
 public:
     NLSceneCameraBase(NLScene *widget = 0);
@@ -62,12 +63,14 @@ public:
     void SetZIsUp(bool b);
     void SetEnabled(bool b);
     bool IsEnabled() const { return m_enabled; }
+    void SetPropertyChanged(NLSceneCameraPropertyChangedFunc func);
 
 protected:
     virtual void Projection();
     virtual void View();
     virtual void UpdateProjectionMatrix(NLMatrix4 *mat);
     void UpdateMatrix();
+    void PropertyChanged(const QString &name, const NLProperty &value);
 
 private:
     typedef struct GL_matrix_status_s {
@@ -100,6 +103,7 @@ private:
     NLMatrix4 m_normalMatrix; // normal
     NLMatrix4 m_globalMatrix;
     NLMatrix4 m_renderMatrix;
+    NLSceneCameraPropertyChangedFunc m_propertyChangedFunc;
 
     Q_DISABLE_COPY(NLSceneCameraBase)
 };

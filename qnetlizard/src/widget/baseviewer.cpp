@@ -48,6 +48,16 @@ void BaseViewer::SetTitleLabel(const QString &str)
     m_titleLabel->setText(str);
 }
 
+void BaseViewer::SetTitleLabelVisible(bool visible)
+{
+    m_titleLabel->setVisible(visible);
+}
+
+QString BaseViewer::TitleLabelText() const
+{
+    return m_titleLabel->text();
+}
+
 void BaseViewer::SetCentralWidget(QWidget *widget)
 {
     if(m_centralWidget)

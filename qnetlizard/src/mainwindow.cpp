@@ -5,9 +5,10 @@
 #include <QMessageBox>
 #include <QResizeEvent>
 #include <QMoveEvent>
-
+#include <QStackedWidget>
 #include <QMenuBar>
 #include <QToolBar>
+#include <QStatusBar>
 
 #include "imageviewer.h"
 #include "textviewer.h"
@@ -36,6 +37,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     m_toolBar(0),
+    m_centralWidget(0),
     m_logDialog(0),
     m_sceneWidget(0),
     m_actorWidget(0)
@@ -55,6 +57,7 @@ void MainWindow::Init()
     QMenu *menu;
     QAction *menuItem;
     m_toolBar = new QToolBar(this);
+    m_centralWidget = new QStackedWidget(this);
 
     menuBar = new QMenuBar(this);
 
@@ -88,6 +91,7 @@ void MainWindow::Init()
 
     connect(menuBar, SIGNAL(triggered(QAction *)), this, SLOT(MenuActionSlot(QAction *)));
     addToolBar(m_toolBar);
+    setCentralWidget(m_centralWidget);
 
     setMenuBar(menuBar);
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
@@ -104,10 +108,11 @@ void MainWindow::Init()
 
 void MainWindow::CloseCurrentWidget()
 {
-    BaseViewer *viewer = dynamic_cast<BaseViewer *>(centralWidget());
+    BaseViewer *viewer = CurrentWidget();
     if(viewer)
     {
     }
+    SetCurrentWidget();
     m_toolBar->clear();
     if(m_sceneWidget)
         m_sceneWidget->Reset();
@@ -151,12 +156,32 @@ void MainWindow::MenuActionSlot(QAction *action)
     {
         CloseCurrentWidget();
         BaseViewer *viewer = GenViewer(type);
-        setCentralWidget(viewer);
+        SetCurrentWidget(viewer);
         if(viewer->ToolsCount())
         {
             viewer->SetupToolBar(m_toolBar);
         }
     }
+}
+
+void MainWindow::SetCurrentWidget(BaseViewer *viewer)
+{
+    while(m_centralWidget->count())
+    {
+        QWidget *w = m_centralWidget->widget(0);
+        m_centralWidget->removeWidget(w);
+        w->deleteLater();
+    }
+    if(viewer)
+        m_centralWidget->addWidget(viewer);
+}
+
+BaseViewer * MainWindow::CurrentWidget()
+{
+    QWidget *w = m_centralWidget->widget(0);
+    if(w)
+        return static_cast<BaseViewer *>(w);
+    return 0;
 }
 
 BaseViewer * MainWindow::GenViewer(const QString &type)
@@ -194,8 +219,9 @@ BaseViewer * MainWindow::GenViewer(const QString &type)
 
     if(viewer)
     {
-        //setCentralWidget(viewer);
+        //SetCurrentWidget(viewer);
         connect(viewer, SIGNAL(titleChanged(const QString &)), this, SLOT(setWindowTitle(const QString &)));
+        connect(viewer, SIGNAL(statusTextChanged(const QString &)), this, SLOT(SetStatusText(const QString &)));
         setWindowTitle(viewer->Title());
         NLScene *scene = dynamic_cast<NLScene *>(viewer->CentralWidget());
         if(scene && m_sceneWidget)
@@ -296,4 +322,10 @@ void MainWindow::moveEvent(QMoveEvent *event)
         settings->SetSetting("WINDOW/x", pos.x());
         settings->SetSetting("WINDOW/y", pos.y());
     }
+}
+
+void MainWindow::SetStatusText(const QString &str)
+{
+    QStatusBar *bar = statusBar();
+    bar->showMessage(str);
 }

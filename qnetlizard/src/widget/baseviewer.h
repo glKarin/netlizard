@@ -17,9 +17,11 @@ public:
     virtual ~BaseViewer();
     QString Title() const { return m_title; }
     QString StatusText() const { return m_statusText; }
+    QString TitleLabelText() const;
     QWidget * CentralWidget() { return m_centralWidget; }
     void SetupToolBar(QToolBar *toolbar);
     int ToolsCount() const { return m_tools.size(); }
+    void SetTitleLabelVisible(bool visible);
     
 signals:
     void titleChanged(const QString &title);
