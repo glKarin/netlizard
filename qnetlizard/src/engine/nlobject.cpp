@@ -201,3 +201,8 @@ void NLObject::SetEnabled(bool enabled)
         emit propertyChanged("enabled", m_enabled);
     }
 }
+
+void NLObject::SetPropertyConfig(const NLProperties &props)
+{
+    m_propertyConfig = props;
+}

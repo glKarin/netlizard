@@ -118,6 +118,7 @@ void MainWindow::CloseCurrentWidget()
         m_sceneWidget->Reset();
     if(m_actorWidget)
         m_actorWidget->Reset();
+    SetStatusText();
 }
 
 void MainWindow::MenuActionSlot(QAction *action)
@@ -328,4 +329,5 @@ void MainWindow::SetStatusText(const QString &str)
 {
     QStatusBar *bar = statusBar();
     bar->showMessage(str);
+    bar->setVisible(!str.isEmpty());
 }

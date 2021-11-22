@@ -26,6 +26,8 @@
 
 #define OBJ_RADIUS 50
 #define OBJ_HEIGHT 180
+#define OBJ_LEG_HEIGHT 50
+#define OBJ_HEAD_HEIGHT 20
 
 static const float _g = NL::Physics::EARTH_G * 1000;
 
@@ -187,7 +189,7 @@ void MapScene::Update(float delta)
 
         //fprintf(stderr,"Old pos : %f %f %f\n", oldPos.v[0], oldPos.v[1], oldPos.v[2]);fflush(stderr);
         //fprintf(stderr,"Tmp pos : %f %f %f\n", pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
-        collision_object_t obj = {oldPos, OBJ_RADIUS, OBJ_HEIGHT};
+        collision_object_t obj = {oldPos, OBJ_RADIUS, OBJ_HEIGHT, OBJ_LEG_HEIGHT, OBJ_HEAD_HEIGHT};
         int res = NETLizard_MapCollisionTesting(m_model, &obj, &pos, &scene, include_item, &item);
         //fprintf(stderr,"new_pos : %f %f %f\n", pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
         vector3_t p;

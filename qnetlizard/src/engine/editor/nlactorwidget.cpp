@@ -11,6 +11,7 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <limits>
+#include <QComboBox>
 
 #include "qdef.h"
 #include "nlfuncs.h"
@@ -313,8 +314,9 @@ QWidget * NLActorWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
         {
             QSpinBox *w = new QSpinBox;
             w->setSingleStep(1);
-            w->setMaximum(std::numeric_limits<int>::max());
-            w->setMinimum(-std::numeric_limits<int>::max());
+            const QVariantHash prop = item.prop.value("range").toHash();
+            w->setMinimum(prop.value("min", -std::numeric_limits<int>::max()).toInt());
+            w->setMaximum(prop.value("max", std::numeric_limits<int>::max()).toInt());
             w->setReadOnly(item.readonly);
             w->setValue(item.value.toInt());
             connect(w, SIGNAL(valueChanged(int)), this, SLOT(OnIntChanged(int)));
@@ -325,8 +327,9 @@ QWidget * NLActorWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
             QDoubleSpinBox *w = new QDoubleSpinBox;
             w->setSingleStep(DOUBLE_SPINBOX_SINGLE_STEP);
             w->setDecimals(DOUBLE_SPINBOX_DECIMAL);
-            w->setMaximum(std::numeric_limits<float>::max());
-            w->setMinimum(-std::numeric_limits<float>::max());
+            const QVariantHash prop = item.prop.value("range").toHash();
+            w->setMinimum(prop.value("min", -std::numeric_limits<float>::max()).toDouble());
+            w->setMaximum(prop.value("max", std::numeric_limits<float>::max()).toDouble());
             w->setReadOnly(item.readonly);
             w->setValue(item.value.toFloat());
             //connect(w, SIGNAL(valueChanged(const QString &)), this, SLOT(OnValueChanged(const QString &)));
@@ -379,23 +382,20 @@ QWidget * NLActorWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
     }
     else if(item.widget == "combobox")
     {
-#if 0
         QComboBox *w = new QComboBox;
-        const QVariantList & items = item.prop.value("option").toList();
+        const NLPropertyPairList items = item.prop.value("enum").value<NLPropertyPairList>();
         int cur = 0;
-        int target = settings->GetSetting<int>(item.name, item.value.toInt());
         for(int i = 0; i < items.size(); i++)
         {
-            const QVariantHash p = items[i].toHash();
-            const QVariant v = p.value("value");
-            w->addItem(p.value("label").toString(), v);
-            if(v.toInt() == target)
+            const NLPropertyPair &p = items[i];
+            w->addItem(p.first, p.second);
+            if(p.second == item.value)
                 cur = i;
         }
+        w->setEnabled(!item.readonly);
         w->setCurrentIndex(cur);
-        connect(w, SIGNAL(currentIndexChanged(int)), this, SLOT(OnIntChanged(int)));
+        connect(w, SIGNAL(currentIndexChanged(int)), this, SLOT(OnIndexChanged(int)));
         widget = w;
-#endif
     }
     else if(item.widget == "vector3")
     {
@@ -449,6 +449,13 @@ void NLActorWidget::OnPropertyChanged(const QString &name, const NLProperty &val
     {
         static_cast<QLineEdit *>(widget)->setText(value.toString());
     }
+    else if(instanceofv(widget, QComboBox))
+    {
+        QComboBox *cb = static_cast<QComboBox *>(widget);
+        int index = cb->findData(value);
+        if(index >= 0)
+            cb->setCurrentIndex(index);
+    }
 }
 
 void NLActorWidget::OnIntChanged(int i)
@@ -463,6 +470,24 @@ void NLActorWidget::OnIntChanged(int i)
     if(!obj)
         return;
     obj->SetProperty(s->objectName(), i);
+}
+
+void NLActorWidget::OnIndexChanged(int i)
+{
+    QObject *s = sender();
+    if(!s)
+        return;
+    QObject *o = s->property(NLOBJECT_PTR_PROPERTY_NAME).value<QObject *>();
+    if(!o)
+        return;
+    NLObject *obj = static_cast<NLObject *>(o);
+    if(!obj)
+        return;
+    if(instanceofv(s, QComboBox))
+    {
+        QComboBox *cb = static_cast<QComboBox *>(s);
+        obj->SetProperty(s->objectName(), cb->itemData(i));
+    }
 }
 
 void NLActorWidget::OnDoubleChanged(double f)

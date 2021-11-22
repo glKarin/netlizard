@@ -51,6 +51,7 @@ public:
     bool HasProperty(const QString &name);
     NLProperty GetInitProperty(const QString &name, const NLProperty &def = QVariant()) const { return m_property.Get(name, def); }
     template<class T> T GetInitProperty_T(const QString &name, const T &def = T());
+    NLProperties PropertyConfig() const { return m_propertyConfig; }
 
 protected:
     void SetName(const NLName &name);
@@ -60,6 +61,7 @@ protected:
     virtual void Destroy();
     virtual void Update(float delta);
     virtual void InitProperty();
+    void SetPropertyConfig(const NLProperties &props);
 
 signals:
     void enabledChanged(bool enabled);
@@ -82,6 +84,7 @@ private:
     NLProperties m_property;
     NLScene *m_scene;
     bool m_enabled;
+    NLProperties m_propertyConfig;
 
     friend class NLObjectContainer;
     

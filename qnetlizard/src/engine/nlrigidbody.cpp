@@ -71,6 +71,14 @@ void NLRigidbody::Construct()
     setObjectName("NLRigidbody");
     vector3_identityv(&m_moveRotation);
     m_moveDirection = Direction();
+
+    NLProperties props;
+    NLProperties m;
+    NLProperties sm;
+    sm.insert("min", 0);
+    m.insert("range", sm);
+    props.Insert("mass", m);
+    SetPropertyConfig(props);
 }
 
 // limit x to [-90, 90]: [270, 360] | [0, 90]

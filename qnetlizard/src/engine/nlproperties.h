@@ -6,34 +6,6 @@
 
 typedef QVariant NLProperty;
 
-struct NLPropertyInfo
-{
-    QString name;
-    NLProperty value;
-    QString type;
-    QString widget;
-    bool readonly;
-    NLProperty default_value;
-    QVariantMap prop;
-
-    NLPropertyInfo(const QString &name, const NLProperty &value, const QString &type, const QString &widget, bool readonly = true, const NLProperty &def_value = NLProperty())
-        : name(name),
-          value(value),
-          type(type),
-          widget(widget),
-          readonly(readonly),
-          default_value(def_value)
-    {
-    }
-
-    NLPropertyInfo & operator()(const QString &name, const QVariant &val)
-    {
-        prop.insert(name, val);
-        return *this;
-    }
-};
-typedef QList<NLPropertyInfo> NLPropertyInfoList;
-
 class NLPropertyPair : public QPair<QString, NLProperty>
 {
 public:
@@ -51,6 +23,7 @@ public:
     template <class T>
     void SetValue_T(const T &val);
 };
+typedef QList<NLPropertyPair> NLPropertyPairList;
 
 class NLProperties : public QVariantHash
 {
@@ -76,6 +49,35 @@ public:
     NLProperties & operator()(const QString &name, const NLProperty &value) { return Insert(name, value); }
     NLProperty operator()(const QString &name) { return Get(name, NLProperty()); }
 };
+
+struct NLPropertyInfo
+{
+    QString name;
+    NLProperty value;
+    QString type;
+    QString widget;
+    bool readonly;
+    NLProperty default_value;
+    QVariantHash prop;
+
+    NLPropertyInfo(const QString &name, const NLProperty &value, const QString &type, const QString &widget, bool readonly = true, const NLProperty &def_value = NLProperty(), const QVariantHash &config = QVariantHash())
+        : name(name),
+          value(value),
+          type(type),
+          widget(widget),
+          readonly(readonly),
+          default_value(def_value),
+          prop(config)
+    {
+    }
+
+    NLPropertyInfo & operator()(const QString &name, const QVariant &val)
+    {
+        prop.insert(name, val);
+        return *this;
+    }
+};
+typedef QList<NLPropertyInfo> NLPropertyInfoList;
 
 template <class T>
 inline T NLPropertyPair::Value_T() const
@@ -121,5 +123,9 @@ T NLProperties::GetSet_T(const QString &name, const T &def)
         Set_T<T>(name, def);
     return Get_T<T>(name);
 }
+
+Q_DECLARE_METATYPE(NLPropertyPair)
+Q_DECLARE_METATYPE(NLPropertyPairList)
+Q_DECLARE_METATYPE(NLProperties)
 
 #endif // _KARIN_NLPROPERTIES_H

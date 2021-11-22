@@ -40,6 +40,7 @@ void StringViewer::Init()
     m_decodeLabel = new QLabel;
     QVBoxLayout *vLayout;
     QHBoxLayout *thLayout;
+    SetTitleLabelVisible(false);
 
     vLayout = new QVBoxLayout;
     m_encodeLabel->setText("Encode text");

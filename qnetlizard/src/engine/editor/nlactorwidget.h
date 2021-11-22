@@ -78,6 +78,7 @@ private Q_SLOTS:
     void OnBoolChanged(bool b);
     void OnDoubleChanged(double f);
     void OnVector3Changed(const NLVector3 &v);
+    void OnIndexChanged(int i);
 
 private:
     typedef QHash<QString, QWidget *> PropWidgetHash;

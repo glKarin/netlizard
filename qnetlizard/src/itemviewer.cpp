@@ -45,6 +45,7 @@ void ItemViewer::Init()
     m_itemScene = new ItemScene;
     QHBoxLayout *toolLayout = ToolLayout();
     m_indexSpinBox = new QSpinBox;
+    SetTitleLabelVisible(false);
 
     for(int i = 0; i <= NL_CONTR_TERRORISM_3D_EPISODE_3; i++)
     {
@@ -196,7 +197,7 @@ bool ItemViewer::OpenFile()
         QMessageBox::warning(this, "Error", "Unsupport 3D game!");
         break;
     }
-    SetTitleLabel(QString("%1(index-%2)  obj: %3, resource directory: %4 -> %5").arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(index).arg(m_objPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
+    SetStatusText(QString("%1(index-%2)  obj: %3, resource directory: %4 -> %5").arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(index).arg(m_objPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
     if(res)
     {
         m_itemScene->setFocus();

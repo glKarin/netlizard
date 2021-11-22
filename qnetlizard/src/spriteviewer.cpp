@@ -38,6 +38,7 @@ void SpriteViewer::Init()
     QHBoxLayout *layout = new QHBoxLayout;
     QPushButton *button;
     QHBoxLayout *toolLayout = ToolLayout();
+    SetTitleLabelVisible(false);
 
     m_indexList = new QListWidget;
     layout->addWidget(m_indexList);
@@ -147,7 +148,7 @@ bool SpriteViewer::LoadSprite()
         const int Co = m_spriteScene->Count();
         for(int i = 0; i < Co; i++)
             m_indexList->addItem(QString::number(i));
-        SetTitleLabel(QString("config file: %1, texture file: %2").arg(m_cuFile).arg(m_uFile));
+        SetStatusText(QString("config file: %1, texture file: %2").arg(m_cuFile).arg(m_uFile));
     }
     else
     {

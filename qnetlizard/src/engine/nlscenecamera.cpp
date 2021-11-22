@@ -45,7 +45,15 @@ void NLSceneCamera::SetType(SceneCamera_Type type)
 {
     if(m_type != type)
     {
+        float near = ZNear();
+        float far = ZFar();
         m_type = type;
         Reset();
+        float nnear = ZNear();
+        float nfar = ZFar();
+        if(near != nnear)
+            PropertyChanged("zNear", nnear);
+        if(far != nfar)
+            PropertyChanged("zFar", nfar);
     }
 }

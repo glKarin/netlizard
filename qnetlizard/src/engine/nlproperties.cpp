@@ -7,6 +7,7 @@ NLPropertyPair::NLPropertyPair()
 }
 
 NLPropertyPair::NLPropertyPair(const QString &name, const NLProperty &value)
+    : QPair<QString, NLProperty>(name, value)
 {
 
 }

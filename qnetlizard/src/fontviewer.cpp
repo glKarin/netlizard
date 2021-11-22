@@ -40,6 +40,7 @@ void FontViewer::Init()
     QPushButton *button;
     QHBoxLayout *toolLayout = ToolLayout();
     QVBoxLayout *vLayout;
+    SetTitleLabelVisible(false);
 
     vLayout = new QVBoxLayout;
     vLayout->addStretch();
@@ -159,7 +160,7 @@ bool FontViewer::LoadFont()
     {
         m_renderButton->setEnabled(true);
         m_textInput->setEnabled(true);
-        SetTitleLabel(QString("config file: %1, texture file: %2").arg(m_cfFile).arg(m_fntFile));
+        SetStatusText(QString("config file: %1, texture file: %2").arg(m_cfFile).arg(m_fntFile));
         QMessageBox::warning(this, "Success", "Load font success!");
     }
     else

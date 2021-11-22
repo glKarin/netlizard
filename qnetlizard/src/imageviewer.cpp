@@ -62,6 +62,7 @@ void ImageViewer::Init()
     QHBoxLayout *toolLayout = ToolLayout();
     m_indexSpinBox = new QSpinBox;
     m_alignComboBox = new QComboBox;
+    SetTitleLabelVisible(false);
 
     for(int i = 0; i < 6; i++)
     {
@@ -164,7 +165,7 @@ bool ImageViewer::OpenFile(const QString &file)
     }
     m_saveButton->setEnabled(true);
     const texture_s *tex = m_imageScene->Texture();
-    SetTitleLabel(QString("%1: width %2, height %3, format %4").arg(Types[selectedIndex].second).arg(tex->width).arg(tex->height).arg(tex->format == GL_RGB ? "RGB" : "RGBA"));
+    SetStatusText(QString("%1: width %2, height %3, format %4").arg(Types[selectedIndex].second).arg(tex->width).arg(tex->height).arg(tex->format == GL_RGB ? "RGB" : "RGBA"));
 
     return true;
 }

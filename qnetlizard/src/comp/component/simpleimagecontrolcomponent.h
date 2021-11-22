@@ -10,8 +10,8 @@ class SimpleImageControlComponent : public NLComponent
     Q_PROPERTY(float transSens READ TransSens WRITE SetTransSens FINAL)
     Q_PROPERTY(float rotSens READ RotSens WRITE SetRotSens FINAL)
     Q_PROPERTY(float zoomSens READ ZoomSens WRITE SetZoomSens FINAL)
-    Q_PROPERTY(float invertX READ InvertX WRITE SetInvertX FINAL)
-    Q_PROPERTY(float invertY READ InvertY WRITE SetInvertY FINAL)
+    Q_PROPERTY(bool invertX READ InvertX WRITE SetInvertX FINAL)
+    Q_PROPERTY(bool invertY READ InvertY WRITE SetInvertY FINAL)
 public:
     explicit SimpleImageControlComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleImageControlComponent();

@@ -67,6 +67,7 @@ void AnimationViewer::Init()
     m_toolbar = new QToolBar;
     QToolButton *nextFrame = new QToolButton;
     QToolButton *prevFrame = new QToolButton;
+    SetTitleLabelVisible(false);
 
     for(int i = NL_FRAME_ANIMATION_IDLE; i < NL_FRAME_ANIMATION_TOTAL; i++)
     {
@@ -244,12 +245,12 @@ void AnimationViewer::OnAnimChanged(int index)
     const NETLizard_3D_Frame_Animation *config = m_animationScene->CurrentAnimation();
     if(config)
     {
-        SetTitleLabel(QString("Animation: %1, frame range: %2 - %3, frame count: %4").arg(nlGet3DModelFrameAnimationName(config->type)).arg(config->begin_frame).arg(config->end_frame).arg(config->count));
+        SetStatusText(QString("Animation: %1, frame range: %2 - %3, frame count: %4").arg(nlGet3DModelFrameAnimationName(config->type)).arg(config->begin_frame).arg(config->end_frame).arg(config->count));
         m_frameSlider->setMaximum(config->count - 1);
     }
     else
     {
-        SetTitleLabel("Invalid frame animation!");
+        SetStatusText("Invalid frame animation!");
         m_frameSlider->setMaximum(0);
     }
 }
@@ -331,7 +332,7 @@ bool AnimationViewer::OpenFile()
         QMessageBox::warning(this, "Error", "Unsupport 3D game!");
         break;
     }
-    SetTitleLabel(QString("%1(index-%2)  obj: %3, resource directory: %4 -> %5").arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(index).arg(m_objPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
+    SetStatusText(QString("%1(index-%2)  obj: %3, resource directory: %4 -> %5").arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(index).arg(m_objPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
     if(res)
     {
         m_toolbar->setEnabled(true);

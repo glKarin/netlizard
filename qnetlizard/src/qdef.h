@@ -65,4 +65,11 @@
     (src) = NULL; \
 }
 
+#define PTR_DELETE(T, x) \
+if(x) { \
+    T *_Tx = x; \
+    x = 0; \
+    delete _Tx; \
+}
+
 #endif // _KARIN_QDEF_H

@@ -116,6 +116,7 @@ void IndexViewer::Init()
     QScrollArea *root = new QScrollArea;
     m_layout = new QGridLayout;
     QGroupBox *container = new QGroupBox;
+    SetTitleLabelVisible(false);
 
     //container->setMinimumWidth(CELL_SIZE);
     container->setTitle("NETLizard");

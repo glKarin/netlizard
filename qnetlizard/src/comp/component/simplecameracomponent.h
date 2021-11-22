@@ -6,6 +6,7 @@
 #include "nlactor.h"
 
 class NLSceneCamera;
+class CameraNotifyFunc;
 
 NLCOMPONENT(SimpleCameraComponent)
 class SimpleCameraComponent : public NLComponent
@@ -74,7 +75,9 @@ private Q_SLOTS:
 private:
     NLPROPERTY(int, type) int m_type;
     NLSceneCamera *m_camera;
+    void *m_cameraNotifyFunc;
 
+    friend class CameraNotifyFunc;
     Q_DISABLE_COPY(SimpleCameraComponent)
 };
 

@@ -8,43 +8,76 @@
 
 namespace NL
 {
+static NLPropertyInfo make_property_info(const QString &name, const QString &t, const QVariant &value, const QList<QString> &propKeys = QList<QString>())
+{
+    QString type(t);
+    QString widget;
+    if(type == "NLVector3" || type == "vector3_s" || type == "vector3_t")
+    {
+        if(type != "NLVector3")
+            type = "NLVector3";
+        widget = "vector3";
+    }
+    else if(type == "int")
+    {
+        if(propKeys.contains("enum"))
+            widget = "combobox";
+        else
+            widget = "spinbox";
+    }
+    else if(type == "double" || type == "float")
+    {
+        if(type != "float")
+            type = "float";
+        widget = "spinbox";
+    }
+    else if(type == "bool")
+        widget = "checkbox";
+    else
+    {
+        widget = "lineedit";
+    }
+
+    bool readonly = (name == "objectName" || name == "renderable");
+
+    //qDebug() << name << p.read(obj).type() << p.read(obj).userType() << obj->dynamicPropertyNames();
+    return(NLPropertyInfo(name, value, type, widget, readonly));
+}
 
 NLPropertyInfoList object_propertics(const NLObject *obj)
 {
     const QMetaObject *metaObj = obj->metaObject();
     NLPropertyInfoList ret;
+    const NLProperties config = obj->PropertyConfig();
+
     for(int i = 0 /*metaObj->propertyOffset()*/; i < metaObj->propertyCount(); i++)
     {
         QMetaProperty p = metaObj->property(i);
         QString name(p.name());
-        QString type(p.typeName());
-        QString widget;
-        if(type == "NLVector3" || type == "vector3_s" || type == "vector3_t")
-        {
-            if(type != "NLVector3")
-                type = "NLVector3";
-            widget = "vector3";
-        }
-        else if(type == "int")
-        {
-            widget = "spinbox";
-        }
-        else if(type == "double" || type == "float")
-        {
-            if(type != "float")
-                type = "float";
-            widget = "spinbox";
-        }
-        else if(type == "bool")
-            widget = "checkbox";
-        else
-            widget = "lineedit";
 
-        bool readonly = (name == "objectName" || name == "renderable");
+        NLPropertyInfo info = make_property_info(name, p.typeName(), p.read(obj), config.value(name).toHash().keys());
+        info.default_value = obj->GetInitProperty(name);
+        if(config.contains(name))
+            info.prop = config.value(name).toHash();
 
-        //qDebug() << name << p.read(obj).type() << p.read(obj).userType();
-        ret.push_back(NLPropertyInfo(name, p.read(obj), type, widget, readonly, obj->GetInitProperty(name)));
+        ret.push_back(info);
     }
+
+    // dynamic property
+    const QList<QByteArray> list = obj->dynamicPropertyNames();
+    Q_FOREACH(const QByteArray &ba, list)
+    {
+        QVariant p = obj->property(ba.constData());
+        QString name(ba);
+
+        NLPropertyInfo info = make_property_info(name, p.typeName(), p, config.value(name).toHash().keys());
+        info.default_value = obj->GetInitProperty(name);
+        if(config.contains(name))
+            info.prop = config.value(name).toHash();
+
+        ret.push_back(info);
+    }
+
     return ret;
 }
 

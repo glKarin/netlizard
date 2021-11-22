@@ -27,7 +27,31 @@ public:
         Type_Ortho = 2
     };
     typedef void (*NLSceneCameraRenderFunc)(const float view_mat[16], const float proj_mat[16], const float mvp_mat[16]);
-    typedef void (*NLSceneCameraPropertyChangedFunc)(const QString &name, const NLProperty &value);
+
+    class NLSceneCameraChangedNotify
+    {
+        public:
+        enum Notify_Type
+        {
+            Notify_PropertyChanged = 1,
+            Notify_ValueChanged = 2
+        };
+
+    public:
+            explicit NLSceneCameraChangedNotify(int type);
+            virtual ~NLSceneCameraChangedNotify();
+            virtual void PropertyChanged(const QString &name, const NLProperty &value) = 0;
+            virtual void ValueChanged(const QString &name, const NLProperty &value) = 0;
+
+    protected:
+        void SetType(int type);
+        int Type() const { return m_type; }
+
+        private:
+            int m_type;
+
+       friend class NLSceneCameraBase;
+    };
 
 public:
     NLSceneCameraBase(NLScene *widget = 0);
@@ -63,7 +87,7 @@ public:
     void SetZIsUp(bool b);
     void SetEnabled(bool b);
     bool IsEnabled() const { return m_enabled; }
-    void SetPropertyChanged(NLSceneCameraPropertyChangedFunc func);
+    void SetChangedNotifyFunc(NLSceneCameraChangedNotify *func);
 
 protected:
     virtual void Projection();
@@ -71,6 +95,7 @@ protected:
     virtual void UpdateProjectionMatrix(NLMatrix4 *mat);
     void UpdateMatrix();
     void PropertyChanged(const QString &name, const NLProperty &value);
+    void ValueChanged(const QString &name, const NLProperty &value);
 
 private:
     typedef struct GL_matrix_status_s {
@@ -103,7 +128,7 @@ private:
     NLMatrix4 m_normalMatrix; // normal
     NLMatrix4 m_globalMatrix;
     NLMatrix4 m_renderMatrix;
-    NLSceneCameraPropertyChangedFunc m_propertyChangedFunc;
+    NLSceneCameraChangedNotify *m_notifyFunc;
 
     Q_DISABLE_COPY(NLSceneCameraBase)
 };

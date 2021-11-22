@@ -35,6 +35,7 @@ void TextViewer::Init()
     QPushButton *button;
     QHBoxLayout *toolLayout = ToolLayout();
     m_textBrowser = new QTextBrowser;
+    SetTitleLabelVisible(false);
 
     button = new QPushButton;
     button->setText("Open file");
@@ -77,7 +78,7 @@ bool TextViewer::OpenFile(const QString &file)
         return false;
     }
 
-    SetTitleLabel(QString("%1 - Length: %2").arg(file).arg(len));
+    SetStatusText(QString("%1 - Length: %2").arg(file).arg(len));
     m_textBrowser->setText(QString::fromLocal8Bit(data));
     SetData(data, len);
     m_saveButton->setEnabled(true);

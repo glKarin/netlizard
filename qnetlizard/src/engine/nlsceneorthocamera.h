@@ -21,7 +21,8 @@ public:
     virtual void SetZFar(float far);
     void Set2D();
     void Set2D(float left, float right, float bottom, float top);
-    void Set(float left, float right, float bottom, float top, float near = -1, float far = 1);
+    void Set(float left, float right, float bottom, float top, float near, float far);
+    void Set(float left, float right, float bottom, float top);
     float Left() const { return m_left; }
     float Right() const { return m_right; }
     float Bottom() const { return m_bottom; }

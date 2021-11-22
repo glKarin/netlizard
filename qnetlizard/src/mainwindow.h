@@ -33,7 +33,7 @@ private slots:
     void MenuActionSlot(QAction *action);
     void ToggleLogDialog();
     void OpenSceneEditor();
-    void SetStatusText(const QString &str);
+    void SetStatusText(const QString &str = QString());
 
 private:
     BaseViewer * GenViewer(const QString &type);

@@ -9,6 +9,7 @@
 #include "nlactor.h"
 #include "nlactorcontainer.h"
 #include "nlmath.h"
+#include "qdef.h"
 
 static const NLVector3 InitUp_z = VECTOR3(0, 0, 1);
 static const NLVector3 InitUp_y = VECTOR3(0, 1, 0);
@@ -19,11 +20,29 @@ static const NLVector3 InitPosition = VECTOR3(0, 0, 0);
 static const NLVector3 InitRotation = VECTOR3(/*-9*/0, 0, 0);
 static const NLVector3 InitScale = VECTOR3(1, 1, 1);
 
+
+NLSceneCameraBase::NLSceneCameraChangedNotify::NLSceneCameraChangedNotify(int type)
+    : m_type(type)
+{
+
+}
+
+NLSceneCameraBase::NLSceneCameraChangedNotify::~NLSceneCameraChangedNotify()
+{
+    DEBUG_DESTROY("NLSceneCameraChangedNotify")
+}
+
+void NLSceneCameraBase::NLSceneCameraChangedNotify::SetType(int type)
+{
+    if(m_type != type)
+        m_type = type;
+}
+
 NLSceneCameraBase::NLSceneCameraBase(NLScene *widget)
     : m_scene(widget),
       m_zIsUp(false),
       m_enabled(true),
-      m_propertyChangedFunc(0)
+      m_notifyFunc(0)
 {
     Mesa_AllocGLMatrix(&m_viewMatrix);
     Mesa_AllocGLMatrix(&m_normalMatrix);
@@ -44,6 +63,7 @@ NLSceneCameraBase::NLSceneCameraBase(NLScene *widget)
 NLSceneCameraBase::~NLSceneCameraBase()
 {
     m_scene = 0;
+    PTR_DELETE(NLSceneCameraBase::NLSceneCameraChangedNotify, m_notifyFunc)
     Mesa_FreeGLMatrix(&m_normalMatrix);
     Mesa_FreeGLMatrix(&m_viewMatrix);
     Mesa_FreeGLMatrix(&m_projectionMatrix);
@@ -90,7 +110,7 @@ void NLSceneCameraBase::SetPosition(const NLVector3 &v)
     VECTOR3_Y(m_position) = VECTOR3_Y(v);
     VECTOR3_Z(m_position) = VECTOR3_Z(v);
     UpdateMatrix();
-    PropertyChanged("position", NLProperty::fromValue<NLVector3>(m_position));
+    ValueChanged("position", NLProperty::fromValue<NLVector3>(m_position));
 }
 
 void NLSceneCameraBase::SetRotation(const NLVector3 &v)
@@ -102,7 +122,7 @@ void NLSceneCameraBase::SetRotation(const NLVector3 &v)
     VECTOR3_Z(m_rotation) = VECTOR3_Z(v);
     UpdateMatrix();
     UpdateDirection();
-    PropertyChanged("rotation", NLProperty::fromValue<NLVector3>(m_rotation));
+    ValueChanged("rotation", NLProperty::fromValue<NLVector3>(m_rotation));
 }
 
 void NLSceneCameraBase::SetScale(const NLVector3 &v)
@@ -148,7 +168,7 @@ NLSceneCameraBase * NLSceneCameraBase::Zoom(const NLVector3 &v)
     //vector3_multiplyve(&m_scale, &v);
     vector3_addve(&m_scale, &v);
     UpdateMatrix();
-    PropertyChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
+    ValueChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
     return this;
 }
 
@@ -252,11 +272,11 @@ void NLSceneCameraBase::Reset()
 {
     SetGlobalMatrix(0);
     m_position = InitPosition;
-    PropertyChanged("position", NLProperty::fromValue<NLVector3>(m_position));
+    ValueChanged("position", NLProperty::fromValue<NLVector3>(m_position));
     m_rotation = InitRotation;
-    PropertyChanged("rotation", NLProperty::fromValue<NLVector3>(m_rotation));
+    ValueChanged("rotation", NLProperty::fromValue<NLVector3>(m_rotation));
     m_scale = InitScale;
-    PropertyChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
+    ValueChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
     m_up = m_zIsUp ? InitUp_z : InitUp_y;
     if(m_zIsUp)
     {
@@ -360,14 +380,22 @@ void NLSceneCameraBase::SetEnabled(bool b)
         m_enabled = b;
 }
 
-void NLSceneCameraBase::SetPropertyChanged(NLSceneCameraBase::NLSceneCameraPropertyChangedFunc func)
+void NLSceneCameraBase::SetChangedNotifyFunc(NLSceneCameraBase::NLSceneCameraChangedNotify *func)
 {
-    m_propertyChangedFunc = func;
+    PTR_DELETE(NLSceneCameraBase::NLSceneCameraChangedNotify, m_notifyFunc)
+    if(m_notifyFunc != func)
+        m_notifyFunc = func;
 }
-
 
 void NLSceneCameraBase::PropertyChanged(const QString &name, const NLProperty &value)
 {
-    if(m_propertyChangedFunc)
-        m_propertyChangedFunc(name, value);
+    if(m_notifyFunc && (m_notifyFunc->m_type & NLSceneCameraBase::NLSceneCameraChangedNotify::Notify_PropertyChanged))
+        m_notifyFunc->PropertyChanged(name, value);
 }
+
+void NLSceneCameraBase::ValueChanged(const QString &name, const NLProperty &value)
+{
+    if(m_notifyFunc && (m_notifyFunc->m_type & NLSceneCameraBase::NLSceneCameraChangedNotify::Notify_ValueChanged))
+        m_notifyFunc->ValueChanged(name, value);
+}
+

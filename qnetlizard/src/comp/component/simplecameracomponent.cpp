@@ -6,17 +6,76 @@
 
 #include "nlscene.h"
 #include "nlfuncs.h"
+#include "qdef.h"
 
 #include "nlsceneperspectivecamera.h"
 #include "nlsceneorthocamera.h"
 #include "nlscenecamera.h"
 
+class CameraNotifyFunc : public NLSceneCamera::NLSceneCameraChangedNotify
+{
+public:
+    explicit CameraNotifyFunc(SimpleCameraComponent *comp);
+    virtual ~CameraNotifyFunc();
+    virtual void PropertyChanged(const QString &name, const NLProperty &value);
+    virtual void ValueChanged(const QString &name, const NLProperty &value) { Q_UNUSED(name); Q_UNUSED(value); }
+
+private:
+    SimpleCameraComponent *m_comp;
+};
+
+CameraNotifyFunc::CameraNotifyFunc(SimpleCameraComponent *comp)
+    : NLSceneCameraBase::NLSceneCameraChangedNotify(NLSceneCamera::NLSceneCameraChangedNotify::Notify_PropertyChanged),
+    m_comp(comp)
+{
+}
+
+CameraNotifyFunc::~CameraNotifyFunc()
+{
+    m_comp = 0;
+    DEBUG_DESTROY("CameraNotifyFunc")
+}
+
+void CameraNotifyFunc::PropertyChanged(const QString &name, const NLProperty &value)
+{
+    if(m_comp)
+    {
+        m_comp->propertyChanged(name, value);
+    }
+}
+
+
+
 SimpleCameraComponent::SimpleCameraComponent(const NLProperties &prop, NLActor *parent) :
     NLComponent(prop, parent),
       m_type(NLSceneCamera::Type_Perspective),
-      m_camera(new NLSceneCamera)
+      m_camera(new NLSceneCamera),
+      m_cameraNotifyFunc(new CameraNotifyFunc(this))
 {
     setObjectName("SimpleCameraComponent");
+    m_camera->SetChangedNotifyFunc(static_cast<CameraNotifyFunc *>(m_cameraNotifyFunc));
+
+    NLProperties props;
+    NLProperties m;
+    NLPropertyPairList sl;
+
+    sl.push_back(NLPropertyPair("Perspective", static_cast<int>(NLSceneCamera::Type_Perspective)));
+    sl.push_back(NLPropertyPair("Ortho",  static_cast<int>(NLSceneCamera::Type_Ortho)));
+    m.insert("enum", NLProperty::fromValue<NLPropertyPairList>(sl));
+    props.Insert("type", m);
+
+    m.clear();
+    sl.clear();
+    sl.push_back(NLPropertyPair("Center", static_cast<int>(Qt::AlignCenter)));
+    sl.push_back(NLPropertyPair("Left-Top", static_cast<int>(Qt::AlignLeft | Qt::AlignTop)));
+    sl.push_back(NLPropertyPair("Left-Bottom", static_cast<int>(Qt::AlignLeft | Qt::AlignBottom)));
+    sl.push_back(NLPropertyPair("Left-Center", static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter)));
+    sl.push_back(NLPropertyPair("Center-Top", static_cast<int>(Qt::AlignHCenter | Qt::AlignTop)));
+    sl.push_back(NLPropertyPair("Center-Bottom", static_cast<int>(Qt::AlignHCenter | Qt::AlignBottom)));
+    m.insert("enum", NLProperty::fromValue<NLPropertyPairList>(sl));
+    props.Insert("alignment", m);
+
+    SetPropertyConfig(props);
 }
 
 SimpleCameraComponent::~SimpleCameraComponent()

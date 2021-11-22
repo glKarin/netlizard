@@ -68,7 +68,7 @@ void NLSceneOrthoCamera::Update(float width, float height)
         ortho[2] = -height / 2;
         ortho[3] = height / 2;
     }
-    Set(ortho[0], ortho[1], ortho[2], ortho[3], m_zNear, m_zFar);
+    Set(ortho[0], ortho[1], ortho[2], ortho[3]);
 }
 
 void NLSceneOrthoCamera::SetLeft(float left)
@@ -191,9 +191,14 @@ void NLSceneOrthoCamera::Set(float left, float right, float bottom, float top, f
     }
 }
 
+void NLSceneOrthoCamera::Set(float left, float right, float bottom, float top)
+{
+    Set(left, right, bottom, top, m_zNear, m_zFar);
+}
+
 void NLSceneOrthoCamera::Set2D(float left, float right, float bottom, float top)
 {
-    Set(left, right, bottom, top);
+    Set(left, right, bottom, top, NLSCENEORTHOCAMERA_DEFAULT_Z_NEAR, NLSCENEORTHOCAMERA_DEFAULT_Z_FAR);
 }
 
 void NLSceneOrthoCamera::Projection()
@@ -223,14 +228,8 @@ void NLSceneOrthoCamera::SetAlignment(Qt::Alignment align)
 void NLSceneOrthoCamera::Reset()
 {
     NLSceneCameraBase::Reset();
-    m_align = Qt::AlignCenter;
-    m_left = NLSCENEORTHOCAMERA_DEFAULT_LEFT;
-    m_right = NLSCENEORTHOCAMERA_DEFAULT_RIGHT;
-    m_bottom = NLSCENEORTHOCAMERA_DEFAULT_BOTTOM;
-    m_top = NLSCENEORTHOCAMERA_DEFAULT_TOP;
-    m_zNear = NLSCENEORTHOCAMERA_DEFAULT_Z_NEAR;
-    m_zFar = NLSCENEORTHOCAMERA_DEFAULT_Z_FAR;
-    UpdateMatrix();
+    Set(NLSCENEORTHOCAMERA_DEFAULT_LEFT, NLSCENEORTHOCAMERA_DEFAULT_RIGHT, NLSCENEORTHOCAMERA_DEFAULT_BOTTOM, NLSCENEORTHOCAMERA_DEFAULT_TOP, NLSCENEORTHOCAMERA_DEFAULT_Z_NEAR, NLSCENEORTHOCAMERA_DEFAULT_Z_FAR);
+    SetAlignment(Qt::AlignCenter);
 }
 
 void NLSceneOrthoCamera::EmitPropertyChanged(int b)

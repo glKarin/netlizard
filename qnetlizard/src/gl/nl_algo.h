@@ -33,7 +33,9 @@ typedef struct collision_object_s
 {
     vector3_t position;
     float radius;
-    float height;
+    float height; // foot - eye
+    float leg_height; // leg
+    float head_height; // sys - head
 } collision_object_t;
 
 int NETLizard_FindScenePointIn(const GL_NETLizard_3D_Model *map, const nl_vector3_t *p);

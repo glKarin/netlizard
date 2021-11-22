@@ -77,7 +77,7 @@ void NLScenePerspectiveCamera::SetZFar(float far)
 void NLScenePerspectiveCamera::Set(float fovy, float width, float height, float near, float far)
 {
     float aspect = CaleAspect(width, height);
-    int b = false;
+    int b = 0;
     if(m_fovy != fovy)
     {
         m_fovy = fovy;
@@ -107,7 +107,7 @@ void NLScenePerspectiveCamera::Set(float fovy, float width, float height, float 
 
 void NLScenePerspectiveCamera::Set(float fovy, float aspect, float near, float far)
 {
-    int b = false;
+    int b = 0;
     if(m_fovy != fovy)
     {
         m_fovy = fovy;
@@ -151,11 +151,7 @@ void NLScenePerspectiveCamera::UpdateProjectionMatrix(NLMatrix4 *mat)
 void NLScenePerspectiveCamera::Reset()
 {
     NLSceneCameraBase::Reset();
-    m_fovy = NLSCENEPERSPECTIVECAMERA_DEFAULT_FOVY;
-    m_aspect = NLSCENEPERSPECTIVECAMERA_DEFAULT_ASPECT;
-    m_zNear = NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_NEAR;
-    m_zFar = NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_FAR;
-    UpdateMatrix();
+    Set(NLSCENEPERSPECTIVECAMERA_DEFAULT_FOVY, NLSCENEPERSPECTIVECAMERA_DEFAULT_ASPECT, NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_NEAR, NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_FAR);
 }
 
 void NLScenePerspectiveCamera::EmitPropertyChanged(int b)

@@ -8,8 +8,8 @@ class SimpleControl2DComponent : public NLComponent
 {
     Q_OBJECT
     Q_PROPERTY(float moveSens READ MoveSens WRITE SetMoveSens FINAL)
-    Q_PROPERTY(float invertX READ InvertX WRITE SetInvertX FINAL)
-    Q_PROPERTY(float invertY READ InvertY WRITE SetInvertY FINAL)
+    Q_PROPERTY(bool invertX READ InvertX WRITE SetInvertX FINAL)
+    Q_PROPERTY(bool invertY READ InvertY WRITE SetInvertY FINAL)
 public:
     explicit SimpleControl2DComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleControl2DComponent();
