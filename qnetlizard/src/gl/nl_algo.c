@@ -161,7 +161,7 @@ int NETLizard_FindScenePointIn(const GL_NETLizard_3D_Model *map_model, const nl_
         bound_t aabb = SCENE_BOUND(mesh);
         if(!bound_point_in_box(&aabb, p))
             continue;
-        fprintf(stderr, "%d (%f %f %f) %f %f %f, %f %f %f | %d, %d\n",i, p->v[0], p->v[1], p->v[2], aabb.min.v[0], aabb.min.v[1], aabb.min.v[2], aabb.max.v[0], aabb.max.v[1], aabb.max.v[2],mesh->plane_type, mesh->plane_count);
+        //fprintf(stderr, "%d (%f %f %f) %f %f %f, %f %f %f | %d, %d\n",i, p->v[0], p->v[1], p->v[2], aabb.min.v[0], aabb.min.v[1], aabb.min.v[2], aabb.max.v[0], aabb.max.v[1], aabb.max.v[2],mesh->plane_type, mesh->plane_count);
         int index = mesh->plane_type == 0 ? 3 : mesh->plane_type - 1;
         if(scenes[index] == -1) // Only get first
         {
@@ -178,16 +178,12 @@ int NETLizard_FindScenePointIn(const GL_NETLizard_3D_Model *map_model, const nl_
     }
     // 筛选场景: 可能有场景重叠, 优先选择有自带碰撞面的, 然后是通过顶点数据计算出碰撞面的, 然后是通过包围盒计算出碰撞面的
     // 1 > 2 > 3 > 0
-    for(i = 0; i < 4; i++)
-    {
-        fprintf(stderr, "%d ", scenes[i]);
-    }
-    fprintf(stderr, "\n");
+    //for(i = 0; i < 4; i++) { fprintf(stderr, "%d ", scenes[i]); } fprintf(stderr, "\n");
     for(i = 0; i < 4; i++)
     {
         if(scenes[i] != -1)
         {
-            fprintf(stderr, "final %d\n", scenes[i]);
+            //fprintf(stderr, "final %d\n", scenes[i]);
             return scenes[i];
         }
     }
@@ -615,11 +611,11 @@ static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3
     VECTOR3_Z(npos) -= body_length;
 
     // 获取位置所在的场景
-    int s = NETLizard_FindScenePointIn(map, &npos);
+    int s = NETLizard_FindScenePointIn(map, new_pos/*&npos*/);
     if(s == -1) // New位置不在任何场景范围内
     {
         result.res = SCT_Outside;
-        s = NETLizard_FindScenePointIn(map, &pos); // 尝试获取原位置的场景
+        s = NETLizard_FindScenePointIn(map, &obj->position/*&pos*/); // 尝试获取原位置的场景
         if(s == -1)
             return result;
     }
