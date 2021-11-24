@@ -211,11 +211,11 @@ void MapScene::Update(float delta)
             if(gravity && gravity->GetProperty_T("force", 0) != 0) // is jump
                 clear = true;
         }
-        //fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
+        fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
         float rglz = 0;
         obj.position = p;
         res = NETLizard_GetScenePointZCoord(m_model, &obj, scene, include_item, &scene, &rglz);
-        //fprintf(stderr,"NETLizard_GetScenePointZCoord : %d - scene(%d): %f <> %f\n\n", res, scene, VECTOR3_Z(p), rglz);fflush(stderr);
+        fprintf(stderr,"NETLizard_GetScenePointZCoord : %d - scene(%d): %f <> %f\n\n", res, scene, VECTOR3_Z(p), rglz);fflush(stderr);
         if(clear)
             m_mainCameraActor->Collision();
 
@@ -223,6 +223,7 @@ void MapScene::Update(float delta)
         {
             if(VECTOR3_Z(p) > OBJ_HEIGHT + rglz)
             {
+                fprintf(stderr,"res222\n");fflush(stderr);
                 if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())
                 {
                     // pre cale
