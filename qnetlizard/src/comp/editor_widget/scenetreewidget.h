@@ -1,19 +1,18 @@
-#ifndef _KARIN_SCENETREEINFOWIDGET_H
-#define _KARIN_SCENETREEINFOWIDGET_H
+#ifndef _KARIN_SCENETREEWIDGET_H
+#define _KARIN_SCENETREEWIDGET_H
 
 #include <QDockWidget>
 
-class NLSceneInfoWidget;
 class NLSceneTreeWidget;
 class NLScene;
 class NLActor;
 
-class SceneTreeInfoWidget : public QDockWidget
+class SceneTreeWidget : public QDockWidget
 {
     Q_OBJECT
 public:
-    explicit SceneTreeInfoWidget(QWidget *parent = 0);
-    virtual ~SceneTreeInfoWidget();
+    explicit SceneTreeWidget(QWidget *parent = 0);
+    virtual ~SceneTreeWidget();
     void SetScene(NLScene *scene);
     NLScene * Scene() { return m_scene; }
     
@@ -30,10 +29,9 @@ private:
 
 private:
     NLScene *m_scene;
-    NLSceneInfoWidget *m_infoWidget;
     NLSceneTreeWidget *m_treeWidget;
 
-    Q_DISABLE_COPY(SceneTreeInfoWidget)
+    Q_DISABLE_COPY(SceneTreeWidget)
 };
 
-#endif // _KARIN_SCENETREEINFOWIDGET_H
+#endif // _KARIN_SCENETREEWIDGET_H

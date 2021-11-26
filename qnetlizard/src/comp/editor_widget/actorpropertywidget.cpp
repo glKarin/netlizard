@@ -9,7 +9,7 @@
 
 #include "nlactor.h"
 #include "nlscene.h"
-#include "nlactorwidget.h"
+#include "nlactorpropwidget.h"
 #include "qdef.h"
 
 ActorPropertyWidget::ActorPropertyWidget(QWidget *parent) :
@@ -49,8 +49,8 @@ void ActorPropertyWidget::Reset()
 
 void ActorPropertyWidget::Init()
 {
-    m_actorWidget = new NLActorWidget;
+    m_actorWidget = new NLActorPropWidget;
     setWidget(m_actorWidget);
-    setWindowTitle("Actor property viewer");
+    setWindowTitle("Actor property");
     //setMaximumWidth(360);
 }

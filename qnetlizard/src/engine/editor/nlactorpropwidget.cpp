@@ -1,4 +1,4 @@
-#include "nlactorwidget.h"
+#include "nlactorpropwidget.h"
 
 #include <QDebug>
 #include <QFormLayout>
@@ -147,21 +147,21 @@ void NLVector3Widget::SetReadOnly(bool b)
 
 
 
-NLActorWidget::NLActorWidget(QWidget *widget)
+NLActorPropWidget::NLActorPropWidget(QWidget *widget)
     : QScrollArea(widget),
       m_actor(0)
 {
-    setObjectName("NLActorWidget");
+    setObjectName("NLActorPropWidget");
     Init();
 }
 
-NLActorWidget::~NLActorWidget()
+NLActorPropWidget::~NLActorPropWidget()
 {
     m_actor = 0;
     DEBUG_DESTROY_Q
 }
 
-void NLActorWidget::Init()
+void NLActorPropWidget::Init()
 {
     QLabel *label;
     QGroupBox *groupBox;
@@ -194,7 +194,7 @@ void NLActorWidget::Init()
     setWidget(root);
 }
 
-void NLActorWidget::SetActor(NLActor *actor)
+void NLActorPropWidget::SetActor(NLActor *actor)
 {
     if(m_actor != actor)
     {
@@ -211,7 +211,7 @@ void NLActorWidget::SetActor(NLActor *actor)
     }
 }
 
-void NLActorWidget::Reset()
+void NLActorPropWidget::Reset()
 {
     if(m_actor)
     {
@@ -240,7 +240,7 @@ void NLActorWidget::Reset()
     m_actor = 0;
 }
 
-void NLActorWidget::UpdateActorData()
+void NLActorPropWidget::UpdateActorData()
 {
     if(!m_actor)
     {
@@ -250,13 +250,13 @@ void NLActorWidget::UpdateActorData()
     SetupComponentProperties();
 }
 
-void NLActorWidget::OnActorChanged()
+void NLActorPropWidget::OnActorChanged()
 {
     Reset();
     UpdateActorData();
 }
 
-void NLActorWidget::SetupActorProperty()
+void NLActorPropWidget::SetupActorProperty()
 {
     NLPropertyInfoList list = NL::object_propertics(m_actor);
     SortProperties(list);
@@ -268,12 +268,12 @@ void NLActorWidget::SetupActorProperty()
     }
 }
 
-void NLActorWidget::SortProperties(NLPropertyInfoList &list)
+void NLActorPropWidget::SortProperties(NLPropertyInfoList &list)
 {
     qSort(list.begin(), list.end(), NLPropertyInfoCmp);
 }
 
-void NLActorWidget::SetupComponentProperty(NLComponent *comp)
+void NLActorPropWidget::SetupComponentProperty(NLComponent *comp)
 {
     QFormLayout *layout = new QFormLayout;
     QGroupBox *groupBox = new QGroupBox;
@@ -292,7 +292,7 @@ void NLActorWidget::SetupComponentProperty(NLComponent *comp)
     m_componentLayout->addSpacing(1);
 }
 
-void NLActorWidget::SetupComponentProperties()
+void NLActorPropWidget::SetupComponentProperties()
 {
     const int Count = m_actor->ComponentCount();
     if(Count == 0)
@@ -304,7 +304,7 @@ void NLActorWidget::SetupComponentProperties()
     }
 }
 
-QWidget * NLActorWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
+QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
 {
     QWidget *widget = 0;
 
@@ -420,7 +420,7 @@ QWidget * NLActorWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
     return widget;
 }
 
-void NLActorWidget::OnPropertyChanged(const QString &name, const NLProperty &value)
+void NLActorPropWidget::OnPropertyChanged(const QString &name, const NLProperty &value)
 {
     QObject *s = sender();
     if(!s)
@@ -458,7 +458,7 @@ void NLActorWidget::OnPropertyChanged(const QString &name, const NLProperty &val
     }
 }
 
-void NLActorWidget::OnIntChanged(int i)
+void NLActorPropWidget::OnIntChanged(int i)
 {
     QObject *s = sender();
     if(!s)
@@ -472,7 +472,7 @@ void NLActorWidget::OnIntChanged(int i)
     obj->SetProperty(s->objectName(), i);
 }
 
-void NLActorWidget::OnIndexChanged(int i)
+void NLActorPropWidget::OnIndexChanged(int i)
 {
     QObject *s = sender();
     if(!s)
@@ -490,7 +490,7 @@ void NLActorWidget::OnIndexChanged(int i)
     }
 }
 
-void NLActorWidget::OnDoubleChanged(double f)
+void NLActorPropWidget::OnDoubleChanged(double f)
 {
     QObject *s = sender();
     if(!s)
@@ -504,7 +504,7 @@ void NLActorWidget::OnDoubleChanged(double f)
     obj->SetProperty(s->objectName(), (float)f);
 }
 
-void NLActorWidget::OnBoolChanged(bool b)
+void NLActorPropWidget::OnBoolChanged(bool b)
 {
     QObject *s = sender();
     if(!s)
@@ -518,7 +518,7 @@ void NLActorWidget::OnBoolChanged(bool b)
     obj->SetProperty(s->objectName(), b);
 }
 
-void NLActorWidget::OnVector3Changed(const NLVector3 &v)
+void NLActorPropWidget::OnVector3Changed(const NLVector3 &v)
 {
     QObject *s = sender();
     if(!s)

@@ -7,7 +7,8 @@ class QToolBar;
 class QStackedWidget;
 class BaseViewer;
 class LogDialog;
-class SceneTreeInfoWidget;
+class SceneTreeWidget;
+class SceneInfoWidget;
 class ActorPropertyWidget;
 
 class MainWindow : public QMainWindow
@@ -24,6 +25,7 @@ public slots:
 protected:
     void resizeEvent(QResizeEvent *event);
     void moveEvent(QMoveEvent *event);
+    void closeEvent(QCloseEvent *event);
     BaseViewer * CentralViewer();
 
 private:
@@ -45,7 +47,8 @@ private:
     QToolBar *m_toolBar;
     QStackedWidget *m_centralWidget;
     LogDialog *m_logDialog;
-    SceneTreeInfoWidget *m_sceneWidget;
+    SceneTreeWidget *m_sceneTreeWidget;
+    SceneInfoWidget *m_sceneInfoWidget;
     ActorPropertyWidget *m_actorWidget;
 
     Q_DISABLE_COPY(MainWindow)

@@ -1,11 +1,12 @@
 #ifndef _KARIN_NLNLSceneInfoWidget_H
 #define _KARIN_NLNLSceneInfoWidget_H
 
-#include <QTextBrowser>
+#include <QTabWidget>
 
 class NLScene;
+class QTextBrowser;
 
-class NLSceneInfoWidget : public QTextBrowser
+class NLSceneInfoWidget : public QTabWidget
 {
     Q_OBJECT
 public:
@@ -25,6 +26,8 @@ private:
 
 private:
     NLScene *m_scene;
+    QTextBrowser *m_baseInfo;
+    QTextBrowser *m_cameraInfo;
 
     Q_DISABLE_COPY(NLSceneInfoWidget)
     

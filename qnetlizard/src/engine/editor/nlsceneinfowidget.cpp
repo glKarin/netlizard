@@ -8,6 +8,7 @@
 #include <QTextBrowser>
 #include <QScrollBar>
 #include <QPushButton>
+#include <QTextBrowser>
 
 #include "nlscene.h"
 #include "nlscenecamera.h"
@@ -33,8 +34,10 @@
 #endif
 
 NLSceneInfoWidget::NLSceneInfoWidget(QWidget *parent) :
-    QTextBrowser(parent),
-    m_scene(0)
+    QTabWidget(parent),
+    m_scene(0),
+    m_baseInfo(0),
+    m_cameraInfo(0)
 {
     setObjectName("NLSceneInfoWidget");
     Init();
@@ -47,7 +50,16 @@ NLSceneInfoWidget::~NLSceneInfoWidget()
 
 void NLSceneInfoWidget::Init()
 {
-    setAcceptRichText(RICH_TEXT);
+    m_baseInfo = new QTextBrowser(this);
+    m_cameraInfo = new QTextBrowser(this);
+
+    m_baseInfo->setAcceptRichText(RICH_TEXT);
+    m_cameraInfo->setAcceptRichText(RICH_TEXT);
+
+    addTab(m_baseInfo, "Base");
+    addTab(m_cameraInfo, "Camera");
+
+    setCurrentWidget(m_baseInfo);
 }
 
 #define _DBG_VEC3(label, v) QString(_B(" "label": ")"[%1, %2, %3]").arg(VECTOR3_X(v), 0, 'g', 6).arg(VECTOR3_Y(v), 0, 'g', 6).arg(VECTOR3_Z(v), 0, 'g', 6)
@@ -64,20 +76,25 @@ void NLSceneInfoWidget::UpdateSceneInfo()
 {
     if(!m_scene)
     {
-        SETTEXT("No active scene!");
+        m_baseInfo->SETTEXT("No active scene!");
+        m_cameraInfo->SETTEXT("No active scene!");
         return;
     }
 
     QStringList list;
-    list << _B("Scene infomation: ")
+    list
+            //<< _B("Scene infomation: ")
          << _B(" FPS: ") + QString::number(m_scene->CurrentFPS()) + " (" + QString(_B("Limit: ")) + QString::number(m_scene->FPS()) + ")"
          << _B(" Actor count: ") + QString::number(m_scene->ActorCount())
                << _B(" Update delta: ") + QString::number(m_scene->CurrendDelta())
                << _B(" Update time: ") + QDateTime::fromMSecsSinceEpoch(m_scene->UpdateTime()).toString("yyyy-MM-dd HH:mm:ss zzz")
                ;
+    m_baseInfo->SETTEXT(list.join(_ENDL));
 
-    list << "";
-    list << _B("Camera infomation: ");
+    list.clear();
+    list
+            //<< _B("Camera infomation: ")
+               ;
     NLSceneCamera *camera = m_scene->CurrentCamera();
     if(!camera)
     {
@@ -114,7 +131,7 @@ void NLSceneInfoWidget::UpdateSceneInfo()
         list << _DBG_MAT3("Render matrix", m);
     }
 
-    SETTEXT(list.join(_ENDL));
+    m_cameraInfo->SETTEXT(list.join(_ENDL));
 }
 
 void NLSceneInfoWidget::SetScene(NLScene *scene)

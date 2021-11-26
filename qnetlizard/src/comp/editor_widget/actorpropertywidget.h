@@ -3,7 +3,7 @@
 
 #include <QDockWidget>
 
-class NLActorWidget;
+class NLActorPropWidget;
 class NLActor;
 
 class ActorPropertyWidget : public QDockWidget
@@ -27,7 +27,7 @@ private:
 
 private:
     NLActor *m_actor;
-    NLActorWidget *m_actorWidget;
+    NLActorPropWidget *m_actorWidget;
 
     Q_DISABLE_COPY(ActorPropertyWidget)
 };

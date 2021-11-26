@@ -130,10 +130,12 @@ SOURCES += \
     src/comp/scene/spritescene.cpp
 
 HEADERS += \
-    src/comp/editor_widget/scenetreeinfowidget.h \
+    src/comp/editor_widget/sceneinfowidget.h \
+    src/comp/editor_widget/scenetreewidget.h \
     src/comp/editor_widget/actorpropertywidget.h
 SOURCES += \
-    src/comp/editor_widget/scenetreeinfowidget.cpp \
+    src/comp/editor_widget/sceneinfowidget.cpp \
+    src/comp/editor_widget/scenetreewidget.cpp \
     src/comp/editor_widget/actorpropertywidget.cpp
 
 # Engine
@@ -163,11 +165,6 @@ HEADERS += \
     src/engine/nlproperties.h \
     src/engine/nlglobals.h
 
-HEADERS += \
-    src/engine/editor/nlscenetreewidget.h \
-    src/engine/editor/nlsceneinfowidget.h \
-    src/engine/editor/nlactorwidget.h
-
 SOURCES += \
     src/engine/nlscene.cpp \
     src/engine/nlobject.cpp \
@@ -190,10 +187,15 @@ SOURCES += \
     src/engine/nlproperties.cpp \
     src/engine/nlglobals.cpp
 
+HEADERS += \
+    src/engine/editor/nlscenetreewidget.h \
+    src/engine/editor/nlsceneinfowidget.h \
+    src/engine/editor/nlactorpropwidget.h
+
 SOURCES += \
     src/engine/editor/nlscenetreewidget.cpp \
     src/engine/editor/nlsceneinfowidget.cpp \
-    src/engine/editor/nlactorwidget.cpp
+    src/engine/editor/nlactorpropwidget.cpp
 
 # Lib
 DEPENDPATH += ./lib

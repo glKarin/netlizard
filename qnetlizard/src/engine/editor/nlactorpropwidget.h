@@ -1,5 +1,5 @@
-#ifndef _KARIN_NLACTORWIDGET_H
-#define _KARIN_NLACTORWIDGET_H
+#ifndef _KARIN_NLACTORPROPWIDGET_H
+#define _KARIN_NLACTORPROPWIDGET_H
 
 #include <QScrollArea>
 
@@ -45,13 +45,13 @@ private:
     Q_DISABLE_COPY(NLVector3Widget)
 };
 
-class NLActorWidget : public QScrollArea
+class NLActorPropWidget : public QScrollArea
 {
     Q_OBJECT
 
 public:
-    explicit NLActorWidget(QWidget *widget = 0);
-    virtual ~NLActorWidget();
+    explicit NLActorPropWidget(QWidget *widget = 0);
+    virtual ~NLActorPropWidget();
     NLActor * Actor() { return m_actor; }
     void SetActor(NLActor *sctor);
 
@@ -88,7 +88,7 @@ private:
     QVBoxLayout *m_componentLayout;
     ComponentPropWidgetHash m_propWidgetMap;
 
-    Q_DISABLE_COPY(NLActorWidget)
+    Q_DISABLE_COPY(NLActorPropWidget)
 };
 
-#endif // _KARIN_NLACTORWIDGET_H
+#endif // _KARIN_NLACTORPROPWIDGET_H
