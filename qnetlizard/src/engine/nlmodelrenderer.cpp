@@ -53,14 +53,16 @@ void NLRenderModelGLGeneral_coordinate::Init(GLfloat length)
 void NLRenderModelGLGeneral_cube::Init(GLfloat length)
 {
     GLfloat _vertex[32];
-    VE4(_vertex, 0, 0, 0, 0, 1);
-    VE4(_vertex, 4, length, 0, 0, 1);
-    VE4(_vertex, 8, 0, length, 0, 1);
-    VE4(_vertex, 12, length, length, 0, 1);
-    VE4(_vertex, 16, 0, 0, -length, 1);
-    VE4(_vertex, 20, length, 0, -length, 1);
-    VE4(_vertex, 24, 0, length, -length, 1);
-    VE4(_vertex, 28, length, length, -length, 1);
+    const GLfloat min = -length / 2;
+    const GLfloat max = length / 2;
+    VE4(_vertex, 0, min, min, max, 1);
+    VE4(_vertex, 4, max, min, max, 1);
+    VE4(_vertex, 8, min, max, max, 1);
+    VE4(_vertex, 12, max, max, max, 1);
+    VE4(_vertex, 16, min, min, min, 1);
+    VE4(_vertex, 20, max, min, min, 1);
+    VE4(_vertex, 24, min, max, min, 1);
+    VE4(_vertex, 28, max, max, min, 1);
     GLfloat _color[24] = {
         0.5, 0, 0, 1,
         1, 0, 0, 1,
@@ -120,6 +122,56 @@ void NLRenderModelGLGeneral_cube::Init(GLfloat length)
     Primitives().push_back(primitive);
 }
 
+void NLRenderModelGLGeneral_plane::Init(GLfloat length)
+{
+    GLfloat vertex[4 * 4];
+    const GLfloat min = -length / 2;
+    const GLfloat max = length / 2;
+
+    VE4(vertex, 0, min, 0, max, 1);
+    VE4(vertex, 4, max, 0, max, 1);
+    VE4(vertex, 8, min, 0, min, 1);
+    VE4(vertex, 12, max, 0, min, 1);
+
+    for(int i = 0; i < 4; i++)
+    {
+        Vertex().Add(vertex + 4 * i, 0, 0, 0);
+    }
+
+    NLRenderModelGLGeneral::NLRenderModelPrimitiveData primitive;
+    primitive.SetMode(GL_TRIANGLE_STRIP);
+    for(int i = 0; i < 4; i++)
+    {
+        primitive.Index().Add(i);
+    }
+    Primitives().push_back(primitive);
+}
+
+void NLRenderModelGLGeneral_line::Init(GLfloat length)
+{
+    GLfloat vertex[4 * 2];
+    const GLfloat min = -length / 2;
+    const GLfloat max = length / 2;
+
+    VE4(vertex, 0, min, 0, 0, 1);
+    VE4(vertex, 4, max, 0, 0, 1);
+
+    for(int i = 0; i < 2; i++)
+    {
+        Vertex().Add(vertex + 4 * i, 0, 0, 0);
+    }
+
+    NLRenderModelGLGeneral::NLRenderModelPrimitiveData primitive;
+    primitive.SetMode(GL_LINES);
+    for(int i = 0; i < 2; i++)
+    {
+        primitive.Index().Add(i);
+    }
+    Primitives().push_back(primitive);
+}
+#undef VE3
+#undef VE4
+
 
 
 NLModelRenderer::NLModelRenderer(NLActor *actor) :
@@ -152,11 +204,7 @@ void NLModelRenderer::Render()
 {
     if(!m_model)
         return;
-    glPushMatrix();
-    {
-        m_model->Render();
-    }
-    glPopMatrix();
+    m_model->Render();
 }
 
 void NLModelRenderer::DeinitRender()

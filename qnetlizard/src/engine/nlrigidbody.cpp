@@ -129,14 +129,26 @@ void NLRigidbody::SetRotation(const NLVector3 &v)
         return;
     }
 
-    NLVector3 rot = Rotation();
+    //NLVector3 rot = Rotation();
     NLVector3 nv = v;
     float x = NL::clamp_angle(VECTOR3_X(nv));
     if(x > 90 && x < 270)
-        VECTOR3_X(nv) = VECTOR3_X(rot);
+    {
+        if(x <= 180)
+            VECTOR3_X(nv) = 90;
+        else
+            VECTOR3_X(nv) = 270;
+        //VECTOR3_X(nv) = VECTOR3_X(rot);
+    }
     float z = NL::clamp_angle(VECTOR3_Z(nv));
     if(z > 90 && z < 270)
-        VECTOR3_Z(nv) = VECTOR3_Z(rot);
+    {
+        if(z <= 180)
+            VECTOR3_Z(nv) = 90;
+        else
+            VECTOR3_Z(nv) = 270;
+        //VECTOR3_Z(nv) = VECTOR3_Z(rot);
+    }
     NLActor::SetRotation(nv);
 
     if(VECTOR3_Y(m_moveRotation) == VECTOR3_Y(v))
@@ -199,7 +211,8 @@ void NLRigidbody::SetFree(bool b)
     if(m_free != b)
     {
         m_free = b;
-        UpdateDirection();
+        if(!m_free)
+            SetRotation(Rotation());
         emit propertyChanged("free", m_free);
     }
 }

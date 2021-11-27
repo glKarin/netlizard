@@ -21,7 +21,7 @@
 #include "nlactorcontainer.h"
 
 #define NLOBJECT_PTR_PROPERTY_NAME "NLObject"
-#define DOUBLE_SPINBOX_SINGLE_STEP 0.1
+#define DOUBLE_SPINBOX_SINGLE_STEP 1 //0.1
 #define DOUBLE_SPINBOX_DECIMAL 6
 
 static bool NLPropertyInfoCmp(const NLPropertyInfo &a, const NLPropertyInfo &b)

@@ -22,9 +22,6 @@ protected:
     virtual void Update(float f);
     virtual void Deinit();
 
-private:
-    NLModelRenderer *m_renderer;
-
     Q_DISABLE_COPY(TestScene)
 };
 

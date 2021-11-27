@@ -12,7 +12,6 @@ public:
     {
         Init(length);
     }
-    virtual ~NLRenderModelGLGeneral_coordinate() {}
 
 private:
     void Init(GLfloat length = 9999);
@@ -26,10 +25,35 @@ public:
     {
         Init(length);
     }
-    virtual ~NLRenderModelGLGeneral_cube() {}
 
 private:
     void Init(GLfloat length = 200);
+};
+
+class NLRenderModelGLGeneral_plane : public NLRenderModelGLGeneral
+{
+public:
+    explicit NLRenderModelGLGeneral_plane(GLfloat length = 2000)
+        : NLRenderModelGLGeneral()
+    {
+        Init(length);
+    }
+
+private:
+    void Init(GLfloat length = 2000);
+};
+
+class NLRenderModelGLGeneral_line : public NLRenderModelGLGeneral
+{
+public:
+    explicit NLRenderModelGLGeneral_line(GLfloat length = 2000)
+        : NLRenderModelGLGeneral()
+    {
+        Init(length);
+    }
+
+private:
+    void Init(GLfloat length = 2000);
 };
 
 class NLModelRenderer : public NLRenderable
@@ -72,6 +96,28 @@ public:
     {}
     explicit NLModelRenderer_cube(float length, NLActor *actor = 0)
         : NLModelRenderer(new NLRenderModelGLGeneral_cube(length), actor)
+    {}
+};
+
+class NLModelRenderer_plane : public NLModelRenderer
+{
+public:
+    explicit NLModelRenderer_plane(NLActor *actor = 0)
+        : NLModelRenderer(new NLRenderModelGLGeneral_plane, actor)
+    {}
+    explicit NLModelRenderer_plane(float length, NLActor *actor = 0)
+        : NLModelRenderer(new NLRenderModelGLGeneral_plane(length), actor)
+    {}
+};
+
+class NLModelRenderer_line : public NLModelRenderer
+{
+public:
+    explicit NLModelRenderer_line(NLActor *actor = 0)
+        : NLModelRenderer(new NLRenderModelGLGeneral_line, actor)
+    {}
+    explicit NLModelRenderer_line(float length, NLActor *actor = 0)
+        : NLModelRenderer(new NLRenderModelGLGeneral_line(length), actor)
     {}
 };
 

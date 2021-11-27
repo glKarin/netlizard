@@ -9,8 +9,7 @@
 #include "settings.h"
 
 TestScene::TestScene(QWidget *parent)
-    : NLScene(parent),
-      m_renderer(0)
+    : NLScene(parent)
 {
     setObjectName("TestScene");
 
@@ -18,11 +17,13 @@ TestScene::TestScene(QWidget *parent)
     camera->setObjectName("Test_SimpleCameraActor");
     AddActor(camera);
     NLActor *actor = new NLActor;
-    actor->setObjectName("Test_RootRenderActor");
+    actor->setObjectName("Test_CoordinateRenderActor");
     AddActor(actor);
-    m_renderer = new NLModelRenderer_coordinate(9999);
-    actor->SetRenderable(m_renderer);
+    actor->SetRenderable(new NLModelRenderer_coordinate(9999));
     SetCurrentCamera(camera->Camera());
+    actor = new NLActor;
+    actor->setObjectName("Test_ObjectRenderActor");
+    AddActor(actor);
 }
 
 TestScene::~TestScene()
@@ -31,23 +32,39 @@ TestScene::~TestScene()
 
 void TestScene::Init()
 {
-    qDebug() << 11111;
-    NLActor *actor = new NLActor;
-    actor->setObjectName("Test_ChildRenderActor");
-    GetActor(1)->AddChild(actor);
-    NLModelRenderer *r = new NLModelRenderer_cube(200);
-    actor->SetRenderable(r);
+    NLActor *objectActor = GetActor(2);
 
-    qDebug() << 22222;
+    NLActor *plane = new NLActor;
+    plane->setObjectName("Test_PlaneRender");
+    NLModelRenderer *r = new NLModelRenderer_plane(5000);
+    r->Model()->Primitive(0).SetColor(QColor::fromRgbF(0.5, 0.5, 0.5));
+    plane->SetRenderable(r);
+    objectActor->AddChild(plane);
+
+    NLActor *cube = new NLActor;
+    cube->setObjectName("Test_CubeRender");
+    r = new NLModelRenderer_cube(200);
+    cube->SetRenderable(r);
+    objectActor->AddChild(cube);
     NLVector3 v = VECTOR3(-800, 600, -200);
-    actor->SetPosition(v);
+    cube->SetPosition(v);
     NLVector3 vr = VECTOR3(45,0,0);
-    actor->SetRotation(vr);
+    cube->SetRotation(vr);
 
-    NLVector3 vr2 = VECTOR3(0,45,0);
-    GetActor(1)->SetRotation(vr2);
+    NLActor *line = new NLActor;
+    line->setObjectName("Test_LineRender");
+    r = new NLModelRenderer_line(3000);
+    r->Model()->Primitive(0).SetColor(QColor::fromRgbF(0.1, 0.5, 0.9));
+    line->SetRenderable(r);
+    objectActor->AddChild(line);
+    NLVector3 v2 = VECTOR3(600, 800, -200);
+    line->SetPosition(v2);
+    NLVector3 vr2 = VECTOR3(45,45,45);
+    line->SetRotation(vr2);
 
     SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
+
+    NLScene::Init();
 }
 
 void TestScene::Update(float delta)

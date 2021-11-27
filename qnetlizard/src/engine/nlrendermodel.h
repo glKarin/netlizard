@@ -433,7 +433,7 @@ NLRenderModelVertex<T> & NLRenderModelVertex<T>::Add(const T vertex[VERTEX_ELEME
         Add(color, COLOR_ELEMENT);
     else
     {
-        T arr[COLOR_ELEMENT] = {0};
+        T arr[COLOR_ELEMENT] = {1, 1, 1, 1};
         Add(arr, COLOR_ELEMENT);
     }
 #endif
@@ -503,8 +503,7 @@ inline NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator()(const T item[
 template <class T, class TextureT, class ModeT>
 NLRenderModelPrimitive<T, TextureT, ModeT>::NLRenderModelPrimitive()
     : m_texture(0),
-      m_mode(0),
-      m_color(QColor::fromRgbF(1, 1, 1))
+      m_mode(0)
 {
 
 }
@@ -684,18 +683,12 @@ void NLRenderModelGL<VertexT, IndexT>::Render()
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
-#if(COLOR_ELEMENT > 0)
-    glEnableClientState(GL_COLOR_ARRAY);
-#endif
     const char *vertex = (char *)NLRenderModelGL<VertexT, IndexT>::Vertex().ElementData();
     const int Size = NLRenderModelGL<VertexT, IndexT>::Vertex().ElementSize();
 
     glVertexPointer(VERTEX_ELEMENT, m_vertexType, Size * ELEMENT_SIZE, vertex);
     glTexCoordPointer(TEXCOORD_ELEMENT, m_vertexType, Size * ELEMENT_SIZE, vertex + Size * VERTEX_ELEMENT);
     glNormalPointer(m_vertexType, Size * ELEMENT_SIZE, vertex + Size * (VERTEX_ELEMENT + TEXCOORD_ELEMENT));
-#if(COLOR_ELEMENT > 0)
-    glColorPointer(COLOR_ELEMENT, m_vertexType, Size * ELEMENT_SIZE, vertex + Size * (VERTEX_ELEMENT + TEXCOORD_ELEMENT + 3));
-#endif
 
     GLfloat color[4];
     glGetFloatv(GL_CURRENT_COLOR, color);
@@ -707,10 +700,26 @@ void NLRenderModelGL<VertexT, IndexT>::Render()
         if(glIsTexture(tex))
             glBindTexture(GL_TEXTURE_2D, tex);
         QColor c = p.Color();
-        const GLfloat cv[4] = {c.redF(), c.greenF(), c.blueF(), c.alphaF()};
-        glColor4fv(cv);
+        if(c.isValid())
+        {
+            const GLfloat cv[4] = {c.redF(), c.greenF(), c.blueF(), c.alphaF()};
+            glColor4fv(cv);
+        }
+        else
+        {
+#if(COLOR_ELEMENT > 0)
+            glEnableClientState(GL_COLOR_ARRAY);
+            glColorPointer(COLOR_ELEMENT, m_vertexType, Size * ELEMENT_SIZE, vertex + Size * (VERTEX_ELEMENT + TEXCOORD_ELEMENT + 3));
+#endif
+        }
         glDrawElements(p.Mode(), p.Index().Count(), m_indexType, p.Index().ElementData());
         glBindTexture(GL_TEXTURE_2D, 0);
+        if(!c.isValid())
+        {
+#if(COLOR_ELEMENT > 0)
+            glDisableClientState(GL_COLOR_ARRAY);
+#endif
+        }
     }
 
     glColor4fv(color);
@@ -718,9 +727,6 @@ void NLRenderModelGL<VertexT, IndexT>::Render()
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
-#if(COLOR_ELEMENT > 0)
-    glDisableClientState(GL_COLOR_ARRAY);
-#endif
 }
 
 #define GLtype_ENUM(t) \
