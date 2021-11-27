@@ -149,7 +149,10 @@ void NLVector3Widget::SetReadOnly(bool b)
 
 NLActorPropWidget::NLActorPropWidget(QWidget *widget)
     : QScrollArea(widget),
-      m_actor(0)
+      m_actor(0),
+      m_actorLayout(0),
+      m_componentLayout(0),
+      m_actorGroupBox(0)
 {
     setObjectName("NLActorPropWidget");
     Init();
@@ -170,15 +173,15 @@ void NLActorPropWidget::Init()
     m_actorLayout->setRowWrapPolicy(QFormLayout::WrapLongRows);
     QWidget *root = new QWidget;
     QVBoxLayout *mainLayout = new QVBoxLayout;
+    m_actorGroupBox = new QGroupBox;
 
     label = new QLabel("Actor: ");
     mainLayout->addWidget(label);
     mainLayout->addSpacing(1);
 
-    groupBox = new QGroupBox;
-    groupBox->setLayout(m_actorLayout);
-    groupBox->setTitle("Properties");
-    mainLayout->addWidget(groupBox);
+    m_actorGroupBox->setLayout(m_actorLayout);
+    m_actorGroupBox->setTitle("Properties");
+    mainLayout->addWidget(m_actorGroupBox);
     mainLayout->addSpacing(2);
 
     label = new QLabel("Component: ");
@@ -238,6 +241,7 @@ void NLActorPropWidget::Reset()
     }
     m_propWidgetMap.clear();
     m_actor = 0;
+    m_actorGroupBox->setTitle("Properties");
 }
 
 void NLActorPropWidget::UpdateActorData()
@@ -246,6 +250,8 @@ void NLActorPropWidget::UpdateActorData()
     {
         return;
     }
+
+    m_actorGroupBox->setTitle("Properties(" + m_actor->Name() + ")");
     SetupActorProperty();
     SetupComponentProperties();
 }

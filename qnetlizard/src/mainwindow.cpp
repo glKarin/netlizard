@@ -64,6 +64,7 @@ void MainWindow::Init()
     QAction *menuItem;
     m_toolBar = new QToolBar(this);
     m_centralWidget = new QStackedWidget(this);
+    m_toolBar->setObjectName("QToolBar_mainToolBar");
 
     menuBar = new QMenuBar(this);
 
@@ -100,13 +101,13 @@ void MainWindow::Init()
     setCentralWidget(m_centralWidget);
 
     setMenuBar(menuBar);
-    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
-    int x = settings->GetSetting("WINDOW/x", 0);
-    int y = settings->GetSetting("WINDOW/y", 0);
-    move(x, y);
-    int w = settings->GetSetting("WINDOW/width", 480);
-    int h = settings->GetSetting("WINDOW/height", 360);
-    resize(w, h);
+//    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+//    int x = settings->GetSetting("WINDOW/x", 0);
+//    int y = settings->GetSetting("WINDOW/y", 0);
+//    move(x, y);
+//    int w = settings->GetSetting("WINDOW/width", 480);
+//    int h = settings->GetSetting("WINDOW/height", 360);
+//    resize(w, h);
     setWindowTitle(qApp->applicationName());
     //resize(640, 480);
     MenuActionSlot(0);
@@ -166,6 +167,14 @@ void MainWindow::MenuActionSlot(QAction *action)
         CloseCurrentWidget();
         BaseViewer *viewer = GenViewer(type);
         SetCurrentWidget(viewer);
+        NLScene *scene = GetViewerScene();
+        if(scene)
+        {
+            if(m_sceneTreeWidget)
+                m_sceneTreeWidget->SetScene(scene);
+            if(m_sceneInfoWidget)
+                m_sceneInfoWidget->SetScene(scene);
+        }
         if(viewer->ToolsCount())
         {
             viewer->SetupToolBar(m_toolBar);
@@ -232,14 +241,6 @@ BaseViewer * MainWindow::GenViewer(const QString &type)
         connect(viewer, SIGNAL(titleChanged(const QString &)), this, SLOT(setWindowTitle(const QString &)));
         connect(viewer, SIGNAL(statusTextChanged(const QString &)), this, SLOT(SetStatusText(const QString &)));
         setWindowTitle(viewer->Title());
-        NLScene *scene = dynamic_cast<NLScene *>(viewer->CentralWidget());
-        if(scene)
-        {
-            if(m_sceneTreeWidget)
-                m_sceneTreeWidget->SetScene(scene);
-            if(m_sceneInfoWidget)
-                m_sceneInfoWidget->SetScene(scene);
-        }
     }
     else
     {
@@ -272,57 +273,75 @@ BaseViewer * MainWindow::CentralViewer()
     QWidget *w = centralWidget();
     if(!w)
         return 0;
-    return dynamic_cast<BaseViewer *>(w);
+    QStackedWidget *sw = static_cast<QStackedWidget *>(w);
+    if(sw->count() == 0)
+        return 0;
+    return dynamic_cast<BaseViewer *>(sw->widget(0));
+}
+
+NLScene * MainWindow::GetViewerScene(BaseViewer *v)
+{
+    BaseViewer *viewer = v ? v : CentralViewer();
+    if(!viewer)
+        return 0;
+    NLScene *scene = dynamic_cast<NLScene *>(viewer->CentralWidget());
+    if(scene)
+        return scene;
+    return viewer->Scene();
 }
 
 void MainWindow::OpenSceneEditor()
 {
-    BaseViewer *viewer = CentralViewer();
-    NLScene *scene = viewer ? dynamic_cast<NLScene *>(viewer->CentralWidget()) : 0;
+    NLScene *scene = GetViewerScene();
     if(!m_sceneTreeWidget && !m_actorWidget && !m_sceneInfoWidget)
     {
         m_sceneTreeWidget = new SceneTreeWidget(this);
-        if(scene)
-            m_sceneTreeWidget->SetScene(scene);
         addDockWidget(Qt::RightDockWidgetArea, m_sceneTreeWidget, Qt::Vertical);
 
         m_sceneInfoWidget = new SceneInfoWidget(this);
-        if(scene)
-            m_sceneInfoWidget->SetScene(scene);
         addDockWidget(Qt::RightDockWidgetArea, m_sceneInfoWidget, Qt::Vertical);
 
-        m_actorWidget = new ActorPropertyWidget;
+        m_actorWidget = new ActorPropertyWidget(this);
         addDockWidget(Qt::RightDockWidgetArea, m_actorWidget, Qt::Vertical);
         connect(m_sceneTreeWidget, SIGNAL(actorSelected(NLActor *)), m_actorWidget, SLOT(SetActor(NLActor *)));
 
         splitDockWidget(m_sceneTreeWidget, m_actorWidget, Qt::Horizontal);
         splitDockWidget(m_sceneTreeWidget, m_sceneInfoWidget, Qt::Vertical);
 
-//        restoreDockWidget(m_sceneTreeWidget);
-//        restoreDockWidget(m_sceneInfoWidget);
-//        restoreDockWidget(m_actorWidget);
-        Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
-        restoreState(settings->GetSetting<QByteArray>("WINDOW/state"));
+        restoreDockWidget(m_sceneTreeWidget);
+        restoreDockWidget(m_sceneInfoWidget);
+        restoreDockWidget(m_actorWidget);
+
+        //Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+        //restoreState(settings->GetSetting<QByteArray>("WINDOW/state"));
+
+//        if(scene)
+//        {
+//            m_sceneTreeWidget->SetScene(scene);
+//            m_sceneInfoWidget->SetScene(scene);
+//        }
+        //return;
     }
 
+    if(scene)
+    {
+        m_sceneTreeWidget->SetScene(scene);
+        m_sceneInfoWidget->SetScene(scene);
+    }
     if(!m_sceneTreeWidget->isVisible())
     {
-        if(scene)
-            m_sceneTreeWidget->SetScene(scene);
-        m_sceneTreeWidget->setFloating(false);
+        //m_sceneTreeWidget->setFloating(false);
         m_sceneTreeWidget->setVisible(true);
     }
     if(!m_sceneInfoWidget->isVisible())
     {
-        if(scene)
-            m_sceneInfoWidget->SetScene(scene);
-        m_sceneInfoWidget->setFloating(false);
+        //m_sceneInfoWidget->setFloating(false);
         m_sceneInfoWidget->setVisible(true);
     }
     if(!m_actorWidget->isVisible())
     {
         m_actorWidget->Reset();
-        m_actorWidget->setFloating(false);
+        //m_actorWidget->setFloating(false);
         m_actorWidget->setVisible(true);
     }
 }

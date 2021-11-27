@@ -21,6 +21,7 @@ class AnimationViewer : public BaseViewer
 public:
     explicit AnimationViewer(QWidget *parent = 0);
     virtual ~AnimationViewer();
+    virtual NLScene * Scene();
 
 signals:
 

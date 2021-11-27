@@ -23,9 +23,11 @@ ItemScene::ItemScene(QWidget *parent)
     SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
 
     SimpleCameraActor *camera = new SimpleCameraActor(NLProperties("camera_z_is_up", true));
+    camera->setObjectName("main_camera");
     AddActor(camera);
     m_control = static_cast<SimpleControlComponent *>(camera->Control());
     NLActor *actor = new NLActor;
+    actor->setObjectName("item_model_renderer");
     AddActor(actor);
     m_renderer = new NETLizardMapModelRenderer;
     actor->SetRenderable(m_renderer);

@@ -31,13 +31,16 @@ ImageScene::ImageScene(QWidget *parent)
     memset(&m_data.data, 0, sizeof(m_data.data));
     m_data.type = NL_TEXTURE_UNKNOWN;
 
-    NLActor *actor = new NLActor;
-    AddActor(actor);
     SimpleCameraActor *camera = new SimpleCameraActor(NLProperties("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho)));
+    camera->setObjectName("main_camera_2d");
     AddActor(camera);
     m_control = static_cast<SimpleControl2DComponent *>(camera->Control());
+
+    NLActor *actor = new NLActor;
+    actor->setObjectName("texture_renderer");
     m_imageControl = new SimpleImageControlComponent(NLProperties(), actor);
     actor->AddComponent(m_imageControl);
+    AddActor(actor);
     m_renderer = new NETLizardTextureRenderer;
     actor->SetRenderable(m_renderer);
     NLSceneCamera *orthoCam = camera->Camera();

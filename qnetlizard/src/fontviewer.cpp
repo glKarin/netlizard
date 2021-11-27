@@ -188,3 +188,8 @@ void FontViewer::Reset()
     m_renderButton->setEnabled(false);
     m_textInput->setEnabled(false);
 }
+
+NLScene * FontViewer::Scene()
+{
+    return m_fontScene;
+}

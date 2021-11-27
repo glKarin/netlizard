@@ -10,6 +10,7 @@ class LogDialog;
 class SceneTreeWidget;
 class SceneInfoWidget;
 class ActorPropertyWidget;
+class NLScene;
 
 class MainWindow : public QMainWindow
 {
@@ -30,6 +31,7 @@ protected:
 
 private:
     void Init();
+    NLScene * GetViewerScene(BaseViewer *viewer = 0);
 
 private slots:
     void MenuActionSlot(QAction *action);

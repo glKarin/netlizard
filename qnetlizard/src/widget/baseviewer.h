@@ -8,6 +8,7 @@ class QLabel;
 class QVBoxLayout;
 class QHBoxLayout;
 class QToolBar;
+class NLScene;
 
 class BaseViewer : public QWidget
 {
@@ -22,6 +23,7 @@ public:
     void SetupToolBar(QToolBar *toolbar);
     int ToolsCount() const { return m_tools.size(); }
     void SetTitleLabelVisible(bool visible);
+    virtual NLScene * Scene() { return 0; }
     
 signals:
     void titleChanged(const QString &title);

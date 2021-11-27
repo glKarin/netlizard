@@ -174,3 +174,8 @@ void SpriteViewer::Reset()
     m_spriteScene->Reset();
     m_indexList->clear();
 }
+
+NLScene * SpriteViewer::Scene()
+{
+    return m_spriteScene;
+}

@@ -11,6 +11,7 @@ class NLObject;
 class QFormLayout;
 class QVBoxLayout;
 class QDoubleSpinBox;
+class QGroupBox;
 class NLComponent;
 
 class NLVector3Widget : public QWidget
@@ -86,6 +87,7 @@ private:
     NLActor *m_actor;
     QFormLayout *m_actorLayout;
     QVBoxLayout *m_componentLayout;
+    QGroupBox *m_actorGroupBox;
     ComponentPropWidgetHash m_propWidgetMap;
 
     Q_DISABLE_COPY(NLActorPropWidget)

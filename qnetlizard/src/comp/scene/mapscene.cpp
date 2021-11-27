@@ -70,12 +70,14 @@ MapScene::MapScene(QWidget *parent)
 
     // 3D camera + 3D control
     m_mainCameraActor = new SimpleCameraActor(NLProperties("camera_z_is_up", true));
+    m_mainCameraActor->setObjectName("main_camera");
     AddActor(m_mainCameraActor);
     m_control = static_cast<SimpleControlComponent *>(m_mainCameraActor->Control());
     SetCurrentCamera(m_mainCameraActor->Camera());
 
     // render model
     m_mapActor = new NLActor;
+    m_mapActor->setObjectName("map_model_renderer");
     AddActor(m_mapActor);
     m_renderer = new NETLizardMapModelRenderer;
     m_mapActor->SetRenderable(m_renderer);
@@ -84,29 +86,34 @@ MapScene::MapScene(QWidget *parent)
 
     // 2D background camera
     SimpleCameraActor *camera_2d = new SimpleCameraActor(NLProperties("type", static_cast<int>(NLSceneCamera::Type_Ortho))("enable_control", false));
+    camera_2d->setObjectName("sky_2d_camera");
     AddActor(camera_2d);
     m_skyCamera = static_cast<NLSceneOrthoCamera *>(camera_2d->Camera());
     m_skyCamera->SetAlignment(Qt::AlignCenter);
 
     // 2D background render
     m_skyActor = new NLActor;
+    m_skyActor->setObjectName("sky_texture_renderer");
     AddActor(m_skyActor);
     m_skyRenderer = new NETLizardTextureRenderer;
     m_skyActor->SetRenderable(m_skyRenderer);
 
     // 3D background camera
     m_sky3DCameraActor = new SimpleCameraActor(NLProperties("camera_z_is_up", true)("enable_control", false));
+    m_sky3DCameraActor->setObjectName("skybox_camera");
     AddActor(m_sky3DCameraActor);
     m_sky3DCamera = static_cast<NLScenePerspectiveCamera *>(m_sky3DCameraActor->Camera());
 
     // 3D background render
     m_sky3DActor = new NLActor;
+    m_sky3DActor->setObjectName("skybox_model_renderer");
     AddActor(m_sky3DActor);
     m_sky3DRenderer = new NETLizardItemModelRenderer;
     m_sky3DActor->SetRenderable(m_sky3DRenderer);
 
     // render shadow model
     m_shadowActor = new NLActor;
+    m_shadowActor->setObjectName("stencil_shadow_renderer");
     AddActor(m_shadowActor);
     m_shadowRenderer = new NETLizardShadowModelRenderer;
     m_shadowActor->SetRenderable(m_shadowRenderer);
@@ -119,6 +126,7 @@ MapScene::MapScene(QWidget *parent)
 
     // light source
     SimpleLightSourceActor *lightSource = new SimpleLightSourceActor(NLProperties("type", static_cast<int>(SimpleLightSourceComponent::LightSourceType_Point)));
+    lightSource->setObjectName("lighting_source");
     AddActor(lightSource);
 
     m_shadowRenderer->SetLightSourceType(lightSource->LightSource()->IsDirectionLighting());

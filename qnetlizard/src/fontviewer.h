@@ -15,6 +15,7 @@ class FontViewer : public BaseViewer
 public:
     explicit FontViewer(QWidget *parent = 0);
     virtual ~FontViewer();
+    virtual NLScene * Scene();
     
 signals:
     

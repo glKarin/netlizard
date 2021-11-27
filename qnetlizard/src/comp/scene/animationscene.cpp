@@ -31,9 +31,11 @@ AnimationScene::AnimationScene(QWidget *parent)
     SetAnimFPS(10);
 
     SimpleCameraActor *camera = new SimpleCameraActor(NLProperties("camera_z_is_up", true));
+    camera->setObjectName("main_camera");
     AddActor(camera);
     m_control = static_cast<SimpleControlComponent *>(camera->Control());
     NLActor *actor = new NLActor;
+    actor->setObjectName("animation_model_renderer");
     AddActor(actor);
     m_renderer = new NETLizardAnimationModelRenderer;
     actor->SetRenderable(m_renderer);

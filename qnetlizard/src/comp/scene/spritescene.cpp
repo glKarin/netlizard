@@ -27,8 +27,10 @@ SpriteScene::SpriteScene(QWidget *parent) :
     SimpleCameraActor *camera = new SimpleCameraActor(NLProperties("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho))("enable_control", false));
     Qt::Alignment align = Qt::AlignLeft | Qt::AlignTop;
     align = Qt::AlignCenter;
+    camera->setObjectName("main_camera_2d");
     AddActor(camera);
     NLActor *actor = new NLActor;
+    actor->setObjectName("sprite_renderer");
     AddActor(actor);
     m_renderer = new NETLizardSpriteRenderer;
     actor->SetRenderable(m_renderer);

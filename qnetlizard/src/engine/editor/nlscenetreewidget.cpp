@@ -57,7 +57,7 @@ void NLSceneTreeWidget::UpdateTreeData()
     {
         QTreeWidgetItem *subItem = new QTreeWidgetItem;
         NLActor *a = m_scene->GetActor(i);
-        subItem->setText(0, a->objectName() + "(" + a->Name() + ")");
+        subItem->setText(0, a->objectName()/* + "(" + a->Name() + ")"*/);
         subItem->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<QObject *>(a)));
         addTopLevelItem(subItem);
 
@@ -83,7 +83,7 @@ void NLSceneTreeWidget::AddActorNode(NLActor *actor, QTreeWidgetItem *parent)
         NLActor *a = actor->GetChild(i);
 
         QTreeWidgetItem *subItem = new QTreeWidgetItem;
-        subItem->setText(0, a->objectName() + "(" + a->Name() + ")");
+        subItem->setText(0, a->objectName()/* + "(" + a->Name() + ")"*/);
         subItem->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<QObject *>(a)));
         if(parent)
             parent->addChild(subItem);

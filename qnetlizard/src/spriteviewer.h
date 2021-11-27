@@ -16,6 +16,7 @@ class SpriteViewer : public BaseViewer
 public:
     explicit SpriteViewer(QWidget *parent = 0);
     virtual ~SpriteViewer();
+    virtual NLScene * Scene();
     
 signals:
     

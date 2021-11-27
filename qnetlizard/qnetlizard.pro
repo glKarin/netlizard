@@ -303,12 +303,10 @@ DEPENDPATH += ./src/test
 
 HEADERS += \
     src/test/testviewer.h \
-    src/test/testrenderer.h \
     src/test/testscene.h
 
 SOURCES += \
     src/test/testviewer.cpp \
-    src/test/testrenderer.cpp \
     src/test/testscene.cpp
 } else {
 }

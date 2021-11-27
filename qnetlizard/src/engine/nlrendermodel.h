@@ -687,7 +687,7 @@ void NLRenderModelGL<VertexT, IndexT>::Render()
 #if(COLOR_ELEMENT > 0)
     glEnableClientState(GL_COLOR_ARRAY);
 #endif
-    const GLfloat *vertex = NLRenderModelGL<VertexT, IndexT>::Vertex().ElementData();
+    const char *vertex = (char *)NLRenderModelGL<VertexT, IndexT>::Vertex().ElementData();
     const int Size = NLRenderModelGL<VertexT, IndexT>::Vertex().ElementSize();
 
     glVertexPointer(VERTEX_ELEMENT, m_vertexType, Size * ELEMENT_SIZE, vertex);

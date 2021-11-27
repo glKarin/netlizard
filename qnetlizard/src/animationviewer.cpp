@@ -346,3 +346,8 @@ bool AnimationViewer::OpenFile()
     }
     return res;
 }
+
+NLScene * AnimationViewer::Scene()
+{
+    return m_animationScene;
+}
