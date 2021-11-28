@@ -99,4 +99,16 @@ typedef GLmatrix NLMatrix4;
 
 Q_DECLARE_METATYPE(NLVector3)
 
+namespace NL
+{
+extern const NLVector3 Init_Up_z;
+extern const NLVector3 Init_Up_y;
+extern const NLVector3 Init_Direction_z;
+extern const NLVector3 Init_Direction_y;
+extern const NLVector3 Init_Right;
+extern const NLVector3 Init_Position;
+extern const NLVector3 Init_Rotation;
+extern const NLVector3 Init_Scale;
+}
+
 #endif // _KARIN_NLDEF_H

@@ -15,14 +15,14 @@ bool init_engine()
     if(_engine_inited)
         return true;
 
-    qRegisterMetaType<NL::Physics::m>("NL::Physics::m");
-    qRegisterMetaType<NL::Physics::a>("NL::Physics::a");
-    qRegisterMetaType<NL::Physics::g>("NL::Physics::g");
-    qRegisterMetaType<NL::Physics::G>("NL::Physics::G");
-    qRegisterMetaType<NL::Physics::v>("NL::Physics::v");
-    qRegisterMetaType<NL::Physics::F>("NL::Physics::F");
-    qRegisterMetaType<NL::Physics::t>("NL::Physics::t");
-    qRegisterMetaType<NL::Physics::d>("NL::Physics::d");
+    qRegisterMetaType<NL::Physics::m>("NLPhysics_m");
+    qRegisterMetaType<NL::Physics::a>("NLPhysics_a");
+    qRegisterMetaType<NL::Physics::g>("NLPhysics_g");
+    qRegisterMetaType<NL::Physics::G>("NLPhysics_G");
+    qRegisterMetaType<NL::Physics::v>("NLPhysics_v");
+    qRegisterMetaType<NL::Physics::F>("NLPhysics_F");
+    qRegisterMetaType<NL::Physics::t>("NLPhysics_t");
+    qRegisterMetaType<NL::Physics::d>("NLPhysics_d");
 
     _engine_inited = true;
     return _engine_inited;

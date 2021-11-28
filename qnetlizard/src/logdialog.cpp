@@ -11,6 +11,8 @@
 #include "logoutput.h"
 #include "qdef.h"
 
+QString LogDialog::_logText;
+
 LogDialog::LogDialog(QWidget *parent) :
     QDockWidget(parent),
     m_log(0),
@@ -47,7 +49,7 @@ void LogDialog::Init()
 
     root->setLayout(layout);
 
-    m_textViewer->setHtml(m_log->LogText().replace("\n", "<br/>"));
+    m_textViewer->setHtml(LogDialog::_logText);
 
     setWidget(root);
 
@@ -62,7 +64,8 @@ void LogDialog::PushLog(int type, const QString &str)
     else if(type != 0)
         color = "#ff0000";
 
-    QString text = QString("<font color='%1'>%2</font>").arg(color).arg(str);
+    QString text(QString("<font color='%1'>%2</font>").arg(color).arg(str));
+    LogDialog::_logText.append(text);
     m_textViewer->append(text);
     m_textViewer->verticalScrollBar()->setValue(m_textViewer->verticalScrollBar()->maximum());
     m_textViewer->horizontalScrollBar()->setValue(0);
@@ -82,8 +85,9 @@ void LogDialog::ResetPosAndSize()
 
 void LogDialog::ClearLog()
 {
-    m_log->Clear();
     m_textViewer->clear();
+    LogDialog::_logText.clear();
+    m_log->Clear();
 }
 
 void LogDialog::hideEvent(QHideEvent *e)

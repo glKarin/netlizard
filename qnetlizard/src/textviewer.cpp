@@ -138,7 +138,7 @@ bool TextViewer::SaveData(const QString &file)
         QMessageBox::warning(this, "Error", "No data!");
         return false;
     }
-    bool res = IOUtility::file_put_contents(file, m_data.data, m_data.len);
+    bool res = IOUtility::file_put_contents(file, m_data.data, (quint64)m_data.len);
     if(res)
         QMessageBox::information(this, "Success", "File path is " + file);
     else

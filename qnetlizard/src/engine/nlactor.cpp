@@ -11,15 +11,6 @@
 #include "nlcomponent.h"
 #include "nlmath.h"
 
-static const NLVector3 InitUp_z = VECTOR3(0, 0, 1);
-static const NLVector3 InitUp_y = VECTOR3(0, 1, 0);
-static const NLVector3 InitDirection_z = VECTOR3(0, 1, 0);
-static const NLVector3 InitDirection_y = VECTOR3(0, 0, -1);
-static const NLVector3 InitRight = VECTOR3(1, 0, 0);
-static const NLVector3 InitPosition = VECTOR3(0, 0, 0);
-static const NLVector3 InitRotation = VECTOR3(/*-9*/0, 0, 0);
-static const NLVector3 InitScale = VECTOR3(1, 1, 1);
-
 NLActor::NLActor(NLActor *parent) :
     NLObject(parent),
     m_renderable(0),
@@ -77,10 +68,10 @@ void NLActor::Construct()
     Mesa_AllocGLMatrix(&m_matrix);
     Mesa_AllocGLMatrix(&m_globalMatrix);
     Mesa_AllocGLMatrix(&m_normalMatrix);
-    m_position = InitPosition;
-    m_rotation = InitRotation;
-    m_scale = InitScale;
-    m_up = /*m_zIsUp ? InitUp_z : */InitUp_y;
+    m_position = NL::Init_Position;
+    m_rotation = NL::Init_Rotation;
+    m_scale = NL::Init_Scale;
+    m_up = NL::Init_Up_y;
     UpdateMatrix();
     UpdateDirection();
 }
@@ -125,8 +116,6 @@ void NLActor::Render()
     if(m_children)
         m_children->Render();
     //qDebug() << objectName() + ": " + Name() + " -> render" << m_position.v[0] << m_position.v[1] << m_position.v[2];
-
-    //DM(m_globalMatrix);
 }
 
 void NLActor::Destroy()
@@ -364,10 +353,10 @@ void NLActor::SetRenderable(NLRenderable *renderable)
 
 void NLActor::Reset()
 {
-    m_position = InitPosition;
-    m_rotation = InitRotation;
-    m_scale = InitScale;
-    m_up = /*m_zIsUp ? InitUp_z : */InitUp_y;
+    m_position = NL::Init_Position;
+    m_rotation = NL::Init_Rotation;
+    m_scale = NL::Init_Scale;
+    m_up = NL::Init_Up_y;
     UpdateMatrix();
     UpdateDirection();
     emit positionChanged(m_position);
@@ -433,9 +422,9 @@ NLActor * NLActor::MoveOriginal(const NLVector3 &unit)
         return this;
 
     NLVector3 pos = m_position;
-    NLVector3 right = InitRight;
-    NLVector3 up = InitUp_y;
-    NLVector3 direction = InitDirection_y;
+    const NLVector3 &right = NL::Init_Right;
+    const NLVector3 &up = NL::Init_Up_y;
+    const NLVector3 &direction = NL::Init_Direction_y;
     vector3_moveve(&pos, &right, VECTOR3_X(unit));
     vector3_moveve(&pos, &up, VECTOR3_Y(unit));
     vector3_moveve(&pos, &direction, VECTOR3_Z(unit));
@@ -548,7 +537,7 @@ void NLActor::UpdateDirection()
 {
     UpdateUp(); // virtual, constructor call it
 
-    float v[] = {0, 0, -1};
+    static const float v[] = {0, 0, -1};
     Mesa_glTransform_row(VECTOR3_V(m_direction), v, &m_normalMatrix);
 
     vector3_crossv(&m_right, &m_direction, &m_up);
@@ -557,18 +546,18 @@ void NLActor::UpdateDirection()
 
 void NLActor::UpdateUp()
 {
-    NLVector3 up = /*m_zIsUp ? InitUp_z : */InitUp_y;
-    Mesa_glTransform_row(VECTOR3_V(m_up), VECTOR3_V(up), &m_normalMatrix);
+    static const float up[] = {0, 1, 0};
+    Mesa_glTransform_row(VECTOR3_V(m_up), up, &m_normalMatrix);
 }
 
 void NLActor::InitProperty()
 {
     NLObject::InitProperty();
-    NLVector3 v = GetInitProperty_T<NLVector3>("position", InitPosition);
+    NLVector3 v = GetInitProperty_T<NLVector3>("position", NL::Init_Position);
     SetPosition(v);
-    v = GetInitProperty_T<NLVector3>("scale", InitScale);
+    v = GetInitProperty_T<NLVector3>("scale", NL::Init_Scale);
     SetScale(v);
-    v = GetInitProperty_T<NLVector3>("rotation", InitRotation);
+    v = GetInitProperty_T<NLVector3>("rotation", NL::Init_Rotation);
     //VECTOR3_X(v) = GetProperty_T<float>("pitch", 0);
     //VECTOR3_Y(v) = GetProperty_T<float>("yaw", 0);
     //VECTOR3_Z(v) = GetProperty_T<float>("roll", 0);

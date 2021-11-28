@@ -742,7 +742,7 @@ void NLRenderModelGL<VertexT, IndexT>::Render()
 template <class VertexT, class IndexT>
 GLenum NLRenderModelGL<VertexT, IndexT>::GetVertexType()
 {
-    VertexT t;
+    VertexT t = VertexT();
     GLtype_ENUM(t)
     return GL_FLOAT;
 }
@@ -750,7 +750,7 @@ GLenum NLRenderModelGL<VertexT, IndexT>::GetVertexType()
 template <class VertexT, class IndexT>
 GLenum NLRenderModelGL<VertexT, IndexT>::GetIndexType()
 {
-    IndexT t;
+    IndexT t = IndexT();
     GLtype_ENUM(t)
     return GL_UNSIGNED_SHORT;
 }

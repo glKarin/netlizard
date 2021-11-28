@@ -319,7 +319,7 @@ bool ImageScene::SaveData(const QString &file)
     {
         case NL_TEXTURE_NORMAL_PNG:
         case NL_TEXTURE_ENCODE_PNG:
-            res = IOUtility::file_put_contents(file, (char *)m_data.data.image, m_data.len);
+        res = IOUtility::file_put_contents(file, (char *)m_data.data.image, (quint64)m_data.len);
             break;
         case NL_TEXTURE_3D_ENGINE_V2:
         res = nlSaveTextureV2DataToImageFile(m_data.data.texture, ba.constData(), 1);

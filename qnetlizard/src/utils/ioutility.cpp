@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QDataStream>
+#include <QTextStream>
 
 IOUtility::IOUtility()
 {
@@ -13,7 +14,10 @@ int IOUtility::file_put_contents(const QString &file, const char *data, quint64 
 
     res = false;
     QFile f(file);
-    if(!f.open((flags & 1) ? QIODevice::Append : QIODevice::WriteOnly))
+    QIODevice::OpenMode mode = QIODevice::WriteOnly;
+    if(flags & 1)
+        mode |= QIODevice::Append;
+    if(!f.open(mode))
         return false;
     QDataStream os(&f);
     int l = os.writeRawData(data, len);
@@ -46,5 +50,25 @@ char * IOUtility::file_get_contents(const QString &file, quint64 *len)
     memcpy(res, ba.constData(), size);
     if(len)
         *len = size;
+    return res;
+}
+
+
+int IOUtility::file_put_contents(const QString &file, const QString &str, int flags)
+{
+    bool res;
+
+    res = false;
+    QFile f(file);
+    QIODevice::OpenMode mode = QIODevice::WriteOnly | QIODevice::Text;
+    if(flags & 1)
+        mode |= QIODevice::Append;
+
+    if(!f.open(mode))
+        return false;
+    QTextStream os(&f);
+    os << str;
+    f.flush();
+    f.close();
     return res;
 }

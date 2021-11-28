@@ -1,8 +1,13 @@
 #ifndef _KARIN_QDEF_H
 #define _KARIN_QDEF_H
 
+#ifdef _DEV_TEST
 #define DEBUG_DESTROY_Q qDebug() << "Q ~" + objectName();
 #define DEBUG_DESTROY(name) qDebug() << QString("~") + (name);
+#else
+#define DEBUG_DESTROY_Q
+#define DEBUG_DESTROY(name)
+#endif
 
 #define LIB_NAME "libnetlizard"
 #define APP_NAME "QNETLizard"

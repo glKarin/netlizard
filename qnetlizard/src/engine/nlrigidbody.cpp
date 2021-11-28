@@ -6,15 +6,6 @@
 #include "nlforcecontainer.h"
 #include "nlmath.h"
 
-static const NLVector3 InitUp_z = VECTOR3(0, 0, 1);
-static const NLVector3 InitUp_y = VECTOR3(0, 1, 0);
-static const NLVector3 InitDirection_z = VECTOR3(0, 1, 0);
-static const NLVector3 InitDirection_y = VECTOR3(0, 0, -1);
-static const NLVector3 InitRight = VECTOR3(1, 0, 0);
-static const NLVector3 InitPosition = VECTOR3(0, 0, 0);
-static const NLVector3 InitRotation = VECTOR3(/*-9*/0, 0, 0);
-static const NLVector3 InitScale = VECTOR3(1, 1, 1);
-
 NLRigidbody::NLRigidbody(NLActor *parent) :
     NLActor(parent),
     m_zIsUp(false),
@@ -164,7 +155,7 @@ void NLRigidbody::UpdateMoveMatrix()
     Mesa_glRotate(&m_moveMatrix, VECTOR3_Y(m_moveRotation), 0, 1, 0);
     NL::cale_normal_matrix(m_moveMatrix, m_moveMatrix);
 
-    float v[] = {0, 0, -1};
+    static const float v[] = {0, 0, -1};
     Mesa_glTransform_row(VECTOR3_V(m_moveDirection), v, &m_moveMatrix);
 }
 
@@ -177,8 +168,8 @@ NLActor * NLRigidbody::Move(const NLVector3 &v)
     if(vector3_iszero(&v))
         return this;
 
-    NLVector3 right = NLActor::Right();
-    NLVector3 up = NLActor::Up();
+    const NLVector3 right = NLActor::Right();
+    const NLVector3 up = NLActor::Up();
     vector3_moveve(&pos, &right, VECTOR3_X(v));
     vector3_moveve(&pos, &up, VECTOR3_Y(v));
     vector3_moveve(&pos, &m_moveDirection, VECTOR3_Z(v));
@@ -195,9 +186,9 @@ NLActor * NLRigidbody::MoveSelfOriginal(const NLVector3 &unit)
     if(vector3_iszero(&unit))
         return this;
 
-    NLVector3 right = InitRight;
-    NLVector3 up = m_zIsUp ? InitUp_z : InitUp_y;
-    NLVector3 direction = m_zIsUp ? InitDirection_z : InitDirection_y;
+    const NLVector3 &right = NL::Init_Right;
+    const NLVector3 &up = m_zIsUp ? NL::Init_Up_z : NL::Init_Up_y;
+    const NLVector3 &direction = m_zIsUp ? NL::Init_Direction_z : NL::Init_Direction_y;
     vector3_moveve(&pos, &right, VECTOR3_X(unit));
     vector3_moveve(&pos, &up, VECTOR3_Y(unit));
     vector3_moveve(&pos, &direction, VECTOR3_Z(unit));
@@ -231,7 +222,7 @@ void NLRigidbody::SetZIsUp(bool b)
     if(m_zIsUp != b)
     {
         m_zIsUp = b;
-        SetUp(m_zIsUp ? InitUp_z : InitUp_y);
+        SetUp(m_zIsUp ? NL::Init_Up_z : NL::Init_Up_y);
         //UpdateMatrix();
         UpdateDirection();
         emit propertyChanged("z_is_up", m_zIsUp);
@@ -245,7 +236,7 @@ void NLRigidbody::SetFixedUp(bool b)
         m_fixedUp = b;
         if(m_fixedUp)
         {
-            SetUp(m_zIsUp ? InitUp_z : InitUp_y);
+            SetUp(m_zIsUp ? NL::Init_Up_z : NL::Init_Up_y);
         }
         //UpdateMatrix();
         UpdateDirection();

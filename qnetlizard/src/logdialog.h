@@ -33,8 +33,9 @@ private:
     LogOutput *m_log;
     QTextBrowser *m_textViewer;
 
+    static QString _logText;
+
     Q_DISABLE_COPY(LogDialog)
-    
 };
 
 #endif // _KARIN_LOGDIALOG_H

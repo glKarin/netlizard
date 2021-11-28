@@ -23,11 +23,19 @@ class LogOutput : public QObject
 {
     Q_OBJECT
 public:
+    enum Output_Channel
+    {
+        Output_Console = 1,
+        Output_File = 2
+    };
+
+public:
     virtual ~LogOutput();
     static LogOutput * Instance();
     const LogOutputList & LogList() const { return m_logList; }
-    QString LogText() const { return m_logText; }
     uint Count() const { return m_logList.size(); }
+    int OutputChannel() const;
+    void SetOutputChannel(int c);
     
 signals:
     void outputLog(int type, const QString &msg);
@@ -36,17 +44,22 @@ public slots:
     void Clear();
     void Start();
     void Finish();
-    void Push(int type, const QString &msg);
+    void Push(int type, const char *msg);
 
 private:
     explicit LogOutput(QObject *parent = 0);
     QString CurrentDatetime() const;
     void AddItem(const LogOutputItem &item);
+    void OutputConsole(int type, const char *msg);
+    void MkLogFile();
+    bool MkLogDir();
+    void OutputFile(const QString &item);
     
 private:
     LogOutputList m_logList;
-    QString m_logText;
     bool m_inited;
+    int m_outputChannel;
+    QString m_logFile;
 
     Q_DISABLE_COPY(LogOutput)
 };

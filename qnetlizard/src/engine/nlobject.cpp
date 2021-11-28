@@ -100,7 +100,9 @@ void NLObject::SetType(NLObject_Type type)
 
 void NLObject::Init()
 {
-    qDebug() << objectName() + ": " + m_name + " -> inited";
+#ifdef _DEV_TEST
+    qDebug() << objectName() + "(" + m_name + ") -> INITED";
+#endif
     InitProperty();
     m_inited = true;
     emit initilized();
@@ -110,19 +112,27 @@ void NLObject::Update(float delta)
 {
     if(!IsActived())
         return;
-    //qDebug() << objectName() + ": " + m_name + " -> update(" + QString::number(delta) + ")";
+#if 0
+    qDebug() << objectName() + "(" + m_name + ") -> UPDATE(" + QString::number(delta) + ")";
+#else
+    Q_UNUSED(delta);
+#endif
 }
 
 void NLObject::Reset()
 {
-    qDebug() << objectName() + ": " + m_name + " -> reset";
+#ifdef _DEV_TEST
+    qDebug() << objectName() + "(" + m_name + ") -> RESET";
+#endif
     emit reseted();
 }
 
 void NLObject::Destroy()
 {
+#ifdef _DEV_TEST
+    qDebug() << objectName() + "(" + m_name + ") -> DESTROYED";
+#endif
     emit destroying();
-    qDebug() << objectName() + ": " + m_name + " -> destroyed";
     m_inited = false;
 }
 
@@ -152,7 +162,6 @@ NLProperty NLObject::GetProperty(const QString &name, const NLProperty &def) con
 void NLObject::SetProperty(const QString &name, const NLProperty &value)
 {
     bool has = HasProperty(name);
-    //qDebug() << has << NL::property_equals(GetProperty(name), value) << value.typeName();
     if(has && NL::property_equals(GetProperty(name), value))
     {
         return;

@@ -11,16 +11,6 @@
 #include "nlmath.h"
 #include "qdef.h"
 
-static const NLVector3 InitUp_z = VECTOR3(0, 0, 1);
-static const NLVector3 InitUp_y = VECTOR3(0, 1, 0);
-static const NLVector3 InitDirection_z = VECTOR3(0, 1, 0);
-static const NLVector3 InitDirection_y = VECTOR3(0, 0, -1);
-static const NLVector3 InitRight = VECTOR3(1, 0, 0);
-static const NLVector3 InitPosition = VECTOR3(0, 0, 0);
-static const NLVector3 InitRotation = VECTOR3(/*-9*/0, 0, 0);
-static const NLVector3 InitScale = VECTOR3(1, 1, 1);
-
-
 NLSceneCameraBase::NLSceneCameraChangedNotify::NLSceneCameraChangedNotify(int type)
     : m_type(type)
 {
@@ -50,10 +40,10 @@ NLSceneCameraBase::NLSceneCameraBase(NLScene *widget)
     Mesa_AllocGLMatrix(&m_globalMatrix);
     Mesa_AllocGLMatrix(&m_mvpMatrix);
     Mesa_AllocGLMatrix(&m_renderMatrix);
-    m_position = InitPosition;
-    m_rotation = InitRotation;
-    m_scale = InitScale;
-    m_up = m_zIsUp ? InitUp_z : InitUp_y;
+    m_position = NL::Init_Position;
+    m_rotation = NL::Init_Rotation;
+    m_scale = NL::Init_Scale;
+    m_up = m_zIsUp ? NL::Init_Up_z : NL::Init_Up_y;
     if(m_zIsUp)
         Mesa_glRotate(&m_renderMatrix, -90, 1, 0, 0);
     UpdateMatrix();
@@ -106,9 +96,7 @@ void NLSceneCameraBase::SetPosition(const NLVector3 &v)
 {
     if(vector3_equals(&m_position, &v))
         return;
-    VECTOR3_X(m_position) = VECTOR3_X(v);
-    VECTOR3_Y(m_position) = VECTOR3_Y(v);
-    VECTOR3_Z(m_position) = VECTOR3_Z(v);
+    m_position = v;
     UpdateMatrix();
     ValueChanged("position", NLProperty::fromValue<NLVector3>(m_position));
 }
@@ -117,9 +105,7 @@ void NLSceneCameraBase::SetRotation(const NLVector3 &v)
 {
     if(vector3_equals(&m_rotation, &v))
         return;
-    VECTOR3_X(m_rotation) = VECTOR3_X(v);
-    VECTOR3_Y(m_rotation) = VECTOR3_Y(v);
-    VECTOR3_Z(m_rotation) = VECTOR3_Z(v);
+    m_rotation = v;
     UpdateMatrix();
     UpdateDirection();
     ValueChanged("rotation", NLProperty::fromValue<NLVector3>(m_rotation));
@@ -129,9 +115,7 @@ void NLSceneCameraBase::SetScale(const NLVector3 &v)
 {
     if(vector3_equals(&m_scale, &v))
         return;
-    VECTOR3_X(m_scale) = VECTOR3_X(v);
-    VECTOR3_Y(m_scale) = VECTOR3_Y(v);
-    VECTOR3_Z(m_scale) = VECTOR3_Z(v);
+    m_scale = v;
     UpdateMatrix();
     PropertyChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
 }
@@ -271,13 +255,13 @@ void NLSceneCameraBase::SetScene(NLScene *scene)
 void NLSceneCameraBase::Reset()
 {
     SetGlobalMatrix(0);
-    m_position = InitPosition;
+    m_position = NL::Init_Position;
     ValueChanged("position", NLProperty::fromValue<NLVector3>(m_position));
-    m_rotation = InitRotation;
+    m_rotation = NL::Init_Rotation;
     ValueChanged("rotation", NLProperty::fromValue<NLVector3>(m_rotation));
-    m_scale = InitScale;
+    m_scale = NL::Init_Scale;
     ValueChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
-    m_up = m_zIsUp ? InitUp_z : InitUp_y;
+    m_up = m_zIsUp ? NL::Init_Up_z : NL::Init_Up_y;
     if(m_zIsUp)
     {
         Mesa_glLoadIdentity(&m_renderMatrix);
@@ -351,7 +335,7 @@ void NLSceneCameraBase::UpdateDirection()
 //    VECTOR3_Z(m_direction) = -z;
 //    vector3_normalizev(&m_direction);
 
-    float v[] = {0, 0, -1};
+    static const float v[] = {0, 0, -1};
     Mesa_glTransform_row(VECTOR3_V(m_direction), v, &m_normalMatrix);
 
     vector3_crossv(&m_right_x_positive, &m_direction, &m_up);
@@ -363,7 +347,7 @@ void NLSceneCameraBase::SetZIsUp(bool b)
     if(m_zIsUp != b)
     {
         m_zIsUp = b;
-        m_up = m_zIsUp ? InitUp_z : InitUp_y;
+        m_up = m_zIsUp ? NL::Init_Up_z : NL::Init_Up_y;
 
         Mesa_glLoadIdentity(&m_renderMatrix);
         if(m_zIsUp)

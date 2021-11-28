@@ -132,9 +132,9 @@ void MainWindow::CloseCurrentWidget()
 
 void MainWindow::MenuActionSlot(QAction *action)
 {
-    QString type;
-    if(action)
-        type = action->data().toString();
+    QString type(action ? action->data().toString() : "index_viewer");
+    if(type.isEmpty())
+        return;
 
     if(type == "exit")
         qApp->quit();

@@ -137,7 +137,9 @@ void NLComponent::Mount(NLActor *actor)
         Init();
     SetActor(actor);
     m_mounted = true;
-    qDebug() << objectName() + ": " + Name() + " -> mounted";
+#ifdef _DEV_TEST
+    qDebug() << objectName() + "(" + Name() + ") -> MOUNTED";
+#endif
     emit mounted();
 }
 
@@ -147,7 +149,9 @@ void NLComponent::Unmount()
         return;
     SetActor(0);
     m_mounted = false;
-    qDebug() << objectName() + ": " + Name() + " ->unmounted";
+#ifdef _DEV_TEST
+    qDebug() << objectName() + "(" + Name() + ") -> UNMOUNTED";
+#endif
     emit unmounted();
 }
 
