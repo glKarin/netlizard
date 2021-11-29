@@ -31,19 +31,6 @@
 
 static const float _g = NL::Physics::EARTH_G * 1000;
 
-//vector3_t lpos;
-//void rrrrr(void)
-//{
-//    glEnableClientState(GL_VERTEX_ARRAY);
-//    glPointSize(10);
-//    glColor4f(1,0,0,1);
-//    glVertexPointer(3, GL_FLOAT, 0, lpos.v);
-//    glDrawArrays(GL_POINTS, 0, 1);
-//    glColor4f(1,1,1,1);
-//    glDisableClientState(GL_VERTEX_ARRAY);
-//    glPointSize(1);
-//}
-
 MapScene::MapScene(QWidget *parent)
     : NLScene(parent),
       m_model(0),
@@ -257,6 +244,8 @@ void MapScene::Update(float delta)
         ConvToRenderVector3(p);
         m_mainCameraActor->SetPosition(p);
         m_mainCameraActor->UpdateCamera();
+
+        CollisionItem(item);
     }
 
     // cull map scenes
@@ -375,6 +364,21 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
         free(m_model);
         m_model = 0;
         return false;
+    }
+
+    NLint count = 0;
+    const NETLizard_Level_Teleport *teleport = nlGet3DGameTeleport(m_model->game, level, -1, &count);
+    if(teleport)
+    {
+        for(int i = 0; i < count; i++)
+        {
+            const NETLizard_Level_Teleport *t = teleport + i;
+            for(int j = 0; j < countof(t->item); j++)
+            {
+                if(t->item[j] >= 0)
+                    m_teleport.insert(t->item[j], t);
+            }
+        }
     }
 
     m_renderer->SetModel(m_model);
@@ -507,6 +511,7 @@ bool MapScene::KeyEventHandler(int key, bool pressed, int modifier)
 
 void MapScene::Reset()
 {
+    m_teleport.clear();
     m_renderer->SetModel(0);
     m_shadowRenderer->SetModel(0);
     m_skyRenderer->SetTexture(0);
@@ -616,4 +621,30 @@ void MapScene::SetSingleScene(bool b)
     {
         m_singleScene = b;
     }
+}
+
+bool MapScene::CollisionItem(int item)
+{
+    //qDebug() << item << m_teleport.keys();
+    if(item < 0)
+        return false;
+    if(m_teleport.isEmpty())
+        return false;
+    if(!m_teleport.contains(item))
+        return false;
+    m_mainCameraActor->Collision();
+    const NETLizard_Level_Teleport *teleport = m_teleport[item];
+    NLVector3 pos = m_mainCameraActor->Position();
+    ConvToAlgoVector3(pos);
+    if(teleport->mask & 1) VECTOR3_X(pos) = teleport->position[0] >> 16;
+    if(teleport->mask & 2) VECTOR3_Y(pos) = teleport->position[1] >> 16;
+    if(teleport->mask & 4) VECTOR3_Z(pos) = teleport->position[2] >> 16;
+    ConvToRenderVector3(pos);
+    m_mainCameraActor->SetPosition(pos);
+    NLVector3 rot = m_mainCameraActor->Rotation();
+    if(teleport->mask & 8) VECTOR3_X(rot) = teleport->rotation[1];
+    if(teleport->mask & 16) VECTOR3_Y(rot) = teleport->rotation[0];
+    m_mainCameraActor->SetRotation(rot);
+    m_mainCameraActor->UpdateCamera();
+    return true;
 }

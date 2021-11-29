@@ -779,6 +779,84 @@ NLboolean nlIsRE3DMesh(const char *data, NLsizei len)
     return res == 0 ? NL_TRUE : NL_FALSE;
 }
 
+static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_2[] = {
+    {NL_SHADOW_OF_EGYPT_3D, 2, {13, 12}, 15, {-100466688, -141295616, -16384000}, {180, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 2, {15, 14}, 7, {-78643200, 147456000, 9830400}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 2, {11, 10}, 7, {-579993600, 8847360, -36044800}, {0, 0}},
+};
+static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_4[] = {
+    {NL_SHADOW_OF_EGYPT_3D, 4, {11, 10}, 7, {205914112, -144179200, 9830400}, {0, 0}},
+};
+static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_6[] = {
+    {NL_SHADOW_OF_EGYPT_3D, 6, {2, 3}, 7, {-68812800, -503119872, -55705600}, {0, 0}},
+};
+static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_8[] = {
+    {NL_SHADOW_OF_EGYPT_3D, 8, {0, 1}, 3, {-49152000, -76349440, 0}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 8, {80, 82}, 7, {-550502400, 139853824, 13631488}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 8, {120, 127}, 3, {-49152000, -76349440, 0}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 8, {34, 31}, 7, {462028800, 474087424, 6422528}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 8, {68, 70}, 7, {-167116800, -587530240, 14417920}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 8, {132, 136}, 7, {56164352, 82575360, 13959168}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 8, {114, 116}, 7, {56164352, 80871424, 14483456}, {0, 0}},
+};
+static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_9[] = {
+    {NL_SHADOW_OF_EGYPT_3D, 9, {26, 28}, 7, {-152305664, 397213696, 13107200}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 9, {96, 101}, 7, {742195200, 595132416, 13107200}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 9, {81, 83}, 7, {466419712, -32768000, 13107200}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 9, {34, 36}, 7, {289996800, -622460928, 13107200}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 9, {71, 73}, 7, {466419712, -32768000, 13107200}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 9, {38, 41}, 7, {-44171264, -43778048, 14483456}, {0, 0}},
+};
+static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_10[] = {
+    {NL_SHADOW_OF_EGYPT_3D, 10, {0, 1}, 7, {55181312, 86507520, 12713984}, {0, 0}},
+};
+static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_11[] = {
+    {NL_SHADOW_OF_EGYPT_3D, 11, {10, 11}, 7, {111411200, -97648640, 8192000}, {0, 0}},
+};
+static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_12[] = {
+    {NL_SHADOW_OF_EGYPT_3D, 12, {30, 42}, 7, {325255168, 72679424, 13107200}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 12, {19, 25}, 7, {571015168, -310640640, 13107200}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 12, {63, 73}, 7, {305594368, -477756440, 14483456}, {0, 0}},
+};
+static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_13[] = {
+    {NL_SHADOW_OF_EGYPT_3D, 13, {7, 8}, 11, {-78643200, -149094400, 0}, {180, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 13, {11, 10}, 7, {39321600, 144637952, 0}, {0, 0}},
+    {NL_SHADOW_OF_EGYPT_3D, 13, {13, 14}, 7, {50593792, -68943872, 9830400}, {0, 0}},
+};
+static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_14[] = {
+    {NL_SHADOW_OF_EGYPT_3D, 14, {1, 2}, 7, {44433408, -29032448, 8454144}, {0, 0}},
+};
+static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_15[] = {
+    {NL_SHADOW_OF_EGYPT_3D, 15, {1, 8}, 7, {0, -69664768, 8192000}, {0, 0}},
+};
+
+static const NETLizard_Level_Teleport *Egypt3D_Level_Teleport[] = {
+    NULL,
+    NULL, Egypt3D_Level_Teleport_2, NULL, Egypt3D_Level_Teleport_4, NULL,
+    Egypt3D_Level_Teleport_6, NULL, Egypt3D_Level_Teleport_8, Egypt3D_Level_Teleport_9, Egypt3D_Level_Teleport_10,
+    Egypt3D_Level_Teleport_11, Egypt3D_Level_Teleport_12, Egypt3D_Level_Teleport_13, Egypt3D_Level_Teleport_14, Egypt3D_Level_Teleport_15,
+    NULL, NULL,
+    NULL,
+};
+static const NLint Egypt3D_Level_Teleport_Count[] = {
+    0,
+    0, COUNTOF(Egypt3D_Level_Teleport_2), 0, COUNTOF(Egypt3D_Level_Teleport_4), 0,
+    COUNTOF(Egypt3D_Level_Teleport_6), 0, COUNTOF(Egypt3D_Level_Teleport_8), COUNTOF(Egypt3D_Level_Teleport_9), COUNTOF(Egypt3D_Level_Teleport_10),
+    COUNTOF(Egypt3D_Level_Teleport_11), COUNTOF(Egypt3D_Level_Teleport_12), COUNTOF(Egypt3D_Level_Teleport_13), COUNTOF(Egypt3D_Level_Teleport_14), COUNTOF(Egypt3D_Level_Teleport_15),
+    0, 0,
+    0,
+};
+
+const NETLizard_Level_Teleport * nlGet3DGameTeleport(NLenum game, NLint level, NLint item_id, NLint *length)
+{
+    if(game != NL_SHADOW_OF_EGYPT_3D)
+        return NULL;
+    const NETLizard_Level_Teleport *ret = Egypt3D_Level_Teleport[level];
+    if(length)
+        *length = Egypt3D_Level_Teleport_Count[level];
+    return ret;
+}
+
 char * make_resource_file_path(const char *format, int index, const char *resc_path)
 {
     size_t fl = strlen(format);

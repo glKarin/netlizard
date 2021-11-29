@@ -738,7 +738,7 @@ class__e__lvl class_e__function_h_1int__scene(const byte arrayOfByte1[], const c
             a[(i14 * 3 + 2)] = ((jshort)marge_digit(arrayOfByte1[i1], arrayOfByte1[(i1 + 1)]));
 		}
 		dprintfss("Get scene vertex coord");
-        jshort *arrayOfShort = ARRAY_DATA(h[i13].short_array_7__b__primitive) ? h[i13].short_array_7__b__primitive.array : NULL;
+        jshort *arrayOfShort = ARRAY_DATA(h[i13].short_array_7__b__primitive) ? (jshort *)h[i13].short_array_7__b__primitive.array : NULL;
         jint i17;
 		for (i17 = 0; i17 < i10; i17++)
 		{

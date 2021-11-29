@@ -324,7 +324,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 				m->plane = planes;
                 m->plane_type = 1;
 			}
-            else if(mesh->primitive.data) // If not plane data, make a floor plane with vertex data.
+            else if(mesh->primitive.data) // If not plane data, make planes with vertex data.
 			{
 				GLuint c = 0;
 				GLuint j;

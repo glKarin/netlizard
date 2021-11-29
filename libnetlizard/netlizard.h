@@ -398,6 +398,17 @@ typedef struct NETLizard_3D_Model_Config_s
     char obj_path_format[14];
 } NETLizard_3D_Model_Config;
 
+/* NETLizard 3D map teleport config, Egypt 3D */
+typedef struct NETLizard_Level_Teleport_s
+{
+    NLenum game;
+    NLint level;
+    NLint item[2];
+    NLbitfield mask;
+    NLint position[3];
+    NLint rotation[2];
+} NETLizard_Level_Teleport;
+
 ////////// function //////////
 /* PNG util */
 NLboolean nlIsPNGFile(const char *name); // check file is normal png
@@ -458,6 +469,7 @@ NL_RET_PTR_CONST(char *) const char * nlGet3DGameLevelName(NETLizard_Game game, 
 NLboolean nlGet3DGameLevelRange(NETLizard_Game game, NLint *start, NLint *count);
 NL_RET_PTR_CONST(char *) const char * nlGet3DGameName(NETLizard_Game game);
 const NETLizard_3D_Model_Config * nlGet3DGameModelConfig(NETLizard_Game game);
+const NETLizard_Level_Teleport * nlGet3DGameTeleport(NLenum game, NLint level, NLint item_id, NLint *length);
 
 // Contr Terrisiem 3D
 NLboolean nlReadCT3DModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
