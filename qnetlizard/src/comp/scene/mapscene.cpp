@@ -479,6 +479,7 @@ bool MapScene::KeyEventHandler(int key, bool pressed, int modifier)
     switch(key)
     {
         case Qt::Key_Control:
+        if(m_noclip != 0)
         {
             bound_t bound = BOUND(0, 0, 0, 0, 0, 0);
             NETLizard_GetNETLizard3DMapBound(m_model, 0, 0, &bound);
@@ -503,11 +504,14 @@ bool MapScene::KeyEventHandler(int key, bool pressed, int modifier)
                 //m_mainCameraActor->AddForce(new NLForce_push(NLProperties("drag_force", -3000)("force", 2000)("direction_x", VECTOR3_X(dir))("direction_y", VECTOR3_Y(dir))("direction_z", VECTOR3_Z(dir)), m_mainCameraActor));
             break;
         case Qt::Key_Space:
+        if(m_noclip != 0)
+        {
             if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())
             {
                 m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", _g)("force", -2000), m_mainCameraActor));
             }
             return true;
+        }
             break;
     case Qt::Key_P:
         SetNoclip(m_noclip ? 0 : 2);
@@ -616,6 +620,8 @@ void MapScene::SetNoclip(int b)
     {
         m_noclip = b;
         m_mainCameraActor->SetFree(m_noclip == 0);
+        if(m_noclip == 0)
+            m_mainCameraActor->ClearAllForces();
     }
 }
 

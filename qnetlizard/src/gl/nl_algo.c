@@ -38,8 +38,10 @@
 #define UP_NORMAL_LIMIT 0.866025
 #define _MAX(a, b) ((a) > (b) ? (a) : (b))
 
-#define IS_FLOOR(normal) ((normal)[2] > UP_NORMAL_LIMIT)
-#define IS_CEIL(normal) ((normal)[2] < -UP_NORMAL_LIMIT)
+//#define IS_FLOOR(normal) ((normal)[2] > UP_NORMAL_LIMIT)
+#define IS_FLOOR(plane) NETLizard_IsFloorPlane(&plane)
+//#define IS_CEIL(normal) ((normal)[2] < -UP_NORMAL_LIMIT)
+#define IS_CEIL(plane) NETLizard_IsCeilPlane(&plane)
 
 #define PUSH_BACK(T, arr, count, t) \
 { \
@@ -109,6 +111,34 @@ static plane_t NETLizard_GetScenePlane(const GL_NETLizard_3D_Mesh *scene, int j)
     plane_make(&p, &position, &normal);
     return p;
 }
+
+#define MUL 10
+static unsigned NETLizard_IsFloorPlane(const plane_t *plane)
+{
+    //return PLANEV_NORMAL_Z(plane) > UP_NORMAL_LIMIT;
+    nl_vector3_t p;
+    vector3_movev(&p, &PLANEV_POSITION(plane), &PLANEV_NORMAL(plane), MUL);
+    const nl_vector3_t dir = VECTOR3(0, 0, -1);
+    ray_t ray = RAYV(VECTOR3_V(p), VECTOR3_V(dir));
+    int r = plane_ray_intersect(plane, &ray, 0, 0);
+    if(r > 0)
+        return 1;
+    return 0;
+}
+
+static unsigned NETLizard_IsCeilPlane(const plane_t *plane)
+{
+    //return PLANEV_NORMAL_Z(plane) < -UP_NORMAL_LIMIT;
+    nl_vector3_t p;
+    vector3_movev(&p, &PLANEV_POSITION(plane), &PLANEV_NORMAL(plane), MUL);
+    const nl_vector3_t dir = VECTOR3(0, 0, 1);
+    ray_t ray = RAYV(VECTOR3_V(p), VECTOR3_V(dir));
+    int r = plane_ray_intersect(plane, &ray, 0, 0);
+    if(r > 0)
+        return 1;
+    return 0;
+}
+#undef MUL
 
 static int NETLizard_IgnoreCollisionTestingItem(int item_type)
 {
@@ -231,7 +261,8 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
             int has_floor = 0;
             for(j = 0; j < next_mesh->plane_count; j++)
             {
-                if(IS_FLOOR(next_mesh->plane[j].normal))
+                plane_t plane = SCENE_PLANE(next_mesh, j);
+                if(IS_FLOOR(plane))
                 {
                     has_floor = 1;
                     break;
@@ -269,15 +300,17 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
     return res;
 }
 
-static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *mesh,  const nl_vector3_t *new_pos, unsigned under, float *rglz)
+static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *mesh, const nl_vector3_t *new_pos, unsigned under, float *rglz)
 {
     if(!mesh || !new_pos)
         return 0;
     unsigned int j;
+    const bound_t box = SCENE_BOUND(mesh);
     for(j = 0; j < mesh->plane_count; j++)
     {
         // 平面是否向上
-        if(!IS_FLOOR(mesh->plane[j].normal))
+        plane_t plane = SCENE_PLANE(mesh, j);
+        if(!IS_FLOOR(plane))
             continue;
         plane_t pla = SCENE_PLANE(mesh, j);
 
@@ -301,8 +334,21 @@ static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *
 #endif
 
         ray_t l = {*new_pos, dir};
-        if(plane_ray_intersect(&pla, &l, NULL, &point))
+        float lamda = 0;
+        if(plane_ray_intersect(&pla, &l, &lamda, &point))
         {
+            if(under)
+            {
+                if(!bound_point_in_box2d(&box, &point))
+                    continue;
+            }
+            else
+            {
+                nl_vector3_t npoint = VECTOR3V(VECTOR3_V(point));
+                vector3_moveve(&npoint, &dir, -1); // TODO: has precision problem: 0.0001
+                if(!NETLizard_PointInScenePlane(mesh, &npoint))
+                    continue;
+            }
             if(rglz)
                 *rglz = VECTOR3_Z(point);
             return 1;
@@ -525,9 +571,9 @@ static collision_result_t NETLizard_ItemCollisionTesting(const GL_NETLizard_3D_M
     unsigned int j = 0;
     while(j < mesh->plane_count)
     {
-        unsigned is_floor = IS_FLOOR(mesh->plane[j].normal);
-        unsigned is_ceil = IS_CEIL(mesh->plane[j].normal);
         plane_t plane = SCENE_PLANE(mesh, j);
+        unsigned is_floor = IS_FLOOR(plane);
+        unsigned is_ceil = IS_CEIL(plane);
         float limit = 0;
         if(is_floor)
             limit = 0;
@@ -735,9 +781,9 @@ static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3
     unsigned int j = 0;
     while(j < mesh->plane_count)
     {
-        unsigned is_floor = IS_FLOOR(mesh->plane[j].normal);
-        unsigned is_ceil = IS_CEIL(mesh->plane[j].normal);
         plane_t plane = SCENE_PLANE(mesh, j);
+        unsigned is_floor = IS_FLOOR(plane);
+        unsigned is_ceil = IS_CEIL(plane);
         float limit = 0;
         if(is_floor)
             limit = 0;

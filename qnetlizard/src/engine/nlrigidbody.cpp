@@ -380,3 +380,9 @@ void NLRigidbody::Collision()
     if(c)
         emit forceChanged();
 }
+
+void NLRigidbody::Reset()
+{
+    NLActor::Reset();
+    ClearAllForces();
+}

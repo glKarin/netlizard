@@ -49,6 +49,7 @@ public:
     NLActor * MoveSelfOriginal(const NLVector3 &v);
     NLINTERFACE void ClearAllForces();
     NLINTERFACE void Collision();
+    virtual void Reset();
     //NLINTERFACE void CollisionFloor();
 
     template <class T>
