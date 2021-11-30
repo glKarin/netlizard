@@ -21,6 +21,7 @@ SimpleImageControlComponent::SimpleImageControlComponent(const NLProperties &pro
     m_invertX(false),
     m_invertY(false)
 {
+    CLASS_NAME(SimpleImageControlComponent);
     setObjectName("SimpleImageControlComponent");
     Reset();
 }

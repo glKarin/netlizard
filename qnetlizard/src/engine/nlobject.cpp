@@ -62,7 +62,8 @@ NLObject::~NLObject()
 void NLObject::Construct(const NLProperties &prop)
 {
     CopyProperty(prop);
-    setObjectName(GetProperty_T<QString>("name", "NLObject"));
+    CLASS_NAME(NLObject);
+    setObjectName(GetInitProperty_T<QString>("name", "NLObject"));
     QObject *p = parent();
     if(p)
     {
@@ -90,6 +91,12 @@ void NLObject::SetName(const QString &name)
 {
     if(m_name != name)
         m_name = name;
+}
+
+void NLObject::SetClassName(const QString &name)
+{
+    if(m_className != name)
+        m_className = name;
 }
 
 void NLObject::SetType(NLObject_Type type)

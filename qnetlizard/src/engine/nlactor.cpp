@@ -63,6 +63,7 @@ void NLActor::Construct()
     if(a)
         SetParentActor(a);
 
+    CLASS_NAME(NLActor);
     setObjectName("NLActor");
     SetType(NLObject::Type_Actor);
     Mesa_AllocGLMatrix(&m_matrix);

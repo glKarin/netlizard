@@ -86,6 +86,7 @@ const HomeCellItemMap & IndexViewer::ActionMap()
         list
                 << HomeCellItem("&Log", "log")
                 << HomeCellItem("&Scene", "scene")
+                << HomeCellItem("&Reset", "reset")
 #ifdef _DEV_TEST
                 << HomeCellItem("&Test", "test")
 #endif

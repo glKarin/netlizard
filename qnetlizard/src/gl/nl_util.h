@@ -15,6 +15,8 @@ typedef vector3_t nl_vector3_t;
 int NETLizard_GetMapRenderScenes(const GL_NETLizard_3D_Model *model, int c[], float frustum[6][4]);
 void NETLizard_GetNETLizard3DMapBound(const GL_NETLizard_3D_Model *model, int scenes[], unsigned int count, struct bound_s *box);
 void NETLizard_GetNETLizard3DMeshBound(const GL_NETLizard_3D_Mesh *mesh, unsigned int count, struct bound_s *box);
+void NETLizard_GetNETLizard3DMeshTransformBound(const GL_NETLizard_3D_Mesh *meshs, unsigned int count, struct bound_s *box);
+int NETLizard_GetNETLizard3DMapNeighboringScenes(const GL_NETLizard_3D_Model *model, int scene, int scenes[]);
 // (x, y, z) -> (x, z, -y)
 void conv_gl_vector3(nl_vector3_t *v);
 vector3_t to_gl_vector3(const vector3_t *v);

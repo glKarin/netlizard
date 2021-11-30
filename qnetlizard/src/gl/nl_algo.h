@@ -16,7 +16,8 @@ typedef enum NETLizard_Collision_Testing_Scene_Result_e
     NETLizard_Collision_Testing_Scene_Pass = 2, // 测试通过, 且位置没有重新设置
     NETLizard_Collision_Testing_Scene_Missing_Plane = 3, // 仅在场景AABB内，但是该场景无碰撞面数据
     NETLizard_Collision_Testing_Scene_Movement = 4, // 在场景AABB内, 且在场景所有碰撞面内, 但是位置被重新设置
-    NETLizard_Collision_Testing_Scene_Item = 5 // 与物体碰撞
+    NETLizard_Collision_Testing_Scene_Item = 5, // 与物体碰撞
+    NETLizard_Collision_Testing_Scene_Only_In_Planes = 6 // 仅在所有平面内, 但距离过小
 } NETLizard_Collision_Testing_Scene_Result;
 
 typedef enum NETLizard_Collision_Testing_Item_Result_e

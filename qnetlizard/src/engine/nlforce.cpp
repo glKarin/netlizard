@@ -57,6 +57,7 @@ void NLForce::Construct()
     NLObject *parent = ParentObject();
     if(parent)
         SetScene(parent->Scene());
+    CLASS_NAME(NLForce);
     setObjectName("NLForce");
     SetType(NLObject::Type_Force);
     VECTOR3_X(m_direction) = VECTOR3_Y(m_direction) = VECTOR3_Z(m_direction) = 0;
@@ -224,6 +225,7 @@ void NLForce_gravity::InitProperty()
 
 void NLForce_gravity::Construct()
 {
+    CLASS_NAME(NLForce_gravity);
     setObjectName("NLForce_gravity");
     m_force = NL::Physics::gravity_force(1, m_g);
     NLVector3 down = VECTOR3(0, -1, 0);
@@ -323,6 +325,7 @@ void NLForce_push::InitProperty()
 
 void NLForce_push::Construct()
 {
+    CLASS_NAME(NLForce_push);
     setObjectName("NLForce_push");
 }
 

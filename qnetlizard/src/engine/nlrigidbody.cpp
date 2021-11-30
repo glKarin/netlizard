@@ -57,9 +57,10 @@ NLRigidbody::~NLRigidbody()
 
 void NLRigidbody::Construct()
 {
+    CLASS_NAME(NLRigidbody);
+    setObjectName("NLRigidbody");
     Mesa_AllocGLMatrix(&m_moveMatrix);
     SetFixedUp(true);
-    setObjectName("NLRigidbody");
     vector3_identityv(&m_moveRotation);
     m_moveDirection = Direction();
 

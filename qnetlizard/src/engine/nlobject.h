@@ -7,6 +7,8 @@
 #include "nlproperties.h"
 #include "nlfuncs.h"
 
+#define CLASS_NAME(x) SetClassName(#x)
+
 class NLObjectContainer;
 class NLScene;
 
@@ -34,6 +36,7 @@ public:
     virtual void Reset();
     NLObject_Type Type() const { return m_type; }
     QString Name() const { return m_name; }
+    QString ClassName() const { return m_className; }
     NLObject * ParentObject();
     bool IsInited() const { return m_inited; }
     NLObjectContainer * Container() { return m_container; }
@@ -55,6 +58,7 @@ public:
 
 protected:
     void SetName(const NLName &name);
+    void SetClassName(const NLName &name);
     void SetType(NLObject_Type type);
     void SetContainer(NLObjectContainer *container);
     virtual void Init();
@@ -80,6 +84,7 @@ private:
     NLObject_Type m_type;
     bool m_inited;
     QString m_name;
+    QString m_className;
     NLObjectContainer *m_container;
     NLProperties m_property;
     NLScene *m_scene;

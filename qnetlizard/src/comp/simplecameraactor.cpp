@@ -17,6 +17,7 @@ SimpleCameraActor::SimpleCameraActor(const NLProperties &prop, NLActor *parent) 
     m_camera(0),
     m_control(0)
 {
+    CLASS_NAME(SimpleCameraActor);
     setObjectName("SimpleCameraActor");
 }
 

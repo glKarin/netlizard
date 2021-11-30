@@ -52,6 +52,7 @@ SimpleCameraComponent::SimpleCameraComponent(const NLProperties &prop, NLActor *
       m_camera(new NLSceneCamera),
       m_cameraNotifyFunc(new CameraNotifyFunc(this))
 {
+    CLASS_NAME(SimpleCameraComponent);
     setObjectName("SimpleCameraComponent");
     m_camera->SetChangedNotifyFunc(static_cast<CameraNotifyFunc *>(m_cameraNotifyFunc));
 

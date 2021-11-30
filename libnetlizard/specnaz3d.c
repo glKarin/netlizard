@@ -765,9 +765,10 @@ class__k__lvl class_k__function_h_1int__scene(const byte arrayOfByte[], const ch
 	i1 += 2;
 	bU = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
 	dprintfsi("Map item count", bU);
-    new_array(&j_l, sizeof(class__j__item), bU);
-    if(ARRAY_DATA(j_l))
+    ARRAY_NULL(j_l);
+    if(bU)
 	{
+        new_array(&j_l, sizeof(class__j__item), bU);
         class__j__item *l = (class__j__item *)(j_l.array);
         jint i19 = 0;
         jint i20;

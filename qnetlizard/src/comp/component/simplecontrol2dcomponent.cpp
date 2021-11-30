@@ -15,6 +15,7 @@ SimpleControl2DComponent::SimpleControl2DComponent(const NLProperties &prop, NLA
         m_invertX(false),
         m_invertY(false)
 {
+    CLASS_NAME(SimpleControl2DComponent);
     setObjectName("SimpleControl2DComponent");
     Reset();
 }

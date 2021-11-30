@@ -24,6 +24,7 @@ typedef QVector<char> ByteArray;
 
 namespace NL
 {
+// no RTTI
 IS_GLtype(GLfloat)
 IS_GLtype(GLdouble)
 IS_GLtype(GLint)

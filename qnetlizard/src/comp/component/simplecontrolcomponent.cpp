@@ -19,6 +19,7 @@ SimpleControlComponent::SimpleControlComponent(const NLProperties &prop, NLActor
         m_freelookSens(M_Freelook_Sens),
     m_fovySens(M_Fovy_Sens)
 {
+    CLASS_NAME(SimpleControlComponent);
     setObjectName("SimpleControlComponent");
     Reset();
 }

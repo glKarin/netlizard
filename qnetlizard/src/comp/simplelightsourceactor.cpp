@@ -9,6 +9,7 @@ SimpleLightSourceActor::SimpleLightSourceActor(const NLProperties &prop, NLActor
     NLActor(prop, parent),
     m_lightSource(0)
 {
+    CLASS_NAME(SimpleLightSourceActor);
     setObjectName("SimpleLightSourceActor");
 }
 

@@ -32,6 +32,7 @@ protected:
 private:
     void Init();
     NLScene * GetViewerScene(BaseViewer *viewer = 0);
+    void Reset();
 
 private slots:
     void MenuActionSlot(QAction *action);
@@ -46,6 +47,7 @@ private:
     BaseViewer * CurrentWidget();
 
 private:
+    QByteArray m_state;
     QToolBar *m_toolBar;
     QStackedWidget *m_centralWidget;
     LogDialog *m_logDialog;

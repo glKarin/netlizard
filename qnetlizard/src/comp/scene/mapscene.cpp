@@ -49,7 +49,7 @@ MapScene::MapScene(QWidget *parent)
       m_control(0),
       m_noclip(0),
       m_fog(false),
-      m_singleScene(false)
+      m_singleScene(0)
 {
     setObjectName("MapScene");
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
@@ -120,7 +120,7 @@ MapScene::MapScene(QWidget *parent)
 
     SetNoclip(settings->GetSetting<int>("DEBUG/noclip"));
     SetFog(settings->GetSetting<int>("RENDER/fog") > 0);
-    SetSingleScene(settings->GetSetting<bool>("DEBUG/single_scene"));
+    SetSingleScene(settings->GetSetting<int>("DEBUG/single_scene"));
     connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
 
@@ -218,7 +218,6 @@ void MapScene::Update(float delta)
         {
             if(VECTOR3_Z(p) > OBJ_HEIGHT + rglz)
             {
-                fprintf(stderr,"res222\n");fflush(stderr);
                 if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())
                 {
                     // pre cale
@@ -259,6 +258,10 @@ void MapScene::Update(float delta)
             {
                 scenes[0] = scene;
                 count = 1;
+                if(m_singleScene == 2)
+                {
+                    count += NETLizard_GetNETLizard3DMapNeighboringScenes(m_model, scene, scenes + 1);
+                }
             }
             else
                 count = 0;
@@ -373,7 +376,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
         for(int i = 0; i < count; i++)
         {
             const NETLizard_Level_Teleport *t = teleport + i;
-            for(int j = 0; j < countof(t->item); j++)
+            for(unsigned j = 0; j < countof(t->item); j++)
             {
                 if(t->item[j] >= 0)
                     m_teleport.insert(t->item[j], t);
@@ -494,6 +497,7 @@ bool MapScene::KeyEventHandler(int key, bool pressed, int modifier)
             }
             m_mainCameraActor->SetPosition(pos);
             m_mainCameraActor->UpdateCamera();
+            return true;
         }
                 //NLVector3 dir = m_mainCameraActor->MoveDirection();
                 //m_mainCameraActor->AddForce(new NLForce_push(NLProperties("drag_force", -3000)("force", 2000)("direction_x", VECTOR3_X(dir))("direction_y", VECTOR3_Y(dir))("direction_z", VECTOR3_Z(dir)), m_mainCameraActor));
@@ -505,6 +509,14 @@ bool MapScene::KeyEventHandler(int key, bool pressed, int modifier)
             }
             return true;
             break;
+    case Qt::Key_P:
+        SetNoclip(m_noclip ? 0 : 2);
+        return true;
+        break;
+    case Qt::Key_G:
+        SetSingleScene(m_singleScene ? 0 : 1);
+        return true;
+        break;
     }
     return false;
 }
@@ -568,7 +580,7 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
         SetFog(fog > 0);
     }
     else if(name == "DEBUG/single_scene")
-        SetSingleScene(value.toBool());
+        SetSingleScene(value.toInt());
 }
 
 void MapScene::ConvToAlgoVector3(vector3_t &v)
@@ -615,7 +627,7 @@ void MapScene::SetFog(bool b)
     }
 }
 
-void MapScene::SetSingleScene(bool b)
+void MapScene::SetSingleScene(int b)
 {
     if(m_singleScene != b)
     {

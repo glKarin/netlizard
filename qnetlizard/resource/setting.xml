@@ -72,8 +72,12 @@
             <option name="option" label="Render scene plane" value="64"></option>
             <option name="option" label="Render scene BSP" value="128"></option>
         </item>
-        <item alias="DEBUG/single_scene" name="Only render current single scene" widget="checkbox" type="bool" default-value="false">
+        <item alias="DEBUG/single_scene" name="Render current single scene" widget="combobox" type="int" default-value="0">
+            <option name="option" label="No single scene" value="0"></option>
+            <option name="option" label="Only render current single scene" value="1"></option>
+            <option name="option" label="Render current scene and neighboring scene" value="2"></option>
         </item>
+        <!--<item alias="DEBUG/single_scene" name="Only render current single scene" widget="checkbox" type="bool" default-value="false"></item>-->
     </category>
 
 </setting>

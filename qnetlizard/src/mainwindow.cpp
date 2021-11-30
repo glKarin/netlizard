@@ -32,6 +32,8 @@
 #include "scenetreewidget.h"
 #include "actorpropertywidget.h"
 
+#define MAIN_WINDOW_INTERNAL_STATE_VERSION -1
+
 #ifdef _DEV_TEST
 #include "testviewer.h"
 #endif
@@ -100,6 +102,28 @@ void MainWindow::Init()
     addToolBar(m_toolBar);
     setCentralWidget(m_centralWidget);
 
+    // dock
+    m_logDialog = new LogDialog(this);
+    addDockWidget(Qt::BottomDockWidgetArea, m_logDialog, Qt::Horizontal);
+    restoreDockWidget(m_logDialog);
+
+    m_sceneTreeWidget = new SceneTreeWidget(this);
+    addDockWidget(Qt::RightDockWidgetArea, m_sceneTreeWidget, Qt::Vertical);
+
+    m_sceneInfoWidget = new SceneInfoWidget(this);
+    addDockWidget(Qt::RightDockWidgetArea, m_sceneInfoWidget, Qt::Vertical);
+
+    m_actorWidget = new ActorPropertyWidget(this);
+    addDockWidget(Qt::RightDockWidgetArea, m_actorWidget, Qt::Vertical);
+    connect(m_sceneTreeWidget, SIGNAL(actorSelected(NLActor *)), m_actorWidget, SLOT(SetActor(NLActor *)));
+
+    splitDockWidget(m_sceneTreeWidget, m_actorWidget, Qt::Horizontal);
+    splitDockWidget(m_sceneTreeWidget, m_sceneInfoWidget, Qt::Vertical);
+
+    restoreDockWidget(m_sceneTreeWidget);
+    restoreDockWidget(m_sceneInfoWidget);
+    restoreDockWidget(m_actorWidget);
+
     setMenuBar(menuBar);
 //    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
 //    int x = settings->GetSetting("WINDOW/x", 0);
@@ -111,6 +135,8 @@ void MainWindow::Init()
     setWindowTitle(qApp->applicationName());
     //resize(640, 480);
     MenuActionSlot(0);
+
+    m_state = saveState(MAIN_WINDOW_INTERNAL_STATE_VERSION);
 }
 
 void MainWindow::CloseCurrentWidget()
@@ -161,6 +187,10 @@ void MainWindow::MenuActionSlot(QAction *action)
     else if(type == "scene")
     {
         OpenSceneEditor();
+    }
+    else if(type == "reset")
+    {
+        Reset();
     }
     else
     {
@@ -252,12 +282,7 @@ BaseViewer * MainWindow::GenViewer(const QString &type)
 void MainWindow::ToggleLogDialog()
 {
     if(!m_logDialog)
-    {
-        m_logDialog = new LogDialog(this);
-        addDockWidget(Qt::BottomDockWidgetArea, m_logDialog, Qt::Horizontal);
-        restoreDockWidget(m_logDialog);
-    }
-
+        return;
     if(m_logDialog->isVisible())
         m_logDialog->hide();
     else
@@ -293,35 +318,6 @@ NLScene * MainWindow::GetViewerScene(BaseViewer *v)
 void MainWindow::OpenSceneEditor()
 {
     NLScene *scene = GetViewerScene();
-    if(!m_sceneTreeWidget && !m_actorWidget && !m_sceneInfoWidget)
-    {
-        m_sceneTreeWidget = new SceneTreeWidget(this);
-        addDockWidget(Qt::RightDockWidgetArea, m_sceneTreeWidget, Qt::Vertical);
-
-        m_sceneInfoWidget = new SceneInfoWidget(this);
-        addDockWidget(Qt::RightDockWidgetArea, m_sceneInfoWidget, Qt::Vertical);
-
-        m_actorWidget = new ActorPropertyWidget(this);
-        addDockWidget(Qt::RightDockWidgetArea, m_actorWidget, Qt::Vertical);
-        connect(m_sceneTreeWidget, SIGNAL(actorSelected(NLActor *)), m_actorWidget, SLOT(SetActor(NLActor *)));
-
-        splitDockWidget(m_sceneTreeWidget, m_actorWidget, Qt::Horizontal);
-        splitDockWidget(m_sceneTreeWidget, m_sceneInfoWidget, Qt::Vertical);
-
-        restoreDockWidget(m_sceneTreeWidget);
-        restoreDockWidget(m_sceneInfoWidget);
-        restoreDockWidget(m_actorWidget);
-
-        //Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
-        //restoreState(settings->GetSetting<QByteArray>("WINDOW/state"));
-
-//        if(scene)
-//        {
-//            m_sceneTreeWidget->SetScene(scene);
-//            m_sceneInfoWidget->SetScene(scene);
-//        }
-        //return;
-    }
 
     if(scene)
     {
@@ -392,3 +388,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings->SetSetting<QByteArray>("WINDOW/state", saveState());
     QMainWindow::closeEvent(event);
 }
+
+void MainWindow::Reset()
+{
+    restoreState(m_state, MAIN_WINDOW_INTERNAL_STATE_VERSION);
+}
+

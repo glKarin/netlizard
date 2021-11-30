@@ -251,7 +251,7 @@ void NLActorPropWidget::UpdateActorData()
         return;
     }
 
-    m_actorGroupBox->setTitle("Properties(" + m_actor->Name() + ")");
+    m_actorGroupBox->setTitle(m_actor->ClassName() + "(" + m_actor->Name() + ")");
     SetupActorProperty();
     SetupComponentProperties();
 }
@@ -283,7 +283,7 @@ void NLActorPropWidget::SetupComponentProperty(NLComponent *comp)
 {
     QFormLayout *layout = new QFormLayout;
     QGroupBox *groupBox = new QGroupBox;
-    groupBox->setTitle(comp->objectName() + "(" + comp->Name() + ")");
+    groupBox->setTitle(comp->ClassName() + "(" + comp->Name() + ")");
     NLPropertyInfoList list = NL::object_propertics(comp);
     SortProperties(list);
     Q_FOREACH(const NLPropertyInfo &item, list)

@@ -38,7 +38,7 @@ protected:
     void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
     void SetNoclip(int b);
     void SetFog(bool b);
-    void SetSingleScene(bool b);
+    void SetSingleScene(int b);
 
     private:
     void ConvToAlgoVector3(vector3_t &v);
@@ -63,7 +63,7 @@ private:
     SimpleControlComponent *m_control;
     int m_noclip;
     bool m_fog;
-    bool m_singleScene;
+    int m_singleScene;
     MapTeleportMap m_teleport;
 
     Q_DISABLE_COPY(MapScene)

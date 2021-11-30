@@ -419,7 +419,7 @@ NLboolean nlLoadEgypt3DModelData(const char* data, NLsizei size, const char *res
 				plane->position[2] = s_a[position_index + 2];
 				k++;
 			}
-		}
+        }
 
         // box
         mesh->box.max[0] = obj->int__d__aabb >> 16;
@@ -659,7 +659,8 @@ class__e__lvl class_e__function_h_1int__scene(const byte arrayOfByte1[], const c
 	i1 += 2;
     jint i6;
 	i6 = marge_digit(arrayOfByte1[i1], arrayOfByte1[(i1 + 1)]);
-	dprintfsi("Map normal count", i6);
+    dprintfsi("Map normal count", i6);
+    ARRAY_NULL(int_d);
 	if(i6)
 	{
         new_array(&int_d, ESIZE(jint, 4), i6);
@@ -753,7 +754,7 @@ class__e__lvl class_e__function_h_1int__scene(const byte arrayOfByte1[], const c
 		dprintfss("Get scene primitive vertex coord index");
 		i1 += 2;
 		i18 = marge_digit(arrayOfByte1[i1], arrayOfByte1[(i1 + 1)]);
-		dprintfsi("Scene plane count", i18);
+        dprintfsi("Scene plane count", i18);
         ARRAY_NULL(h[i13].int_array_2__j__plane);
 		//h[i13].j = NEW_II(int, i18 * 2);
 		if(i18)

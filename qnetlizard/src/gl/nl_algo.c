@@ -6,9 +6,12 @@
 #include <string.h>
 #include <float.h>
 
+#include "nl_util.h"
 #include "lib/bound.h"
 #include "lib/line.h"
 #include "lib/euler.h"
+
+#define PRINT(fmt, args...) { fprintf(stderr, fmt, ##args); fprintf(stderr, "\n"); fflush(stderr); }
 
 #define SCT_Invalid -1
 #define SCT_Outside NETLizard_Collision_Testing_Scene_Outside
@@ -17,6 +20,7 @@
 #define SCT_Missing_Plane NETLizard_Collision_Testing_Scene_Missing_Plane
 #define SCT_Movement NETLizard_Collision_Testing_Scene_Movement
 #define SCT_Item NETLizard_Collision_Testing_Scene_Item
+#define SCT_Only_In_Planes NETLizard_Collision_Testing_Scene_Only_In_Planes
 
 #define ICT_Invalid -1
 #define ICT_Inside NETLizard_Collision_Testing_Item_Inside
@@ -67,14 +71,23 @@ static bound_t NETLizard_GetSceneBound(const GL_NETLizard_3D_Mesh *scene)
 {
     nl_vector3_t min = VECTOR3V(scene->box.min);
     nl_vector3_t max = VECTOR3V(scene->box.max);
-    GLmatrix mat;
-    Mesa_AllocGLMatrix(&mat);
-    Mesa_glTranslate(&mat, scene->position[0], scene->position[1], scene->position[2]);
-    matrix_transformv_self(&mat, &min);
-    matrix_transformv_self(&mat, &max);
-    Mesa_FreeGLMatrix(&mat);
     bound_t bound;
-    bound_make(&bound, &min, &max);
+    if(scene->rotation[0] == 0 && scene->rotation[1] == 0) // no rotation
+    {
+        GLmatrix mat;
+        Mesa_AllocGLMatrix(&mat);
+        Mesa_glTranslate(&mat, scene->position[0], scene->position[1], scene->position[2]);
+        Mesa_glRotate(&mat, scene->rotation[0], 1.0f, 0.0f, 0.0f);
+        Mesa_glRotate(&mat, scene->rotation[1], 0.0f, 0.0f, 1.0f);
+        matrix_transformv_self(&mat, &min);
+        matrix_transformv_self(&mat, &max);
+        Mesa_FreeGLMatrix(&mat);
+        bound_make(&bound, &min, &max);
+    }
+    else
+    {
+        NETLizard_GetNETLizard3DMeshTransformBound(scene, 1, &bound);
+    }
     return bound;
 }
 
@@ -86,6 +99,8 @@ static plane_t NETLizard_GetScenePlane(const GL_NETLizard_3D_Mesh *scene, int j)
     GLmatrix mat;
     Mesa_AllocGLMatrix(&mat);
     Mesa_glTranslate(&mat, scene->position[0], scene->position[1], scene->position[2]);
+    Mesa_glRotate(&mat, scene->rotation[0], 1.0f, 0.0f, 0.0f);
+    Mesa_glRotate(&mat, scene->rotation[1], 0.0f, 0.0f, 1.0f);
     matrix_transformv_self(&mat, &position);
     Mesa_InverseTransposeMatrix(&mat);
     matrix_transformv_self_row(&mat, &normal);
@@ -300,7 +315,7 @@ static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *
   获取点new_pos下的场景索引scene的地板Z坐标rglz
   */
 #define GET_FLOOR_INVERT_NORMAL 3 // 1 2 3
-int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netlizard_3d_model, const collision_object_t *obj, int scene, unsigned include_item, float *rglz)
+static int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netlizard_3d_model, const collision_object_t *obj, int scene, unsigned include_item, float *rglz)
 {
     if(!netlizard_3d_model || !obj)
         return 0;
@@ -328,6 +343,36 @@ int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model *netli
             {
                 zcoord = (has++) ? _MAX(zcoord, f) : f;
             }
+        }
+
+        // find neighboring scene
+        if(!has)
+        {
+            int *scenes = calloc(netlizard_3d_model->count, sizeof(int));
+            int c = NETLizard_GetNETLizard3DMapNeighboringScenes(netlizard_3d_model, scene, scenes);
+            unsigned int k;
+            for(k = 0; k < c; k++)
+            {
+                const GL_NETLizard_3D_Mesh *m = netlizard_3d_model->meshes + scenes[k];
+                for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
+                {
+                    const GL_NETLizard_3D_Mesh *im = netlizard_3d_model->item_meshes + j;
+                    if(NETLizard_IgnoreCollisionTestingItem(im->item_type))
+                        continue;
+                    bound_t aabb = SCENE_BOUND(im);
+                    nl_vector3_t expand = VECTOR3(obj->radius, obj->radius, 0);
+                    bound_expand(&aabb, &expand);
+                    if(!bound_point_in_box2d(&aabb, new_pos))
+                        continue;
+                    float f;
+                    int r = NETLizard_GetMeshFloorZCoordInScenePoint(netlizard_3d_model->item_meshes + j, new_pos, 1, &f);
+                    if(r)
+                    {
+                        zcoord = (has++) ? _MAX(zcoord, f) : f;
+                    }
+                }
+            }
+            free(scenes);
         }
     }
 
@@ -612,6 +657,26 @@ static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3
 
     // 获取位置所在的场景
     int s = NETLizard_FindScenePointIn(map, new_pos/*&npos*/);
+//    int so = NETLizard_FindScenePointIn(map, &obj->position/*&pos*/);
+//    if(s == -1 && so == -1)
+//    {
+//        result.res = SCT_Outside;
+//        return result;
+//    }
+//    if(s != so)
+//    {
+//        if(s == -1)
+//        {
+//            s = so;
+//        }
+//        else if(so == -1)
+//        {
+//        }
+//        else
+//        {
+//            s = so;
+//        }
+//    }
     if(s == -1) // New位置不在任何场景范围内
     {
         result.res = SCT_Outside;
@@ -619,6 +684,8 @@ static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3
         if(s == -1)
             return result;
     }
+
+    const GL_NETLizard_3D_Mesh *mesh = map->meshes + s;
 
     result.scene = s;
     if(include_item) // 首先检测物体碰撞
@@ -642,14 +709,20 @@ static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3
     }
 
     // 检查场景是否有碰撞面数据
-    const GL_NETLizard_3D_Mesh *mesh = map->meshes + s;
     if(!mesh->plane) // 无碰撞面数据
     {
         result.res = SCT_Missing_Plane;
         return result;
     }
 
-    result.res = SCT_Only_In_AABB;
+    int in_all_plane = NETLizard_PointInScenePlane(mesh, new_pos/*&npos*/);
+    if(!in_all_plane)
+    {
+        result.res = SCT_Only_In_AABB;
+        return result;
+    }
+
+    result.res = SCT_Only_In_Planes;
     line_t line;
     line_make(&line, &pos, &npos);
     nl_vector3_t line_dir;
@@ -689,7 +762,23 @@ static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3
         {
             if(mask == 0) // 两点都在背面
             {
-                result.res = SCT_Only_In_AABB;
+                if(!is_floor && !is_ceil)
+                {
+                    ray_t ray = RAYV(VECTOR3_V(LINE_B(line)), VECTOR3_V(PLANE_NORMAL(plane)));
+                    vector3_invertv(&PLANE_NORMAL(plane));
+                    nl_vector3_t c0;
+                    int r = plane_ray_intersect(&plane, &ray, 0, &c0);
+                    if(r > 0)
+                    {
+                        LINE_B(line) = c0;
+                        line_direction(&line, &line_dir);
+                        line_len = line_length(&line);
+                        line_zero = line_iszero(&line);
+                        j++;
+                        continue;
+                    }
+                }
+                result.res = SCT_Only_In_Planes;
                 fail = 1;
                 break;
             }
@@ -700,7 +789,33 @@ static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3
         {
             if(mask == 0) // 两点都在背面
             {
-                result.res = SCT_Only_In_AABB;
+                if(!is_floor && !is_ceil)
+                {
+                    int r = line_iszero(&line);
+                    if(!r)
+                    {
+                        ray_t rayl;
+                        ray_line_to_ray(&rayl, &line);
+                        r = plane_ray_intersect(&plane, &rayl, NULL, NULL);
+                    }
+                    if(r > 0)
+                    {
+                        ray_t ray = RAYV(VECTOR3_V(LINE_B(line)), VECTOR3_V(PLANE_NORMAL(plane)));
+                        vector3_invertv(&PLANE_NORMAL(plane));
+                        nl_vector3_t c0;
+                        r = plane_ray_intersect(&plane, &ray, NULL, &c0);
+                        if(r > 0)
+                        {
+                            LINE_B(line) = c0;
+                            line_direction(&line, &line_dir);
+                            line_len = line_length(&line);
+                            line_zero = line_iszero(&line);
+                            j++;
+                            continue;
+                        }
+                    }
+                }
+                result.res = SCT_Only_In_Planes;
                 fail = 1;
                 break;
             }
@@ -815,7 +930,7 @@ static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3
                 }
                 else
                 {
-                    result.res = SCT_Only_In_AABB;
+                    result.res = SCT_Only_In_Planes;
                     fail = 1;
                     break;
                 }
@@ -826,7 +941,7 @@ static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3
     }
 
     //fprintf(stderr,"------------------\n\n");fflush(stderr);
-    if(result.res == SCT_Only_In_AABB && !fail)
+    if(result.res == SCT_Only_In_Planes && !fail)
     {
         result.res = SCT_Pass;
         result.npos = *new_pos;

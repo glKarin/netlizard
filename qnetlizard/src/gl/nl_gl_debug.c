@@ -56,7 +56,7 @@ void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, GLuint t
 	{
 		GLuint i;
 		for(i = 0; i < model->count; i++)
-		{
+        {
             const GL_NETLizard_3D_Mesh *m = model->meshes + i;
             func(m);
 #if 0

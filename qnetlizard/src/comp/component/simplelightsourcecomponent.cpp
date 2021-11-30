@@ -11,6 +11,7 @@ SimpleLightSourceComponent::SimpleLightSourceComponent(const NLProperties &prop,
     NLComponent(prop, parent),
     m_type(SimpleLightSourceComponent::LightSourceType_Direction)
 {
+    CLASS_NAME(SimpleLightSourceComponent);
     setObjectName("SimpleLightSourceComponent");
     NLVector3 v = VECTOR3(0, 0, 0);
     SetPosition(v);

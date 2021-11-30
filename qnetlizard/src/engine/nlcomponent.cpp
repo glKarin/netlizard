@@ -45,6 +45,7 @@ void NLComponent::Construct()
     NLObject *parent = ParentObject();
     if(parent)
         SetScene(parent->Scene());
+    CLASS_NAME(NLComponent);
     setObjectName("NLComponent");
     SetType(NLObject::Type_Component);
 }
