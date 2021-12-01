@@ -23,8 +23,6 @@ public:
 
 protected:
     virtual void Init();
-    virtual void Destroy();
-    virtual void Update(float delta);
     
 signals:
     

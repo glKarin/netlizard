@@ -4,6 +4,9 @@
 #include <QVariantHash>
 #include <QPair>
 
+#define NLPROPERTIES_NAME(p, x) NLProperties(p).TrySet("name", #x)
+#define NLPROPERTIY_NAME(x) NLProperties("name", #x)
+
 typedef QVariant NLProperty;
 
 class NLPropertyPair : public QPair<QString, NLProperty>
@@ -48,6 +51,15 @@ public:
     T GetSet_T(const QString &name, const T &def);
     NLProperties & operator()(const QString &name, const NLProperty &value) { return Insert(name, value); }
     NLProperty operator()(const QString &name) { return Get(name, NLProperty()); }
+    bool SetIfNoExists(const QString &name, const NLProperty &value);
+    template <class T>
+    bool SetIfNoExists_T(const QString &name, const T &value);
+    NLProperties & TrySet(const QString &name, const NLProperty &value);
+    template <class T>
+    NLProperties & TrySet_T(const QString &name, const T &value);
+    bool Replace(const QString &name, const NLProperty &value);
+    template <class T>
+    bool Replace_T(const QString &name, const T &value);
 };
 
 struct NLPropertyInfo
@@ -114,6 +126,38 @@ int NLProperties::Set_T(const QString &name, const T &value)
         return 2;
     }
     return 0;
+}
+
+template <class T>
+bool NLProperties::SetIfNoExists_T(const QString &name, const T &value)
+{
+    if(!contains(name))
+    {
+        insert(name, NLProperty::fromValue(value));
+        return true;
+    }
+    return false;
+}
+
+template <class T>
+NLProperties & NLProperties::TrySet_T(const QString &name, const T &value)
+{
+    SetIfNoExists_T<T>(name, value);
+    return *this;
+}
+
+template <class T>
+bool NLProperties::Replace_T(const QString &name, const T &value)
+{
+    if(contains(name))
+    {
+        if(operator[](name).value<T>() != value)
+        {
+            insert(name, NLProperty::fromValue(value));
+            return true;
+        }
+    }
+    return false;
 }
 
 template <class T>

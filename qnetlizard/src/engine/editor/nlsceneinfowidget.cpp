@@ -91,10 +91,6 @@ void NLSceneInfoWidget::UpdateSceneInfo()
                ;
     m_baseInfo->SETTEXT(list.join(_ENDL));
 
-    list.clear();
-    list
-            //<< _B("Camera infomation: ")
-               ;
     NLSceneCamera *camera = m_scene->CurrentCamera();
     if(!camera)
     {
@@ -102,6 +98,8 @@ void NLSceneInfoWidget::UpdateSceneInfo()
     }
     else
     {
+        list.clear();
+        //list << _B("Camera infomation: ") ;
         NLVector3 v = camera->Position();
         list << _B("vector3");
         list << _DBG_VEC3("Position", v);

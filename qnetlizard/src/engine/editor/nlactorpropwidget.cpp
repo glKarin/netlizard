@@ -167,7 +167,7 @@ NLActorPropWidget::~NLActorPropWidget()
 void NLActorPropWidget::Init()
 {
     QLabel *label;
-    QGroupBox *groupBox;
+    //QGroupBox *groupBox;
     m_actorLayout = new QFormLayout;
     m_componentLayout = new QVBoxLayout;
     m_actorLayout->setRowWrapPolicy(QFormLayout::WrapLongRows);

@@ -136,6 +136,8 @@ void MainWindow::Init()
     //resize(640, 480);
     MenuActionSlot(0);
 
+    setWindowIcon(QIcon(":/LOGO"));
+
     m_state = saveState(MAIN_WINDOW_INTERNAL_STATE_VERSION);
 }
 

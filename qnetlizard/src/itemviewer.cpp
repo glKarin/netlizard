@@ -43,7 +43,7 @@ void ItemViewer::Init()
     QPushButton *button;
     m_gameComboBox = new QComboBox;
     m_itemScene = new ItemScene;
-    QHBoxLayout *toolLayout = ToolLayout();
+    //QHBoxLayout *toolLayout = ToolLayout();
     m_indexSpinBox = new QSpinBox;
     SetTitleLabelVisible(false);
 

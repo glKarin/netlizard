@@ -131,13 +131,6 @@ MapScene::~MapScene()
 void MapScene::Init()
 {
     NLScene::Init();
-#define LOG_FILE "E:\\qobject\\log.txt"
-    FILE *file = fopen(LOG_FILE, 1 ? "a+" : "w");
-    nlEnable(NL_LOG);
-    nlLogFunc(NL_LOG_OUT, NL_LOG_STD, file);
-    nlLogFunc(NL_LOG_ERR, NL_LOG_STD, file);
-//    nlLogFunc(NL_LOG_OUT, NL_LOG_USER, (void *)lllll);
-//    nlLogFunc(NL_LOG_ERR, NL_LOG_USER, (void *)lllll);
 
     GLfloat color[4];
     glGetFloatv(GL_CURRENT_COLOR, color);

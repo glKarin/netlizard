@@ -76,7 +76,9 @@ static GLboolean shadow_volume_need_cap(int method)
 #define UP_NORMAL_LIMIT 0.866025
 static GLboolean normal_is_up_down(const float normal[3])
 {
-    return normal[2] > UP_NORMAL_LIMIT || normal[2] < -UP_NORMAL_LIMIT;
+    //return normal[2] > 0 || normal[2] < 0;
+    //return normal[2] != 0;
+    return normal[2] > 0 || normal[2] < -UP_NORMAL_LIMIT;
 }
 
 static int push_edge_line(LineList &list, const line_t *lp)

@@ -6,7 +6,7 @@
 #include "nlforcecontainer.h"
 
 NLForce::NLForce(NLRigidbody *parent) :
-    NLObject(parent),
+    NLObject(NLPROPERTIY_NAME(NLForce), parent),
   m_force(0),
   m_time(0),
   m_state(NLForce::State_Ready),
@@ -18,7 +18,7 @@ NLForce::NLForce(NLRigidbody *parent) :
 }
 
 NLForce::NLForce(const NLProperties &prop, NLRigidbody *parent) :
-    NLObject(prop, parent),
+    NLObject(NLPROPERTIES_NAME(prop, NLForce), parent),
           m_force(0),
           m_time(0),
           m_state(NLForce::State_Ready),
@@ -28,7 +28,7 @@ NLForce::NLForce(const NLProperties &prop, NLRigidbody *parent) :
 }
 
 NLForce::NLForce(NLScene *scene, NLRigidbody *parent) :
-    NLObject(scene, parent),
+    NLObject(scene, NLPROPERTIY_NAME(NLForce), parent),
           m_force(0),
           m_time(0),
           m_state(NLForce::State_Ready),
@@ -38,7 +38,7 @@ NLForce::NLForce(NLScene *scene, NLRigidbody *parent) :
 }
 
 NLForce::NLForce(NLScene *scene, const NLProperties &prop, NLRigidbody *parent) :
-    NLObject(scene, prop, parent),
+    NLObject(scene, NLPROPERTIES_NAME(prop, NLForce), parent),
           m_force(0),
           m_time(0),
           m_state(NLForce::State_Ready),
@@ -89,10 +89,12 @@ void NLForce::SetRigidbody(NLRigidbody *o)
 
 void NLForce::Update(float delta)
 {
-    NLObject::Update(delta);
+    if(!IsActived())
+        return;
     if(m_state != NLForce::State_Forcing)
         return;
     m_time += delta;
+    NLObject::Update(delta);
 }
 
 void NLForce::Start()
@@ -167,7 +169,7 @@ NL::Physics::a NLForce::Acceleration(NL::Physics::F f0) const
 
 // gravity
 NLForce_gravity::NLForce_gravity(NLRigidbody *parent) :
-    NLForce(parent),
+    NLForce(NLPROPERTIY_NAME(NLForce_gravity), parent),
     m_g(NL::Physics::EARTH_G),
     m_initialSpeed(0),
     m_distance(0),
@@ -178,7 +180,7 @@ NLForce_gravity::NLForce_gravity(NLRigidbody *parent) :
 }
 
 NLForce_gravity::NLForce_gravity(const NLProperties &prop, NLRigidbody *parent) :
-    NLForce(prop, parent),
+    NLForce(NLPROPERTIES_NAME(prop, NLForce_gravity), parent),
     m_g(NL::Physics::EARTH_G),
     m_initialSpeed(0),
     m_distance(0),
@@ -189,7 +191,7 @@ NLForce_gravity::NLForce_gravity(const NLProperties &prop, NLRigidbody *parent) 
 }
 
 NLForce_gravity::NLForce_gravity(NLScene *scene, NLRigidbody *parent) :
-    NLForce(scene, parent),
+    NLForce(scene, NLPROPERTIY_NAME(NLForce_gravity), parent),
     m_g(NL::Physics::EARTH_G),
     m_initialSpeed(0),
     m_distance(0),
@@ -200,7 +202,7 @@ NLForce_gravity::NLForce_gravity(NLScene *scene, NLRigidbody *parent) :
 }
 
 NLForce_gravity::NLForce_gravity(NLScene *scene, const NLProperties &prop, NLRigidbody *parent) :
-    NLForce(scene, prop, parent),
+    NLForce(scene, NLPROPERTIES_NAME(prop, NLForce_gravity), parent),
     m_g(NL::Physics::EARTH_G),
     m_initialSpeed(0),
     m_distance(0),
@@ -242,6 +244,8 @@ void NLForce_gravity::Reset()
 
 void NLForce_gravity::Update(float delta)
 {
+    if(!IsActived())
+        return;
     if(!IsForcing())
         return;
     NLForce::Update(delta);
@@ -262,7 +266,7 @@ void NLForce_gravity::Update(float delta)
 
 // push
 NLForce_push::NLForce_push(NLRigidbody *parent) :
-    NLForce(parent),
+    NLForce(NLPROPERTIY_NAME(NLForce_push), parent),
     m_dragForce(0),
     m_initialSpeed(0),
     m_distance(0),
@@ -274,7 +278,7 @@ NLForce_push::NLForce_push(NLRigidbody *parent) :
 }
 
 NLForce_push::NLForce_push(const NLProperties &prop, NLRigidbody *parent) :
-    NLForce(prop, parent),
+    NLForce(NLPROPERTIES_NAME(prop, NLForce_push), parent),
     m_dragForce(NL::Physics::EARTH_G),
     m_initialSpeed(0),
     m_distance(0),
@@ -286,7 +290,7 @@ NLForce_push::NLForce_push(const NLProperties &prop, NLRigidbody *parent) :
 }
 
 NLForce_push::NLForce_push(NLScene *scene, NLRigidbody *parent) :
-    NLForce(scene, parent),
+    NLForce(scene, NLPROPERTIY_NAME(NLForce_push), parent),
     m_dragForce(0),
     m_initialSpeed(0),
     m_distance(0),
@@ -298,7 +302,7 @@ NLForce_push::NLForce_push(NLScene *scene, NLRigidbody *parent) :
 }
 
 NLForce_push::NLForce_push(NLScene *scene, const NLProperties &prop, NLRigidbody *parent) :
-    NLForce(scene, prop, parent),
+    NLForce(scene, NLPROPERTIES_NAME(prop, NLForce_push), parent),
     m_dragForce(0),
     m_initialSpeed(0),
     m_distance(0),
@@ -339,6 +343,8 @@ void NLForce_push::Reset()
 
 void NLForce_push::Update(float delta)
 {
+    if(!IsActived())
+        return;
     if(!IsForcing())
         return;
     NLForce::Update(delta);

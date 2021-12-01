@@ -7,7 +7,7 @@
 #include "nlcomponentcontainer.h"
 
 NLComponent::NLComponent(NLActor *parent) :
-    NLObject(parent),
+    NLObject(NLPROPERTIY_NAME(NLComponent), parent),
     m_mounted(false)
 {
     Construct();
@@ -16,21 +16,21 @@ NLComponent::NLComponent(NLActor *parent) :
 }
 
 NLComponent::NLComponent(const NLProperties &prop, NLActor *parent) :
-    NLObject(prop, parent),
+    NLObject(NLPROPERTIES_NAME(prop, NLComponent), parent),
     m_mounted(false)
 {
     Construct();
 }
 
 NLComponent::NLComponent(NLScene *scene, NLActor *parent) :
-    NLObject(scene, parent),
+    NLObject(scene, NLPROPERTIY_NAME(NLComponent), parent),
     m_mounted(false)
 {
     Construct();
 }
 
 NLComponent::NLComponent(NLScene *scene, const NLProperties &prop, NLActor *parent) :
-    NLObject(scene, prop, parent),
+    NLObject(scene, NLPROPERTIES_NAME(prop, NLComponent), parent),
     m_mounted(false)
 {
     Construct();
@@ -50,12 +50,12 @@ void NLComponent::Construct()
     SetType(NLObject::Type_Component);
 }
 
-void NLComponent::Update(float delta)
-{
-    if(!IsActived())
-        return;
-    NLObject::Update(delta);
-}
+//void NLComponent::Update(float delta)
+//{
+//    if(!IsActived())
+//        return;
+//    NLObject::Update(delta);
+//}
 
 void NLComponent::Destroy()
 {

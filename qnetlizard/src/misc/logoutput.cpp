@@ -14,7 +14,7 @@
 
 #define LOG_DIR_NAME "logs"
 #define LOG_FILE_NAME APP_NAME
-#define MAX_LOG 20
+#define MAX_LOG 0
 
 static const QString LogOutputTypeNames[] = {
     "DEBUG",
@@ -32,11 +32,14 @@ QString LogOutputItem::Format() const
 LogOutput::LogOutput(QObject *parent) :
     QObject(parent),
     m_inited(false),
-    m_outputChannel(LogOutput::Output_Console | LogOutput::Output_File)
+    m_outputChannel(LogOutput::Output_Console | LogOutput::Output_File),
+    m_maxCache(MAX_LOG)
 {
     setObjectName("LogOutput");
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(Finish()));
-    //Start();
+#ifndef _DEV_TEST
+    Start();
+#endif
 }
 
 LogOutput::~LogOutput()
@@ -99,7 +102,7 @@ void LogOutput::OutputFile(const QString &str)
     if(!MkLogDir())
         return;
     MkLogFile();
-    IOUtility::file_put_contents(m_logFile, str + "\n", 1);
+    IOUtility::file_put_contents(m_logFile, str + "\n", "UTF-8", 1);
 }
 
 QString LogOutput::CurrentDatetime() const
@@ -112,13 +115,16 @@ void LogOutput::AddItem(const LogOutputItem &item)
 {
     if(!m_inited)
         return;
-#if(MAX_LOG != 0)
-    m_logList.push_back(item);
-#if(MAX_LOG > 0)
-    while(m_logList.count() > MAX_LOG)
-        m_logList.pop_front();
-#endif
-#endif
+
+    if(m_maxCache != 0)
+    {
+        m_logList.push_back(item);
+        if(m_maxCache > 0)
+        {
+            while(m_logList.count() > m_maxCache)
+                m_logList.pop_front();
+        }
+    }
     const QString str(item.Format());
     OutputFile(str);
     emit outputLog(item.type, str);
@@ -156,6 +162,21 @@ void LogOutput::SetOutputChannel(int c)
     if(m_outputChannel != c)
     {
         m_outputChannel = c;
+    }
+}
+
+void LogOutput::SetMaxCache(int c)
+{
+    if(m_maxCache != c)
+    {
+        m_maxCache = c;
+        if(m_maxCache > 0)
+        {
+            while(m_logList.count() > m_maxCache)
+                m_logList.pop_front();
+        }
+        else if(m_maxCache == 0)
+            m_logList.clear();
     }
 }
 

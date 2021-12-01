@@ -42,7 +42,7 @@ void MapViewer::Init()
     QPushButton *button;
     m_gameComboBox = new QComboBox;
     m_mapScene = new MapScene;
-    QHBoxLayout *toolLayout = ToolLayout();
+    //QHBoxLayout *toolLayout = ToolLayout();
     m_levelSpinBox = new QSpinBox;
     SetTitleLabelVisible(false);
 

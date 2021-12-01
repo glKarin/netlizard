@@ -33,8 +33,10 @@ SimpleImageControlComponent::~SimpleImageControlComponent()
 
 void SimpleImageControlComponent::Update(float delta)
 {
-    NLComponent::Update(delta);
+    if(!IsActived())
+        return;
     Transform(delta);
+    NLComponent::Update(delta);
 }
 
 void SimpleImageControlComponent::Init()

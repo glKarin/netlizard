@@ -59,7 +59,7 @@ void ImageViewer::Init()
     QPushButton *button;
     m_typeComboBox = new QComboBox;
     m_imageScene = new ImageScene;
-    QHBoxLayout *toolLayout = ToolLayout();
+    //QHBoxLayout *toolLayout = ToolLayout();
     m_indexSpinBox = new QSpinBox;
     m_alignComboBox = new QComboBox;
     SetTitleLabelVisible(false);

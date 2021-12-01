@@ -1,6 +1,8 @@
 #ifndef _KARIN_QDEF_H
 #define _KARIN_QDEF_H
 
+#include <QDateTime>
+
 #ifdef _DEV_TEST
 #define DEBUG_DESTROY_Q qDebug() << "Q ~" + objectName();
 #define DEBUG_DESTROY(name) qDebug() << QString("~") + (name);
@@ -44,7 +46,9 @@
 #define _F(x, color) "<font color=\""color"\">"x"</font>"
 #define _S(x, size) "<font size=\""size"\">"x"</font>"
 
-#define BUILD_TIME QLocale(QLocale::English).toDateTime(__DATE__ " " __TIME__, "MMM dd yyyy hh:mm:ss")
+#define BUILD_TIME QLocale(QLocale::English).toDateTime(QString(__DATE__ " " __TIME__).replace(QRegExp("\\s+"), " "), "MMM d yyyy hh:mm:ss")
+#define BUILD_TIME_FORMAT(x) BUILD_TIME.toString(x)
+#define BUILD_TIME_STRING BUILD_TIME_FORMAT("yyyy-MM-dd HH:mm:ss")
 #define BUILD_TIMEZONE "+0800" // zh_cn
 
 #define BITS(x) (1 << (x))
@@ -75,6 +79,12 @@ if(x) { \
     T *_Tx = x; \
     x = 0; \
     delete _Tx; \
+}
+
+namespace NETLizard
+{
+QDateTime build_time();
+QString build_time_string(const QString &format = "yyyy-MM-dd HH:mm:ss");
 }
 
 #endif // _KARIN_QDEF_H

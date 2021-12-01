@@ -12,7 +12,7 @@
 #include "nlmath.h"
 
 NLActor::NLActor(NLActor *parent) :
-    NLObject(parent),
+    NLObject(NLPROPERTIY_NAME(NLActor), parent),
     m_renderable(0),
     m_components(0),
     m_children(0)
@@ -21,7 +21,7 @@ NLActor::NLActor(NLActor *parent) :
 }
 
 NLActor::NLActor(const NLProperties &prop, NLActor *parent) :
-    NLObject(prop, parent),
+    NLObject(NLPROPERTIES_NAME(prop, NLActor), parent),
     m_renderable(0),
     m_components(0),
     m_children(0)
@@ -30,7 +30,7 @@ NLActor::NLActor(const NLProperties &prop, NLActor *parent) :
 }
 
 NLActor::NLActor(NLScene *scene, NLActor *parent) :
-    NLObject(scene, parent),
+    NLObject(scene, NLPROPERTIY_NAME(NLActor), parent),
     m_renderable(0),
     m_components(0),
     m_children(0)
@@ -39,7 +39,7 @@ NLActor::NLActor(NLScene *scene, NLActor *parent) :
 }
 
 NLActor::NLActor(NLScene *scene, const NLProperties &prop, NLActor *parent) :
-    NLObject(scene, prop, parent),
+    NLObject(scene, NLPROPERTIES_NAME(prop, NLActor), parent),
     m_renderable(0),
     m_components(0),
     m_children(0)
@@ -94,11 +94,11 @@ void NLActor::Update(float delta)
 {
     if(!IsActived())
         return;
-    NLObject::Update(delta);
     if(m_components)
         m_components->Update(delta);
     if(m_children)
         m_children->Update(delta);
+    NLObject::Update(delta);
 }
 
 void NLActor::Render()

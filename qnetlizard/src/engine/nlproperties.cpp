@@ -56,6 +56,34 @@ int NLProperties::Set(const QString &name, const NLProperty &value)
     return 0;
 }
 
+bool NLProperties::SetIfNoExists(const QString &name, const NLProperty &value)
+{
+    if(!contains(name))
+    {
+        insert(name, value);
+        return true;
+    }
+    return false;
+}
+
+NLProperties & NLProperties::TrySet(const QString &name, const NLProperty &value)
+{
+    SetIfNoExists(name, value);
+    return *this;
+}
+
+bool NLProperties::Replace(const QString &name, const NLProperty &value)
+{
+    if(contains(name))
+    {
+        if(operator[](name) != value)
+        {
+            insert(name, value);
+            return true;
+        }
+    }
+    return false;
+}
 
 NLProperty NLProperties::GetSet(const QString &name, const NLProperty &def)
 {

@@ -1,8 +1,10 @@
 #include "ioutility.h"
 
+#include <QDebug>
 #include <QFile>
 #include <QDataStream>
 #include <QTextStream>
+#include <QTextCodec>
 
 IOUtility::IOUtility()
 {
@@ -53,8 +55,7 @@ char * IOUtility::file_get_contents(const QString &file, quint64 *len)
     return res;
 }
 
-
-int IOUtility::file_put_contents(const QString &file, const QString &str, int flags)
+int IOUtility::file_put_contents(const QString &file, const QString &str, const QString &code, int flags)
 {
     bool res;
 
@@ -67,6 +68,12 @@ int IOUtility::file_put_contents(const QString &file, const QString &str, int fl
     if(!f.open(mode))
         return false;
     QTextStream os(&f);
+    if(!code.isEmpty())
+    {
+        QTextCodec *codec = QTextCodec::codecForName(code.toLocal8Bit());
+        if(codec)
+            os.setCodec(codec);
+    }
     os << str;
     f.flush();
     f.close();

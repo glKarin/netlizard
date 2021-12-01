@@ -27,7 +27,7 @@ protected:
     virtual bool motionev(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modifier);
     virtual bool wheelev(int mouse, int orientation, int delta, int x, int y, int modifier);
     virtual void Destroy();
-    virtual void Update(float delta);
+    //virtual void Update(float delta);
     virtual void Mount(NLActor *actor);
     virtual void Unmount();
     void SetContainer(NLComponentContainer *container);

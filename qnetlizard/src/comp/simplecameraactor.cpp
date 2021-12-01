@@ -56,18 +56,6 @@ void SimpleCameraActor::Init()
     NLRigidbody::Init();
 }
 
-void SimpleCameraActor::Destroy()
-{
-    NLRigidbody::Destroy();
-}
-
-void SimpleCameraActor::Update(float delta)
-{
-    if(!IsInited())
-        return;
-    NLRigidbody::Update(delta);
-}
-
 NLSceneCamera * SimpleCameraActor::Camera()
 {
     return m_camera ? m_camera->Camera() : 0;

@@ -93,11 +93,15 @@ void LogDialog::ClearLog()
 void LogDialog::hideEvent(QHideEvent *e)
 {
     QDockWidget::hideEvent(e);
+#ifdef _DEV_TEST
     m_log->Finish();
+#endif
 }
 
 void LogDialog::showEvent(QShowEvent *e)
 {
     QDockWidget::showEvent(e);
+#ifdef _DEV_TEST
     m_log->Start();
+#endif
 }

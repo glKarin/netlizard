@@ -33,7 +33,7 @@ TextViewer::~TextViewer()
 void TextViewer::Init()
 {
     QPushButton *button;
-    QHBoxLayout *toolLayout = ToolLayout();
+    //QHBoxLayout *toolLayout = ToolLayout();
     m_textBrowser = new QTextBrowser;
     SetTitleLabelVisible(false);
 

@@ -31,8 +31,10 @@ SimpleControlComponent::~SimpleControlComponent()
 
 void SimpleControlComponent::Update(float delta)
 {
-    NLComponent::Update(delta);
+    if(!IsActived())
+        return;
     Transform(delta);
+    NLComponent::Update(delta);
 }
 
 void SimpleControlComponent::Init()

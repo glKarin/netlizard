@@ -25,6 +25,11 @@ SimpleLightSourceComponent::~SimpleLightSourceComponent()
 
 void SimpleLightSourceComponent::Update(float delta)
 {
+    if(!IsActived())
+        return;
+    NLActor *actor = Actor();
+    if(actor)
+        SetPosition(actor->Position());
     NLComponent::Update(delta);
 }
 

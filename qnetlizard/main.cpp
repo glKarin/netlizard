@@ -7,15 +7,10 @@
 #include "logoutput.h"
 #include "qdef.h"
 #include "nlglobals.h"
-
-#include "nlactor.h"
-#include "nlobject.h"
-#include "nlobjectcontainer.h"
-#include "nlactorcontainer.h"
-#include "test/testscene.h"
-#include "nlrendermodel.h"
+#include "nldef.h"
 
 static int Test(int argc, char **argv);
+static int nl_log_func(int type, const char *str);
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +37,9 @@ int main(int argc, char *argv[])
     qRegisterMetaType<NLVector3>("NLVector3");
 
     LogOutput::Instance();
+    nlEnable(NL_LOG);
+    nlLogFunc(NL_LOG_OUT, NL_LOG_USER, (void *)nl_log_func);
+    nlLogFunc(NL_LOG_ERR, NL_LOG_USER, (void *)nl_log_func);
 
     MainWindow viewer;
     QWidget *win = &viewer;
@@ -50,22 +48,15 @@ int main(int argc, char *argv[])
     return app.exec();
 }
 
+int nl_log_func(int type, const char *str)
+{
+    LogOutput *lo = LogOutput::Instance();
+    lo->Push(type == NL_LOG_ERR ? QtCriticalMsg : QtDebugMsg, str);
+}
+
 #ifdef _DEV_TEST
 int Test(int argc, char **argv)
 {
-    return 0;
-    NLVector3 nor = VECTOR3(0, 1, 0);
-    NLVector3 nor2 = VECTOR3(0, 0, 0);
-    NLMatrix4 mat;
-    NLMatrix4 idmat;
-    Mesa_AllocGLMatrix(&mat);
-    Mesa_AllocGLMatrix(&idmat);
-    Mesa_glRotate(&idmat, 90, 1, 0, 0);
-    Mesa_NormalMatrix(&mat, idmat.m);
-    Mesa_glTransform_row(nor2.v, nor.v, &mat);
-    qDebug() << QString().setNum(nor2.v[0]) << QString().setNum(nor2.v[1]) << QString().setNum(nor2.v[2]);
-    Mesa_FreeGLMatrix(&mat);
-    Mesa_FreeGLMatrix(&idmat);
     return 0;
 }
 #endif

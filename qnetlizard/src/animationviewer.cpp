@@ -54,7 +54,7 @@ void AnimationViewer::Init()
     QPushButton *button;
     m_gameComboBox = new QComboBox;
     m_animationScene = new AnimationScene;
-    QHBoxLayout *toolLayout = ToolLayout();
+    //QHBoxLayout *toolLayout = ToolLayout();
     m_indexSpinBox = new QSpinBox;
     QHBoxLayout *layout = new QHBoxLayout;
     QVBoxLayout *vLayout = new QVBoxLayout;

@@ -37,7 +37,7 @@ void SpriteViewer::Init()
 {
     QHBoxLayout *layout = new QHBoxLayout;
     QPushButton *button;
-    QHBoxLayout *toolLayout = ToolLayout();
+    //QHBoxLayout *toolLayout = ToolLayout();
     SetTitleLabelVisible(false);
 
     m_indexList = new QListWidget;

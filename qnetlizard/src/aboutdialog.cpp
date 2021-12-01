@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QDateTime>
+#include <QRegExp>
 
 #include "qdef.h"
 
@@ -21,6 +22,7 @@ void AboutDialog::Init()
 {
 #define T_ENDL "<br/>"
     QString text = QString(
+                "<p align='center'><img src=':LZ' height='48'></img><p>" T_ENDL
                  "<b>" APP_NAME "</b> is a tools for <i>`" LIB_NAME "`</i> using Qt4." T_ENDL
                  "<b>" LIB_NAME "</b> is a tools of NETLizard J2ME game resource." T_ENDL
                 T_ENDL
@@ -28,8 +30,8 @@ void AboutDialog::Init()
                 "Build: %1" T_ENDL
                 "Dev: <a href='mailto:" APP_EMAIL "'>" APP_DEV "</a>" T_ENDL
                 "Github: <a href='" APP_GITHUB "'>glKarin/netlizard</a>" T_ENDL
-                ).arg(BUILD_TIME.toString("yyyy-MM-dd HH:mm:ss"));
-    setText(APP_NAME);
+                ).arg(NETLizard::build_time_string());
+    setText("<h2 align='center'>" APP_NAME "</h2>");
     setInformativeText(text);
     addButton("Close", QMessageBox::AcceptRole);
     setWindowTitle(QString("About ") + APP_NAME);

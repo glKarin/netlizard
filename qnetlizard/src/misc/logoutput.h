@@ -36,6 +36,7 @@ public:
     uint Count() const { return m_logList.size(); }
     int OutputChannel() const;
     void SetOutputChannel(int c);
+    void SetMaxCache(int c);
     
 signals:
     void outputLog(int type, const QString &msg);
@@ -60,6 +61,7 @@ private:
     bool m_inited;
     int m_outputChannel;
     QString m_logFile;
+    int m_maxCache;
 
     Q_DISABLE_COPY(LogOutput)
 };

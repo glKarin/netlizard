@@ -32,20 +32,6 @@ void SimpleLightSourceActor::Init()
     NLActor::Init();
 }
 
-void SimpleLightSourceActor::Destroy()
-{
-    NLActor::Destroy();
-}
-
-void SimpleLightSourceActor::Update(float delta)
-{
-    if(!IsInited())
-        return;
-    NLActor::Update(delta);
-    if(m_lightSource)
-        m_lightSource->SetPosition(Position());
-}
-
 NLVector3 SimpleLightSourceActor::LightSourceDirection() const
 {
     if(!m_lightSource)

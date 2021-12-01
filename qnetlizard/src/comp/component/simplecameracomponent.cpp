@@ -102,6 +102,8 @@ void SimpleCameraComponent::Init()
 
 void SimpleCameraComponent::Update(float delta)
 {
+    if(!IsActived())
+        return;
     UpdateCamera();
     NLComponent::Update(delta);
 }
@@ -115,6 +117,7 @@ void SimpleCameraComponent::Destroy()
 {
     m_type = 0;
     delete m_camera;
+    m_camera = 0;
     NLComponent::Destroy();
 }
 

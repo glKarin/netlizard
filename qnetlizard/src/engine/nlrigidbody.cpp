@@ -7,7 +7,7 @@
 #include "nlmath.h"
 
 NLRigidbody::NLRigidbody(NLActor *parent) :
-    NLActor(parent),
+    NLActor(NLPROPERTIY_NAME(NLRigidbody), parent),
     m_zIsUp(false),
     m_fixedUp(true),
     m_free(false),
@@ -18,7 +18,7 @@ NLRigidbody::NLRigidbody(NLActor *parent) :
 }
 
 NLRigidbody::NLRigidbody(const NLProperties &prop, NLActor *parent) :
-    NLActor(prop, parent),
+    NLActor(NLPROPERTIES_NAME(prop, NLRigidbody), parent),
     m_zIsUp(false),
     m_fixedUp(true),
     m_free(false),
@@ -29,7 +29,7 @@ NLRigidbody::NLRigidbody(const NLProperties &prop, NLActor *parent) :
 }
 
 NLRigidbody::NLRigidbody(NLScene *scene, NLActor *parent) :
-    NLActor(scene, parent),
+    NLActor(scene, NLPROPERTIY_NAME(NLRigidbody), parent),
     m_zIsUp(false),
     m_fixedUp(true),
     m_free(false),
@@ -40,7 +40,7 @@ NLRigidbody::NLRigidbody(NLScene *scene, NLActor *parent) :
 }
 
 NLRigidbody::NLRigidbody(NLScene *scene, const NLProperties &prop, NLActor *parent) :
-    NLActor(scene, prop, parent),
+    NLActor(scene, NLPROPERTIES_NAME(prop, NLRigidbody), parent),
     m_zIsUp(false),
     m_fixedUp(true),
     m_free(false),

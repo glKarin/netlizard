@@ -24,6 +24,7 @@ HEADERS += \
 
 SOURCES += \
     main.cpp \
+    src/qdef.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp
@@ -329,7 +330,9 @@ UI_DIR = ./ui
 
 OTHER_FILES += README.md \
                 debian/changelog \
-                resource/help.xml \
-                resource/setting.xml
+                resource/img/lz.png \
+                resource/img/logo.png \
+                resource/cfg/help.xml \
+                resource/cfg/setting.xml
 
 INSTALLS += qnetlizard

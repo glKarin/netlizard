@@ -27,8 +27,10 @@ SimpleControl2DComponent::~SimpleControl2DComponent()
 
 void SimpleControl2DComponent::Update(float delta)
 {
-    NLComponent::Update(delta);
+    if(!IsActived())
+        return;
     Transform(delta);
+    NLComponent::Update(delta);
 }
 
 void SimpleControl2DComponent::Init()
