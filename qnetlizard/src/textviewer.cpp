@@ -39,10 +39,12 @@ void TextViewer::Init()
 
     button = new QPushButton;
     button->setText("Open file");
+    button->setShortcut(QKeySequence::fromString("ctrl+f"));
     AddTool();
     AddTool(button);
     m_saveButton = new QPushButton;
     m_saveButton->setText("Save data");
+    m_saveButton->setShortcut(QKeySequence::fromString("ctrl+s"));
     m_saveButton->setEnabled(false);
     AddTool(m_saveButton);
     connect(m_saveButton, SIGNAL(clicked()), this, SLOT(OpenSaveChooser()));

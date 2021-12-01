@@ -84,6 +84,7 @@ public:
     NLSceneCameraBase * Move(const NLVector3 &v);
     NLSceneCameraBase * Turn(const NLVector3 &v);
     NLSceneCameraBase * Zoom(const NLVector3 &v);
+    bool ZIsUp() const;
     void SetZIsUp(bool b);
     void SetEnabled(bool b);
     bool IsEnabled() const { return m_enabled; }

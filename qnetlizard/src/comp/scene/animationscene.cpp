@@ -129,7 +129,7 @@ bool AnimationScene::LoadFile(const QString &file, const QString &resourcePath, 
     SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(0);
     camera->SetPosition(startPos);
 
-    //SetAnim(0);
+    SetAnim(0);
 
     //GrabMouseCursor(true);
 
@@ -141,8 +141,8 @@ void AnimationScene::Reset()
     Stop();
     m_frameAnim = 0;
     m_renderer->SetModel(0, 0);
-    m_renderer->SetAnim(-1);
-    m_renderer->SetFrame(-1);
+    /*m_renderer->*/SetAnim(-1);
+    /*m_renderer->*/SetFrame(-1);
     if(m_model)
     {
         delete_GL_NETLizard_3D_Model(m_model);
@@ -165,7 +165,7 @@ void AnimationScene::SetAnim(int anim)
     if(m_anim != anim)
     {
         m_anim = anim;
-        SetFrame(0);
+        SetFrame(m_anim < 0 ? -1 : 0);
         m_renderer->SetAnim(anim);
         emit animChanged(anim);
     }

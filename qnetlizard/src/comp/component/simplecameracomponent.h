@@ -23,6 +23,7 @@ class SimpleCameraComponent : public NLComponent
     Q_PROPERTY(float bottom READ Bottom WRITE SetBottom FINAL)
     Q_PROPERTY(float top READ Top WRITE SetTop FINAL)
     Q_PROPERTY(int alignment READ Alignment WRITE SetAlignment FINAL)
+    Q_PROPERTY(bool zIsUp READ ZIsUp WRITE SetZIsUp FINAL)
 public:
     explicit SimpleCameraComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleCameraComponent();
@@ -46,6 +47,7 @@ public:
     float Fovy() const;
     float Aspect() const;
     int Alignment() const;
+    bool ZIsUp() const;
 
     void SetLeft(float left);
     void SetRight(float right);
@@ -56,6 +58,7 @@ public:
     void SetFovy(float fovy);
     void SetAspect(float aspect);
     void SetAlignment(int align);
+    void SetZIsUp(bool b);
     
 signals:
     

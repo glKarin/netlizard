@@ -154,7 +154,7 @@ void MapScene::Init()
 
 void MapScene::Update(float delta)
 {
-    vector3_t oldPos = m_mainCameraActor->Position();
+    nl_vector3_t oldPos = m_mainCameraActor->Position();
 
     NLScene::Update(delta);
     if(!m_model)
@@ -232,10 +232,44 @@ void MapScene::Update(float delta)
                 VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
             }
         }
-
         ConvToRenderVector3(p);
         m_mainCameraActor->SetPosition(p);
         m_mainCameraActor->UpdateCamera();
+
+        float distance = 0;
+        int scene = -1;
+        int collision_id = -1;
+        int collision_type = 0;
+        NLSceneCamera *camera = CurrentCamera();
+        vector3_t np = p;
+        vector3_t direction = camera->Direction();
+        fprintf(stderr, "1| %f %f %f\n", direction.v[0], direction.v[1], direction.v[2]); fflush(stderr);
+        vector3_moveve(&np, &direction, 1);
+        ConvToAlgoVector3(p);
+        ConvToAlgoVector3(np);
+        vector3_directionv(&direction, &p, &np);
+        obj.position = p;
+       fprintf(stderr, "2| %f %f %f\n", direction.v[0], direction.v[1], direction.v[2]); fflush(stderr);
+       vector3_t direction2 = camera->Direction();
+       ConvToAlgoVector3(direction2);
+       fprintf(stderr, "3| %f %f %f\n", direction2.v[0], direction2.v[1], direction2.v[2]); fflush(stderr);
+
+       vector3_t direction3 = camera->Direction();
+        const NLMatrix4 *mat = CurrentCamera()->RenderMatrix();
+        NLMatrix4 normat;
+        Mesa_AllocGLMatrix(&normat);
+        matrix_normal_matrix(mat, &normat);
+        matrix_transformv_self_row(&normat, &direction3);
+        Mesa_FreeGLMatrix(&normat);
+        fprintf(stderr, "4| %f %f %f\n", direction3.v[0], direction3.v[1], direction3.v[2]); fflush(stderr);
+
+        nl_vector3_t cpoint = VECTOR3(0, 0, 0);
+        res = NETLizard_RayIntersect(m_model, &obj, &direction, 1, &scene, &collision_id, &collision_type, &cpoint, &distance);
+        if(res)
+        fprintf(stderr, "%d: scene %d, id %d, type %d, %f | %f %f %f\n", res, scene, collision_id, collision_type, distance, cpoint.v[0], cpoint.v[1], cpoint.v[2]);
+        else
+            fprintf(stderr, "not\n");
+            fflush(stderr);
 
         CollisionItem(item);
     }
@@ -471,7 +505,7 @@ bool MapScene::KeyEventHandler(int key, bool pressed, int modifier)
         return false;
     switch(key)
     {
-        case Qt::Key_Control:
+        case Qt::Key_U:
         if(m_noclip != 0)
         {
             bound_t bound = BOUND(0, 0, 0, 0, 0, 0);

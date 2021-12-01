@@ -24,9 +24,6 @@ protected:
     virtual void DeinitRender();
 
 private:
-    void RenderSky();
-
-private:
     GL_NETLizard_3D_Model *m_model;
     const NETLizard_3D_Frame_Animation *m_config;
     int m_anim;

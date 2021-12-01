@@ -46,6 +46,7 @@ void FontViewer::Init()
     vLayout->addStretch();
     m_renderButton = new QPushButton;
     m_renderButton->setText(">>");
+    m_renderButton->setShortcut(QKeySequence::fromString("ctrl+d"));
     m_renderButton->setEnabled(false);
     m_renderButton->setMaximumWidth(32);
     connect(m_renderButton, SIGNAL(clicked()), this, SLOT(RenderString()));
@@ -63,10 +64,12 @@ void FontViewer::Init()
 
     m_openCfButton = new QPushButton;
     m_openCfButton->setText("config file(cf.png)");
+    m_openCfButton->setShortcut(QKeySequence::fromString("ctrl+f"));
     AddTool(m_openCfButton);
     connect(m_openCfButton, SIGNAL(clicked()), this, SLOT(OpenCfFileChooser()));
     m_openFntButton = new QPushButton(this);
     m_openFntButton->setText("image file(fnt.png)");
+    m_openFntButton->setShortcut(QKeySequence::fromString("ctrl+r"));
     connect(m_openFntButton, SIGNAL(clicked()), this, SLOT(OpenFntFileChooser()));
     AddTool(m_openFntButton);
     toolLayout->addStretch();
@@ -76,6 +79,7 @@ void FontViewer::Init()
     AddTool(button);
     button = new QPushButton;
     button->setText("Load");
+    button->setShortcut(QKeySequence::fromString("ctrl+o"));
     connect(button, SIGNAL(clicked()), this, SLOT(LoadFont()));
     AddTool(button);
 
@@ -160,7 +164,7 @@ bool FontViewer::LoadFont()
     {
         m_renderButton->setEnabled(true);
         m_textInput->setEnabled(true);
-        SetStatusText(QString("config file: %1, texture file: %2").arg(m_cfFile).arg(m_fntFile));
+        SetStatusText(QString("config file: %1, texture file: %2 -> character count: %3").arg(m_cfFile).arg(m_fntFile).arg(m_fontScene->Font()->char_count));
         QMessageBox::warning(this, "Success", "Load font success!");
     }
     else

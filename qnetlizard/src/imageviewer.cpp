@@ -86,10 +86,12 @@ void ImageViewer::Init()
     AddTool(m_typeComboBox);
     button = new QPushButton;
     button->setText("Open file");
+    button->setShortcut(QKeySequence::fromString("ctrl+f"));
     AddTool(button);
     connect(button, SIGNAL(clicked()), this, SLOT(OpenFileChooser()));
     m_saveButton = new QPushButton;
     m_saveButton->setText("Save data");
+    m_saveButton->setShortcut(QKeySequence::fromString("ctrl+s"));
     m_saveButton->setEnabled(false);
     AddTool(m_saveButton);
     connect(m_saveButton, SIGNAL(clicked()), this, SLOT(OpenSaveChooser()));
@@ -165,7 +167,7 @@ bool ImageViewer::OpenFile(const QString &file)
     }
     m_saveButton->setEnabled(true);
     const texture_s *tex = m_imageScene->Texture();
-    SetStatusText(QString("%1: width %2, height %3, format %4").arg(Types[selectedIndex].second).arg(tex->width).arg(tex->height).arg(tex->format == GL_RGB ? "RGB" : "RGBA"));
+    SetStatusText(QString("%1: size %2 x %3, format %4").arg(Types[selectedIndex].second).arg(tex->width).arg(tex->height).arg(tex->format == GL_RGB ? "RGB" : "RGBA"));
 
     return true;
 }

@@ -27,7 +27,8 @@ SOURCES += \
     src/qdef.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
-    src/misc/settings.cpp
+    src/misc/settings.cpp \
+    src/gl/nl_gl_algo_debug.cpp
 
 # Widget
 HEADERS += \
@@ -69,8 +70,8 @@ SOURCES += \
     src/changelogdialog.cpp
 
 # Component
-DEPENDPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer ./src/comp/editor_widget
-INCLUDEPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer ./src/comp/editor_widget
+DEPENDPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer ./src/comp/widget
+INCLUDEPATH += ./src/comp ./src/comp/scene ./src/comp/component ./src/comp/renderer ./src/comp/widget
 
 HEADERS += \
     src/comp/simplecameraactor.h \
@@ -125,13 +126,13 @@ SOURCES += \
     src/comp/scene/spritescene.cpp
 
 HEADERS += \
-    src/comp/editor_widget/sceneinfowidget.h \
-    src/comp/editor_widget/scenetreewidget.h \
-    src/comp/editor_widget/actorpropertywidget.h
+    src/comp/widget/sceneinfowidget.h \
+    src/comp/widget/scenetreewidget.h \
+    src/comp/widget/actorpropertywidget.h
 SOURCES += \
-    src/comp/editor_widget/sceneinfowidget.cpp \
-    src/comp/editor_widget/scenetreewidget.cpp \
-    src/comp/editor_widget/actorpropertywidget.cpp
+    src/comp/widget/sceneinfowidget.cpp \
+    src/comp/widget/scenetreewidget.cpp \
+    src/comp/widget/actorpropertywidget.cpp
 
 # Engine
 DEPENDPATH += ./src/engine ./src/engine/editor

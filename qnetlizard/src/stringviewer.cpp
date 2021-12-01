@@ -62,12 +62,14 @@ void StringViewer::Init()
     toolLayout->addStretch();
     m_decodeButton = new QPushButton;
     m_decodeButton->setText(">>");
+    m_decodeButton->setShortcut(QKeySequence::fromString("ctrl+d"));
     m_decodeButton->setMaximumWidth(24);
     m_decodeButton->setEnabled(false);
     connect(m_decodeButton, SIGNAL(clicked()), this, SLOT(DecodeString()));
     toolLayout->addWidget(m_decodeButton);
     m_encodeButton = new QPushButton;
     m_encodeButton->setText("<<");
+    m_encodeButton->setShortcut(QKeySequence::fromString("ctrl+e"));
     m_encodeButton->setMaximumWidth(24);
     m_encodeButton->setEnabled(false);
     connect(m_encodeButton, SIGNAL(clicked()), this, SLOT(EncodeString()));

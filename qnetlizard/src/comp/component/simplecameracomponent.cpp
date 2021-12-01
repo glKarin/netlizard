@@ -87,6 +87,8 @@ SimpleCameraComponent::~SimpleCameraComponent()
 void SimpleCameraComponent::InitProperty()
 {
     SetType(GetInitProperty_T<int>("type", static_cast<int>(NLSceneCamera::Type_Perspective)));
+    if(GetInitProperty_T<bool>("camera_z_is_up", GetInitProperty_T<bool>("camera_z_is_up")))
+        m_camera->SetZIsUp(true); // z_is_up
 }
 
 void SimpleCameraComponent::Init()
@@ -146,8 +148,6 @@ void SimpleCameraComponent::SetType(int type)
     {
         m_type = type;
         m_camera->SetType(static_cast<NLSceneCamera::SceneCamera_Type>(m_type));
-        if(GetProperty_T<bool>("camera_z_is_up", GetInitProperty_T<bool>("camera_z_is_up")))
-            m_camera->SetZIsUp(true); // z_is_up
         //m_camera->SetScene(Scene());
         emit propertyChanged("type", m_type);
     }
@@ -327,4 +327,14 @@ void SimpleCameraComponent::SetRender(bool enabled)
 bool SimpleCameraComponent::IsRender() const
 {
     return m_camera->IsEnabled();
+}
+
+bool SimpleCameraComponent::ZIsUp() const
+{
+    return m_camera->ZIsUp();
+}
+
+void SimpleCameraComponent::SetZIsUp(bool b)
+{
+    m_camera->SetZIsUp(b);
 }

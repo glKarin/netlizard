@@ -56,12 +56,14 @@ void MapViewer::Init()
     m_openLvlButton = new QPushButton;
     connect(m_openLvlButton, SIGNAL(clicked()), this, SLOT(OpenFileChooser()));
     m_openLvlButton->setText("lvl/dm/track file");
+    m_openLvlButton->setShortcut(QKeySequence::fromString("ctrl+f"));
     AddTool(m_openLvlButton);
     AddTool();
 
     m_openResourcePathButton = new QPushButton;
     connect(m_openResourcePathButton, SIGNAL(clicked()), this, SLOT(OpenResourceDirChooser()));
     m_openResourcePathButton->setText("Resource path");
+    m_openResourcePathButton->setShortcut(QKeySequence::fromString("ctrl+r"));
     AddTool(m_openResourcePathButton);
     AddTool();
 
@@ -75,6 +77,7 @@ void MapViewer::Init()
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenFile()));
     button->setText("Load");
+    button->setShortcut(QKeySequence::fromString("ctrl+o"));
     AddTool(button);
 
     connect(m_gameComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));

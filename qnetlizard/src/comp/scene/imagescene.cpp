@@ -84,12 +84,7 @@ void ImageScene::SetAlignment(Qt::Alignment align)
     {
         m_align = (Qt::Alignment)a;
 
-        SimpleCameraActor *camera = GetActor_T<SimpleCameraActor>(1);
-        camera->Reset();
-
-        NLActor *actor = GetActor(0);
-        actor->Reset();
-        static_cast<NLSceneOrthoCamera *>(camera->Camera())->SetAlignment(align);
+        CurrentCamera()->SetAlignment(align);
         m_renderer->SetAlignment(align);
 
         bool invertY = align & Qt::AlignTop;

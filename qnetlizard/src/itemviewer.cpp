@@ -57,12 +57,14 @@ void ItemViewer::Init()
     m_openObjButton = new QPushButton;
     connect(m_openObjButton, SIGNAL(clicked()), this, SLOT(OpenObjFileChooser()));
     m_openObjButton->setText("obj/o/car file");
+    m_openObjButton->setShortcut(QKeySequence::fromString("ctrl+f"));
     AddTool(m_openObjButton);
     AddTool();
 
     m_openResourcePathButton = new QPushButton;
     connect(m_openResourcePathButton, SIGNAL(clicked()), this, SLOT(OpenResourceDirChooser()));
     m_openResourcePathButton->setText("Resource path");
+    m_openResourcePathButton->setShortcut(QKeySequence::fromString("ctrl+r"));
     AddTool(m_openResourcePathButton);
     AddTool();
 
@@ -81,6 +83,7 @@ void ItemViewer::Init()
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenFile()));
     button->setText("Load");
+    button->setShortcut(QKeySequence::fromString("ctrl+o"));
     AddTool(button);
 
     connect(m_gameComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));

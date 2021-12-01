@@ -120,7 +120,7 @@ static unsigned NETLizard_IsFloorPlane(const plane_t *plane)
     vector3_movev(&p, &PLANEV_POSITION(plane), &PLANEV_NORMAL(plane), MUL);
     const nl_vector3_t dir = VECTOR3(0, 0, -1);
     ray_t ray = RAYV(VECTOR3_V(p), VECTOR3_V(dir));
-    int r = plane_ray_intersect(plane, &ray, 0, 0);
+    int r = plane_ray_intersect(plane, &ray, NULL, NULL);
     if(r > 0)
         return 1;
     return 0;
@@ -133,7 +133,7 @@ static unsigned NETLizard_IsCeilPlane(const plane_t *plane)
     vector3_movev(&p, &PLANEV_POSITION(plane), &PLANEV_NORMAL(plane), MUL);
     const nl_vector3_t dir = VECTOR3(0, 0, 1);
     ray_t ray = RAYV(VECTOR3_V(p), VECTOR3_V(dir));
-    int r = plane_ray_intersect(plane, &ray, 0, 0);
+    int r = plane_ray_intersect(plane, &ray, NULL, NULL);
     if(r > 0)
         return 1;
     return 0;
@@ -813,7 +813,7 @@ static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3
                     ray_t ray = RAYV(VECTOR3_V(LINE_B(line)), VECTOR3_V(PLANE_NORMAL(plane)));
                     vector3_invertv(&PLANE_NORMAL(plane));
                     nl_vector3_t c0;
-                    int r = plane_ray_intersect(&plane, &ray, 0, &c0);
+                    int r = plane_ray_intersect(&plane, &ray, NULL, &c0);
                     if(r > 0)
                     {
                         LINE_B(line) = c0;
@@ -1019,4 +1019,104 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
         *collision_item = result.item;
 
     return result.res;
+}
+
+int NETLizard_RayIntersect(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, const nl_vector3_t *direction, unsigned include_item, int *scene, int *collision_id, int *collision_type, nl_vector3_t *cpoint, float *dis)
+{
+    unsigned has = 0;
+    int item_id = -1;
+    int type = -1;
+    int s = -1;
+    nl_vector3_t point = VECTOR3(0, 0, 0);
+    float distance = 0;
+    ray_t ray = RAYV(VECTOR3_V(obj->position), VECTOR3V_V(direction));
+    unsigned int i;
+    for(i = 0; i < map->count; i++)
+    {
+        const GL_NETLizard_3D_Mesh *mesh = map->meshes + i;
+        unsigned int j;
+        // item
+        for(j = mesh->item_index_range[0]; j < mesh->item_index_range[1]; j++)
+        {
+            const GL_NETLizard_3D_Mesh *im = map->item_meshes + j;
+            bound_t box = SCENE_BOUND(im);
+            unsigned int k;
+            for(k = 0; k < mesh->plane_count; k++)
+            {
+                plane_t plane = SCENE_PLANE(mesh, k);
+                nl_vector3_t c0;
+                float lamda = 0;
+                int r = plane_ray_intersect(&plane, &ray, &lamda, &c0);
+                if(r <= 0)
+                    continue;
+                nl_vector3_t c1 = c0;
+                vector3_moveve(&c1, &RAY_DIRECTION(ray), 1);
+                if(!bound_point_in_box(&box, &c1))
+                    continue;
+                if(!has)
+                {
+                    distance = lamda;
+                    point = c0;
+                    item_id = j;
+                    type = 2;
+                    s = i;
+                    has = 1;
+                    continue;
+                }
+                if(lamda < distance)
+                {
+                    distance = lamda;
+                    point = c0;
+                    item_id = j;
+                    type = 2;
+                    s = i;
+                }
+            }
+        }
+
+        // plane
+        for(j = 0; j < mesh->plane_count; j++)
+        {
+            plane_t plane = SCENE_PLANE(mesh, j);
+            nl_vector3_t c0;
+            float lamda = 0;
+            int r = plane_ray_intersect(&plane, &ray, &lamda, &c0);
+            if(r <= 0)
+                continue;
+            if(NETLizard_FindScenePointIn(map, &c0) < 0)
+                continue;
+            if(!has)
+            {
+                distance = lamda;
+                point = c0;
+                item_id = j;
+                type = 1;
+                s = i;
+                has = 1;
+                continue;
+            }
+            if(lamda < distance)
+            {
+                distance = lamda;
+                point = c0;
+                item_id = j;
+                s = i;
+                type = 1;
+            }
+        }
+    }
+    if(has)
+    {
+        if(collision_id)
+            *collision_id = item_id;
+        if(collision_type)
+            *collision_type = type;
+        if(dis)
+            *dis = distance;
+        if(cpoint)
+            *cpoint = point;
+        if(scene)
+            *scene = s;
+    }
+    return has;
 }

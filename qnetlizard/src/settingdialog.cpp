@@ -83,7 +83,7 @@ void SettingDialog::Init()
     //list->setCurrentRow(0);
 
     setWindowTitle("Settings");
-    resize(360, 320);
+    resize(480, 360);
 }
 
 int SettingDialog::Show(QWidget *parent)

@@ -49,10 +49,12 @@ void SpriteViewer::Init()
     // ccc - ccu
     m_openCuButton = new QPushButton;
     m_openCuButton->setText("config file(cu|ccc.png)");
+    m_openCuButton->setShortcut(QKeySequence::fromString("ctrl+f"));
     AddTool(m_openCuButton);
     connect(m_openCuButton, SIGNAL(clicked()), this, SLOT(openCuFileChooser()));
     m_openUButton = new QPushButton(this);
     m_openUButton->setText("image file(u0|ccu.png)");
+    m_openUButton->setShortcut(QKeySequence::fromString("ctrl+r"));
     connect(m_openUButton, SIGNAL(clicked()), this, SLOT(OpenUFileChooser()));
     AddTool(m_openUButton);
     AddTool();
@@ -62,6 +64,7 @@ void SpriteViewer::Init()
     AddTool(button);
     button = new QPushButton;
     button->setText("Load");
+    button->setShortcut(QKeySequence::fromString("ctrl+o"));
     connect(button, SIGNAL(clicked()), this, SLOT(LoadSprite()));
     AddTool(button);
     connect(m_indexList, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(RenderIndex(QListWidgetItem *)));
@@ -148,7 +151,7 @@ bool SpriteViewer::LoadSprite()
         const int Co = m_spriteScene->Count();
         for(int i = 0; i < Co; i++)
             m_indexList->addItem(QString::number(i));
-        SetStatusText(QString("config file: %1, texture file: %2").arg(m_cuFile).arg(m_uFile));
+        SetStatusText(QString("config file: %1, texture file: %2 -> sprite count: %3").arg(m_cuFile).arg(m_uFile).arg(m_spriteScene->Sprite()->sprite_count));
     }
     else
     {

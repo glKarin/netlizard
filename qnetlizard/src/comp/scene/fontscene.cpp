@@ -25,8 +25,6 @@ FontScene::FontScene(QWidget *parent) :
     SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
 
     SimpleCameraActor *camera = new SimpleCameraActor(NLProperties("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho))("enable_control", false));
-    Qt::Alignment align = Qt::AlignLeft | Qt::AlignTop;
-    //align = Qt::AlignCenter;
     camera->setObjectName("main_camera_2d");
     AddActor(camera);
     NLActor *actor = new NLActor;
@@ -35,7 +33,7 @@ FontScene::FontScene(QWidget *parent) :
     m_renderer = new NETLizardFontRenderer;
     actor->SetRenderable(m_renderer);
     NLSceneCamera *orthoCam = camera->Camera();
-    orthoCam->SetAlignment(align);
+    orthoCam->SetAlignment(Qt::AlignLeft | Qt::AlignTop);
     SetCurrentCamera(orthoCam);
     connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
@@ -74,6 +72,8 @@ void FontScene::Reset()
     m_renderer->SetFont(0);
 
     NLScene::Reset();
+
+    CurrentCamera()->SetAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
 void FontScene::paintGL()

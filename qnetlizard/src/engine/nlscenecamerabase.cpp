@@ -117,7 +117,7 @@ void NLSceneCameraBase::SetScale(const NLVector3 &v)
         return;
     m_scale = v;
     UpdateMatrix();
-    PropertyChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
+    ValueChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
 }
 
 NLSceneCameraBase * NLSceneCameraBase::Move(const NLVector3 &unit)
@@ -355,13 +355,22 @@ void NLSceneCameraBase::SetZIsUp(bool b)
 
         UpdateMatrix();
         UpdateDirection();
+        PropertyChanged("zIsUp", NLProperty::fromValue(m_zIsUp));
     }
+}
+
+bool NLSceneCameraBase::ZIsUp() const
+{
+    return m_zIsUp;
 }
 
 void NLSceneCameraBase::SetEnabled(bool b)
 {
     if(m_enabled != b)
+    {
         m_enabled = b;
+        PropertyChanged("enabled", NLProperty::fromValue(m_enabled));
+    }
 }
 
 void NLSceneCameraBase::SetChangedNotifyFunc(NLSceneCameraBase::NLSceneCameraChangedNotify *func)
