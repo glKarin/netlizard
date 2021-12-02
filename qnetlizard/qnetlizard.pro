@@ -20,7 +20,9 @@ HEADERS += \
     src/qdef.h \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
-    src/misc/settings.h
+    src/misc/settings.h \
+    src/gl/nl_gl_algo_debug.h \
+    src/comp/renderer/netlizardmapmodeldebugrenderer.h
 
 SOURCES += \
     main.cpp \
@@ -28,7 +30,8 @@ SOURCES += \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
-    src/gl/nl_gl_algo_debug.cpp
+    src/gl/nl_gl_algo_debug.cpp \
+    src/comp/renderer/netlizardmapmodeldebugrenderer.cpp
 
 # Widget
 HEADERS += \

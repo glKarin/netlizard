@@ -37,7 +37,7 @@ extern "C" {
 
 #define Mesa_glTransform_column(t, o, m) Mesa_glTransform(t, 0, m)
 #define Mesa_glTransform4_column(t, o, m) Mesa_glTransform4(t, 0, m)
-#define Mesa_InverseTranspose(m, v) Mesa_NormalMatrix(m, v)
+#define Mesa_InverseTranspose(m, v) Mesa_InverseTransposeMatrix(m, v)
 
 void Mesa_glTranslate(GLmatrix *mat, float x, float y, float z);
 void Mesa_glRotate(GLmatrix *mat, float angle, float x, float y, float z);
@@ -66,9 +66,9 @@ void Mesa_AllocGLMatrix(GLmatrix *mat);
 int Mesa_GLMatrixIsAlloc(GLmatrix *mat);
 
 void Mesa_glTranspose(GLmatrix *mat);
-void Mesa_NormalMatrix(GLmatrix *mat, const GLfloat mv[16]);
+void Mesa_NormalMatrix(GLmatrix *mat);
 void Mesa_InverseMatrix(GLmatrix *mat);
-void Mesa_InverseTransposeMatrix(GLmatrix *mat);
+void Mesa_InverseTransposeMatrix(GLmatrix *mat, const GLfloat mv[16]);
 
 
 #ifdef __cplusplus

@@ -154,7 +154,7 @@ void NETLizardShadowModelRenderer::SetLightSourceType(bool dirlight)
     }
 }
 
-void NETLizardShadowModelRenderer::SetRenderScenes(int scenes[], int count)
+void NETLizardShadowModelRenderer::SetRenderScenes(const int scenes[], int count)
 {
     if(!m_scenes)
         return;

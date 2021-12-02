@@ -84,6 +84,37 @@ int plane_point_clip(const plane_t *plane, const vector3_t *v)
     return a > 0 ? 1 : (a < 0 ? -1 : 0);
 }
 
+int plane_point_clip_precision(const plane_t *plane, const vector3_t *v, float precision)
+{
+    int f = plane_point_clip(plane, v);
+    if(f == 0)
+        return 0;
+    if(f > 0)
+    {
+        vector3_t pos;
+        vector3_movev(&pos, v, &PLANEV_NORMAL(plane), -precision);
+        int a = plane_point_clip(plane, &pos);
+        if(a == 0)
+            return 0;
+        else if(a < 0)
+            return 0;
+        else
+            return 1;
+    }
+    else
+    {
+        vector3_t pos;
+        vector3_movev(&pos, v, &PLANEV_NORMAL(plane), precision);
+        int a = plane_point_clip(plane, &pos);
+        if(a == 0)
+            return 0;
+        else if(a > 0)
+            return 0;
+        else
+            return -1;
+    }
+}
+
 /*
   mask:
     0: A and B all under plane

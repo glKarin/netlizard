@@ -1,11 +1,13 @@
-//#include "nl_gl_debug.h"
+#include "nl_gl_algo_debug.h"
 
-//#include <stdlib.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <list>
 
-//#include "lib/vector3.h"
-//#include "lib/line.h"
-//#include "lib/bound.h"
-//#include "nl_util.h"
+#include "lib/vector3.h"
+#include "lib/line.h"
+#include "lib/bound.h"
+#include "nl_util.h"
 
 #define BEGIN_DEBUG_RENDER \
     glDepthMask(GL_FALSE); \
@@ -45,49 +47,195 @@
 #define BITS_FALSE(b, t) (((b) & (t)) == 0)
 #define BITS_TRUE(b, t) (((b) & (t)) != 0)
 
-#if 0
-void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, GLuint type, GL_NETLizard_Debug_Render_Mesh_f func)
+//#define POINT_CLIP(p, x) plane_point_clip(p, x)
+#define POINT_CLIP(p, x) plane_point_clip_precision(p, x, 1)
+
+typedef std::list<vector3_t> Vector3List;
+typedef std::list<line_t> LineList;
+
+static int push_edge_line(LineList &list, const line_t *lp)
 {
-    if(!model || !func)
-		return;
-    if(BITS_FALSE(type, NETLIZARD_DEBUG_TYPE_ITEM) && BITS_FALSE(type, NETLIZARD_DEBUG_TYPE_SCENE))
+    int has = 0;
+    LineList::iterator itor;
+
+    for(itor = list.begin(); itor != list.end(); ++itor) // find in lines list
+    {
+        const line_t &line = *itor;
+        if(line_equals_ignore_seq(lp, &line))
+        {
+            //printf("%d exist\n", i);
+            has = 1;
+            break;
+        }
+    }
+
+    if(has) // if exists, remove this line
+    {
+        list.erase(itor);
+    }
+    else // if not exists, add new line to list
+    {
+        list.push_back(*lp);
+    }
+    return has;
+}
+
+static void render_highlight_lines(const LineList &lines, const GLfloat position[3], const GLfloat rotation[2])
+{
+    if(lines.empty())
+        return;
+    BEGIN_DEBUG_RENDER
+    {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glPushMatrix();
+        {
+            glTranslatef(position[0], position[1], position[2]);
+            glRotatef(rotation[0], 1.0f, 0.0f, 0.0f);
+            glRotatef(rotation[1], 0.0f, 0.0f, 1.0f);
+            glColor4f(LINE_COLOR);
+
+            for(LineList::const_iterator itor = lines.begin();
+                itor != lines.end(); ++itor)
+            {
+                const line_t &line = *itor;
+                GLfloat vs[] = {
+                    LINE_A_X(line), LINE_A_Y(line), LINE_A_Z(line),
+                    LINE_B_X(line), LINE_B_Y(line), LINE_B_Z(line),
+                };
+                glVertexPointer(3, GL_FLOAT, 0, vs);
+                glDrawArrays(GL_LINES, 0, 2);
+            }
+        }
+        glPopMatrix();
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+    }
+    END_DEBUG_RENDER
+}
+
+void NETLizard_DebugHighlightRenderGL3DModelPlane(const GL_NETLizard_3D_Model *model, GLuint scene, GLuint plane_index)
+{
+    if(!model)
         return;
 
-    if(model->meshes && BITS_TRUE(type, NETLIZARD_DEBUG_TYPE_SCENE))
-	{
-		GLuint i;
-		for(i = 0; i < model->count; i++)
-        {
-            const GL_NETLizard_3D_Mesh *m = model->meshes + i;
-            func(m);
-#if 0
-            if(model->item_meshes)
-			{
-				GLuint j;
-				for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++) 
-                {
-					GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
-                    if(!im->materials) // REDO
-                        continue;
-                    func(im);
-				}
-			}
-#endif
-		}
-	}
+    const GL_NETLizard_3D_Mesh *mesh = model->meshes + scene;
+    const GL_NETLizard_3D_Plane *p = mesh->plane + plane_index;
+    const GL_NETLizard_3D_Vertex *vertex = mesh->vertex_data.vertex;
+    const plane_t plane = PLANEV(p->position, p->normal);
+    LineList lines;
 
-    if(model->item_meshes && BITS_TRUE(type, NETLIZARD_DEBUG_TYPE_ITEM))
-	{
-		GLuint i;
-		for(i = 0; i < model->item_count; i++)
+    unsigned int i;
+    for(i = 0; i < mesh->count; i++)
+    {
+        const GL_NETLizard_3D_Material *m = mesh->materials + i;
+        unsigned int j;
+        for(j = 0; j < m->index_count; j += 3) // GL_TRIANGLES
         {
-            const GL_NETLizard_3D_Item_Mesh *m = model->item_meshes + i;
-            if(!m->materials) // REDO
-				continue;
-            if(m->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
+            int index1 = m->index[j];
+            int index2 = m->index[j + 1];
+            int index3 = m->index[j + 2];
+            const GL_NETLizard_3D_Vertex *pa[] = {
+                vertex + index1,
+                vertex + index2,
+                vertex + index3,
+            };
+
+            int n;
+            unsigned all_in = 1;
+            // check point in plane
+            for(n = 0; n < 3; n++) // 3 points of triangle
+            {
+                vector3_t point = VECTOR3V(pa[n]->position);
+                if(POINT_CLIP(&plane, &point) != 0) // !!!
+                {
+                    all_in = 0;
+                    break;
+                }
+            }
+            if(!all_in)
                 continue;
-            func(m);
-		}
-	}
+
+            for(n = 0; n < 3; n++) // 3 points of triangle
+            {
+                int next_index = (n + 1) % 3;
+
+                line_t lp = LINEV(pa[n]->position, pa[next_index]->position);
+                push_edge_line(lines, &lp);
+            }
+        }
+    }
+    render_highlight_lines(lines, mesh->position, mesh->rotation);
 }
-#endif
+
+void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model *model, GLuint scene, GLuint item_index, const vector3_t *pos, const vector3_t *dir)
+{
+    if(!model || !pos || !dir)
+        return;
+
+    const GL_NETLizard_3D_Mesh *mesh = model->item_meshes + item_index;
+    const GL_NETLizard_3D_Vertex *vertex = mesh->vertex_data.vertex;
+    LineList lines;
+    GLmatrix mat, nor_mat;
+    Mesa_AllocGLMatrix(&mat);
+    Mesa_AllocGLMatrix(&nor_mat);
+    Mesa_glLoadIdentity(&mat);
+    Mesa_glTranslate(&mat, mesh->position[0], mesh->position[1], mesh->position[2]);
+    Mesa_glRotate(&mat, mesh->rotation[0], 1.0f, 0.0f, 0.0f);
+    Mesa_glRotate(&mat, mesh->rotation[1], 0.0f, 0.0f, 1.0f);
+
+    matrix_normal_matrix(&mat, &nor_mat);
+
+    unsigned int i;
+    for(i = 0; i < mesh->count; i++)
+    {
+        const GL_NETLizard_3D_Material *m = mesh->materials + i;
+        unsigned int j;
+        for(j = 0; j < m->index_count; j += 3) // GL_TRIANGLES
+        {
+            int index1 = m->index[j];
+            int index2 = m->index[j + 1];
+            int index3 = m->index[j + 2];
+            const GL_NETLizard_3D_Vertex *pa[] = {
+                vertex + index1,
+                vertex + index2,
+                vertex + index3,
+            };
+
+            vector3_t p2l = VECTOR3V(pa[0]->normal);
+
+            Mesa_glTransform_row(VECTOR3_V(p2l), pa[0]->normal, &nor_mat);
+
+            float dot_p = 0;
+            if(dir&&0)
+            {
+                vector3_t d2 = *dir;
+                vector3_invertv(&d2);
+                dot_p = vector3_dot(&p2l, &d2);
+            }
+            else
+            {
+                vector3_t p;
+                Mesa_glTransform(VECTOR3_V(p), pa[0]->position, &mat);
+                vector3_t nor;
+                vector3_directionv(&nor, &p, pos);
+                dot_p = vector3_dot(&p2l, &nor);
+            }
+
+            if(dot_p <= 0.0)
+                continue;
+
+            int n;
+            for(n = 0; n < 3; n++) // 3 points of triangle
+            {
+                int next_index = (n + 1) % 3;
+
+                line_t lp = LINEV(pa[n]->position, pa[next_index]->position);
+                push_edge_line(lines, &lp);
+            }
+        }
+    }
+
+    Mesa_FreeGLMatrix(&mat);
+    Mesa_FreeGLMatrix(&nor_mat);
+    render_highlight_lines(lines, mesh->position, mesh->rotation);
+}

@@ -20,6 +20,8 @@ extern "C" {
 #define NETLIZARD_DEBUG_RENDER_ITEM_PLANE (1 << 5)
 #define NETLIZARD_DEBUG_RENDER_SCENE_PLANE (1 << 6)
 #define NETLIZARD_DEBUG_RENDER_MAP_BSP (1 << 7)
+#define NETLIZARD_DEBUG_RENDER_HIGHLIGHT_VIEW_SCENE_PLANE (1 << 8)
+#define NETLIZARD_DEBUG_RENDER_HIGHLIGHT_VIEW_ITEM (1 << 9)
 
 #define NETLizard_DebugRenderGL3DModel_VertexNormal(m, t) NETLizard_DebugRenderGL3DModel(m, t, NETLizard_DebugRenderGL3DMeshVertexNormal)
 #define NETLizard_DebugRenderGL3DMapModelScene_VertexNormal(m, s, c, t) NETLizard_DebugRenderGL3DMapModelScene(m, s, c, t, NETLizard_DebugRenderGL3DMeshVertexNormal)

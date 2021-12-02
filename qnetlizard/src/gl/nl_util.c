@@ -297,3 +297,44 @@ int NETLizard_GetNETLizard3DMapNeighboringScenes(const GL_NETLizard_3D_Model *mo
     }
     return index;
 }
+
+void NETLizard_GetSceneBound(const GL_NETLizard_3D_Mesh *scene, bound_t *bound)
+{
+    if(!scene || !bound)
+        return;
+    nl_vector3_t min = VECTOR3V(scene->box.min);
+    nl_vector3_t max = VECTOR3V(scene->box.max);
+    if(scene->rotation[0] == 0 && scene->rotation[1] == 0) // no rotation
+    {
+        GLmatrix mat;
+        Mesa_AllocGLMatrix(&mat);
+        Mesa_glTranslate(&mat, scene->position[0], scene->position[1], scene->position[2]);
+        Mesa_glRotate(&mat, scene->rotation[0], 1.0f, 0.0f, 0.0f);
+        Mesa_glRotate(&mat, scene->rotation[1], 0.0f, 0.0f, 1.0f);
+        matrix_transformv_self(&mat, &min);
+        matrix_transformv_self(&mat, &max);
+        Mesa_FreeGLMatrix(&mat);
+        bound_make(bound, &min, &max);
+    }
+    else
+    {
+        NETLizard_GetNETLizard3DMeshTransformBound(scene, 1, bound);
+    }
+}
+
+void NETLizard_GetScenePlane(const GL_NETLizard_3D_Mesh *scene, int j, plane_t *p)
+{
+    const GL_NETLizard_3D_Plane *plane = scene->plane + j;
+    nl_vector3_t normal = VECTOR3V(plane->normal);
+    nl_vector3_t position = VECTOR3V(plane->position);
+    GLmatrix mat;
+    Mesa_AllocGLMatrix(&mat);
+    Mesa_glTranslate(&mat, scene->position[0], scene->position[1], scene->position[2]);
+    Mesa_glRotate(&mat, scene->rotation[0], 1.0f, 0.0f, 0.0f);
+    Mesa_glRotate(&mat, scene->rotation[1], 0.0f, 0.0f, 1.0f);
+    matrix_transformv_self(&mat, &position);
+    Mesa_NormalMatrix(&mat);
+    matrix_transformv_self_row(&mat, &normal);
+    Mesa_FreeGLMatrix(&mat);
+    plane_make(p, &position, &normal);
+}

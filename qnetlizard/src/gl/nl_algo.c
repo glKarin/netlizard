@@ -31,9 +31,9 @@
 #define ICT_Ignore NETLizard_Collision_Testing_Item_Ignore
 
 //#define SCENE_BOUND(mesh) BOUNDV(mesh->box.min, mesh->box.max)
-#define SCENE_BOUND(mesh) NETLizard_GetSceneBound(mesh)
+#define SCENE_BOUND(mesh) NETLizard_SceneBound(mesh)
 //#define SCENE_PLANE(plane) PLANEV(mesh->plane[i])
-#define SCENE_PLANE(mesh, i) NETLizard_GetScenePlane(mesh, i)
+#define SCENE_PLANE(mesh, i) NETLizard_ScenePlane(mesh, i)
 
 #define UP_NORMAL_LIMIT 0.866025
 #define _MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -69,46 +69,17 @@ static void * push_back(int size, void **arr, int *count, const void *t)
     return _narr;
 }
 
-static bound_t NETLizard_GetSceneBound(const GL_NETLizard_3D_Mesh *scene)
+static bound_t NETLizard_SceneBound(const GL_NETLizard_3D_Mesh *scene)
 {
-    nl_vector3_t min = VECTOR3V(scene->box.min);
-    nl_vector3_t max = VECTOR3V(scene->box.max);
     bound_t bound;
-    if(scene->rotation[0] == 0 && scene->rotation[1] == 0) // no rotation
-    {
-        GLmatrix mat;
-        Mesa_AllocGLMatrix(&mat);
-        Mesa_glTranslate(&mat, scene->position[0], scene->position[1], scene->position[2]);
-        Mesa_glRotate(&mat, scene->rotation[0], 1.0f, 0.0f, 0.0f);
-        Mesa_glRotate(&mat, scene->rotation[1], 0.0f, 0.0f, 1.0f);
-        matrix_transformv_self(&mat, &min);
-        matrix_transformv_self(&mat, &max);
-        Mesa_FreeGLMatrix(&mat);
-        bound_make(&bound, &min, &max);
-    }
-    else
-    {
-        NETLizard_GetNETLizard3DMeshTransformBound(scene, 1, &bound);
-    }
+    NETLizard_GetSceneBound(scene, &bound);
     return bound;
 }
 
-static plane_t NETLizard_GetScenePlane(const GL_NETLizard_3D_Mesh *scene, int j)
+static plane_t NETLizard_ScenePlane(const GL_NETLizard_3D_Mesh *scene, int j)
 {
-    const GL_NETLizard_3D_Plane *plane = scene->plane + j;
-    nl_vector3_t normal = VECTOR3V(plane->normal);
-    nl_vector3_t position = VECTOR3V(plane->position);
-    GLmatrix mat;
-    Mesa_AllocGLMatrix(&mat);
-    Mesa_glTranslate(&mat, scene->position[0], scene->position[1], scene->position[2]);
-    Mesa_glRotate(&mat, scene->rotation[0], 1.0f, 0.0f, 0.0f);
-    Mesa_glRotate(&mat, scene->rotation[1], 0.0f, 0.0f, 1.0f);
-    matrix_transformv_self(&mat, &position);
-    Mesa_InverseTransposeMatrix(&mat);
-    matrix_transformv_self_row(&mat, &normal);
-    Mesa_FreeGLMatrix(&mat);
     plane_t p;
-    plane_make(&p, &position, &normal);
+    NETLizard_GetScenePlane(scene, j, &p);
     return p;
 }
 
@@ -1021,7 +992,7 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
     return result.res;
 }
 
-int NETLizard_RayIntersect(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, const nl_vector3_t *direction, unsigned include_item, int *scene, int *collision_id, int *collision_type, nl_vector3_t *cpoint, float *dis)
+int NETLizard_RayIntersect(const GL_NETLizard_3D_Model *map, const nl_vector3_t *position, const nl_vector3_t *direction, unsigned collision_object, int *scene, int *collision_id, int *collision_type, nl_vector3_t *cpoint, float *dis)
 {
     unsigned has = 0;
     int item_id = -1;
@@ -1029,53 +1000,58 @@ int NETLizard_RayIntersect(const GL_NETLizard_3D_Model *map, const collision_obj
     int s = -1;
     nl_vector3_t point = VECTOR3(0, 0, 0);
     float distance = 0;
-    ray_t ray = RAYV(VECTOR3_V(obj->position), VECTOR3V_V(direction));
+    const ray_t ray = RAYV(VECTOR3V_V(position), VECTOR3V_V(direction));
     unsigned int i;
     for(i = 0; i < map->count; i++)
     {
         const GL_NETLizard_3D_Mesh *mesh = map->meshes + i;
+        bound_t scene_box = SCENE_BOUND(mesh);
         unsigned int j;
         // item
-        for(j = mesh->item_index_range[0]; j < mesh->item_index_range[1]; j++)
+        if(collision_object & 2)
         {
-            const GL_NETLizard_3D_Mesh *im = map->item_meshes + j;
-            bound_t box = SCENE_BOUND(im);
-            unsigned int k;
-            for(k = 0; k < mesh->plane_count; k++)
+            for(j = mesh->item_index_range[0]; j < mesh->item_index_range[1]; j++)
             {
-                plane_t plane = SCENE_PLANE(mesh, k);
-                nl_vector3_t c0;
-                float lamda = 0;
-                int r = plane_ray_intersect(&plane, &ray, &lamda, &c0);
-                if(r <= 0)
-                    continue;
-                nl_vector3_t c1 = c0;
-                vector3_moveve(&c1, &RAY_DIRECTION(ray), 1);
-                if(!bound_point_in_box(&box, &c1))
-                    continue;
-                if(!has)
+                const GL_NETLizard_3D_Mesh *im = map->item_meshes + j;
+                vector3_t c1 = VECTOR3(1, 1, 1);
+                bound_t box = SCENE_BOUND(im);
+                bound_expand(&box, &c1);
+                unsigned int k;
+                for(k = 0; k < mesh->plane_count; k++)
                 {
-                    distance = lamda;
-                    point = c0;
-                    item_id = j;
-                    type = 2;
-                    s = i;
-                    has = 1;
-                    continue;
-                }
-                if(lamda < distance)
-                {
-                    distance = lamda;
-                    point = c0;
-                    item_id = j;
-                    type = 2;
-                    s = i;
+                    plane_t plane = SCENE_PLANE(im, k);
+                    nl_vector3_t c0;
+                    float lamda = 0;
+                    int r = plane_ray_intersect(&plane, &ray, &lamda, &c0);
+                    if(r <= 0)
+                        continue;
+                    if(!bound_point_in_box(&box, &c0))
+                        continue;
+                    fprintf(stderr, "wwwwwwwwwwwww\n");fflush(stderr);
+                    if(!has)
+                    {
+                        distance = lamda;
+                        point = c0;
+                        item_id = j;
+                        type = 2;
+                        s = i;
+                        has = 1;
+                        continue;
+                    }
+                    if(lamda < distance)
+                    {
+                        distance = lamda;
+                        point = c0;
+                        item_id = j;
+                        type = 2;
+                        s = i;
+                    }
                 }
             }
         }
 
         // plane
-        for(j = 0; j < mesh->plane_count; j++)
+        for(j = 0; j < 0; j++)
         {
             plane_t plane = SCENE_PLANE(mesh, j);
             nl_vector3_t c0;
@@ -1083,7 +1059,8 @@ int NETLizard_RayIntersect(const GL_NETLizard_3D_Model *map, const collision_obj
             int r = plane_ray_intersect(&plane, &ray, &lamda, &c0);
             if(r <= 0)
                 continue;
-            if(NETLizard_FindScenePointIn(map, &c0) < 0)
+            int gs = bound_point_in_box(&scene_box, &c0);
+            if(!gs)
                 continue;
             if(!has)
             {
@@ -1105,8 +1082,15 @@ int NETLizard_RayIntersect(const GL_NETLizard_3D_Model *map, const collision_obj
             }
         }
     }
+
     if(has)
     {
+        if(collision_object == 2) // only item
+        {
+            if(type == 1)
+                return 0;
+        }
+
         if(collision_id)
             *collision_id = item_id;
         if(collision_type)

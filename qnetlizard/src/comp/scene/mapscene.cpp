@@ -7,6 +7,7 @@
 #include "simplecameraactor.h"
 #include "netlizardmapmodelrenderer.h"
 #include "netlizardshadowmodelrenderer.h"
+#include "netlizardmapmodeldebugrenderer.h"
 #include "netlizarditemmodelrenderer.h"
 #include "simplecameracomponent.h"
 #include "simplecontrolcomponent.h"
@@ -37,11 +38,13 @@ MapScene::MapScene(QWidget *parent)
       m_mainCameraActor(0),
       m_mapActor(0),
       m_shadowActor(0),
+      m_debugActor(0),
       m_skyActor(0),
       m_sky3DActor(0),
       m_sky3DCameraActor(0),
       m_renderer(0),
       m_shadowRenderer(0),
+      m_debugRenderer(0),
       m_skyRenderer(0),
       m_sky3DRenderer(0),
       m_skyCamera(0),
@@ -69,7 +72,6 @@ MapScene::MapScene(QWidget *parent)
     m_renderer = new NETLizardMapModelRenderer;
     m_mapActor->SetRenderable(m_renderer);
     m_renderer->SetCull(settings->GetSetting<bool>("RENDER/scene_cull"));
-    m_renderer->SetDebug(settings->GetSetting<int>("DEBUG/render"));
 
     // 2D background camera
     SimpleCameraActor *camera_2d = new SimpleCameraActor(NLProperties("type", static_cast<int>(NLSceneCamera::Type_Ortho))("enable_control", false));
@@ -115,6 +117,16 @@ MapScene::MapScene(QWidget *parent)
     SimpleLightSourceActor *lightSource = new SimpleLightSourceActor(NLProperties("type", static_cast<int>(SimpleLightSourceComponent::LightSourceType_Point)));
     lightSource->setObjectName("lighting_source");
     AddActor(lightSource);
+
+    // render debug model
+    m_debugActor = new NLActor;
+    m_debugActor->setObjectName("debug_renderer");
+    AddActor(m_debugActor);
+    m_debugRenderer = new NETLizardMapModelDebugRenderer;
+    m_debugActor->SetRenderable(m_debugRenderer);
+    m_debugRenderer->SetCull(settings->GetSetting<bool>("RENDER/scene_cull"));
+    m_debugRenderer->SetDebug(settings->GetSetting<int>("DEBUG/render"));
+    m_debugRenderer->SetCamera(CurrentCamera());
 
     m_shadowRenderer->SetLightSourceType(lightSource->LightSource()->IsDirectionLighting());
 
@@ -236,41 +248,6 @@ void MapScene::Update(float delta)
         m_mainCameraActor->SetPosition(p);
         m_mainCameraActor->UpdateCamera();
 
-        float distance = 0;
-        int scene = -1;
-        int collision_id = -1;
-        int collision_type = 0;
-        NLSceneCamera *camera = CurrentCamera();
-        vector3_t np = p;
-        vector3_t direction = camera->Direction();
-        fprintf(stderr, "1| %f %f %f\n", direction.v[0], direction.v[1], direction.v[2]); fflush(stderr);
-        vector3_moveve(&np, &direction, 1);
-        ConvToAlgoVector3(p);
-        ConvToAlgoVector3(np);
-        vector3_directionv(&direction, &p, &np);
-        obj.position = p;
-       fprintf(stderr, "2| %f %f %f\n", direction.v[0], direction.v[1], direction.v[2]); fflush(stderr);
-       vector3_t direction2 = camera->Direction();
-       ConvToAlgoVector3(direction2);
-       fprintf(stderr, "3| %f %f %f\n", direction2.v[0], direction2.v[1], direction2.v[2]); fflush(stderr);
-
-       vector3_t direction3 = camera->Direction();
-        const NLMatrix4 *mat = CurrentCamera()->RenderMatrix();
-        NLMatrix4 normat;
-        Mesa_AllocGLMatrix(&normat);
-        matrix_normal_matrix(mat, &normat);
-        matrix_transformv_self_row(&normat, &direction3);
-        Mesa_FreeGLMatrix(&normat);
-        fprintf(stderr, "4| %f %f %f\n", direction3.v[0], direction3.v[1], direction3.v[2]); fflush(stderr);
-
-        nl_vector3_t cpoint = VECTOR3(0, 0, 0);
-        res = NETLizard_RayIntersect(m_model, &obj, &direction, 1, &scene, &collision_id, &collision_type, &cpoint, &distance);
-        if(res)
-        fprintf(stderr, "%d: scene %d, id %d, type %d, %f | %f %f %f\n", res, scene, collision_id, collision_type, distance, cpoint.v[0], cpoint.v[1], cpoint.v[2]);
-        else
-            fprintf(stderr, "not\n");
-            fflush(stderr);
-
         CollisionItem(item);
     }
 
@@ -304,6 +281,7 @@ void MapScene::Update(float delta)
         }
         m_renderer->SetSceneCount(count);
         m_shadowRenderer->SetRenderScenes(scenes, count);
+        m_debugRenderer->SetRenderScenes(scenes, count);
     }
 }
 
@@ -338,6 +316,7 @@ void MapScene::paintGL()
     if(m_fog)
         glDisable(GL_FOG);
     mainCamera->Render(m_shadowActor);
+    mainCamera->Render(m_debugActor);
     //mainCamera->Render(rrrrr);
 
     glFlush();
@@ -413,6 +392,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
 
     m_renderer->SetModel(m_model);
     m_shadowRenderer->SetModel(m_model);
+    m_debugRenderer->SetModel(m_model);
     bool hasSky = m_model->bg_tex && glIsTexture(m_model->bg_tex->texid);
     if(hasSky)
         m_skyRenderer->SetTexture(m_model->bg_tex);
@@ -557,6 +537,7 @@ void MapScene::Reset()
     m_teleport.clear();
     m_renderer->SetModel(0);
     m_shadowRenderer->SetModel(0);
+    m_debugRenderer->SetModel(0);
     m_skyRenderer->SetTexture(0);
     m_sky3DRenderer->SetModel(0, 0);
     if(m_model)
@@ -577,6 +558,7 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
     {
         m_renderer->SetCull(value.toBool());
         m_shadowRenderer->SetCull(m_renderer->Cull());
+        m_debugRenderer->SetCull(m_renderer->Cull());
     }
     else if(name == "CONTROL_3D/move_sens")
         m_control->SetMoveSens(value.toInt());
@@ -598,7 +580,7 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
         m_shadowRenderer->SetShadowObject(shadowObj);
     }
     else if(name == "DEBUG/render")
-        m_renderer->SetDebug(value.toInt());
+        m_debugRenderer->SetDebug(value.toInt());
     else if(name == "DEBUG/noclip")
         SetNoclip(value.toInt());
     else if(name == "RENDER/fog")

@@ -12,14 +12,13 @@ public:
     virtual ~NETLizardMapModelRenderer();
     GL_NETLizard_3D_Model * Model() { return m_model; }
     void SetModel(GL_NETLizard_3D_Model *model);
-    void SetScenes(bool b);
+    void SetupScenes(bool b);
     int * Scenes() { return m_scenes; }
     void SetCull(bool b);
     bool Cull() const { return m_cull; }
     void SetSceneCount(int i);
-    int SceneCount() const { return m_sceneCount; }
-    void SetDebug(int i);
-    int Debug() const { return m_debug; }
+    int SceneCount() const { return m_sceneCount; } 
+    void SetRenderScenes(const int scenes[], int count);
 
 protected:
     virtual void InitRender();
@@ -27,14 +26,10 @@ protected:
     virtual void DeinitRender();
 
 private:
-    void RenderDebug();
-
-private:
     GL_NETLizard_3D_Model *m_model;
     bool m_cull;
     int *m_scenes;
     int m_sceneCount;
-    int m_debug;
 
     Q_DISABLE_COPY(NETLizardMapModelRenderer)
     

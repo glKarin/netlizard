@@ -12,6 +12,7 @@ class NLScenePerspectiveCamera;
 class SimpleControlComponent;
 class SimpleCameraActor;
 class NETLizardShadowModelRenderer;
+class NETLizardMapModelDebugRenderer;
 
 NLSCENE(MapScene)
 class MapScene : public NLScene
@@ -51,11 +52,13 @@ private:
     SimpleCameraActor *m_mainCameraActor;
     NLActor *m_mapActor;
     NLActor *m_shadowActor;
+    NLActor *m_debugActor;
     NLActor *m_skyActor;
     NLActor *m_sky3DActor;
     SimpleCameraActor *m_sky3DCameraActor;
     NETLizardMapModelRenderer *m_renderer;
     NETLizardShadowModelRenderer *m_shadowRenderer;
+    NETLizardMapModelDebugRenderer *m_debugRenderer;
     NETLizardTextureRenderer *m_skyRenderer;
     NETLizardItemModelRenderer *m_sky3DRenderer;
     NLSceneOrthoCamera *m_skyCamera;

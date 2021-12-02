@@ -19,7 +19,7 @@ public:
     void SetSceneCount(int i);
     int SceneCount() const;
     void SetLightSource(const NLVector3 *pos = 0, bool dirlight = false);
-    void SetRenderScenes(int scenes[], int count);
+    void SetRenderScenes(const int scenes[], int count);
     int StencilShadowMethod() const { return m_stencilShadowMethod; }
     void SetStencilShadowMethod(int method);
     void SetLightSourcePosition(const NLVector3 &pos);

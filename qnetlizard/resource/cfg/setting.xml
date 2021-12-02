@@ -71,6 +71,8 @@
             <option name="option" label="Render item plane" value="32"></option>
             <option name="option" label="Render scene plane" value="64"></option>
             <option name="option" label="Render scene BSP" value="128"></option>
+            <option name="option" label="Render highlight view scene plane" value="256"></option>
+            <option name="option" label="Render highlight view item" value="512"></option>
         </item>
         <item alias="DEBUG/single_scene" name="Render current single scene" widget="combobox" type="int" default-value="0">
             <option name="option" label="No single scene" value="0"></option>

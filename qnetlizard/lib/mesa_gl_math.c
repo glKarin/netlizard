@@ -179,7 +179,7 @@ int Mesa_GLMatrixIsAlloc(GLmatrix *mat)
     return GL_MATRIXV_M(mat) ? 1 : 0;
 }
 
-void Mesa_NormalMatrix(GLmatrix *mat, const GLfloat mv[16])
+void Mesa_InverseTransposeMatrix(GLmatrix *mat, const GLfloat mv[16])
 {
     GLmatrix nor;
     GLfloat tmp[16];
@@ -201,7 +201,7 @@ void Mesa_InverseMatrix(GLmatrix *mat)
     _math_matrix_analyse(mat);
 }
 
-void Mesa_InverseTransposeMatrix(GLmatrix *mat)
+void Mesa_NormalMatrix(GLmatrix *mat)
 {
     GLfloat tmp[16];
     GLfloat mv[16] = {

@@ -34,7 +34,7 @@ void cale_normal_matrix(NLMatrix4 &r, const NLMatrix4 &mat)
         0.0, 0.0, 0.0, 1.0
     };
     Mesa_glLoadIdentity(&r);
-    Mesa_NormalMatrix(&r, m);
+    Mesa_InverseTransposeMatrix(&r, m);
 }
 
 }

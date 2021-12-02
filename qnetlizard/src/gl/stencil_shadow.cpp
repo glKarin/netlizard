@@ -203,6 +203,13 @@ static GLboolean cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard
     r->vertex_data.vertex_count = nl_mesh->vertex_data.vertex_count;
     r->vertex_data.vertex = (GL_NETLizard_3D_Vertex *)calloc(nl_mesh->vertex_data.vertex_count, sizeof(GL_NETLizard_3D_Vertex));
 
+    Mesa_glLoadIdentity(&mat);
+    Mesa_glTranslate(&mat, nl_mesh->position[0], nl_mesh->position[1], nl_mesh->position[2]);
+    Mesa_glRotate(&mat, nl_mesh->rotation[0], 1.0f, 0.0f, 0.0f);
+    Mesa_glRotate(&mat, nl_mesh->rotation[1], 0.0f, 0.0f, 1.0f);
+
+    NL::cale_normal_matrix(nor_mat, mat);
+
 	for(i = 0; i < nl_mesh->count; i++)
 	{
 		nl_mat = nl_mesh->materials + i;
@@ -211,13 +218,6 @@ static GLboolean cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard
             m = nl_mat->index[j];
             nl_vertex = nl_mesh->vertex_data.vertex + m;
             point = r->vertex_data.vertex + m;
-
-            Mesa_glLoadIdentity(&mat);
-            Mesa_glTranslate(&mat, nl_mesh->position[0], nl_mesh->position[1], nl_mesh->position[2]);
-            Mesa_glRotate(&mat, nl_mesh->rotation[0], 1.0f, 0.0f, 0.0f);
-            Mesa_glRotate(&mat, nl_mesh->rotation[1], 0.0f, 0.0f, 1.0f);
-
-            NL::cale_normal_matrix(nor_mat, mat);
 
             Mesa_glTransform(point->position, nl_vertex->position, &mat);
             Mesa_glTransform_row(point->normal, nl_vertex->normal, &nor_mat);
