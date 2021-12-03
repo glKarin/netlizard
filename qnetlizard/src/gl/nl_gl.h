@@ -74,6 +74,7 @@ typedef struct _GL_NETLizard_3D_Mesh
     GLfloat position[3];
     GLfloat rotation[2];
     GLint item_type;
+    GLint obj_index;
 } GL_NETLizard_3D_Mesh;
 typedef GL_NETLizard_3D_Mesh GL_NETLizard_3D_Item_Mesh;
 

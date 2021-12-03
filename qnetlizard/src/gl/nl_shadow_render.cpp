@@ -32,6 +32,16 @@
     glPolygonOffset(0, 0); \
     glEnable(GL_ALPHA_TEST);
 
+static GLboolean NETLizard_IgnoreShadowItem(int item_type)
+{
+    if((item_type & NL_3D_ITEM_TYPE_TRANSPARENT)
+            || (item_type & NL_3D_ITEM_TYPE_SKYBOX)
+            || (item_type & NL_3D_ITEM_TYPE_2D)
+            )
+        return GL_TRUE;
+    return GL_FALSE;
+}
+
 #define SHADOW_MASK_Z 1
 #define SHADOW_MASK_W 5000
 static void render_shadow_mask(void)
@@ -108,6 +118,8 @@ void NETLizard_RenderNETLizardModelSceneShadow(const GL_NETLizard_3D_Model *map_
                     if(scenes[i] < 0 && scenes[i] >= c)
                         continue;
                     m = map_model->meshes + scenes[i];
+                    if(NETLizard_IgnoreShadowItem(m->item_type))
+                        continue;
                     NETLizard_RenderMeshShadow(m, light_position, dirlight, method, invert);
                 }
             }
@@ -129,7 +141,7 @@ void NETLizard_RenderNETLizardModelSceneShadow(const GL_NETLizard_3D_Model *map_
                         im = map_model->item_meshes + j;
                         if(!im->materials) // REDO
                             continue;
-                        if(im->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
+                        if(NETLizard_IgnoreShadowItem(im->item_type))
                             continue;
                         NETLizard_RenderMeshShadow(im, light_position, dirlight, method, 0);
                     }
@@ -159,6 +171,8 @@ void NETLizard_RenderNETLizardModelShadow(const GL_NETLizard_3D_Model *map_model
             for(i = 0; i < map_model->count; i++)
             {
                 m = map_model->meshes + i;
+                if(NETLizard_IgnoreShadowItem(m->item_type))
+                    continue;
                 NETLizard_RenderMeshShadow(m, light_position, dirlight, method, invert);
             }
         }
@@ -177,7 +191,7 @@ void NETLizard_RenderNETLizardModelShadow(const GL_NETLizard_3D_Model *map_model
                     im = map_model->item_meshes + j;
                     if(!im->materials) // REDO
                         continue;
-                    if(im->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
+                    if(NETLizard_IgnoreShadowItem(im->item_type))
                         continue;
                     NETLizard_RenderMeshShadow(im, light_position, dirlight, method, 0);
                 }

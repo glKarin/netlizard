@@ -803,7 +803,7 @@ static GLboolean render_shadow_volume_mesh(const GL_NETLizard_3D_Mesh *nl_mesh, 
 void NETLizard_RenderMeshShadow(const GL_NETLizard_3D_Mesh *mesh, const vector3_t *light_position, int dirlight, int method, int invert)
 {
     if(!mesh || !light_position)
-		return;
+        return;
 
     GL_NETLizard_3D_Mesh m;
     memset(&m, 0, sizeof(GL_NETLizard_3D_Mesh));

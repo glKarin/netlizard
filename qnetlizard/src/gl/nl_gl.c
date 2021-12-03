@@ -156,6 +156,13 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 //            m->vertex_data.index_count = 0;
 			m->bsp_count = 0;
 			m->bsp = NULL;
+            m->obj_index = -1;
+            m->item_type = 0;
+            m->position[0] = 0;
+            m->position[1] = 0;
+            m->position[2] = 0;
+            m->rotation[0] = 0;
+            m->rotation[1] = 0;
 
             if(mesh->primitive.data)
 			{
@@ -440,6 +447,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
             m->rotation[0] = (GLfloat)mesh->rotation[0];
             m->rotation[1] = (GLfloat)mesh->rotation[1];
 			m->item_type = nlGetItemType(game, mesh->obj_index);
+            m->obj_index = mesh->obj_index;
             if(mesh->item_mesh.vertex.count && mesh->item_mesh.primitive.count)
 			{
 				GLint o;

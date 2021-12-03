@@ -128,21 +128,23 @@ typedef enum NETLizard_Texture_Type_e
 /* NETLizard 3D game item model category */
 typedef enum NETLizard_3D_Item_Type_e
 {
-    NL_3D_ITEM_TYPE_GENERAL = 0,
-    NL_3D_ITEM_TYPE_THIN = 1,
-    NL_3D_ITEM_TYPE_2D = 1 << 1,
-    NL_3D_ITEM_TYPE_FAN_VERTICAL = 1 << 2,
-    NL_3D_ITEM_TYPE_FAN_HORIZONTAL = 1 << 3,
-    NL_3D_ITEM_TYPE_ROLE = 1 << 4,
-    NL_3D_ITEM_TYPE_SKY_BOX = 1 << 5,
-    NL_3D_ITEM_TYPE_DOOR_VERTICAL = 1 << 6,
-    NL_3D_ITEM_TYPE_DOOR_HORIZONTAL = 1 << 7,
-    NL_3D_ITEM_TYPE_ELEVATOR = 1 << 8,
-    NL_3D_ITEM_TYPE_LADDER = 1 << 9,
-    NL_3D_ITEM_TYPE_WEAPON = 1 << 10,
-    NL_3D_ITEM_TYPE_SKYLINE = 1 << 11,
-    NL_3D_ITEM_TYPE_PORTAL = 1 << 12,
-    NL_3D_ITEM_TYPE_SWITCH = 1 << 13
+    NL_3D_ITEM_TYPE_GENERAL = 0, // exam scene or general item
+    NL_3D_ITEM_TYPE_THIN = 1, // maybe not cull face when rendering. exam net
+    NL_3D_ITEM_TYPE_2D = 1 << 1, // maybe no shadow when rendering. exam Stalin photo in CT 3D
+    NL_3D_ITEM_TYPE_FAN_VERTICAL = 1 << 2, // can rotate on x/y-axis. exam fan on ceil, tail fan in helicopter
+    NL_3D_ITEM_TYPE_FAN_HORIZONTAL = 1 << 3, // can rotate on z-axis. exam fan on wall, top fan in helicopter
+    NL_3D_ITEM_TYPE_ROLE = 1 << 4, // has frame animation. exam character in Egypt 3D and Clone 3D
+    NL_3D_ITEM_TYPE_SKYBOX = 1 << 5, // it is a skybox. exam skybox in Egypt 3D level 0, 8, 9, 10, 12
+    NL_3D_ITEM_TYPE_DOOR_VERTICAL = 1 << 6, // can translate on z-axis. exam door that move vertical
+    NL_3D_ITEM_TYPE_DOOR_HORIZONTAL = 1 << 7, // can translate on x/y-axis. exam door that move horizontal
+    NL_3D_ITEM_TYPE_ELEVATOR = 1 << 8, // can translate on z-axis. exam elevator in Clone 3D
+    NL_3D_ITEM_TYPE_LADDER = 1 << 9, // it is a way that can move on z-axis. exam ladder in CT-EP2 3D and CT-EP3 3D
+    NL_3D_ITEM_TYPE_WEAPON = 1 << 10, // a weapon. exam guns or knifes
+    NL_3D_ITEM_TYPE_SKYLINE = 1 << 11, // has floor plane. exam float bridge in Egypt 3D level 5, 8, 9, 10, 12
+    NL_3D_ITEM_TYPE_PORTAL = 1 << 12, // can teleport. exam teleporter in Egypt 3D
+    NL_3D_ITEM_TYPE_SWITCH = 1 << 13, // it is a switch controller. exam elevator switch in Clone 3D
+    NL_3D_ITEM_TYPE_TRANSPARENT = 1 << 14, // maybe no shadow when rendering. exam net
+    NL_3D_ITEM_TYPE_EMPTY = 1 << 15 // maybe ignore when collision testing. exam tower in Egypt 3D level 0, 10
 } NETLizard_3D_Item_Type;
 
 /* NETLizard 3D game character animation category */

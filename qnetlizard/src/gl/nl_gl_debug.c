@@ -83,7 +83,7 @@ void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, GLuint t
             const GL_NETLizard_3D_Item_Mesh *m = model->item_meshes + i;
             if(!m->materials) // REDO
 				continue;
-            if(m->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
+            if(m->item_type & NL_3D_ITEM_TYPE_SKYBOX)
                 continue;
             func(m);
 		}
@@ -119,7 +119,7 @@ void NETLizard_DebugRenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, 
                     const GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
                     if(!im->materials) // REDO
                         continue;
-                    if(im->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
+                    if(im->item_type & NL_3D_ITEM_TYPE_SKYBOX)
                         continue;
                     func(im);
                 }

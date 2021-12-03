@@ -586,102 +586,113 @@ const NETLizard_3D_Frame_Animation * nlGet3DModelFrameAnimationConfig(NETLizard_
 
 int nlGetItemType(NETLizard_Game game, int index)
 {
+    int res = NL_3D_ITEM_TYPE_GENERAL;
 	switch(game)
 	{
         case NL_CLONE_3D:
 			if(index == 3 || index == 4 || index == 5 || index == 6)
-				return NL_3D_ITEM_TYPE_DOOR_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_DOOR_VERTICAL;
 			else if(index == 34 || index == 35 || index == 36 || index == 37)
-				return NL_3D_ITEM_TYPE_DOOR_HORIZONTAL;
+                res |= NL_3D_ITEM_TYPE_DOOR_HORIZONTAL;
 			else if(index == 52 || index == 53 || index == 54 || index == 55)
-				return NL_3D_ITEM_TYPE_WEAPON;
+                res |= NL_3D_ITEM_TYPE_WEAPON;
 			else if(index == 38 || index == 39)
-				return NL_3D_ITEM_TYPE_LADDER;
+                res |= NL_3D_ITEM_TYPE_LADDER;
 			else if(index == 40 || index == 41 || index == 42 || index == 43)
-				return NL_3D_ITEM_TYPE_ELEVATOR;
-			else if(index == 19 || index == 20)
-				return NL_3D_ITEM_TYPE_DOOR_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_ELEVATOR;
+            else if(index == 20)
+                res |= NL_3D_ITEM_TYPE_DOOR_VERTICAL;
 			else if(index == 29)
-				return NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
+                res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
 			else if(index == 31) // 机枪
-				return NL_3D_ITEM_TYPE_FAN_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_FAN_VERTICAL;
 			else if(index == 32 || index == 33)
-				return NL_3D_ITEM_TYPE_DOOR_HORIZONTAL;
+                res |= NL_3D_ITEM_TYPE_DOOR_HORIZONTAL;
 			else if(index == 26)
-				return NL_3D_ITEM_TYPE_SWITCH;
+                res |= NL_3D_ITEM_TYPE_SWITCH;
+            else if(index == 19 || index == 20)
+                res |= NL_3D_ITEM_TYPE_DOOR_VERTICAL | NL_3D_ITEM_TYPE_TRANSPARENT | NL_3D_ITEM_TYPE_THIN;
 			break;
 
         case NL_SHADOW_OF_EGYPT_3D:
 			if(index == 20 || index == 21)
-				return NL_3D_ITEM_TYPE_DOOR_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_DOOR_VERTICAL;
 			if(index == 5 || index == 6)
-				return NL_3D_ITEM_TYPE_SKYLINE;
+                res |= NL_3D_ITEM_TYPE_SKYLINE;
 			else if(index == 24 || index == 25 || index == 26 || index == 27 || index == 28 || index == 29)
-				return NL_3D_ITEM_TYPE_WEAPON | NL_3D_ITEM_TYPE_FAN_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_WEAPON | NL_3D_ITEM_TYPE_FAN_VERTICAL;
 			else if(index == 33 || index == 34 || index == 35 || index == 36)
-				return NL_3D_ITEM_TYPE_SKY_BOX;
+                res |= NL_3D_ITEM_TYPE_SKYBOX;
 			else if(index == 14)
-				return NL_3D_ITEM_TYPE_FAN_VERTICAL | NL_3D_ITEM_TYPE_PORTAL;
+                res |= NL_3D_ITEM_TYPE_FAN_VERTICAL | NL_3D_ITEM_TYPE_PORTAL;
 			else if(index == 8)
-				return NL_3D_ITEM_TYPE_FAN_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_FAN_VERTICAL;
             else if(index == 22) // tower
-                return NL_3D_ITEM_TYPE_THIN;
+                res |= NL_3D_ITEM_TYPE_EMPTY;
 			break;
 
         case NL_CONTR_TERRORISM_3D:
 			if(index == 52 || index == 53 || index == 54 || index == 55)
-				return NL_3D_ITEM_TYPE_DOOR_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_DOOR_VERTICAL;
 			else if(index == 16 || index == 21 || index == 26)
-				return NL_3D_ITEM_TYPE_FAN_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_FAN_VERTICAL;
 			else if(index == 23)
-				return NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
+                res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
 			else if(index == 17)
-				return NL_3D_ITEM_TYPE_GENERAL;
+                res |= NL_3D_ITEM_TYPE_GENERAL; //
+            else if(index == 45 || index == 46)
+                res |= NL_3D_ITEM_TYPE_TRANSPARENT | NL_3D_ITEM_TYPE_THIN;
+            else if(index == 5)
+                res |= NL_3D_ITEM_TYPE_2D;
 			break;
 
         case NL_CONTR_TERRORISM_3D_EPISODE_2:
 			if(index == 1 || index == 2 || index == 3 || index == 4 || index == 5 || index == 6 || index == 7)
-				return NL_3D_ITEM_TYPE_WEAPON;
+                res |= NL_3D_ITEM_TYPE_WEAPON | NL_3D_ITEM_TYPE_THIN;
 			else if(index == 38 || index == 39 || index == 40 || index == 41)
-				return NL_3D_ITEM_TYPE_DOOR_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_DOOR_VERTICAL;
 			else if(index == 43)
-				return NL_3D_ITEM_TYPE_LADDER;
+                res |= NL_3D_ITEM_TYPE_LADDER | NL_3D_ITEM_TYPE_TRANSPARENT;
 			else if(index == 12 || index == 15)
-				return NL_3D_ITEM_TYPE_FAN_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_FAN_VERTICAL;
 			else if(index == 13)
-				return NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
+                res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
+            else if(index == 25 || index == 26)
+                res |= NL_3D_ITEM_TYPE_TRANSPARENT | NL_3D_ITEM_TYPE_THIN;
 			break;
 
         case NL_ARMY_RANGER_3D:
 			if(index == 1 || index == 2 || index == 3 || index == 4 || index == 5)
-				return NL_3D_ITEM_TYPE_WEAPON | NL_3D_ITEM_TYPE_FAN_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_WEAPON | NL_3D_ITEM_TYPE_FAN_VERTICAL;
 			else if(index == 6 || index == 7 || index == 8 || index == 9 || index == 10 || index == 11)
-				return NL_3D_ITEM_TYPE_THIN | NL_3D_ITEM_TYPE_FAN_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_EMPTY | NL_3D_ITEM_TYPE_FAN_VERTICAL;
 			else if(index == 40 || index == 41 || index == 42 || index == 43)
-				return NL_3D_ITEM_TYPE_DOOR_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_DOOR_VERTICAL;
 			else if(index == 34 || index == 49)
-				return NL_3D_ITEM_TYPE_FAN_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_FAN_VERTICAL;
 			else if(index == 35)
-				return NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
+                res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
 			break;
 
         case NL_CONTR_TERRORISM_3D_EPISODE_3:
 			if(index == 1 || index == 2 || index == 3 || index == 4 || index == 5 || index == 6 || index == 7)
-				return NL_3D_ITEM_TYPE_WEAPON;
+                res |= NL_3D_ITEM_TYPE_WEAPON | NL_3D_ITEM_TYPE_THIN;
 			else if(index == 38 || index == 39 || index == 40 || index == 41)
-				return NL_3D_ITEM_TYPE_DOOR_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_DOOR_VERTICAL;
 			else if(index == 12 || index == 15)
-				return NL_3D_ITEM_TYPE_FAN_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_FAN_VERTICAL;
 			else if(index == 13)
-				return NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
+                res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
 			else if(index == 43)
-				return NL_3D_ITEM_TYPE_LADDER;
+                res |= NL_3D_ITEM_TYPE_LADDER | NL_3D_ITEM_TYPE_TRANSPARENT;
+            else if(index == 25 || index == 26)
+                res |= NL_3D_ITEM_TYPE_TRANSPARENT | NL_3D_ITEM_TYPE_THIN;
 			break;
 
 		default:
 			break;
 	}
-	return NL_3D_ITEM_TYPE_GENERAL;
+    return res;
 }
 
 NLboolean nlCheck3DGameLevelIsAvailable(NETLizard_Game game, int level)

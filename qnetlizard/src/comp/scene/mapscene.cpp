@@ -462,7 +462,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
                 for(uint i = 0; i < m_model->item_count; i++)
                 {
                     GL_NETLizard_3D_Item_Mesh *mesh = m_model->item_meshes + i;
-                    if(mesh->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
+                    if(mesh->item_type & NL_3D_ITEM_TYPE_SKYBOX)
                     {
                         NLVector3 skyPos = VECTOR3(mesh->position[0], mesh->position[2], -mesh->position[1]);
                         NLActor *camera_3d = GetActor(4);

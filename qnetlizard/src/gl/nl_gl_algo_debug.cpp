@@ -185,6 +185,8 @@ void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model
 
     matrix_normal_matrix(&mat, &nor_mat);
 
+    fprintf(stderr, "item_type -> %d %d %d\n", mesh->obj_index, mesh->item_type, NL_3D_ITEM_TYPE_TRANSPARENT); fflush(stderr);
+
     unsigned int i;
     for(i = 0; i < mesh->count; i++)
     {

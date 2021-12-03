@@ -52,8 +52,8 @@ void Mesa_glLoadMatrix(GLmatrix *mat, const float m[16])
 
 void Mesa_glLoadTransposeMatrix(GLmatrix *mat, const float m[16])
 {
-    float tm[16];
     IF_NULL_RETURN(mat)
+    float tm[16];
    if (!m) return;
    _math_transposef(tm, m);
    Mesa_glLoadMatrix(mat, tm);
@@ -74,8 +74,8 @@ void Mesa_glMultMatrix(GLmatrix *mat, const float m[16])
 
 void Mesa_glMultTransposeMatrix(GLmatrix *mat, const float m[16])
 {
-    float tm[16];
     IF_NULL_RETURN(mat)
+    float tm[16];
    if (!m) return;
    _math_transposef(tm, m);
    Mesa_glMultMatrix(mat, tm);
@@ -120,9 +120,9 @@ void Mesa_glOrtho(GLmatrix *mat, float left, float right, float bottom, float to
 
 void Mesa_glTransform_row(float r[3], const float p[3], const GLmatrix *mat)
 {
+    IF_NULL_RETURN(mat)
     float v[4] = {p[0], p[1], p[2], 1};
     float u[4];
-    IF_NULL_RETURN(mat)
     _mesa_transform_vector(u, v, mat->m);
     r[0] = u[0] / u[3];
     r[1] = u[1] / u[3];
@@ -138,6 +138,7 @@ void Mesa_glTransform4_row(float r[4], const float p[4], const GLmatrix *mat)
 // column vector
 void Mesa_glTransform(float r[3], const float p[3], const GLmatrix *mat)
 {
+    IF_NULL_RETURN(mat)
     float u[4];
     TRANSFORM_POINT3(u, mat->m, p);
     r[0] = u[0] / u[3];
@@ -154,8 +155,8 @@ void Mesa_glTransform4(float r[4], const float p[4], const GLmatrix *mat)
 
 void Mesa_glTranspose(GLmatrix *mat)
 {
-    float tm[16];
     IF_NULL_RETURN(mat)
+    float tm[16];
 
    _math_transposef(tm, mat->m);
     _math_matrix_loadf( mat, tm );
@@ -179,8 +180,35 @@ int Mesa_GLMatrixIsAlloc(GLmatrix *mat)
     return GL_MATRIXV_M(mat) ? 1 : 0;
 }
 
+void Mesa_DupGLMatrix(GLmatrix *to, const GLmatrix *mat)
+{
+    IF_NULL_RETURN(mat)
+    IF_NULL_RETURN(to)
+    to->flags = mat->flags;
+    to->type = mat->type;
+    if(GL_MATRIXV_M(mat))
+    {
+        arrcpy16(GL_MATRIXV_M(to), GL_MATRIXV_M(mat))
+    }
+    if(GL_MATRIXV_INV_M(mat))
+    {
+        arrcpy16(GL_MATRIXV_INV_M(to), GL_MATRIXV_INV_M(mat))
+    }
+}
+
+void Mesa_InitGLMatrix(GLmatrix *to, const GLmatrix *mat)
+{
+    IF_NULL_RETURN(to)
+    Mesa_AllocGLMatrix(to);
+    if(mat)
+    {
+        Mesa_DupGLMatrix(to, mat);
+    }
+}
+
 void Mesa_InverseTransposeMatrix(GLmatrix *mat, const GLfloat mv[16])
 {
+    IF_NULL_RETURN(mat)
     GLmatrix nor;
     GLfloat tmp[16];
     GLfloat dst[16];
@@ -198,11 +226,13 @@ void Mesa_InverseTransposeMatrix(GLmatrix *mat, const GLfloat mv[16])
 
 void Mesa_InverseMatrix(GLmatrix *mat)
 {
+    IF_NULL_RETURN(mat)
     _math_matrix_analyse(mat);
 }
 
 void Mesa_NormalMatrix(GLmatrix *mat)
 {
+    IF_NULL_RETURN(mat)
     GLfloat tmp[16];
     GLfloat mv[16] = {
         GL_MATRIXV_M(mat)[0], GL_MATRIXV_M(mat)[1], GL_MATRIXV_M(mat)[2], 0.0,
@@ -253,6 +283,7 @@ static void __gluMakeIdentityf(GLfloat m[16])
 
 void Mesa_gluPerspective(GLmatrix *r, GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar)
 {
+    IF_NULL_RETURN(r)
     GLfloat m[4][4];
     GLfloat sine, cotangent, deltaZ;
     GLfloat radians = fovy / 2 * __glPi / 180;
@@ -279,7 +310,7 @@ void Mesa_gluPerspective(GLmatrix *r, GLfloat fovy, GLfloat aspect, GLfloat zNea
 
 void Mesa_gluLookAt(GLmatrix *r, GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz)
 {
-
+    IF_NULL_RETURN(r)
     float forward[3], side[3], up[3];
     GLfloat m[4][4];
 

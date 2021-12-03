@@ -16,6 +16,9 @@ extern "C" {
 #define GL_MATRIX_MM(matrix) ((float **)(GL_MATRIX_M(matrix)))
 #define GL_MATRIXV_MM(matrix) ((float **)(GL_MATRIXV_M(matrix)))
 
+#define GL_MATRIX_INV_M(matrix) (matrix).inv
+#define GL_MATRIXV_INV_M(matrix) (matrix)->inv
+
 #if 0
 #define GL_MATRIX_M_CR(matrix, col, row) (GL_MATRIX_M(matrix))[row * 4 + col]
 #define GL_MATRIXV_M_CR(matrix, col, row) (GL_MATRIXV_M(matrix))[row * 4 + col]
@@ -64,6 +67,8 @@ void Mesa_glTransform4(float r[4], const float p[4], const GLmatrix *mat);
 void Mesa_FreeGLMatrix(GLmatrix *mat);
 void Mesa_AllocGLMatrix(GLmatrix *mat);
 int Mesa_GLMatrixIsAlloc(GLmatrix *mat);
+void Mesa_DupGLMatrix(GLmatrix *to, const GLmatrix *mat);
+void Mesa_InitGLMatrix(GLmatrix *to, const GLmatrix *mat);
 
 void Mesa_glTranspose(GLmatrix *mat);
 void Mesa_NormalMatrix(GLmatrix *mat);

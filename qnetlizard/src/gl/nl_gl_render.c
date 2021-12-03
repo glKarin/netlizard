@@ -4,6 +4,14 @@
 
 #include "lib/vector3.h"
 
+static GLboolean NETLizard_NotCullFace(int item_type)
+{
+    if((item_type & NL_3D_ITEM_TYPE_THIN)
+            )
+        return GL_TRUE;
+    return GL_FALSE;
+}
+
 void NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
 {
 	if(!model)
@@ -40,7 +48,7 @@ void NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
             const GL_NETLizard_3D_Item_Mesh *m = model->item_meshes + i;
             if(!m->materials) // REDO
 				continue;
-            if(m->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
+            if(m->item_type & NL_3D_ITEM_TYPE_SKYBOX)
                 continue;
             NETLizard_RenderGL3DMesh(m, model->texes);
 		}
@@ -71,7 +79,7 @@ void NETLizard_RenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint
                     const GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
                     if(!im->materials) // REDO
                         continue;
-                    if(im->item_type & NL_3D_ITEM_TYPE_SKY_BOX)
+                    if(im->item_type & NL_3D_ITEM_TYPE_SKYBOX)
                         continue;
                     NETLizard_RenderGL3DMesh(im, model->texes);
                 }
@@ -111,6 +119,10 @@ GLvoid NETLizard_RenderGL3DMesh(const GL_NETLizard_3D_Mesh *m, texture_s **const
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
+    GLboolean notcullface = NETLizard_NotCullFace(m->item_type);
+    if(notcullface)
+        glDisable(GL_CULL_FACE);
+
     glPushMatrix();
     {
         glTranslatef(m->position[0], m->position[1], m->position[2]);
@@ -130,6 +142,8 @@ GLvoid NETLizard_RenderGL3DMesh(const GL_NETLizard_3D_Mesh *m, texture_s **const
         }
     }
     glPopMatrix();
+    if(notcullface)
+        glEnable(GL_CULL_FACE);
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);

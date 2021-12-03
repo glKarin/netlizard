@@ -114,8 +114,9 @@ static unsigned NETLizard_IsCeilPlane(const plane_t *plane)
 static int NETLizard_IgnoreCollisionTestingItem(int item_type)
 {
     if((item_type & NL_3D_ITEM_TYPE_WEAPON)
-            || (item_type & NL_3D_ITEM_TYPE_THIN)
-            || (item_type & NL_3D_ITEM_TYPE_SKY_BOX)
+            || (item_type & NL_3D_ITEM_TYPE_EMPTY)
+            || (item_type & NL_3D_ITEM_TYPE_2D)
+            || (item_type & NL_3D_ITEM_TYPE_SKYBOX)
             || (item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL)
             || (item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL)
             )
@@ -1051,7 +1052,7 @@ int NETLizard_RayIntersect(const GL_NETLizard_3D_Model *map, const nl_vector3_t 
         }
 
         // plane
-        for(j = 0; j < 0; j++)
+        for(j = 0; j < mesh->plane_count; j++)
         {
             plane_t plane = SCENE_PLANE(mesh, j);
             nl_vector3_t c0;
