@@ -13,6 +13,7 @@ class SimpleControlComponent;
 class SimpleCameraActor;
 class NETLizardShadowModelRenderer;
 class NETLizardMapModelDebugRenderer;
+class MapEventHandlerComponent;
 
 NLSCENE(MapScene)
 class MapScene : public NLScene
@@ -44,10 +45,8 @@ protected:
     private:
     void ConvToAlgoVector3(vector3_t &v);
     void ConvToRenderVector3(vector3_t &v);
-    bool CollisionItem(int item);
 
 private:
-    typedef QHash<NLint, const NETLizard_Level_Teleport *> MapTeleportMap;
     GL_NETLizard_3D_Model *m_model;
     SimpleCameraActor *m_mainCameraActor;
     NLActor *m_mapActor;
@@ -64,10 +63,10 @@ private:
     NLSceneOrthoCamera *m_skyCamera;
     NLScenePerspectiveCamera *m_sky3DCamera;
     SimpleControlComponent *m_control;
+    MapEventHandlerComponent *m_eventHandler;
     int m_noclip;
     bool m_fog;
     int m_singleScene;
-    MapTeleportMap m_teleport;
 
     Q_DISABLE_COPY(MapScene)
 };

@@ -17,6 +17,7 @@
 #include "nlfuncs.h"
 #include "nlscene.h"
 #include "nlcomponent.h"
+#include "nlrenderable.h"
 #include "nlactor.h"
 #include "nlactorcontainer.h"
 
@@ -409,6 +410,35 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
         w->SetVector3(item.value.value<NLVector3>());
         w->SetReadOnly(item.readonly);
         connect(w, SIGNAL(vector3Changed(const NLVector3 &)), this, SLOT(OnVector3Changed(const NLVector3 &)));
+        widget = w;
+    }
+    else if(item.widget == "label")
+    {
+        int type = item.value.type();
+        QLineEdit *w = 0;
+        if(type == QMetaType::QObjectStar || type == QMetaType::VoidStar)
+        {
+            if(type == QMetaType::QObjectStar)
+            {
+                QObject *qo = item.value.value<QObject *>();
+                if(instanceofv(qo, NLObject))
+                {
+                    NLObject *nlo = static_cast<NLObject *>(qo);
+                    w = new QLineEdit(nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")");
+                    w->setReadOnly(item.readonly);
+                }
+            }
+            else if(type == QMetaType::VoidStar)
+            {
+                void *vo = item.value.value<void *>();
+                if(/*instanceofv(vo, NLRenderable)*/1)
+                {
+                    NLRenderable *renderable = static_cast<NLRenderable *>(vo);
+                    w = new QLineEdit(renderable->Name());
+                    w->setReadOnly(item.readonly);
+                }
+            }
+        }
         widget = w;
     }
     else// if(item.widget == "lineedit")

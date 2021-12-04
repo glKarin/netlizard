@@ -14,6 +14,7 @@ class NLComponent;
 class NLActor : public NLObject
 {
     Q_OBJECT
+    Q_PROPERTY(void* renderable READ RenderablePtr FINAL)
     Q_PROPERTY(NLVector3 position READ Position WRITE SetPosition NOTIFY positionChanged FINAL)
     Q_PROPERTY(NLVector3 rotation READ Rotation WRITE SetRotation NOTIFY rotationChanged FINAL)
     Q_PROPERTY(NLVector3 scale READ Scale WRITE SetScale NOTIFY scaleChanged FINAL)
@@ -27,6 +28,7 @@ public:
     virtual void Reset();
     void SetRenderable(NLRenderable *renderable);
     NLRenderable * Renderable() { return m_renderable; }
+    void * RenderablePtr() { return (void *)m_renderable; }
     NLActor * ParentActor();
     void SetParentActor(NLActor *actor);
     NLActorContainer * Container();

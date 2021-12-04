@@ -8,9 +8,9 @@
 
 namespace NL
 {
-static NLPropertyInfo make_property_info(const QString &name, const QString &t, const QVariant &value, const QList<QString> &propKeys = QList<QString>())
+static NLPropertyInfo make_property_info(const QString &name, int t, const QString &typeName, const QVariant &value, const QList<QString> &propKeys = QList<QString>())
 {
-    QString type(t);
+    QString type(typeName);
     QString widget;
     if(type == "NLVector3" || type == "vector3_s" || type == "vector3_t")
     {
@@ -35,12 +35,19 @@ static NLPropertyInfo make_property_info(const QString &name, const QString &t, 
         widget = "checkbox";
     else
     {
-        widget = "lineedit";
+        if(t == QMetaType::QObjectStar || t == QMetaType::QWidgetStar || t == QMetaType::VoidStar)
+        {
+            widget = "label";
+        }
+        else
+            widget = "lineedit";
     }
 
-    bool readonly = (name == "objectName" || name == "renderable");
+    bool readonly = (name == "objectName" || name == "renderable")
+            || (t == QMetaType::QObjectStar || t == QMetaType::QWidgetStar || t == QMetaType::VoidStar)
+            ;
 
-    //qDebug() << name << p.read(obj).type() << p.read(obj).userType() << obj->dynamicPropertyNames();
+    //qDebug() << name << t << value << QMetaType::QObjectStar << t << QMetaType::VoidStar;
     return(NLPropertyInfo(name, value, type, widget, readonly));
 }
 
@@ -55,7 +62,7 @@ NLPropertyInfoList object_propertics(const NLObject *obj)
         QMetaProperty p = metaObj->property(i);
         QString name(p.name());
 
-        NLPropertyInfo info = make_property_info(name, p.typeName(), p.read(obj), config.value(name).toHash().keys());
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p.read(obj), config.value(name).toHash().keys());
         info.default_value = obj->GetInitProperty(name);
         if(config.contains(name))
             info.prop = config.value(name).toHash();
@@ -70,7 +77,7 @@ NLPropertyInfoList object_propertics(const NLObject *obj)
         QVariant p = obj->property(ba.constData());
         QString name(ba);
 
-        NLPropertyInfo info = make_property_info(name, p.typeName(), p, config.value(name).toHash().keys());
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p, config.value(name).toHash().keys());
         info.default_value = obj->GetInitProperty(name);
         if(config.contains(name))
             info.prop = config.value(name).toHash();
