@@ -103,6 +103,7 @@ public:
     const T * ElementData() const;
     uint DataSize() const;
     uint ElementSize() const;
+    bool IsEmpty() const;
 
 private:
     QVector<T> m_data;
@@ -158,12 +159,19 @@ public:
     const NLRenderModelData<T> & Index() const;
     QColor Color() const;
     void SetColor(const QColor &color);
+    bool UsingIndex() const;
+    T Start() const;
+    T Count() const;
+    void SetStart(T t);
+    void SetCount(T t);
 
 private:
     NLRenderModelData<T> m_index;
     TextureT m_texture;
     ModeT m_mode;
     QColor m_color;
+    T m_start;
+    T m_count;
 };
 
 template <class VertexT, class IndexT, class TextureT, class ModeT>
@@ -361,6 +369,12 @@ inline uint NLRenderModelData<T>::ElementSize() const
     return sizeof(T);
 }
 
+template <class T>
+inline bool NLRenderModelData<T>::IsEmpty() const
+{
+    return m_data.isEmpty();
+}
+
 
 
 template <class T>
@@ -504,7 +518,9 @@ inline NLRenderModelVertex<T> & NLRenderModelVertex<T>::operator()(const T item[
 template <class T, class TextureT, class ModeT>
 NLRenderModelPrimitive<T, TextureT, ModeT>::NLRenderModelPrimitive()
     : m_texture(0),
-      m_mode(0)
+      m_mode(0),
+      m_start(0),
+      m_count(0)
 {
 
 }
@@ -576,6 +592,36 @@ void NLRenderModelPrimitive<T, TextureT, ModeT>::SetColor(const QColor &color)
 {
     if(m_color != color)
         m_color = color;
+}
+
+template <class T, class TextureT, class ModeT>
+inline bool NLRenderModelPrimitive<T, TextureT, ModeT>::UsingIndex() const
+{
+    return !m_index.IsEmpty();
+}
+
+template <class T, class TextureT, class ModeT>
+inline T NLRenderModelPrimitive<T, TextureT, ModeT>::Start() const
+{
+    return m_start;
+}
+
+template <class T, class TextureT, class ModeT>
+inline T NLRenderModelPrimitive<T, TextureT, ModeT>::Count() const
+{
+    return m_count;
+}
+
+template <class T, class TextureT, class ModeT>
+inline void NLRenderModelPrimitive<T, TextureT, ModeT>::SetStart(T t)
+{
+    m_start = t;
+}
+
+template <class T, class TextureT, class ModeT>
+inline void NLRenderModelPrimitive<T, TextureT, ModeT>::SetCount(T t)
+{
+    m_count = t;
 }
 
 
@@ -713,7 +759,14 @@ void NLRenderModelGL<VertexT, IndexT>::Render()
             glColorPointer(COLOR_ELEMENT, m_vertexType, Size * ELEMENT_SIZE, vertex + Size * (VERTEX_ELEMENT + TEXCOORD_ELEMENT + 3));
 #endif
         }
-        glDrawElements(p.Mode(), p.Index().Count(), m_indexType, p.Index().ElementData());
+        if(p.UsingIndex())
+        {
+            glDrawElements(p.Mode(), p.Index().Count(), m_indexType, p.Index().ElementData());
+        }
+        else
+        {
+            glDrawArrays(p.Mode(), p.Start(), p.Count());
+        }
         glBindTexture(GL_TEXTURE_2D, 0);
         if(!c.isValid())
         {

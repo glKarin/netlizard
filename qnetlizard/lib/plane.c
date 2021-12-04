@@ -33,15 +33,15 @@ float plane_d(const plane_t *plane)
 }
 
 #define COLLISION_ZERO 0.0
-int plane_ray_intersect(const plane_t *plane, const ray_t *line, float *lamda, vector3_t *point)
+int plane_ray_intersect(const plane_t *plane, const ray_t *line, float *lamda, vector3_t *point, float *scale)
 {
     float dotProduct = vector3_dot(&(RAYV_DIRECTION(line)), &(PLANEV_NORMAL(plane)));
     float l2;
 
-    if((dotProduct <= COLLISION_ZERO) && (dotProduct >= -COLLISION_ZERO))
+    if(dotProduct == 0)
         return 0;
 
-    if(dotProduct == 0)
+    if((dotProduct <= COLLISION_ZERO) && (dotProduct >= -COLLISION_ZERO))
         return 0;
 
     vector3_t vec;
@@ -55,17 +55,17 @@ int plane_ray_intersect(const plane_t *plane, const ray_t *line, float *lamda, v
 
      // ray start point is allow on plane
     //if (l2 <= -COLLISION_ZERO) // not allow
-    if (l2 < -COLLISION_ZERO) // allow
-        return -1;
+    int res = l2 < 0 ? -1 : 1;
+    // if (l2 < 0) return -1;
 
+    float distance = vector3_dot(&(PLANEV_NORMAL(plane)), &(PLANEV_POSITION(plane)));
+    float t = - (vector3_dot(&(PLANEV_NORMAL(plane)), &(RAYV_POSITION(line))) - distance) / dotProduct;
+    //fprintf(stderr, "plane_point_clip: %f = (%f, %f) / %f\n", t, vector3_dot(&(PLANEV_NORMAL(plane)), &(RAYV_POSITION(line))), distance, dotProduct);fflush(stderr);
+    if(scale)
+        *scale = t;
     if(point)
-    {
-        float d = dotProduct;
-        float distance = vector3_dot(&(PLANEV_NORMAL(plane)), &(PLANEV_POSITION(plane)));
-        float t = - (vector3_dot(&(PLANEV_NORMAL(plane)), &(RAYV_POSITION(line))) - distance) / d;
         vector3_movev(point, &RAYV_POSITION(line), &RAYV_DIRECTION(line), t);
-    }
-    return 1;
+    return res;
 }
 
 void plane_triangle_plane(plane_t *plane, const triangle_t *tri)
@@ -217,7 +217,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
 
     ray_line_to_ray(&a, line);
     const float length = line_length(line); // UNUSED: because `sqrt` may be has precision on float
-    int res = plane_ray_intersect(plane, &a, &l, &p);
+    int res = plane_ray_intersect(plane, &a, &l, &p, NULL);
     if(res == 0)
     {
         return 0;
@@ -230,7 +230,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
         plane_t bp;
         plane_make(&bp, &LINEV_B(line), &PLANEV_NORMAL(plane));
         float bl;
-        plane_ray_intersect(&bp, &a, &bl, NULL);
+        plane_ray_intersect(&bp, &a, &bl, NULL, NULL);
         //fprintf(stderr, " a->b } %f, %f %f\n", l, bl, length);fflush(stderr);
 
         if(l > bl)
@@ -254,7 +254,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
 
     line_t inv = LINEV(VECTOR3_V(LINEV_B(line)), VECTOR3_V(LINEV_A(line)));
     ray_line_to_ray(&a, &inv);
-    res = plane_ray_intersect(plane, &a, &l, &p);
+    res = plane_ray_intersect(plane, &a, &l, &p, NULL);
     if(res <= 0)
         return -500;
 
@@ -262,7 +262,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
     plane_t bp;
     plane_make(&bp, &LINEV_A(line), &PLANEV_NORMAL(plane));
     float al;
-    plane_ray_intersect(&bp, &a, &al, NULL);
+    plane_ray_intersect(&bp, &a, &al, NULL, NULL);
     //fprintf(stderr, " b->a } %f, %f %f\n", l, length, al);fflush(stderr);
 
     if(l > al)

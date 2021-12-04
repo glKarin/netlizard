@@ -44,6 +44,7 @@ void vector3_multiplyv(vector3_t *r, const vector3_t *a, const vector3_t *b);
 void vector3_dividev(vector3_t *r, const vector3_t *a, const vector3_t *b);
 void vector3_crossv(vector3_t *r, const vector3_t *a, const vector3_t *b);
 void vector3_directionv(vector3_t *r, const vector3_t *a, const vector3_t *b);
+void vector3_centerv(vector3_t *r, const vector3_t *a, const vector3_t *b);
 
 vector3_t vector3_normalize(const vector3_t *vec);
 vector3_t vector3_cross(const vector3_t *a, const vector3_t *b);
@@ -54,6 +55,7 @@ vector3_t vector3_divide(const vector3_t *a, const vector3_t *b);
 vector3_t vector3_scale(const vector3_t *a, float n);
 vector3_t vector3_invert(const vector3_t *a);
 vector3_t vector3_direction(const vector3_t *a, const vector3_t *b);
+vector3_t vector3_center(const vector3_t *a, const vector3_t *b);
 
 void vector3_addve(vector3_t *r, const vector3_t *a);
 void vector3_subtractve(vector3_t *r, const vector3_t *a);

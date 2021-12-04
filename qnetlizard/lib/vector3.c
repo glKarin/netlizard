@@ -16,7 +16,16 @@ static const vector3_t Identity_Vector3 = { { 0, 0, 0 } };
 vector3_t vector3_direction(const vector3_t *a, const vector3_t *b)
 {
     vector3_t r = Identity_Vector3;
+    IF_NULL_RETURNV2(a, b, r)
     vector3_directionv(&r, a, b);
+    return r;
+}
+
+vector3_t vector3_center(const vector3_t *a, const vector3_t *b)
+{
+    vector3_t r = Identity_Vector3;
+    IF_NULL_RETURNV2(a, b, r)
+    vector3_centerv(&r, a, b);
     return r;
 }
 
@@ -207,6 +216,15 @@ void vector3_directionv(vector3_t *r,const vector3_t *a, const vector3_t *b)
 
     vector3_subtractv(r, b, a);
     vector3_normalizev(r);
+}
+
+void vector3_centerv(vector3_t *r,const vector3_t *a, const vector3_t *b)
+{
+    IF_NULL_RETURN3(a, b, r)
+
+    vector3_subtractv(r, b, a);
+    vector3_scalev(r, 0.5);
+    vector3_addve(r, a);
 }
 
 int vector3_iszero(const vector3_t *a)

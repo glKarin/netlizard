@@ -46,7 +46,7 @@ void plane_make(plane_t *plane, const vector3_t *pos, const vector3_t *nor);
 float plane_point_to_plane_distance(const plane_t *plane, const vector3_t *point);
 float plane_d(const plane_t *plane);
 
-int plane_ray_intersect(const plane_t *plane, const struct ray_s *line, float *lamda, vector3_t *point);
+int plane_ray_intersect(const plane_t *plane, const struct ray_s *line, float *lamda, vector3_t *point, float *scale);
 void plane_triangle_plane(plane_t *plane, const struct triangle_s *tri);
 int plane_point_clip(const plane_t *plane, const vector3_t *v);
 int plane_point_clip_precision(const plane_t *plane, const vector3_t *v, float precision);

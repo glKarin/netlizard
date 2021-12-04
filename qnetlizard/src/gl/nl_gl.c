@@ -12,6 +12,8 @@
 #include "lib/plane.h"
 #include "lib/bound.h"
 
+#define PRINT(fmt, args...) { fprintf(stderr, fmt, ##args); fprintf(stderr, "\n"); fflush(stderr); }
+
 GLvoid delete_GL_NETLizard_3D_Material(GL_NETLizard_3D_Material *mat)
 {
     if(!mat)
@@ -336,22 +338,26 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 				GLuint c = 0;
 				GLuint j;
 				for(j = 0; j < m->count; j++)
-					c += m->materials[j].index_count;
+                    c += m->materials[j].index_count / 3;
 				GLuint plane_count = c;
                 GL_NETLizard_3D_Plane *planes = calloc(c, sizeof(GL_NETLizard_3D_Plane));
+                GL_NETLizard_3D_Vertex *vertex = m->vertex_data.vertex;
 				GLuint n = 0;
 				for(j = 0; j < m->count; j++)
 				{
 					GLuint k;
-					for(k = 0; k < m->materials[j].index_count; k++)
+                    for(k = 0; k < m->materials[j].index_count; k += 3)
 					{
-						GLuint index = (m->materials[j].index_start + k) * 3;
-                        planes[n].position[0] = m->vertex_data.vertex[index].position[0];
-                        planes[n].position[1] = m->vertex_data.vertex[index].position[1];
-                        planes[n].position[2] = m->vertex_data.vertex[index].position[2];
-                        planes[n].normal[0] = m->vertex_data.vertex[index].normal[0];
-                        planes[n].normal[1] = m->vertex_data.vertex[index].normal[1];
-                        planes[n].normal[2] = m->vertex_data.vertex[index].normal[2];
+                        GLuint index = m->materials[j].index[k];
+                        triangle_t tri = TRIANGLEV(vertex[index].position, vertex[index + 1].position, vertex[index + 2].position);
+                        vector3_t center;
+                        triangle_center_point(&tri, &center);
+                        planes[n].position[0] = VECTOR3_X(center); // vertex[index].position[0];
+                        planes[n].position[1] = VECTOR3_Y(center); // vertex[index].position[1];
+                        planes[n].position[2] = VECTOR3_Z(center); // vertex[index].position[2];
+                        planes[n].normal[0] = vertex[index].normal[0];
+                        planes[n].normal[1] = vertex[index].normal[1];
+                        planes[n].normal[2] = vertex[index].normal[2];
 						n++;
 					}
 				}
@@ -448,6 +454,10 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
             m->rotation[1] = (GLfloat)mesh->rotation[1];
 			m->item_type = nlGetItemType(game, mesh->obj_index);
             m->obj_index = mesh->obj_index;
+//            if(mesh->obj_index == 19)
+//            {
+//                fprintf(stderr, "item_type -> count: %d, %d\n", mesh->item_mesh.vertex.count,mesh->item_mesh.primitive.count); fflush(stderr);
+//            }
             if(mesh->item_mesh.vertex.count && mesh->item_mesh.primitive.count)
 			{
 				GLint o;
@@ -492,10 +502,6 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                 GLuint plane_count = mesh->item_mesh.primitive.count;
                 GL_NETLizard_3D_Plane *planes = calloc(plane_count, sizeof(GL_NETLizard_3D_Plane));
                 NLint *mesh_vertex = (NLint *)(mesh->item_mesh.vertex.data);
-#if 0
-				if(mesh->obj_index >= 40 && mesh->obj_index <= 43)
-					printf("e=prop %d 0.2 0 0.0 40.0 0 10.0 0 0 0.0 360.0 0 0\n", i);
-#endif
 
 				GLint b = 0;
 				GLint c = 0;
@@ -576,9 +582,11 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 							indexs[a + 1] = a + 1;
 							indexs[a + 2] = a + 2;
 
-							planes[b].position[0] = vertex[a].position[0];
-							planes[b].position[1] = vertex[a].position[1];
-							planes[b].position[2] = vertex[a].position[2];
+                            vector3_t center;
+                            triangle_center_point(&tri, &center);
+                            planes[b].position[0] = VECTOR3_X(center); // vertex[a].position[0];
+                            planes[b].position[1] = VECTOR3_Y(center); // vertex[a].position[1];
+                            planes[b].position[2] = VECTOR3_Z(center); // vertex[a].position[2];
 							planes[b].normal[0] = vertex[a].normal[0];
 							planes[b].normal[1] = vertex[a].normal[1];
 							planes[b].normal[2] = vertex[a].normal[2];

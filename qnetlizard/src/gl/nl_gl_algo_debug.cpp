@@ -89,9 +89,13 @@ static void render_highlight_lines(const LineList &lines, const GLfloat position
         glEnableClientState(GL_VERTEX_ARRAY);
         glPushMatrix();
         {
-            glTranslatef(position[0], position[1], position[2]);
-            glRotatef(rotation[0], 1.0f, 0.0f, 0.0f);
-            glRotatef(rotation[1], 0.0f, 0.0f, 1.0f);
+            if(position)
+                glTranslatef(position[0], position[1], position[2]);
+            if(rotation)
+            {
+                glRotatef(rotation[0], 1.0f, 0.0f, 0.0f);
+                glRotatef(rotation[1], 0.0f, 0.0f, 1.0f);
+            }
             glColor4f(LINE_COLOR);
 
             for(LineList::const_iterator itor = lines.begin();
@@ -169,7 +173,7 @@ void NETLizard_DebugHighlightRenderGL3DModelPlane(const GL_NETLizard_3D_Model *m
 
 void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model *model, GLuint scene, GLuint item_index, const vector3_t *pos, const vector3_t *dir)
 {
-    if(!model || !pos || !dir)
+    if(!model || !pos)
         return;
 
     const GL_NETLizard_3D_Mesh *mesh = model->item_meshes + item_index;
@@ -178,14 +182,13 @@ void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model
     GLmatrix mat, nor_mat;
     Mesa_AllocGLMatrix(&mat);
     Mesa_AllocGLMatrix(&nor_mat);
-    Mesa_glLoadIdentity(&mat);
     Mesa_glTranslate(&mat, mesh->position[0], mesh->position[1], mesh->position[2]);
     Mesa_glRotate(&mat, mesh->rotation[0], 1.0f, 0.0f, 0.0f);
     Mesa_glRotate(&mat, mesh->rotation[1], 0.0f, 0.0f, 1.0f);
 
     matrix_normal_matrix(&mat, &nor_mat);
 
-    fprintf(stderr, "item_type -> %d %d %d\n", mesh->obj_index, mesh->item_type, NL_3D_ITEM_TYPE_TRANSPARENT); fflush(stderr);
+    fprintf(stderr, "item_type -> obj_index: %d, item_type: %d, count: %d\n", mesh->obj_index, mesh->item_type, mesh->count); fflush(stderr);
 
     unsigned int i;
     for(i = 0; i < mesh->count; i++)
@@ -203,12 +206,11 @@ void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model
                 vertex + index3,
             };
 
-            vector3_t p2l = VECTOR3V(pa[0]->normal);
-
+            vector3_t p2l;
             Mesa_glTransform_row(VECTOR3_V(p2l), pa[0]->normal, &nor_mat);
 
             float dot_p = 0;
-            if(dir&&0)
+            if(dir)
             {
                 vector3_t d2 = *dir;
                 vector3_invertv(&d2);

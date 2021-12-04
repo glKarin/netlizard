@@ -32,6 +32,7 @@
 
 //#define SCENE_BOUND(mesh) BOUNDV(mesh->box.min, mesh->box.max)
 #define SCENE_BOUND(mesh) NETLizard_SceneBound(mesh)
+#define SCENE_FULL_BOUND(map, scene) NETLizard_SceneFullBound(map, scene)
 //#define SCENE_PLANE(plane) PLANEV(mesh->plane[i])
 #define SCENE_PLANE(mesh, i) NETLizard_ScenePlane(mesh, i)
 
@@ -76,6 +77,13 @@ static bound_t NETLizard_SceneBound(const GL_NETLizard_3D_Mesh *scene)
     return bound;
 }
 
+static bound_t NETLizard_SceneFullBound(const GL_NETLizard_3D_Model *model, int scene)
+{
+    bound_t bound;
+    NETLizard_GetSceneFullBound(model, scene, &bound);
+    return bound;
+}
+
 static plane_t NETLizard_ScenePlane(const GL_NETLizard_3D_Mesh *scene, int j)
 {
     plane_t p;
@@ -91,7 +99,7 @@ static unsigned NETLizard_IsFloorPlane(const plane_t *plane)
     vector3_movev(&p, &PLANEV_POSITION(plane), &PLANEV_NORMAL(plane), MUL);
     const nl_vector3_t dir = VECTOR3(0, 0, -1);
     ray_t ray = RAYV(VECTOR3_V(p), VECTOR3_V(dir));
-    int r = plane_ray_intersect(plane, &ray, NULL, NULL);
+    int r = plane_ray_intersect(plane, &ray, NULL, NULL, NULL);
     if(r > 0)
         return 1;
     return 0;
@@ -104,7 +112,7 @@ static unsigned NETLizard_IsCeilPlane(const plane_t *plane)
     vector3_movev(&p, &PLANEV_POSITION(plane), &PLANEV_NORMAL(plane), MUL);
     const nl_vector3_t dir = VECTOR3(0, 0, 1);
     ray_t ray = RAYV(VECTOR3_V(p), VECTOR3_V(dir));
-    int r = plane_ray_intersect(plane, &ray, NULL, NULL);
+    int r = plane_ray_intersect(plane, &ray, NULL, NULL, NULL);
     if(r > 0)
         return 1;
     return 0;
@@ -122,6 +130,14 @@ static int NETLizard_IgnoreCollisionTestingItem(int item_type)
             )
         return 1;
     return 0;
+}
+
+static GLboolean NETLizard_IgnoreViewItem(int item_type)
+{
+    if((item_type & NL_3D_ITEM_TYPE_SKYBOX)
+            )
+        return GL_TRUE;
+    return GL_FALSE;
 }
 
 /*
@@ -175,7 +191,8 @@ int NETLizard_FindScenePointIn(const GL_NETLizard_3D_Model *map_model, const nl_
     for(i = 0; i < map_model->count; i++)
     {
         const GL_NETLizard_3D_Mesh *mesh = map_model->meshes + i;
-        bound_t aabb = SCENE_BOUND(mesh);
+        //!! bound_t aabb = SCENE_BOUND(mesh);
+        bound_t aabb = SCENE_FULL_BOUND(map_model, i);
         if(!bound_point_in_box(&aabb, p))
             continue;
         //fprintf(stderr, "%d (%f %f %f) %f %f %f, %f %f %f | %d, %d\n",i, p->v[0], p->v[1], p->v[2], aabb.min.v[0], aabb.min.v[1], aabb.min.v[2], aabb.max.v[0], aabb.max.v[1], aabb.max.v[2],mesh->plane_type, mesh->plane_count);
@@ -307,7 +324,7 @@ static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *
 
         ray_t l = {*new_pos, dir};
         float lamda = 0;
-        if(plane_ray_intersect(&pla, &l, &lamda, &point))
+        if(plane_ray_intersect(&pla, &l, &lamda, &point, NULL) > 0)
         {
             if(under)
             {
@@ -785,7 +802,7 @@ static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3
                     ray_t ray = RAYV(VECTOR3_V(LINE_B(line)), VECTOR3_V(PLANE_NORMAL(plane)));
                     vector3_invertv(&PLANE_NORMAL(plane));
                     nl_vector3_t c0;
-                    int r = plane_ray_intersect(&plane, &ray, NULL, &c0);
+                    int r = plane_ray_intersect(&plane, &ray, NULL, &c0, NULL);
                     if(r > 0)
                     {
                         LINE_B(line) = c0;
@@ -814,14 +831,14 @@ static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3
                     {
                         ray_t rayl;
                         ray_line_to_ray(&rayl, &line);
-                        r = plane_ray_intersect(&plane, &rayl, NULL, NULL);
+                        r = plane_ray_intersect(&plane, &rayl, NULL, NULL, NULL);
                     }
                     if(r > 0)
                     {
                         ray_t ray = RAYV(VECTOR3_V(LINE_B(line)), VECTOR3_V(PLANE_NORMAL(plane)));
                         vector3_invertv(&PLANE_NORMAL(plane));
                         nl_vector3_t c0;
-                        r = plane_ray_intersect(&plane, &ray, NULL, &c0);
+                        r = plane_ray_intersect(&plane, &ray, NULL, &c0, NULL);
                         if(r > 0)
                         {
                             LINE_B(line) = c0;
@@ -1014,21 +1031,22 @@ int NETLizard_RayIntersect(const GL_NETLizard_3D_Model *map, const nl_vector3_t 
             for(j = mesh->item_index_range[0]; j < mesh->item_index_range[1]; j++)
             {
                 const GL_NETLizard_3D_Mesh *im = map->item_meshes + j;
+                if(NETLizard_IgnoreViewItem(im->item_type))
+                    continue;
                 vector3_t c1 = VECTOR3(1, 1, 1);
                 bound_t box = SCENE_BOUND(im);
                 bound_expand(&box, &c1);
                 unsigned int k;
-                for(k = 0; k < mesh->plane_count; k++)
+                for(k = 0; k < im->plane_count; k++)
                 {
                     plane_t plane = SCENE_PLANE(im, k);
                     nl_vector3_t c0;
                     float lamda = 0;
-                    int r = plane_ray_intersect(&plane, &ray, &lamda, &c0);
+                    int r = plane_ray_intersect(&plane, &ray, &lamda, &c0, NULL);
                     if(r <= 0)
                         continue;
                     if(!bound_point_in_box(&box, &c0))
                         continue;
-                    fprintf(stderr, "wwwwwwwwwwwww\n");fflush(stderr);
                     if(!has)
                     {
                         distance = lamda;
@@ -1057,7 +1075,7 @@ int NETLizard_RayIntersect(const GL_NETLizard_3D_Model *map, const nl_vector3_t 
             plane_t plane = SCENE_PLANE(mesh, j);
             nl_vector3_t c0;
             float lamda = 0;
-            int r = plane_ray_intersect(&plane, &ray, &lamda, &c0);
+            int r = plane_ray_intersect(&plane, &ray, &lamda, &c0, NULL);
             if(r <= 0)
                 continue;
             int gs = bound_point_in_box(&scene_box, &c0);

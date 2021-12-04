@@ -46,6 +46,7 @@ typedef struct triangle_s
 
 void triangle_make(triangle_t *tri, const vector3_t *a, const vector3_t *b, const vector3_t *c);
 void triangle_cale_normal(const triangle_t *tri, vector3_t *normal);
+void triangle_center_point(const triangle_t *tri, vector3_t *p);
 
 #ifdef __cplusplus
 }

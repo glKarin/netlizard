@@ -122,7 +122,8 @@ void NETLizardMapModelDebugRenderer::Render()
                 NETLizard_DebugRenderGL3DMapModelBSP(m_model);
         }
     }
-    RenderHighlight();
+    if(m_model->game != NL_RACING_EVOLUTION_3D)
+        RenderHighlight();
     glPopMatrix();
 }
 
@@ -216,11 +217,6 @@ void NETLizardMapModelDebugRenderer::RenderHighlight()
     vector3_t p = m_camera->Position();
     const NLMatrix4 *mat = m_camera->RenderMatrix();
     matrix_transformv_self_row(mat, &p);
-//    NLMatrix4 normat;
-//    Mesa_AllocGLMatrix(&normat);
-//    matrix_normal_matrix(mat, &normat);
-//    matrix_transformv_self_row(&normat, &direction);
-//    Mesa_FreeGLMatrix(&normat);
 
     nl_vector3_t cpoint = VECTOR3(0, 0, 0);
     int res = NETLizard_RayIntersect(m_model, &p, &direction, collision_object, &scene, &collision_id, &collision_type, &cpoint, &distance);
@@ -230,13 +226,10 @@ void NETLizardMapModelDebugRenderer::RenderHighlight()
             NETLizard_DebugHighlightRenderGL3DModelPlane(m_model, scene, collision_id);
         else
         {
-            vector3_t pos = m_camera->Position();
-            NETLizard_DebugHighlightRenderGL3DItemModelEdge(m_model, scene, collision_id, &p, &direction);
+            //vector3_t pos = m_camera->Position();
+            NETLizard_DebugHighlightRenderGL3DItemModelEdge(m_model, scene, collision_id, &p, NULL/*&direction*/);
         }
 
-        fprintf(stderr, "%d: scene %d, id %d, type %d, %f | %f %f %f\n", res, scene, collision_id, collision_type, distance, cpoint.v[0], cpoint.v[1], cpoint.v[2]);
+        //fprintf(stderr, "%d: scene %d, id %d, type %d, %f | %f %f %f\n", res, scene, collision_id, collision_type, distance, cpoint.v[0], cpoint.v[1], cpoint.v[2]);
     }
-    else
-        fprintf(stderr, "not\n");
-        fflush(stderr);
 }

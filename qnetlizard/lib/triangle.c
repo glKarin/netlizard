@@ -24,3 +24,12 @@ void triangle_cale_normal(const triangle_t *tri, vector3_t *normal)
     vector3_normalizev(normal);
 }
 
+void triangle_center_point(const triangle_t *tri, vector3_t *p)
+{
+    const vector3_t *a = &TRIANGLEV_A(tri);
+    const vector3_t *b = &TRIANGLEV_B(tri);
+    const vector3_t *c = &TRIANGLEV_C(tri);
+    vector3_t ab;
+    vector3_centerv(&ab, a, b);
+    vector3_centerv(p, &ab, c);
+}

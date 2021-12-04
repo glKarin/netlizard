@@ -322,6 +322,22 @@ void NETLizard_GetSceneBound(const GL_NETLizard_3D_Mesh *scene, bound_t *bound)
     }
 }
 
+void NETLizard_GetSceneFullBound(const GL_NETLizard_3D_Model *model, GLuint s, bound_t *bound)
+{
+    if(!model || !bound)
+        return;
+    const GL_NETLizard_3D_Mesh *scene = model->meshes + s;
+    NETLizard_GetSceneBound(scene, bound);
+    unsigned int i;
+    for(i = scene->item_index_range[0]; i < scene->item_index_range[1]; i++)
+    {
+        bound_t b;
+        const GL_NETLizard_3D_Mesh *im = model->item_meshes + i;
+        NETLizard_GetSceneBound(im, &b);
+        bound_combine(bound, &b);
+    }
+}
+
 void NETLizard_GetScenePlane(const GL_NETLizard_3D_Mesh *scene, int j, plane_t *p)
 {
     const GL_NETLizard_3D_Plane *plane = scene->plane + j;

@@ -20,6 +20,7 @@ void NETLizard_GetNETLizard3DMeshTransformBound(const GL_NETLizard_3D_Mesh *mesh
 int NETLizard_GetNETLizard3DMapNeighboringScenes(const GL_NETLizard_3D_Model *model, int scene, int scenes[]);
 void NETLizard_GetSceneBound(const GL_NETLizard_3D_Mesh *scene, struct bound_s *bound);
 void NETLizard_GetScenePlane(const GL_NETLizard_3D_Mesh *scene, int j, struct plane_s *plane);
+void NETLizard_GetSceneFullBound(const GL_NETLizard_3D_Model *model, GLuint s, struct bound_s *bound);
 // (x, y, z) -> (x, z, -y)
 void conv_gl_vector3(nl_vector3_t *v);
 vector3_t to_gl_vector3(const vector3_t *v);

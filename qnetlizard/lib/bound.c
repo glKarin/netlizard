@@ -183,3 +183,24 @@ void bound_expand(bound_t *b, const vector3_t *a)
     BOUNDV_MAX_Y(b) += VECTOR3V_Y(a);
     BOUNDV_MAX_Z(b) += VECTOR3V_Z(a);
 }
+
+#define IF_LESS_ASSIGN(a, b) \
+    if(b < a) { \
+        a = b; \
+    }
+#define IF_GREATER_ASSIGN(a, b) \
+    if(b > a) { \
+        a = b; \
+    }
+void bound_combine(bound_t *b, const bound_t *o)
+{
+    IF_LESS_ASSIGN(BOUNDV_MIN_X(b), BOUNDV_MIN_X(o))
+    IF_LESS_ASSIGN(BOUNDV_MIN_Y(b), BOUNDV_MIN_Y(o))
+    IF_LESS_ASSIGN(BOUNDV_MIN_Z(b), BOUNDV_MIN_Z(o))
+
+    IF_GREATER_ASSIGN(BOUNDV_MAX_X(b), BOUNDV_MAX_X(o))
+    IF_GREATER_ASSIGN(BOUNDV_MAX_Y(b), BOUNDV_MAX_Y(o))
+    IF_GREATER_ASSIGN(BOUNDV_MAX_Z(b), BOUNDV_MAX_Z(o))
+}
+#undef IF_LESS_ASSIGN
+#undef IF_GREATER_ASSIGN
