@@ -60,13 +60,6 @@ MapScene::MapScene(QWidget *parent)
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
     SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
 
-    // 3D camera + 3D control
-    m_mainCameraActor = new SimpleCameraActor(NLProperties("camera_z_is_up", true));
-    m_mainCameraActor->setObjectName("main_camera");
-    AddActor(m_mainCameraActor);
-    m_control = static_cast<SimpleControlComponent *>(m_mainCameraActor->Control());
-    SetCurrentCamera(m_mainCameraActor->Camera());
-
     // render model
     m_mapActor = new NLActor;
     m_mapActor->setObjectName("map_model_renderer");
@@ -78,6 +71,13 @@ MapScene::MapScene(QWidget *parent)
     m_eventHandler->setObjectName("map_event_handler");
     m_mapActor->AddComponent(m_eventHandler);
     m_eventHandler->SetTeleportActor(m_mainCameraActor);
+
+    // 3D camera + 3D control
+    m_mainCameraActor = new SimpleCameraActor(NLProperties("camera_z_is_up", true));
+    m_mainCameraActor->setObjectName("main_camera");
+    AddActor(m_mainCameraActor);
+    m_control = static_cast<SimpleControlComponent *>(m_mainCameraActor->Control());
+    SetCurrentCamera(m_mainCameraActor->Camera());
 
     // 2D background camera
     SimpleCameraActor *camera_2d = new SimpleCameraActor(NLProperties("type", static_cast<int>(NLSceneCamera::Type_Ortho))("enable_control", false));
@@ -411,8 +411,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     {
         CurrentCamera()->SetZIsUp(false);
         m_sky3DCamera->SetZIsUp(false);
-        SimpleCameraActor *cameraActor = GetActor_T<SimpleCameraActor>(0);
-        SimpleControlComponent *control = cameraActor->GetComponent_T<SimpleControlComponent>(1);
+        SimpleControlComponent *control = m_mainCameraActor->GetComponent_T<SimpleControlComponent>(1);
         control->SetMoveSens(control->MoveSens() / 20);
         NLVector3 pos = VECTOR3(VECTOR3_X(lp), BOUND_MAX_Y(bound) + (VECTOR3_Y(lp) - BOUND_MIN_Y(bound)) * 2, VECTOR3_Z(lp));
         GetActor(7)->SetPosition(pos);
@@ -641,4 +640,43 @@ void MapScene::SetSingleScene(int b)
     {
         m_singleScene = b;
     }
+}
+
+int MapScene::RayIntersect()
+{
+    if(!m_model)
+        return -1;
+    float distance = 0;
+    int scene = -1;
+    int collision_id = -1;
+    int collision_type = 0;
+    NLSceneCamera *camera = CurrentCamera();
+
+    vector3_t direction = camera->Direction();
+    vector3_t p = camera->Position();
+    const NLMatrix4 *mat = camera->RenderMatrix();
+    matrix_transformv_self_row(mat, &p);
+
+    nl_vector3_t cpoint = VECTOR3(0, 0, 0);
+    int res = NETLizard_RayIntersect(m_model, &p, &direction, 2, &scene, &collision_id, &collision_type, &cpoint, &distance);
+    if(res)
+    {
+       const GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + collision_id;
+        fprintf(stderr, "item -> %d: obj_index: %d, item_type: %d, count: %d\n", collision_id, mesh->obj_index, mesh->item_type, mesh->count); fflush(stderr);
+
+        return collision_id;
+    }
+    return -1;
+}
+
+bool MapScene::MouseEventHandler(int mouse, bool pressed, int x, int y, int modifier)
+{
+    if(!pressed)
+        return false;
+    if((mouse & Qt::LeftButton) == 0)
+        return false;
+    int item = RayIntersect();
+    if(item < 0)
+        return false;
+    m_eventHandler->Trigger(item);
 }

@@ -415,26 +415,26 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
     else if(item.widget == "label")
     {
         int type = item.value.type();
-        QLineEdit *w = 0;
+        QLineEdit *w = new QLineEdit;
         if(type == QMetaType::QObjectStar || type == QMetaType::VoidStar)
         {
             if(type == QMetaType::QObjectStar)
             {
                 QObject *qo = item.value.value<QObject *>();
-                if(instanceofv(qo, NLObject))
+                if(qo && instanceofv(qo, NLObject))
                 {
                     NLObject *nlo = static_cast<NLObject *>(qo);
-                    w = new QLineEdit(nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")");
+                    w->setText(nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")");
                     w->setReadOnly(item.readonly);
                 }
             }
             else if(type == QMetaType::VoidStar)
             {
                 void *vo = item.value.value<void *>();
-                if(/*instanceofv(vo, NLRenderable)*/1)
+                if(/*instanceofv(vo, NLRenderable)*/vo)
                 {
                     NLRenderable *renderable = static_cast<NLRenderable *>(vo);
-                    w = new QLineEdit(renderable->Name());
+                    w->setText(renderable->Name());
                     w->setReadOnly(item.readonly);
                 }
             }

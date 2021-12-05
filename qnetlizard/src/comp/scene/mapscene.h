@@ -35,6 +35,7 @@ protected:
     virtual void Update(float f);
     virtual void Deinit();
     virtual bool KeyEventHandler(int key, bool pressed, int modifier);
+    virtual bool MouseEventHandler(int mouse, bool pressed, int x, int y, int modifier);
 
     private Q_SLOTS:
     void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
@@ -45,6 +46,7 @@ protected:
     private:
     void ConvToAlgoVector3(vector3_t &v);
     void ConvToRenderVector3(vector3_t &v);
+    int RayIntersect();
 
 private:
     GL_NETLizard_3D_Model *m_model;
