@@ -48,8 +48,14 @@ public:
         Elevator_At_End,
         Elevator_Moving_Down
     };
+    enum Elevator_Mask_e
+    {
+        Elevator_Up = 1,
+        Elevator_Down = 2,
+        Elevator_Up_And_Down = 3
+    };
 public:
-    explicit MapEventHandler_elevator(float min, float max, GL_NETLizard_3D_Mesh *item, bool loop = false);
+    explicit MapEventHandler_elevator(float min, float max, Elevator_Mask_e mask, GL_NETLizard_3D_Mesh *item, bool loop = false);
     virtual ~MapEventHandler_elevator();
     virtual void Update(float delta);
     virtual bool Start();
@@ -59,6 +65,7 @@ private:
     float m_min;
     float m_max;
     float m_unit;
+    int m_mask;
 };
 
 class MapEventHandlerContainer
@@ -70,6 +77,7 @@ public:
     bool Add(int itemIndex, MapEventHandler *item);
     void Clear();
     bool Exists(int item);
+    bool Remove(int itemIndex);
 
 private:
     QList<MapEventHandler *> m_handlers;
@@ -103,12 +111,16 @@ protected:
     void ConvToAlgoVector3(vector3_t &v);
     void ConvToRenderVector3(vector3_t &v);
     NLSceneCamera * SceneCamera();
+    bool HandleElevator(int item);
+    bool HandleTeleport(int item);
 
 private:
     typedef QHash<NLint, const NETLizard_Level_Teleport *> MapTeleportMap;
+    typedef QHash<NLint, const NETLizard_Level_Elevator *> MapElevatorMap;
     GL_NETLizard_3D_Model *m_model;
     NLRigidbody *m_teleportActor;
     MapTeleportMap m_teleport;
+    MapElevatorMap m_elevator;
     MapEventHandlerContainer m_handlers;
 };
 

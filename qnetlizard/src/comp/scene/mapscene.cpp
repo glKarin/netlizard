@@ -70,7 +70,6 @@ MapScene::MapScene(QWidget *parent)
     m_eventHandler = new MapEventHandlerComponent;
     m_eventHandler->setObjectName("map_event_handler");
     m_mapActor->AddComponent(m_eventHandler);
-    m_eventHandler->SetTeleportActor(m_mainCameraActor);
 
     // 3D camera + 3D control
     m_mainCameraActor = new SimpleCameraActor(NLProperties("camera_z_is_up", true));
@@ -78,6 +77,7 @@ MapScene::MapScene(QWidget *parent)
     AddActor(m_mainCameraActor);
     m_control = static_cast<SimpleControlComponent *>(m_mainCameraActor->Control());
     SetCurrentCamera(m_mainCameraActor->Camera());
+    m_eventHandler->SetTeleportActor(m_mainCameraActor);
 
     // 2D background camera
     SimpleCameraActor *camera_2d = new SimpleCameraActor(NLProperties("type", static_cast<int>(NLSceneCamera::Type_Ortho))("enable_control", false));

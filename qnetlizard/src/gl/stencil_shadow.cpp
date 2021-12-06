@@ -220,7 +220,8 @@ static GLboolean cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard
             point = r->vertex_data.vertex + m;
 
             Mesa_glTransform(point->position, nl_vertex->position, &mat);
-            Mesa_glTransform_row(point->normal, nl_vertex->normal, &nor_mat);
+            //Mesa_glTransform_row(point->normal, nl_vertex->normal, &nor_mat); !!! ???
+            Mesa_glTransform(point->normal, nl_vertex->normal, &nor_mat);
             //memcpy(point->texcoord, nl_vertex->texcoord, sizeof(GLfloat) * 2);
             if(invert)
             {

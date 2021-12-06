@@ -153,7 +153,7 @@ void matrix_perspective(matrix4_t *mat, const perspective_t *v)
 
 void matrix_normal_matrix(const matrix4_t *mat, matrix4_t *v)
 {
-    GLfloat mv[16] = {
+    const GLfloat mv[16] = {
         GL_MATRIXV_M(mat)[0], GL_MATRIXV_M(mat)[1], GL_MATRIXV_M(mat)[2], 0.0,
         GL_MATRIXV_M(mat)[4], GL_MATRIXV_M(mat)[5], GL_MATRIXV_M(mat)[6], 0.0,
         GL_MATRIXV_M(mat)[8], GL_MATRIXV_M(mat)[9], GL_MATRIXV_M(mat)[10], 0.0,

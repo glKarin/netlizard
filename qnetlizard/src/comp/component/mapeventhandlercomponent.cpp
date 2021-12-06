@@ -30,8 +30,7 @@ bool MapEventHandlerContainer::Add(int itemIndex, MapEventHandler *item)
         return false;
     m_handlers.push_back(item);
     m_map.insert(itemIndex, item);
-    qDebug() << item->Start();
-    return true;
+    return item->Start();
 }
 
 void MapEventHandlerContainer::Clear()
@@ -68,6 +67,17 @@ bool MapEventHandlerContainer::Exists(int item)
     return m_map.contains(item);
 }
 
+bool MapEventHandlerContainer::Remove(int itemIndex)
+{
+    if(!m_map.contains(itemIndex))
+        return false;
+    MapEventHandler *item = m_map[itemIndex];
+    m_handlers.removeOne(item);
+    m_map.remove(itemIndex);
+    delete item;
+    return true;
+}
+
 MapEventHandler::MapEventHandler(GL_NETLizard_3D_Mesh *item, bool loop)
     : m_item(item),
       m_loop(loop),
@@ -96,12 +106,13 @@ bool MapEventHandler::Start()
     return true;
 }
 
-MapEventHandler_elevator::MapEventHandler_elevator(float min, float max, GL_NETLizard_3D_Mesh *item, bool loop)
+MapEventHandler_elevator::MapEventHandler_elevator(float min, float max, MapEventHandler_elevator::Elevator_Mask_e mask, GL_NETLizard_3D_Mesh *item, bool loop)
     : MapEventHandler(item, loop),
       m_elevatorState(MapEventHandler_elevator::Elevator_At_Start),
       m_min(min),
       m_max(max),
-      m_unit(200)
+      m_unit(500),
+      m_mask(mask)
 {
 
 }
@@ -113,7 +124,12 @@ MapEventHandler_elevator::~MapEventHandler_elevator()
 
 bool MapEventHandler_elevator::Start()
 {
-    return MapEventHandler::Start();
+    bool res = MapEventHandler::Start();
+    if(!res)
+        return false;
+    if(m_mask == MapEventHandler_elevator::Elevator_Down)
+        m_elevatorState = MapEventHandler_elevator::Elevator_At_End;
+    return res;
 }
 
 void MapEventHandler_elevator::Update(float delta)
@@ -126,7 +142,7 @@ void MapEventHandler_elevator::Update(float delta)
     float length = m_unit * delta * neg;
     float z = item->position[2];
     float newZ = z + length;
-    qDebug() << newZ;
+    //qDebug() << newZ;
     MapEventHandler_elevator::Elevator_State_e newState = m_elevatorState;
     if(is_downing)
     {
@@ -137,11 +153,11 @@ void MapEventHandler_elevator::Update(float delta)
         }
         else
         {
-            if(m_elevatorState == MapEventHandler_elevator::Elevator_At_End)
+            if(m_elevatorState == MapEventHandler_elevator::Elevator_At_End && (m_mask & MapEventHandler_elevator::Elevator_Down))
                 newState = MapEventHandler_elevator::Elevator_Moving_Down;
         }
     }
-    else
+    else // up
     {
         if(newZ > m_max)
         {
@@ -161,6 +177,14 @@ void MapEventHandler_elevator::Update(float delta)
     if(newState == MapEventHandler_elevator::Elevator_At_Start)
     {
         SetState(MapEventHandler::Handler_Finished);
+    }
+
+    if(m_mask == MapEventHandler_elevator::Elevator_Up)
+    {
+        if(newState == MapEventHandler_elevator::Elevator_At_End)
+        {
+            SetState(MapEventHandler::Handler_Finished);
+        }
     }
 }
 
@@ -206,8 +230,10 @@ void MapEventHandlerComponent::Update(float delta)
 void MapEventHandlerComponent::Reset()
 {
     NLComponent::Reset();
-    m_teleport.clear();
     m_model = 0;
+    m_handlers.Clear();
+    m_teleport.clear();
+    m_elevator.clear();
 }
 
 void MapEventHandlerComponent::SetModel(GL_NETLizard_3D_Model *model, int level)
@@ -231,6 +257,15 @@ void MapEventHandlerComponent::SetModel(GL_NETLizard_3D_Model *model, int level)
                     }
                 }
             }
+            const NETLizard_Level_Elevator *elevator = nlGet3DGameElevator(m_model->game, level, -1, &count);
+            if(elevator)
+            {
+                for(int i = 0; i < count; i++)
+                {
+                    const NETLizard_Level_Elevator *e = elevator + i;
+                    m_elevator.insert(e->switch_item, e);
+                }
+            }
         }
     }
 }
@@ -241,24 +276,51 @@ bool MapEventHandlerComponent::Trigger(int item)
         return false;
     if(item < 0)
         return false;
- // 26 41
-    if(item != 66)
+    const GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + item;
+    qDebug() << item << mesh->rotation[0] << mesh->rotation[1];
+    if(mesh->item_type & NL_3D_ITEM_TYPE_SWITCH)
+        return HandleElevator(item);
+    else if(mesh->item_type & NL_3D_ITEM_TYPE_PORTAL)
+        return HandleTeleport(item);
+    return false;
+}
+
+bool MapEventHandlerComponent::HandleElevator(int item)
+{
+    if(m_elevator.isEmpty())
         return false;
-    if(m_handlers.Exists(65))
+    if(!m_elevator.contains(item))
         return false;
-    GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + 65;
-    MapEventHandler_elevator *handler = new MapEventHandler_elevator(0, 1200, mesh, false);
-    qDebug() << m_handlers.Add(item, handler);
+    const NETLizard_Level_Elevator *elevator = m_elevator[item];
+    int elevator_item = elevator->elevator_item;
+    if(m_handlers.Exists(elevator_item))
+        qDebug() << "rm -> " << m_handlers.Remove(elevator_item);
+    int mask = 0;
+    if(elevator->mask & 1)
+        mask |= MapEventHandler_elevator::Elevator_Up;
+    if(elevator->mask & 2)
+        mask |= MapEventHandler_elevator::Elevator_Down;
+    GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + elevator->elevator_item;
+    MapEventHandler_elevator *handler = new MapEventHandler_elevator(elevator->min, elevator->max, static_cast<MapEventHandler_elevator::Elevator_Mask_e>(mask), mesh, false);
+    qDebug() << "add -> " << m_handlers.Add(elevator_item, handler);
     return true;
 }
 
 bool MapEventHandlerComponent::Collision(int item)
 {
-    //qDebug() << item << m_teleport.keys();
     if(!m_model)
         return false;
     if(item < 0)
         return false;
+    const GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + item;
+    //qDebug() << item << m_teleport.keys() << mesh->item_type;
+    if(mesh->item_type & NL_3D_ITEM_TYPE_PORTAL)
+        return HandleTeleport(item);
+    return false;
+}
+
+bool MapEventHandlerComponent::HandleTeleport(int item)
+{
     if(!m_teleportActor)
         return false;
     if(m_teleport.isEmpty())

@@ -6,6 +6,8 @@
 
 #include "stencil_shadow.h"
 
+//#define _SHADOW_DEBUG
+#ifndef _SHADOW_DEBUG
 #define SHADOW_BEGIN \
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); \
 	glDepthMask(GL_FALSE); \
@@ -31,6 +33,10 @@
     glDisable(GL_POLYGON_OFFSET_FILL); \
     glPolygonOffset(0, 0); \
     glEnable(GL_ALPHA_TEST);
+#else
+#define SHADOW_BEGIN
+#define SHADOW_END
+#endif
 
 static GLboolean NETLizard_IgnoreShadowItem(int item_type)
 {

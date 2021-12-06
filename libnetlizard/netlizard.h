@@ -411,6 +411,18 @@ typedef struct NETLizard_Level_Teleport_s
     NLint rotation[2];
 } NETLizard_Level_Teleport;
 
+/* NETLizard 3D map elevator config, Clone 3D */
+typedef struct NETLizard_Level_Elevator_s
+{
+    NLenum game;
+    NLint level;
+    NLint switch_item;
+    NLint elevator_item;
+    NLbitfield mask;
+    NLint min;
+    NLint max;
+} NETLizard_Level_Elevator;
+
 ////////// function //////////
 /* PNG util */
 NLboolean nlIsPNGFile(const char *name); // check file is normal png
@@ -472,6 +484,7 @@ NLboolean nlGet3DGameLevelRange(NETLizard_Game game, NLint *start, NLint *count)
 NL_RET_PTR_CONST(char *) const char * nlGet3DGameName(NETLizard_Game game);
 const NETLizard_3D_Model_Config * nlGet3DGameModelConfig(NETLizard_Game game);
 const NETLizard_Level_Teleport * nlGet3DGameTeleport(NLenum game, NLint level, NLint item_id, NLint *length);
+const NETLizard_Level_Elevator * nlGet3DGameElevator(NLenum game, NLint level, NLint item_id, NLint *length);
 
 // Contr Terrisiem 3D
 NLboolean nlReadCT3DModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);

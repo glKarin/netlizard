@@ -350,7 +350,8 @@ void NETLizard_GetScenePlane(const GL_NETLizard_3D_Mesh *scene, int j, plane_t *
     Mesa_glRotate(&mat, scene->rotation[1], 0.0f, 0.0f, 1.0f);
     matrix_transformv_self(&mat, &position);
     Mesa_NormalMatrix(&mat);
-    matrix_transformv_self_row(&mat, &normal);
+    //matrix_transformv_self_row(&mat, &normal); // !!! ???
+    matrix_transformv_self(&mat, &normal);
     Mesa_FreeGLMatrix(&mat);
     plane_make(p, &position, &normal);
 }

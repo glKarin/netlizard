@@ -599,7 +599,7 @@ int nlGetItemType(NETLizard_Game game, int index)
 			else if(index == 38 || index == 39)
                 res |= NL_3D_ITEM_TYPE_LADDER;
 			else if(index == 40 || index == 41 || index == 42 || index == 43)
-                res |= NL_3D_ITEM_TYPE_ELEVATOR;
+                res |= NL_3D_ITEM_TYPE_ELEVATOR | NL_3D_ITEM_TYPE_THIN;
             else if(index == 20)
                 res |= NL_3D_ITEM_TYPE_DOOR_VERTICAL;
 			else if(index == 29)
@@ -625,6 +625,8 @@ int nlGetItemType(NETLizard_Game game, int index)
                 res |= NL_3D_ITEM_TYPE_SKYBOX;
 			else if(index == 14)
                 res |= NL_3D_ITEM_TYPE_FAN_VERTICAL | NL_3D_ITEM_TYPE_PORTAL;
+            else if(index == 15)
+                res |= NL_3D_ITEM_TYPE_PORTAL;
 			else if(index == 8)
                 res |= NL_3D_ITEM_TYPE_FAN_VERTICAL;
             else if(index == 22) // tower
@@ -865,6 +867,81 @@ const NETLizard_Level_Teleport * nlGet3DGameTeleport(NLenum game, NLint level, N
     const NETLizard_Level_Teleport *ret = Egypt3D_Level_Teleport[level];
     if(length)
         *length = Egypt3D_Level_Teleport_Count[level];
+    return ret;
+}
+
+static const NETLizard_Level_Elevator Clone3D_Level_Elevator_3[] = {
+    {NL_CLONE_3D, 3, 26, 25, 3, 600, 1800},
+};
+
+static const NETLizard_Level_Elevator Clone3D_Level_Elevator_4[] = {
+    {NL_CLONE_3D, 4, 66, 65, 3, 0, 1200},
+};
+
+static const NETLizard_Level_Elevator Clone3D_Level_Elevator_6[] = {
+    {NL_CLONE_3D, 6, 35, 34, 3, 900, 2280},
+};
+
+static const NETLizard_Level_Elevator Clone3D_Level_Elevator_8[] = {
+    {NL_CLONE_3D, 8, 29, 28, 3, 600, 1500},
+};
+
+static const NETLizard_Level_Elevator Clone3D_Level_Elevator_9[] = {
+    {NL_CLONE_3D, 9, 7, 6, 3, 0, 900},
+};
+
+static const NETLizard_Level_Elevator Clone3D_Level_Elevator_10[] = {
+    {NL_CLONE_3D, 10, 21, 20, 3, 0, 1200},
+    {NL_CLONE_3D, 10, 32, 31, 3, 1200, 2400},
+    {NL_CLONE_3D, 10, 34, 33, 3, 1200, 2400},
+};
+
+static const NETLizard_Level_Elevator Clone3D_Level_Elevator_11[] = {
+    {NL_CLONE_3D, 11, 7, 6, 3, 0, 1200},
+    {NL_CLONE_3D, 11, 29, 28, 3, 3300, 4500},
+    {NL_CLONE_3D, 11, 40, 39, 3, 4500, 5700},
+    {NL_CLONE_3D, 11, 42, 41, 3, 5700, 6900},
+    {NL_CLONE_3D, 11, 50, 49, 3, 6900, 9000},
+
+    {NL_CLONE_3D, 11, 54, 53, 1, 9000, 9900},
+    {NL_CLONE_3D, 11, 57, 56, 1, 9000, 9900},
+    {NL_CLONE_3D, 11, 60, 59, 1, 9000, 9900},
+    {NL_CLONE_3D, 11, 55, 53, 2, 9000, 9900},
+    {NL_CLONE_3D, 11, 58, 56, 2, 9000, 9900},
+    {NL_CLONE_3D, 11, 61, 59, 2, 9000, 9900},
+
+    {NL_CLONE_3D, 11, 63, 62, 1, 9000, 9900},
+    {NL_CLONE_3D, 11, 66, 65, 1, 9000, 9900},
+    {NL_CLONE_3D, 11, 64, 62, 2, 9000, 9900},
+    {NL_CLONE_3D, 11, 67, 65, 2, 9000, 9900},
+
+    {NL_CLONE_3D, 11, 69, 68, 3, 9000, 12000},
+};
+
+static const NETLizard_Level_Elevator *Clone3D_Level_Elevator[] = {
+    NULL, NULL, NULL,
+    Clone3D_Level_Elevator_3, Clone3D_Level_Elevator_4, NULL,
+    Clone3D_Level_Elevator_6, NULL,
+    Clone3D_Level_Elevator_8, Clone3D_Level_Elevator_9, Clone3D_Level_Elevator_10,
+    Clone3D_Level_Elevator_11,
+    NULL,
+};
+static const NLint Clone3D_Level_Elevator_Count[] = {
+    0, 0, 0,
+    COUNTOF(Clone3D_Level_Elevator_3), COUNTOF(Clone3D_Level_Elevator_4), 0,
+    COUNTOF(Clone3D_Level_Elevator_6), 0,
+    COUNTOF(Clone3D_Level_Elevator_8), COUNTOF(Clone3D_Level_Elevator_9), COUNTOF(Clone3D_Level_Elevator_10),
+    COUNTOF(Clone3D_Level_Elevator_11),
+    0,
+};
+
+const NETLizard_Level_Elevator * nlGet3DGameElevator(NLenum game, NLint level, NLint item_id, NLint *length)
+{
+    if(game != NL_CLONE_3D)
+        return NULL;
+    const NETLizard_Level_Elevator *ret = Clone3D_Level_Elevator[level];
+    if(length)
+        *length = Clone3D_Level_Elevator_Count[level];
     return ret;
 }
 

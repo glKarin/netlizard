@@ -205,7 +205,7 @@ void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model
             };
 
             vector3_t p2l;
-            Mesa_glTransform_row(VECTOR3_V(p2l), pa[0]->normal, &nor_mat);
+            Mesa_glTransform(VECTOR3_V(p2l), pa[0]->normal, &nor_mat);
 
             float dot_p = 0;
             if(dir)

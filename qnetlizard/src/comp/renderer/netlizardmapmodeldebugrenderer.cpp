@@ -226,7 +226,6 @@ void NETLizardMapModelDebugRenderer::RenderHighlight()
             NETLizard_DebugHighlightRenderGL3DModelPlane(m_model, scene, collision_id);
         else
         {
-            //vector3_t pos = m_camera->Position();
             NETLizard_DebugHighlightRenderGL3DItemModelEdge(m_model, scene, collision_id, &p, NULL/*&direction*/);
         }
 
