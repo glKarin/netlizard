@@ -98,6 +98,79 @@ void delete_GL_NETLizard_3D_Model(GL_NETLizard_3D_Model *model)
 	}
 }
 
+static GL_NETLizard_3D_Plane * NETLizard_CalePlaneWithVertex(const GL_NETLizard_3D_Mesh *m, GLint *count)
+{
+    if(count)
+        *count = 0;
+    if(!m)
+        return NULL;
+    GL_NETLizard_3D_Vertex *vertex = m->vertex_data.vertex;
+    if(!vertex)
+        return NULL;
+
+    GLuint c = 0;
+    GLuint j;
+    for(j = 0; j < m->count; j++)
+        c += m->materials[j].index_count / 3;
+    if(c == 0)
+        return NULL;
+
+    plane_t *planes = calloc(c, sizeof(plane_t));
+
+    GLuint n = 0;
+    for(j = 0; j < m->count; j++)
+    {
+        GLuint k;
+        for(k = 0; k < m->materials[j].index_count; k += 3)
+        {
+            GLuint index = m->materials[j].index[k];
+            triangle_t tri = TRIANGLEV(vertex[index].position, vertex[index + 1].position, vertex[index + 2].position);
+            vector3_t center;
+            triangle_center_point(&tri, &center);
+            plane_t p = PLANEV(VECTOR3_V(center), vertex[index].normal);
+
+            GLboolean has = GL_FALSE;
+            GLuint i;
+            for(i = 0; i < n; i++)
+            {
+                if(plane_equals(&p, planes + i))
+                {
+                    has = GL_TRUE;
+                    break;
+                }
+            }
+            if(!has)
+            {
+                planes[n] = p;
+                n++;
+            }
+        }
+    }
+
+    GL_NETLizard_3D_Plane *res = NULL;
+    if(count)
+        *count = n;
+    if(n > 0)
+    {
+        res = calloc(n, sizeof(GL_NETLizard_3D_Plane));
+        GLuint i;
+        for(i = 0; i < n; i++)
+        {
+            const plane_t *p = planes + i;
+            res[i].position[0] = PLANEV_POSITION_X(p); // vertex[index].position[0];
+            res[i].position[1] = PLANEV_POSITION_Y(p); // vertex[index].position[1];
+            res[i].position[2] = PLANEV_POSITION_Z(p); // vertex[index].position[2];
+            res[i].normal[0] = PLANEV_NORMAL_X(p);
+            res[i].normal[1] = PLANEV_NORMAL_Y(p);
+            res[i].normal[2] = PLANEV_NORMAL_Z(p);
+        }
+    }
+
+    free(planes);
+
+    return res;
+}
+
 GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *resource_path, GL_NETLizard_3D_Model *glmodel)
 {
 	if(!model)
@@ -335,34 +408,10 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 			}
             else if(mesh->primitive.data) // If not plane data, make planes with vertex data.
 			{
-				GLuint c = 0;
-				GLuint j;
-				for(j = 0; j < m->count; j++)
-                    c += m->materials[j].index_count / 3;
-				GLuint plane_count = c;
-                GL_NETLizard_3D_Plane *planes = calloc(c, sizeof(GL_NETLizard_3D_Plane));
-                GL_NETLizard_3D_Vertex *vertex = m->vertex_data.vertex;
-				GLuint n = 0;
-				for(j = 0; j < m->count; j++)
-				{
-					GLuint k;
-                    for(k = 0; k < m->materials[j].index_count; k += 3)
-					{
-                        GLuint index = m->materials[j].index[k];
-                        triangle_t tri = TRIANGLEV(vertex[index].position, vertex[index + 1].position, vertex[index + 2].position);
-                        vector3_t center;
-                        triangle_center_point(&tri, &center);
-                        planes[n].position[0] = VECTOR3_X(center); // vertex[index].position[0];
-                        planes[n].position[1] = VECTOR3_Y(center); // vertex[index].position[1];
-                        planes[n].position[2] = VECTOR3_Z(center); // vertex[index].position[2];
-                        planes[n].normal[0] = vertex[index].normal[0];
-                        planes[n].normal[1] = vertex[index].normal[1];
-                        planes[n].normal[2] = vertex[index].normal[2];
-						n++;
-					}
-				}
-				m->plane_count = plane_count;
-				m->plane = planes;
+                GLuint plane_count = 0;
+                GL_NETLizard_3D_Plane *planes = NETLizard_CalePlaneWithVertex(m, &plane_count);
+                m->plane_count = plane_count;
+                m->plane = planes;
                 m->plane_type = 2;
             }
             else // If not plane data, make a floor plane with bound data.
@@ -442,8 +491,6 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
             m->tex_index = NULL;
             m->vertex_data.vertex = NULL;
             m->vertex_data.vertex_count = 0;
-//            m->vertex_data.index = NULL;
-//            m->vertex_data.index_count = 0;
             m->plane_count = 0;
             m->plane = NULL;
 
@@ -499,11 +546,8 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                 GL_NETLizard_3D_Vertex *vertex = calloc(vertex_count, sizeof(GL_NETLizard_3D_Vertex));
                 GLushort *indexs = calloc(index_count, sizeof(GLushort));
                 GL_NETLizard_3D_Material *materials = calloc(m->count, sizeof(GL_NETLizard_3D_Material));
-                GLuint plane_count = mesh->item_mesh.primitive.count;
-                GL_NETLizard_3D_Plane *planes = calloc(plane_count, sizeof(GL_NETLizard_3D_Plane));
                 NLint *mesh_vertex = (NLint *)(mesh->item_mesh.vertex.data);
 
-				GLint b = 0;
 				GLint c = 0;
                 for(o = 0; o < (GLint)m->count; o++)
                 {
@@ -582,15 +626,6 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 							indexs[a + 1] = a + 1;
 							indexs[a + 2] = a + 2;
 
-                            vector3_t center;
-                            triangle_center_point(&tri, &center);
-                            planes[b].position[0] = VECTOR3_X(center); // vertex[a].position[0];
-                            planes[b].position[1] = VECTOR3_Y(center); // vertex[a].position[1];
-                            planes[b].position[2] = VECTOR3_Z(center); // vertex[a].position[2];
-							planes[b].normal[0] = vertex[a].normal[0];
-							planes[b].normal[1] = vertex[a].normal[1];
-							planes[b].normal[2] = vertex[a].normal[2];
-							b++;
 							a += 3;
 						}
 					}
@@ -609,13 +644,19 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                 m->materials = materials;
                 m->vertex_data.vertex_count = vertex_count;
                 m->vertex_data.vertex = vertex;
-                m->plane_count = plane_count;
-                m->plane = planes;
-                m->plane_type = 2;
-//                m->vertex_data.index_count = index_count;
-//                m->vertex_data.index = indexs;
+                m->plane_count = 0;
+                m->plane = NULL;
+                m->plane_type = 0;
+
                 free(indexs);
 			}
+
+            GLuint plane_count = 0;
+            GL_NETLizard_3D_Plane *planes = NETLizard_CalePlaneWithVertex(m, &plane_count);
+            m->plane_count = plane_count;
+            m->plane = planes;
+            m->plane_type = 2;
+
             m->box.min[0] = (GLfloat)mesh->item_mesh.box.min[0];
             m->box.min[1] = (GLfloat)mesh->item_mesh.box.min[1];
             m->box.min[2] = (GLfloat)mesh->item_mesh.box.min[2];

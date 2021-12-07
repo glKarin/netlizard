@@ -9,6 +9,8 @@
 #include "lib/bound.h"
 #include "nl_util.h"
 
+#define PRINT(fmt, args...) { fprintf(stderr, fmt, ##args); fprintf(stderr, "\n"); fflush(stderr); }
+
 #define BEGIN_DEBUG_RENDER \
     glDepthMask(GL_FALSE); \
     glDisable(GL_DEPTH_TEST); \

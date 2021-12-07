@@ -7,11 +7,11 @@ static const int Game_Count = NL_TOTAL_GAME;
 static const char *Game_Names[] = {
 	"Racing Evolution 3D",
 	"Contr Terrorism 3D",
-	"Army Rangers 3D : Operation Arctic",
-	"Contr Terrorism 3D Episode 2",
+    "Army Rangers 3D: Operation Arctic",
+    "Contr Terrorism 3D: Episode 2",
 	"Shadows of Egypt 3D",
 	"Clone 3D",
-	"Contr Terrorism 3D Episode 3"
+    "Contr Terrorism 3D: Episode 3"
 };
 
 static const char *CT3D_Level[] = {

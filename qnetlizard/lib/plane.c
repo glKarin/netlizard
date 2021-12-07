@@ -32,6 +32,12 @@ float plane_d(const plane_t *plane)
     return distance;
 }
 
+int plane_equals(const plane_t *plane, const plane_t *o)
+{
+    return vector3_equals(&PLANEV_NORMAL(plane), &PLANEV_NORMAL(o))
+            && plane_d(plane) == plane_d(o);
+}
+
 #define COLLISION_ZERO 0.0
 int plane_ray_intersect(const plane_t *plane, const ray_t *line, float *lamda, vector3_t *point, float *scale)
 {

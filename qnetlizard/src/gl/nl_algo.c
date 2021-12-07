@@ -92,9 +92,12 @@ static plane_t NETLizard_ScenePlane(const GL_NETLizard_3D_Mesh *scene, int j)
 }
 
 #define MUL 10
+#define UPZ 0.01
 static unsigned NETLizard_IsFloorPlane(const plane_t *plane)
 {
     //return PLANEV_NORMAL_Z(plane) > UP_NORMAL_LIMIT;
+    if(PLANEV_NORMAL_Z(plane) <= UPZ)
+        return 0;
     nl_vector3_t p;
     vector3_movev(&p, &PLANEV_POSITION(plane), &PLANEV_NORMAL(plane), MUL);
     const nl_vector3_t dir = VECTOR3(0, 0, -1);
@@ -104,6 +107,8 @@ static unsigned NETLizard_IsFloorPlane(const plane_t *plane)
         return 1;
     return 0;
 }
+#undef NUL
+#undef UPZ
 
 static unsigned NETLizard_IsCeilPlane(const plane_t *plane)
 {
@@ -244,6 +249,7 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
         if(!bound_point_in_box2d(&aabb, new_pos))
             continue;
         float topz = BOUND_MAX_Z(aabb);
+        int ts = i;
         if(floor)
         {
             if(!mesh->plane)
@@ -259,14 +265,14 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
                     break;
                 }
             }
-            if(!has_floor)
-                continue;
+            // if(!has_floor) continue; // like Specnaz 3D level 9/10 not a floor plane, but has a elevator
             // check elevator
             for(j = mesh->item_index_range[0]; j < mesh->item_index_range[1]; j++)
             {
                 const GL_NETLizard_3D_Mesh *im = netlizard_3d_model->item_meshes + j;
                 if(im->item_type & NL_3D_ITEM_TYPE_ELEVATOR == 0)
                     continue;
+                PRINT("NL_3D_ITEM_TYPE_ELEVATOR %d", j);
                 unsigned int k;
                 for(k = 0; k < im->plane_count; k++)
                 {
@@ -277,10 +283,16 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
                     ray_t ray = RAYV(VECTOR3V_V(new_pos), VECTOR3_V(Down));
                     nl_vector3_t cpoint;
                     int r = plane_ray_intersect(&plane, &ray, NULL, &cpoint, NULL);
+                    PRINT("plane_ray_intersect %d: %d %d %d | %f %f %f", j, r, im->plane_count, im->plane_type, plane.normal.v[0], plane.normal.v[1], plane.normal.v[2]);
                     if(r > 0)
                     {
-                        if(topz < VECTOR3_Z(cpoint))
-                            topz = VECTOR3_Z(cpoint);
+                        r = NETLizard_FindScenePointIn(netlizard_3d_model, &cpoint);
+                        if(r >= 0)
+                        {
+                            ts = r;
+                            if(topz < VECTOR3_Z(cpoint))
+                                topz = VECTOR3_Z(cpoint);
+                        }
                     }
                 }
             }
@@ -289,7 +301,7 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
         {
             if(topz < VECTOR3V_Z(new_pos))
             {
-                s = i;
+                s = ts;
                 z = topz;
                 res = 1;
             }
@@ -299,7 +311,7 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
             if(topz > z && topz < VECTOR3V_Z(new_pos))
             {
                 z = topz;
-                s = i;
+                s = ts;
             }
         }
     }
@@ -326,12 +338,11 @@ static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *
         plane_t plane = SCENE_PLANE(mesh, j);
         if(!IS_FLOOR(plane))
             continue;
-        plane_t pla = SCENE_PLANE(mesh, j);
 
         // 平面点和New位置的Z值比较, 高于New位置的Z则丢弃
         if(under)
         {
-            if(VECTOR3V_Z(new_pos) < PLANE_POSITION_Z(pla))
+            if(plane_point_clip(&plane, new_pos) < 0)
                 continue;
         }
 
@@ -349,7 +360,7 @@ static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *
 
         ray_t l = {*new_pos, dir};
         float lamda = 0;
-        if(plane_ray_intersect(&pla, &l, &lamda, &point, NULL) > 0)
+        if(plane_ray_intersect(&plane, &l, &lamda, &point, NULL) > 0)
         {
             if(under)
             {
@@ -358,7 +369,7 @@ static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *
             }
             else
             {
-                nl_vector3_t npoint = VECTOR3V(VECTOR3_V(point));
+                nl_vector3_t npoint = point;
                 vector3_moveve(&npoint, &dir, -1); // TODO: has precision problem: 0.0001
                 if(!NETLizard_PointInScenePlane(mesh, &npoint))
                     continue;
@@ -461,11 +472,13 @@ int NETLizard_GetSceneFloorZCoordUnderPoint(const GL_NETLizard_3D_Model *netliza
     int gress_scene;
     float gress_z;
     int res = NETLizard_GetTopSceneUnderPoint(netlizard_3d_model, new_pos, 1, &gress_scene, &gress_z);
+    PRINT("wwwwwwwwwwwwwwwwwwww             %d", res);
     if(!res)
         return 0;
     //nl_vector3_t pos = VECTOR3(VECTOR3V_X(new_pos), VECTOR3V_Y(new_pos), gress_z);
     collision_object_t nco = {VECTOR3(VECTOR3V_X(new_pos), VECTOR3V_Y(new_pos), gress_z), obj->radius, obj->height};
     res = NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, &nco, gress_scene, include_item, &gress_z);
+    PRINT("3333333333333333333             %d", res);
     if(res)
     {
         if(scene)
@@ -496,6 +509,7 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
         }
     }
     res = NETLizard_GetSceneFloorZCoordUnderPoint(netlizard_3d_model, obj, include_item, rscene, rglz);
+    PRINT("222222222222222222             %d", res);
     if(res)
         return 1;
     bound_t bound;
@@ -504,6 +518,7 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
     vector3_t pos = *new_pos;
     VECTOR3_Z(pos) = BOUND_MIN_Z(bound);
     res = NETLizard_FindScenePointIn(netlizard_3d_model, &pos);
+    PRINT("eeeeeeeeeeeeee             %d", res);
     if(res >= 0)
     {
         if(rscene)

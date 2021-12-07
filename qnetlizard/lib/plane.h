@@ -45,6 +45,7 @@ typedef struct plane_s
 void plane_make(plane_t *plane, const vector3_t *pos, const vector3_t *nor);
 float plane_point_to_plane_distance(const plane_t *plane, const vector3_t *point);
 float plane_d(const plane_t *plane);
+int plane_equals(const plane_t *plane, const plane_t *o);
 
 int plane_ray_intersect(const plane_t *plane, const struct ray_s *line, float *lamda, vector3_t *point, float *scale);
 void plane_triangle_plane(plane_t *plane, const struct triangle_s *tri);
