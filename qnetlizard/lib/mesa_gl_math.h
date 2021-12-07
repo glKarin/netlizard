@@ -53,14 +53,14 @@ void Mesa_glMultTransposeMatrix(GLmatrix *mat, const float m[16]);
 void Mesa_glFrustum(GLmatrix *mat, float left, float right, float bottom, float top, float nearval, float farval);
 void Mesa_glOrtho(GLmatrix *mat, float left, float right, float bottom, float top, float nearval, float farval);
 
-void Mesa_gluLookAt(GLmatrix *r, GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz);
-void Mesa_gluPerspective(GLmatrix *r, GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
+void Mesa_gluLookAt(GLmatrix *r, float eyex, float eyey, float eyez, float centerx, float centery, float centerz, float upx, float upy, float upz);
+void Mesa_gluPerspective(GLmatrix *r, float fovy, float aspect, float zNear, float zFar);
 void Mesa_gluOrtho2D(GLmatrix *mat, float left, float right, float bottom, float top);
 
-// Row vector: P = vector * matrix; exam: cale normal transform: varying normal = gl_Normal * vNormalMatrix;
+// Row vector: P = V * M; exam: cale normal transform: varying normal = gl_Normal * vNormalMatrix(not transpose);
 void Mesa_glTransform_row(float r[3], const float p[3], const GLmatrix *mat);
 void Mesa_glTransform4_row(float r[4], const float p[4], const GLmatrix *mat);
-// Column vector: P = matrix * vector; exam: cale vextex transform: gl_position = vMVPMatrix * gl_Vertex;
+// Column vector: P = M * V; exam: cale vextex transform: gl_position = vMVPMatrix * gl_Vertex;
 void Mesa_glTransform(float r[3], const float p[3], const GLmatrix *mat);
 void Mesa_glTransform4(float r[4], const float p[4], const GLmatrix *mat);
 
@@ -73,7 +73,9 @@ void Mesa_InitGLMatrix(GLmatrix *to, const GLmatrix *mat);
 void Mesa_glTranspose(GLmatrix *mat);
 void Mesa_NormalMatrix(GLmatrix *mat);
 void Mesa_InverseMatrix(GLmatrix *mat);
-void Mesa_InverseTransposeMatrix(GLmatrix *mat, const GLfloat mv[16]);
+void Mesa_InverseTransposeMatrix(GLmatrix *mat, const float mv[16]);
+
+void Mesa_ToMatrix3x3(float r[16], const GLmatrix *mat);
 
 
 #ifdef __cplusplus

@@ -43,6 +43,7 @@
 #define NORMAL_LENGTH 100
 #define POINT_COLOR 0,0,1,1
 #define LINE_COLOR 1,0,0,1
+#define HL_LINE_COLOR 0,1,0,1
 
 #define BITS_FALSE(b, t) (((b) & (t)) == 0)
 #define BITS_TRUE(b, t) (((b) & (t)) != 0)
@@ -52,6 +53,15 @@
 
 typedef std::list<vector3_t> Vector3List;
 typedef std::list<line_t> LineList;
+
+static GLboolean NETLizard_IsInteractiveItem(int item_type)
+{
+    if((item_type & NL_3D_ITEM_TYPE_SWITCH)
+            || (item_type & NL_3D_ITEM_TYPE_PORTAL)
+            )
+        return GL_TRUE;
+    return GL_FALSE;
+}
 
 static int push_edge_line(LineList &list, const line_t *lp)
 {
@@ -80,7 +90,7 @@ static int push_edge_line(LineList &list, const line_t *lp)
     return has;
 }
 
-static void render_highlight_lines(const LineList &lines, const GLfloat position[3], const GLfloat rotation[2])
+static void render_highlight_lines(const LineList &lines, const GLfloat color[4], const GLfloat position[3], const GLfloat rotation[2])
 {
     if(lines.empty())
         return;
@@ -96,7 +106,10 @@ static void render_highlight_lines(const LineList &lines, const GLfloat position
                 glRotatef(rotation[0], 1.0f, 0.0f, 0.0f);
                 glRotatef(rotation[1], 0.0f, 0.0f, 1.0f);
             }
-            glColor4f(LINE_COLOR);
+            if(color)
+                glColor4fv(color);
+            else
+                glColor4f(LINE_COLOR);
 
             for(LineList::const_iterator itor = lines.begin();
                 itor != lines.end(); ++itor)
@@ -168,7 +181,7 @@ void NETLizard_DebugHighlightRenderGL3DModelPlane(const GL_NETLizard_3D_Model *m
             }
         }
     }
-    render_highlight_lines(lines, mesh->position, mesh->rotation);
+    render_highlight_lines(lines, NULL, mesh->position, mesh->rotation);
 }
 
 void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model *model, GLuint scene, GLuint item_index, const vector3_t *pos, const vector3_t *dir)
@@ -237,7 +250,15 @@ void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model
         }
     }
 
+    GLfloat color[4] = {LINE_COLOR};
+    if(NETLizard_IsInteractiveItem(mesh->item_type))
+    {
+        color[0] = 0;
+        color[1] = 1;
+        color[2] = 0;
+    }
+
     Mesa_FreeGLMatrix(&mat);
     Mesa_FreeGLMatrix(&nor_mat);
-    render_highlight_lines(lines, mesh->position, mesh->rotation);
+    render_highlight_lines(lines, color, mesh->position, mesh->rotation);
 }

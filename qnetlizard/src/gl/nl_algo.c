@@ -236,21 +236,23 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
     int res = 0;
     int s = -1;
     float z = 0.0;
+    const nl_vector3_t Down = VECTOR3(0, 0, -1);
     for(i = 0; i < netlizard_3d_model->count; i++)
     {
-        const GL_NETLizard_3D_Mesh *next_mesh = netlizard_3d_model->meshes + i;
-        bound_t aabb = SCENE_BOUND(next_mesh);
+        const GL_NETLizard_3D_Mesh *mesh = netlizard_3d_model->meshes + i;
+        bound_t aabb = SCENE_BOUND(mesh);
         if(!bound_point_in_box2d(&aabb, new_pos))
             continue;
+        float topz = BOUND_MAX_Z(aabb);
         if(floor)
         {
-            if(!next_mesh->plane)
+            if(!mesh->plane)
                 continue;
             int j;
             int has_floor = 0;
-            for(j = 0; j < next_mesh->plane_count; j++)
+            for(j = 0; j < mesh->plane_count; j++)
             {
-                plane_t plane = SCENE_PLANE(next_mesh, j);
+                plane_t plane = SCENE_PLANE(mesh, j);
                 if(IS_FLOOR(plane))
                 {
                     has_floor = 1;
@@ -259,21 +261,44 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
             }
             if(!has_floor)
                 continue;
+            // check elevator
+            for(j = mesh->item_index_range[0]; j < mesh->item_index_range[1]; j++)
+            {
+                const GL_NETLizard_3D_Mesh *im = netlizard_3d_model->item_meshes + j;
+                if(im->item_type & NL_3D_ITEM_TYPE_ELEVATOR == 0)
+                    continue;
+                unsigned int k;
+                for(k = 0; k < im->plane_count; k++)
+                {
+                    plane_t plane = SCENE_PLANE(im, k);
+                    if(!IS_FLOOR(plane))
+                        continue;
+                    // if(topz < PLANE_POSITION_Z(plane)) topz = PLANE_POSITION_Z(plane);
+                    ray_t ray = RAYV(VECTOR3V_V(new_pos), VECTOR3_V(Down));
+                    nl_vector3_t cpoint;
+                    int r = plane_ray_intersect(&plane, &ray, NULL, &cpoint, NULL);
+                    if(r > 0)
+                    {
+                        if(topz < VECTOR3_Z(cpoint))
+                            topz = VECTOR3_Z(cpoint);
+                    }
+                }
+            }
         }
         if(res == 0)
         {
-            if(BOUND_MAX_Z(aabb) < VECTOR3V_Z(new_pos))
+            if(topz < VECTOR3V_Z(new_pos))
             {
                 s = i;
-                z = BOUND_MAX_Z(aabb);
+                z = topz;
                 res = 1;
             }
         }
         else
         {
-            if(BOUND_MAX_Z(aabb) > z && BOUND_MAX_Z(aabb) < VECTOR3V_Z(new_pos))
+            if(topz > z && topz < VECTOR3V_Z(new_pos))
             {
-                z = BOUND_MAX_Z(aabb);
+                z = topz;
                 s = i;
             }
         }

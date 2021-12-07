@@ -106,13 +106,14 @@ bool MapEventHandler::Start()
     return true;
 }
 
-MapEventHandler_elevator::MapEventHandler_elevator(float min, float max, MapEventHandler_elevator::Elevator_Mask_e mask, GL_NETLizard_3D_Mesh *item, bool loop)
+MapEventHandler_elevator::MapEventHandler_elevator(float min, float max, MapEventHandler_elevator::Elevator_Mask_e mask, bool invert, GL_NETLizard_3D_Mesh *item, bool loop)
     : MapEventHandler(item, loop),
       m_elevatorState(MapEventHandler_elevator::Elevator_At_Start),
       m_min(min),
       m_max(max),
       m_unit(500),
-      m_mask(mask)
+      m_mask(mask),
+      m_invert(invert)
 {
 
 }
@@ -127,7 +128,7 @@ bool MapEventHandler_elevator::Start()
     bool res = MapEventHandler::Start();
     if(!res)
         return false;
-    if(m_mask == MapEventHandler_elevator::Elevator_Down)
+    if(m_mask == MapEventHandler_elevator::Elevator_Back)
         m_elevatorState = MapEventHandler_elevator::Elevator_At_End;
     return res;
 }
@@ -137,24 +138,34 @@ void MapEventHandler_elevator::Update(float delta)
     if(!IsRunning())
         return;
     GL_NETLizard_3D_Mesh *item = Item();
-    bool is_downing = m_elevatorState == MapEventHandler_elevator::Elevator_At_End || m_elevatorState == MapEventHandler_elevator::Elevator_Moving_Down;
+    bool is_downing = m_elevatorState == MapEventHandler_elevator::Elevator_At_End || m_elevatorState == MapEventHandler_elevator::Elevator_Moving_Back;
+    if(m_invert)
+        is_downing = !is_downing;
     int neg = is_downing ? -1 : 1;
     float length = m_unit * delta * neg;
     float z = item->position[2];
     float newZ = z + length;
-    //qDebug() << newZ;
+    //qDebug() << m_invert << is_downing << newZ;
     MapEventHandler_elevator::Elevator_State_e newState = m_elevatorState;
     if(is_downing)
     {
         if(newZ < m_min)
         {
             newZ = m_min;
-            newState = MapEventHandler_elevator::Elevator_At_Start;
+            newState = m_invert ? MapEventHandler_elevator::Elevator_At_End : MapEventHandler_elevator::Elevator_At_Start;
         }
         else
         {
-            if(m_elevatorState == MapEventHandler_elevator::Elevator_At_End && (m_mask & MapEventHandler_elevator::Elevator_Down))
-                newState = MapEventHandler_elevator::Elevator_Moving_Down;
+            if(m_invert)
+            {
+                if(m_elevatorState == MapEventHandler_elevator::Elevator_At_Start && (m_mask & MapEventHandler_elevator::Elevator_Front))
+                    newState = MapEventHandler_elevator::Elevator_Moving_Front;
+            }
+            else
+            {
+                if(m_elevatorState == MapEventHandler_elevator::Elevator_At_End && (m_mask & MapEventHandler_elevator::Elevator_Back))
+                    newState = MapEventHandler_elevator::Elevator_Moving_Back;
+            }
         }
     }
     else // up
@@ -162,12 +173,20 @@ void MapEventHandler_elevator::Update(float delta)
         if(newZ > m_max)
         {
             newZ = m_max;
-            newState = MapEventHandler_elevator::Elevator_At_End;
+            newState = m_invert ? MapEventHandler_elevator::Elevator_At_Start : MapEventHandler_elevator::Elevator_At_End;
         }
         else
         {
-            if(m_elevatorState == MapEventHandler_elevator::Elevator_At_Start)
-                newState = MapEventHandler_elevator::Elevator_Moving_Up;
+            if(m_invert)
+            {
+                if(m_elevatorState == MapEventHandler_elevator::Elevator_At_End && (m_mask & MapEventHandler_elevator::Elevator_Back))
+                    newState = MapEventHandler_elevator::Elevator_Moving_Back;
+            }
+            else
+            {
+                if(m_elevatorState == MapEventHandler_elevator::Elevator_At_Start && (m_mask & MapEventHandler_elevator::Elevator_Front))
+                    newState = MapEventHandler_elevator::Elevator_Moving_Front;
+            }
         }
     }
     item->position[2] = newZ;
@@ -179,7 +198,7 @@ void MapEventHandler_elevator::Update(float delta)
         SetState(MapEventHandler::Handler_Finished);
     }
 
-    if(m_mask == MapEventHandler_elevator::Elevator_Up)
+    if(m_mask == MapEventHandler_elevator::Elevator_Front)
     {
         if(newState == MapEventHandler_elevator::Elevator_At_End)
         {
@@ -263,7 +282,9 @@ void MapEventHandlerComponent::SetModel(GL_NETLizard_3D_Model *model, int level)
                 for(int i = 0; i < count; i++)
                 {
                     const NETLizard_Level_Elevator *e = elevator + i;
-                    m_elevator.insert(e->switch_item, e);
+                    if(!m_elevator.contains(e->switch_item))
+                        m_elevator.insert(e->switch_item, MapEventHandlerComponent::MapElevatorList());
+                    m_elevator[e->switch_item].push_back(e);
                 }
             }
         }
@@ -277,7 +298,6 @@ bool MapEventHandlerComponent::Trigger(int item)
     if(item < 0)
         return false;
     const GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + item;
-    qDebug() << item << mesh->rotation[0] << mesh->rotation[1];
     if(mesh->item_type & NL_3D_ITEM_TYPE_SWITCH)
         return HandleElevator(item);
     else if(mesh->item_type & NL_3D_ITEM_TYPE_PORTAL)
@@ -291,18 +311,22 @@ bool MapEventHandlerComponent::HandleElevator(int item)
         return false;
     if(!m_elevator.contains(item))
         return false;
-    const NETLizard_Level_Elevator *elevator = m_elevator[item];
-    int elevator_item = elevator->elevator_item;
-    if(m_handlers.Exists(elevator_item))
-        qDebug() << "rm -> " << m_handlers.Remove(elevator_item);
-    int mask = 0;
-    if(elevator->mask & 1)
-        mask |= MapEventHandler_elevator::Elevator_Up;
-    if(elevator->mask & 2)
-        mask |= MapEventHandler_elevator::Elevator_Down;
-    GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + elevator->elevator_item;
-    MapEventHandler_elevator *handler = new MapEventHandler_elevator(elevator->min, elevator->max, static_cast<MapEventHandler_elevator::Elevator_Mask_e>(mask), mesh, false);
-    qDebug() << "add -> " << m_handlers.Add(elevator_item, handler);
+    const MapEventHandlerComponent::MapElevatorList &elevators = m_elevator[item];
+    Q_FOREACH(const NETLizard_Level_Elevator *elevator, elevators)
+    {
+        int elevator_item = elevator->elevator_item;
+        if(m_handlers.Exists(elevator_item))
+            qDebug() << "rm -> " << m_handlers.Remove(elevator_item);
+        int mask = 0;
+        if(elevator->mask & 1)
+            mask |= MapEventHandler_elevator::Elevator_Front;
+        if(elevator->mask & 2)
+            mask |= MapEventHandler_elevator::Elevator_Back;
+        GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + elevator->elevator_item;
+        MapEventHandler_elevator *handler = new MapEventHandler_elevator(elevator->min, elevator->max, static_cast<MapEventHandler_elevator::Elevator_Mask_e>(mask), elevator->invert ? true : false, mesh, false);
+        qDebug() << "add -> " << m_handlers.Add(elevator_item, handler);
+    }
+
     return true;
 }
 
@@ -357,7 +381,7 @@ NLSceneCamera * MapEventHandlerComponent::SceneCamera()
 
 void MapEventHandlerComponent::ConvToAlgoVector3(vector3_t &v)
 {
-    NLSceneCamera *camera = SceneCamera();
+    const NLSceneCamera *camera = SceneCamera();
     if(!camera)
         return;
     const NLMatrix4 *mat = camera->RenderMatrix();
@@ -366,7 +390,7 @@ void MapEventHandlerComponent::ConvToAlgoVector3(vector3_t &v)
 
 void MapEventHandlerComponent::ConvToRenderVector3(vector3_t &v)
 {
-    NLSceneCamera *camera = SceneCamera();
+    const NLSceneCamera *camera = SceneCamera();
     if(!camera)
         return;
     const NLMatrix4 *mat = camera->RenderMatrix();

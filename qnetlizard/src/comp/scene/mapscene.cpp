@@ -590,29 +590,31 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
 
 void MapScene::ConvToAlgoVector3(vector3_t &v)
 {
-    NLSceneCamera *camera = CurrentCamera();
+    const NLSceneCamera *camera = CurrentCamera();
     if(!camera)
         return;
 
     const NLMatrix4 *mat = camera->RenderMatrix();
-    matrix_transformv_self_row(mat, &v);
-    //        float z = VECTOR3_Z(pos);
-    //        VECTOR3_X(pos) = VECTOR3_X(pos);
-    //        VECTOR3_Z(pos) = VECTOR3_Y(pos);
-    //        VECTOR3_Y(pos) = -z;
+//    NLMatrix4 normat;
+//    Mesa_InitGLMatrix(&normat, mat);
+//    Mesa_NormalMatrix(&normat);
+//    matrix_transformv_self_row(&normat, &v); // if has translate and scale
+//    Mesa_FreeGLMatrix(&normat);
+    matrix_transformv_self_row(mat, &v); // if no translate and no scale
 }
 
 void MapScene::ConvToRenderVector3(vector3_t &v)
 {
-    NLSceneCamera *camera = CurrentCamera();
+    const NLSceneCamera *camera = CurrentCamera();
     if(!camera)
         return;
-    const NLMatrix4 *mat = camera->RenderMatrix();
-    matrix_transformv_self(mat, &v);
-//    float z = VECTOR3_Y(pos);
-//    VECTOR3_X(pos) = VECTOR3_X(pos);
-//    VECTOR3_Y(pos) = VECTOR3_Z(pos) + 100;
-//    VECTOR3_Z(pos) = -z;
+    const NLMatrix4 *mat = camera->RenderMatrix(); // no translate and no scale
+//    NLMatrix4 normat;
+//    Mesa_InitGLMatrix(&normat, mat);
+//    Mesa_NormalMatrix(&normat);
+//    matrix_transformv_self(&normat, &v); // if has translate and scale
+//    Mesa_FreeGLMatrix(&normat);
+    matrix_transformv_self(mat, &v); // if no translate and no scale
 }
 
 void MapScene::SetNoclip(int b)
@@ -678,5 +680,5 @@ bool MapScene::MouseEventHandler(int mouse, bool pressed, int x, int y, int modi
     int item = RayIntersect();
     if(item < 0)
         return false;
-    m_eventHandler->Trigger(item);
+    return m_eventHandler->Trigger(item);
 }

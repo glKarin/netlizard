@@ -52,6 +52,7 @@ int nl_log_func(int type, const char *str)
 {
     LogOutput *lo = LogOutput::Instance();
     lo->Push(type == NL_LOG_ERR ? QtCriticalMsg : QtDebugMsg, str);
+    return strlen(str);
 }
 
 #ifdef _DEV_TEST

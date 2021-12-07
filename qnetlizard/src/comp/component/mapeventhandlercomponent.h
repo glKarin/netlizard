@@ -44,18 +44,18 @@ public:
     enum Elevator_State_e
     {
         Elevator_At_Start = 0,
-        Elevator_Moving_Up,
+        Elevator_Moving_Front,
         Elevator_At_End,
-        Elevator_Moving_Down
+        Elevator_Moving_Back
     };
     enum Elevator_Mask_e
     {
-        Elevator_Up = 1,
-        Elevator_Down = 2,
-        Elevator_Up_And_Down = 3
+        Elevator_Front = 1,
+        Elevator_Back = 2,
+        Elevator_Front_And_Back = 3
     };
 public:
-    explicit MapEventHandler_elevator(float min, float max, Elevator_Mask_e mask, GL_NETLizard_3D_Mesh *item, bool loop = false);
+    explicit MapEventHandler_elevator(float min, float max, Elevator_Mask_e mask, bool invert, GL_NETLizard_3D_Mesh *item, bool loop = false);
     virtual ~MapEventHandler_elevator();
     virtual void Update(float delta);
     virtual bool Start();
@@ -66,6 +66,7 @@ private:
     float m_max;
     float m_unit;
     int m_mask;
+    bool m_invert;
 };
 
 class MapEventHandlerContainer
@@ -116,7 +117,8 @@ protected:
 
 private:
     typedef QHash<NLint, const NETLizard_Level_Teleport *> MapTeleportMap;
-    typedef QHash<NLint, const NETLizard_Level_Elevator *> MapElevatorMap;
+    typedef QList<const NETLizard_Level_Elevator *> MapElevatorList;
+    typedef QHash<NLint, MapElevatorList> MapElevatorMap;
     GL_NETLizard_3D_Model *m_model;
     NLRigidbody *m_teleportActor;
     MapTeleportMap m_teleport;

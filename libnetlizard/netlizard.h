@@ -421,6 +421,7 @@ typedef struct NETLizard_Level_Elevator_s
     NLbitfield mask;
     NLint min;
     NLint max;
+    NLboolean invert;
 } NETLizard_Level_Elevator;
 
 ////////// function //////////
