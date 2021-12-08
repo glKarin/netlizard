@@ -284,6 +284,10 @@ void NLActorPropWidget::SetupComponentProperty(NLComponent *comp)
 {
     QFormLayout *layout = new QFormLayout;
     QGroupBox *groupBox = new QGroupBox;
+    groupBox->setCheckable(true);
+    groupBox->setChecked(true);
+    QStringList items;
+    QVariantHash itemMaps;
     groupBox->setTitle(comp->ClassName() + "(" + comp->Name() + ")");
     NLPropertyInfoList list = NL::object_propertics(comp);
     SortProperties(list);
@@ -292,9 +296,14 @@ void NLActorPropWidget::SetupComponentProperty(NLComponent *comp)
         QWidget *widget = GenWidget(comp, item);
         m_propWidgetMap[comp].insert(item.name, widget);
         layout->addRow(item.name, widget);
+        items.push_back(item.name);
+        itemMaps.insert(item.name, QVariant::fromValue(widget));
     }
+    groupBox->setProperty("_Layout_items", items);
+    groupBox->setProperty("_Layout_item_maps", itemMaps);
     connect(comp, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
     groupBox->setLayout(layout);
+    connect(groupBox, SIGNAL(toggled(bool)), this, SLOT(ToggleGroupBox(bool)));
     m_componentLayout->addWidget(groupBox);
     m_componentLayout->addSpacing(1);
 }
@@ -308,6 +317,35 @@ void NLActorPropWidget::SetupComponentProperties()
     {
         NLComponent *comp = m_actor->GetComponent(i);
         SetupComponentProperty(comp);
+    }
+}
+
+void NLActorPropWidget::ToggleGroupBox(bool on)
+{
+    QObject *s = sender();
+    if(!s)
+        return;
+    QGroupBox *groupBox = dynamic_cast<QGroupBox *>(s);
+    if(!groupBox)
+        return;
+    QStringList list = s->property("_Layout_items").toStringList();
+    QVariantHash map = s->property("_Layout_item_maps").toHash();
+    QFormLayout *layout = static_cast<QFormLayout *>(groupBox->layout());
+    if(on)
+    {
+        Q_FOREACH(const QString &name, list)
+        {
+            QWidget *widget = map[name].value<QWidget *>();
+            widget->setVisible(true);
+            layout->addRow(name, widget);
+        }
+    }
+    else
+    {
+        while(!layout->isEmpty())
+        {
+            layout->takeAt(0)->widget()->setVisible(false);
+        }
     }
 }
 

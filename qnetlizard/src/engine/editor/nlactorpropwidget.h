@@ -64,6 +64,7 @@ protected:
 
 private Q_SLOTS:
     void OnActorChanged();
+    void ToggleGroupBox(bool on);
 
 private:
     void Init();

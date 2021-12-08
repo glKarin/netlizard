@@ -7,7 +7,6 @@
 class NLRigidbody;
 class NLSceneCamera;
 
-
 class MapEventHandler
 {
 public:
@@ -19,7 +18,7 @@ public:
     };
 
 public:
-    explicit MapEventHandler(GL_NETLizard_3D_Mesh *item, bool loop = false);
+    explicit MapEventHandler(GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
     virtual ~MapEventHandler();
     virtual void Update(float delta) = 0;
     virtual bool Start();
@@ -31,11 +30,13 @@ public:
 
 protected:
     void SetState(Handler_State_e state);
+    NLRigidbody * Actor() { return m_actor; }
 
 private:
     GL_NETLizard_3D_Mesh *m_item;
     bool m_loop;
     Handler_State_e m_state;
+    NLRigidbody *m_actor;
 };
 
 class MapEventHandler_elevator : public MapEventHandler
@@ -55,7 +56,7 @@ public:
         Elevator_Front_And_Back = 3
     };
 public:
-    explicit MapEventHandler_elevator(float min, float max, Elevator_Mask_e mask, bool invert, GL_NETLizard_3D_Mesh *item, bool loop = false);
+    explicit MapEventHandler_elevator(float min, float max, Elevator_Mask_e mask, bool invert, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
     virtual ~MapEventHandler_elevator();
     virtual void Update(float delta);
     virtual bool Start();
@@ -89,7 +90,7 @@ NLCOMPONENT(MapEventHandlerComponent)
 class MapEventHandlerComponent : public NLComponent
 {
     Q_OBJECT
-    Q_PROPERTY(QObject* teleportActor READ TeleportActor FINAL)
+    Q_PROPERTY(QObject* teleportActor READ TeleportActorObject FINAL)
 
 public:
     explicit MapEventHandlerComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
@@ -100,7 +101,8 @@ public:
     bool Trigger(int item);
     bool Collision(int item);
     void SetTeleportActor(NLRigidbody *actor);
-    QObject * TeleportActor();
+    NLRigidbody * TeleportActor() { return m_teleportActor; }
+    QObject * TeleportActorObject();
     
 public slots:
 

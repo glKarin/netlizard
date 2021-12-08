@@ -913,7 +913,7 @@ static const NETLizard_Level_Elevator Clone3D_Level_Elevator_4[] = {
 };
 
 static const NETLizard_Level_Elevator Clone3D_Level_Elevator_6[] = {
-    {NL_CLONE_3D, 6, 35, 34, 3, 900, 2280, NL_FALSE},
+    {NL_CLONE_3D, 6, 35, 34, 3, 900, 2100, NL_FALSE},
 };
 
 static const NETLizard_Level_Elevator Clone3D_Level_Elevator_8[] = {

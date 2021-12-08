@@ -10,6 +10,8 @@
 #include "nlrigidbody.h"
 #include "nlscenecamera.h"
 #include "matrix.h"
+#include "bound.h"
+#include "nl_util.h"
 
 MapEventHandlerContainer::MapEventHandlerContainer()
 {
@@ -78,10 +80,11 @@ bool MapEventHandlerContainer::Remove(int itemIndex)
     return true;
 }
 
-MapEventHandler::MapEventHandler(GL_NETLizard_3D_Mesh *item, bool loop)
+MapEventHandler::MapEventHandler(GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop)
     : m_item(item),
       m_loop(loop),
-      m_state(MapEventHandler::Handler_Ready)
+      m_state(MapEventHandler::Handler_Ready),
+      m_actor(actor)
 {
 
 }
@@ -106,8 +109,8 @@ bool MapEventHandler::Start()
     return true;
 }
 
-MapEventHandler_elevator::MapEventHandler_elevator(float min, float max, MapEventHandler_elevator::Elevator_Mask_e mask, bool invert, GL_NETLizard_3D_Mesh *item, bool loop)
-    : MapEventHandler(item, loop),
+MapEventHandler_elevator::MapEventHandler_elevator(float min, float max, MapEventHandler_elevator::Elevator_Mask_e mask, bool invert, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop)
+    : MapEventHandler(item, actor, loop),
       m_elevatorState(MapEventHandler_elevator::Elevator_At_Start),
       m_min(min),
       m_max(max),
@@ -137,7 +140,30 @@ void MapEventHandler_elevator::Update(float delta)
 {
     if(!IsRunning())
         return;
+
     GL_NETLizard_3D_Mesh *item = Item();
+    // if actor on evelator when elevator is transform ending, stop update
+    if(m_mask == MapEventHandler_elevator::Elevator_Front_And_Back)
+    {
+        if(m_elevatorState == MapEventHandler_elevator::Elevator_At_End)
+        {
+            NLRigidbody *actor = Actor();
+            NLScene *scene = actor->Scene();
+            NLSceneCamera *camera = scene->CurrentCamera();
+            if(camera)
+            {
+                nl_vector3_t pos = actor->Position();
+                matrix_transformv_self_row(camera->RenderMatrix(), &pos);
+                bound_t box;
+                NETLizard_GetSceneBound(item, &box);
+                if(VECTOR3_Z(pos) > BOUND_MAX_Z(box) && bound_point_in_box2d(&box, &pos))
+                {
+                    return;
+                }
+            }
+        }
+    }
+
     bool is_downing = m_elevatorState == MapEventHandler_elevator::Elevator_At_End || m_elevatorState == MapEventHandler_elevator::Elevator_Moving_Back;
     if(m_invert)
         is_downing = !is_downing;
@@ -231,7 +257,7 @@ void MapEventHandlerComponent::SetTeleportActor(NLRigidbody *actor)
         m_teleportActor = actor;
 }
 
-QObject * MapEventHandlerComponent::TeleportActor()
+QObject * MapEventHandlerComponent::TeleportActorObject()
 {
     return m_teleportActor;
 }
@@ -323,7 +349,7 @@ bool MapEventHandlerComponent::HandleElevator(int item)
         if(elevator->mask & 2)
             mask |= MapEventHandler_elevator::Elevator_Back;
         GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + elevator->elevator_item;
-        MapEventHandler_elevator *handler = new MapEventHandler_elevator(elevator->min, elevator->max, static_cast<MapEventHandler_elevator::Elevator_Mask_e>(mask), elevator->invert ? true : false, mesh, false);
+        MapEventHandler_elevator *handler = new MapEventHandler_elevator(elevator->min, elevator->max, static_cast<MapEventHandler_elevator::Elevator_Mask_e>(mask), elevator->invert ? true : false, mesh, m_teleportActor, false);
         qDebug() << "add -> " << m_handlers.Add(elevator_item, handler);
     }
 

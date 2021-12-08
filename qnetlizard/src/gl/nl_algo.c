@@ -249,6 +249,8 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
         if(!bound_point_in_box2d(&aabb, new_pos))
             continue;
         float topz = BOUND_MAX_Z(aabb);
+        if(topz > VECTOR3V_Z(new_pos))
+            continue; // need test
         int ts = i;
         if(floor)
         {
@@ -265,7 +267,7 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
                     break;
                 }
             }
-            // if(!has_floor) continue; // like Specnaz 3D level 9/10 not a floor plane, but has a elevator
+            // if(!has_floor) continue; // like Sp ecnaz 3D level 9/10 not a floor plane, but has a elevator
             // check elevator
             for(j = mesh->item_index_range[0]; j < mesh->item_index_range[1]; j++)
             {
@@ -284,6 +286,7 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
                     nl_vector3_t cpoint;
                     int r = plane_ray_intersect(&plane, &ray, NULL, &cpoint, NULL);
                     PRINT("plane_ray_intersect %d: %d %d %d | %f %f %f", j, r, im->plane_count, im->plane_type, plane.normal.v[0], plane.normal.v[1], plane.normal.v[2]);
+                    PRINT("pppp %d: %f %f %f | %f %f %f >>> %f %f %f", j, new_pos->v[0], new_pos->v[1], new_pos->v[2], plane.position.v[0], plane.position.v[1], plane.position.v[2], cpoint.v[0], cpoint.v[1], cpoint.v[2]);
                     if(r > 0)
                     {
                         r = NETLizard_FindScenePointIn(netlizard_3d_model, &cpoint);
@@ -410,6 +413,7 @@ static int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model
                 continue;
             float f;
             int r = NETLizard_GetMeshFloorZCoordInScenePoint(netlizard_3d_model->item_meshes + j, new_pos, 1, &f);
+            PRINT("555555555555 %d %f", r, f);
             if(r)
             {
                 zcoord = (has++) ? _MAX(zcoord, f) : f;
