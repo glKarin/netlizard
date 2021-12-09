@@ -68,7 +68,7 @@ GLboolean NETLizard_ReadGLSpecnaz3DItemModelFile(const char *name, int i, const 
     if(!name)
         return GL_FALSE;
     NETLizard_3D_Model m;
-    if(!nlReadEgypt3DRoleModelFile(name, i, &m))
+    if(!nlReadSpecnaz3DItemModelFile(name, i, &m))
         return GL_FALSE;
     NETLizard_MakeGL3DModel(&m, resource_path, model);
     nlDeleteNETLizard3DModel(&m);

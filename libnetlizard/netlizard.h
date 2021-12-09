@@ -144,7 +144,8 @@ typedef enum NETLizard_3D_Item_Type_e
     NL_3D_ITEM_TYPE_PORTAL = 1 << 12, // can teleport. exam teleporter in Egypt 3D
     NL_3D_ITEM_TYPE_SWITCH = 1 << 13, // it is a switch controller. exam elevator switch in Clone 3D
     NL_3D_ITEM_TYPE_TRANSPARENT = 1 << 14, // maybe no shadow when rendering. exam net
-    NL_3D_ITEM_TYPE_EMPTY = 1 << 15 // maybe ignore when collision testing. exam tower in Egypt 3D level 0, 10
+    NL_3D_ITEM_TYPE_EMPTY = 1 << 15, // maybe ignore when collision testing. exam tower in Egypt 3D level 0, 10
+    NL_3D_ITEM_TYPE_PARTICLE = 1 << 16 // it is a particle item. exam debris of bodys and box, bloods, bullet trace in Clone 3D
 } NETLizard_3D_Item_Type;
 
 /* NETLizard 3D game character animation category */

@@ -60,6 +60,8 @@ static GLboolean NETLizard_IsInteractiveItem(int item_type)
 {
     if((item_type & NL_3D_ITEM_TYPE_SWITCH)
             || (item_type & NL_3D_ITEM_TYPE_PORTAL)
+            || (item_type & NL_3D_ITEM_TYPE_FAN_VERTICAL)
+            || (item_type & NL_3D_ITEM_TYPE_FAN_HORIZONTAL)
             )
         return GL_TRUE;
     return GL_FALSE;
@@ -92,7 +94,7 @@ static int push_edge_line(LineList &list, const line_t *lp)
     return has;
 }
 
-static void render_highlight_lines(const LineList &lines, const GLfloat color[4], const GLfloat position[3], const GLfloat rotation[2])
+static void render_highlight_lines(const LineList &lines, const GLfloat color[4], const GLfloat position[3], const GLfloat rotation[3])
 {
     if(lines.empty())
         return;
@@ -107,6 +109,7 @@ static void render_highlight_lines(const LineList &lines, const GLfloat color[4]
             {
                 glRotatef(rotation[0], 1.0f, 0.0f, 0.0f);
                 glRotatef(rotation[1], 0.0f, 0.0f, 1.0f);
+                glRotatef(rotation[2], 0.0f, 1.0f, 0.0f);
             }
             if(color)
                 glColor4fv(color);
@@ -200,6 +203,7 @@ void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model
     Mesa_glTranslate(&mat, mesh->position[0], mesh->position[1], mesh->position[2]);
     Mesa_glRotate(&mat, mesh->rotation[0], 1.0f, 0.0f, 0.0f);
     Mesa_glRotate(&mat, mesh->rotation[1], 0.0f, 0.0f, 1.0f);
+    Mesa_glRotate(&mat, mesh->rotation[2], 0.0f, 1.0f, 0.0f);
 
     matrix_normal_matrix(&mat, &nor_mat);
 

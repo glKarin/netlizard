@@ -612,6 +612,8 @@ int nlGetItemType(NETLizard_Game game, int index)
                 res |= NL_3D_ITEM_TYPE_SWITCH;
             else if(index == 19 || index == 20)
                 res |= NL_3D_ITEM_TYPE_DOOR_VERTICAL | NL_3D_ITEM_TYPE_TRANSPARENT | NL_3D_ITEM_TYPE_THIN;
+            else if(index == 51 || index == 50 || index == 49 || index == 48 || index == 47 || index == 46 || index == 45 || index == 44 || index == 10 || index == 57 || index == 11 || index == 58 || index == 56)
+                res |= NL_3D_ITEM_TYPE_PARTICLE;
 			break;
 
         case NL_SHADOW_OF_EGYPT_3D:
@@ -643,7 +645,7 @@ int nlGetItemType(NETLizard_Game game, int index)
 			else if(index == 23)
                 res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
 			else if(index == 17)
-                res |= NL_3D_ITEM_TYPE_GENERAL; //
+                res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
             else if(index == 45 || index == 46)
                 res |= NL_3D_ITEM_TYPE_TRANSPARENT | NL_3D_ITEM_TYPE_THIN;
             else if(index == 5)
@@ -673,9 +675,9 @@ int nlGetItemType(NETLizard_Game game, int index)
 			else if(index == 40 || index == 41 || index == 42 || index == 43)
                 res |= NL_3D_ITEM_TYPE_DOOR_VERTICAL;
 			else if(index == 34 || index == 49)
-                res |= NL_3D_ITEM_TYPE_FAN_VERTICAL;
+                res |= NL_3D_ITEM_TYPE_FAN_VERTICAL | NL_3D_ITEM_TYPE_THIN;
 			else if(index == 35)
-                res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
+                res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL | NL_3D_ITEM_TYPE_THIN;
             else if(index == 44)
                 res |= NL_3D_ITEM_TYPE_ELEVATOR | NL_3D_ITEM_TYPE_SWITCH | NL_3D_ITEM_TYPE_THIN;
 			break;
@@ -807,6 +809,9 @@ static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_4[] = {
 static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_6[] = {
     {NL_SHADOW_OF_EGYPT_3D, 6, {2, 3}, 7, {-68812800, -503119872, -55705600}, {0, 0}},
 };
+static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_7[] = {
+    {NL_SHADOW_OF_EGYPT_3D, 7, {0, -1}, 7, {720896, -23003136, 370540544}, {0, 0}},
+};
 static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_8[] = {
     {NL_SHADOW_OF_EGYPT_3D, 8, {0, 1}, 3, {-49152000, -76349440, 0}, {0, 0}},
     {NL_SHADOW_OF_EGYPT_3D, 8, {80, 82}, 7, {-550502400, 139853824, 13631488}, {0, 0}},
@@ -850,7 +855,7 @@ static const NETLizard_Level_Teleport Egypt3D_Level_Teleport_15[] = {
 static const NETLizard_Level_Teleport *Egypt3D_Level_Teleport[] = {
     NULL,
     NULL, Egypt3D_Level_Teleport_2, NULL, Egypt3D_Level_Teleport_4, NULL,
-    Egypt3D_Level_Teleport_6, NULL, Egypt3D_Level_Teleport_8, Egypt3D_Level_Teleport_9, Egypt3D_Level_Teleport_10,
+    Egypt3D_Level_Teleport_6, Egypt3D_Level_Teleport_7, Egypt3D_Level_Teleport_8, Egypt3D_Level_Teleport_9, Egypt3D_Level_Teleport_10,
     Egypt3D_Level_Teleport_11, Egypt3D_Level_Teleport_12, Egypt3D_Level_Teleport_13, Egypt3D_Level_Teleport_14, Egypt3D_Level_Teleport_15,
     NULL, NULL,
     NULL,
@@ -858,7 +863,7 @@ static const NETLizard_Level_Teleport *Egypt3D_Level_Teleport[] = {
 static const NLint Egypt3D_Level_Teleport_Count[] = {
     0,
     0, COUNTOF(Egypt3D_Level_Teleport_2), 0, COUNTOF(Egypt3D_Level_Teleport_4), 0,
-    COUNTOF(Egypt3D_Level_Teleport_6), 0, COUNTOF(Egypt3D_Level_Teleport_8), COUNTOF(Egypt3D_Level_Teleport_9), COUNTOF(Egypt3D_Level_Teleport_10),
+    COUNTOF(Egypt3D_Level_Teleport_6), COUNTOF(Egypt3D_Level_Teleport_7), COUNTOF(Egypt3D_Level_Teleport_8), COUNTOF(Egypt3D_Level_Teleport_9), COUNTOF(Egypt3D_Level_Teleport_10),
     COUNTOF(Egypt3D_Level_Teleport_11), COUNTOF(Egypt3D_Level_Teleport_12), COUNTOF(Egypt3D_Level_Teleport_13), COUNTOF(Egypt3D_Level_Teleport_14), COUNTOF(Egypt3D_Level_Teleport_15),
     0, 0,
     0,

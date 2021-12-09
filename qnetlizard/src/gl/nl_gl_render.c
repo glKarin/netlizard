@@ -128,6 +128,7 @@ GLvoid NETLizard_RenderGL3DMesh(const GL_NETLizard_3D_Mesh *m, texture_s **const
         glTranslatef(m->position[0], m->position[1], m->position[2]);
         glRotatef(m->rotation[0], 1.0f, 0.0f, 0.0f);
         glRotatef(m->rotation[1], 0.0f, 0.0f, 1.0f);
+        glRotatef(m->rotation[2], 0.0f, 1.0f, 0.0f);
 
         glNormalPointer(GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), m->vertex_data.vertex[0].normal);
         glTexCoordPointer(2, GL_FLOAT, sizeof(GL_NETLizard_3D_Vertex), m->vertex_data.vertex[0].texcoord);

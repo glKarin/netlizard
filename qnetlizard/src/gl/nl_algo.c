@@ -276,7 +276,6 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
                 const GL_NETLizard_3D_Mesh *im = netlizard_3d_model->item_meshes + j;
                 if((im->item_type & NL_3D_ITEM_TYPE_ELEVATOR) == 0)
                     continue;
-                PRINT("NL_3D_ITEM_TYPE_ELEVATOR %d", j);
                 unsigned int k;
                 for(k = 0; k < im->plane_count; k++)
                 {
@@ -287,8 +286,6 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
                     ray_t ray = RAYV(VECTOR3V_V(new_pos), VECTOR3_V(Down));
                     nl_vector3_t cpoint;
                     int r = plane_ray_intersect(&plane, &ray, NULL, &cpoint, NULL);
-                    PRINT("plane_ray_intersect %d: %d %d %d | %f %f %f", j, r, im->plane_count, im->plane_type, plane.normal.v[0], plane.normal.v[1], plane.normal.v[2]);
-                    PRINT("pppp %d: %f %f %f | %f %f %f >>> %f %f %f", j, new_pos->v[0], new_pos->v[1], new_pos->v[2], plane.position.v[0], plane.position.v[1], plane.position.v[2], cpoint.v[0], cpoint.v[1], cpoint.v[2]);
                     if(r > 0)
                     {
                         r = NETLizard_FindScenePointIn(netlizard_3d_model, &cpoint);
@@ -418,12 +415,10 @@ static int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model
             bound_t aabb = SCENE_BOUND(im);
             nl_vector3_t expand = VECTOR3(obj->radius, obj->radius, 0);
             bound_expand(&aabb, &expand);
-            PRINT("551111111111 %d %d", j, bound_point_in_box2d(&aabb, new_pos));
             if(!bound_point_in_box2d(&aabb, new_pos))
                 continue;
             float f;
             int r = NETLizard_GetMeshFloorZCoordInScenePoint(netlizard_3d_model->item_meshes + j, new_pos, 1, &f);
-            PRINT("555555555555 %d %f", r, f);
             if(r)
             {
                 zcoord = (has++) ? _MAX(zcoord, f) : f;
@@ -486,12 +481,10 @@ int NETLizard_GetSceneFloorZCoordUnderPoint(const GL_NETLizard_3D_Model *netliza
     int gress_scene;
     float gress_z;
     int res = NETLizard_GetTopSceneUnderPoint(netlizard_3d_model, new_pos, 1, &gress_scene, &gress_z);
-    PRINT("wwwwwwwwwwwwwwwwwwww             %d", res);
     if(!res)
         return 0;
     collision_object_t nco = {VECTOR3(VECTOR3V_X(new_pos), VECTOR3V_Y(new_pos), gress_z), obj->radius, obj->height};
     res = NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, &nco, gress_scene, include_item, &gress_z);
-    PRINT("3333333333333333333             %d %d, %d %f", res, include_item, gress_scene, gress_z);
     if(res)
     {
         if(scene)
@@ -522,7 +515,6 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
         }
     }
     res = NETLizard_GetSceneFloorZCoordUnderPoint(netlizard_3d_model, obj, include_item, rscene, rglz);
-    PRINT("222222222222222222             %d", res);
     if(res)
         return 1;
     bound_t bound;
@@ -531,7 +523,6 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
     vector3_t pos = *new_pos;
     VECTOR3_Z(pos) = BOUND_MIN_Z(bound);
     res = NETLizard_FindScenePointIn(netlizard_3d_model, &pos);
-    PRINT("eeeeeeeeeeeeee             %d", res);
     if(res >= 0)
     {
         if(rscene)

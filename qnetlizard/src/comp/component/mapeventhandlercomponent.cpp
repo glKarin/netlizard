@@ -12,6 +12,7 @@
 #include "matrix.h"
 #include "bound.h"
 #include "nl_util.h"
+#include "nlmath.h"
 
 MapEventHandlerContainer::MapEventHandlerContainer()
 {
@@ -233,7 +234,50 @@ void MapEventHandler_elevator::Update(float delta)
     }
 }
 
+MapEventHandler_fan::MapEventHandler_fan(int mask, bool invert, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop)
+    : MapEventHandler(item, actor, loop),
+      m_xUnit(90),
+      m_yUnit(90),
+      m_zUnit(90),
+      m_mask(mask),
+      m_invert(invert)
+{
 
+}
+
+MapEventHandler_fan::~MapEventHandler_fan()
+{
+    DEBUG_DESTROY("MapEventHandler_fan")
+}
+
+void MapEventHandler_fan::Update(float delta)
+{
+    if(!IsRunning())
+        return;
+
+    GL_NETLizard_3D_Mesh *item = Item();
+
+    int neg = m_invert ? -1 : 1;
+    //qDebug() << m_invert << is_downing << newZ;
+
+    if(m_mask & MapEventHandler_fan::Fan_Pitch)
+    {
+        float xRadius = m_xUnit * delta * neg;
+        item->rotation[0] = NL::clamp_angle(item->rotation[0] + xRadius);
+    }
+
+    if(m_mask & MapEventHandler_fan::Fan_Yaw)
+    {
+        float yRadius = m_yUnit * delta * neg;
+        item->rotation[1] = NL::clamp_angle(item->rotation[1] + yRadius);
+    }
+
+    if(m_mask & MapEventHandler_fan::Fan_Roll)
+    {
+        float zRadius = m_zUnit * delta * neg;
+        item->rotation[2] = NL::clamp_angle(item->rotation[2] + zRadius);
+    }
+}
 
 
 
@@ -328,6 +372,8 @@ bool MapEventHandlerComponent::Trigger(int item)
         return HandleElevator(item);
     else if(mesh->item_type & NL_3D_ITEM_TYPE_PORTAL)
         return HandleTeleport(item);
+    else if((mesh->item_type & NL_3D_ITEM_TYPE_FAN_HORIZONTAL) || (mesh->item_type & NL_3D_ITEM_TYPE_FAN_VERTICAL))
+        return HandleFan(item);
     return false;
 }
 
@@ -342,7 +388,7 @@ bool MapEventHandlerComponent::HandleElevator(int item)
     {
         int elevator_item = elevator->elevator_item;
         if(m_handlers.Exists(elevator_item))
-            qDebug() << "rm -> " << m_handlers.Remove(elevator_item);
+            m_handlers.Remove(elevator_item);
         int mask = 0;
         if(elevator->mask & 1)
             mask |= MapEventHandler_elevator::Elevator_Front;
@@ -350,7 +396,7 @@ bool MapEventHandlerComponent::HandleElevator(int item)
             mask |= MapEventHandler_elevator::Elevator_Back;
         GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + elevator->elevator_item;
         MapEventHandler_elevator *handler = new MapEventHandler_elevator(elevator->min, elevator->max, static_cast<MapEventHandler_elevator::Elevator_Mask_e>(mask), elevator->invert ? true : false, mesh, m_teleportActor, false);
-        qDebug() << "add -> " << m_handlers.Add(elevator_item, handler);
+        m_handlers.Add(elevator_item, handler);
     }
 
     return true;
@@ -394,6 +440,25 @@ bool MapEventHandlerComponent::HandleTeleport(int item)
     if(teleport->mask & 16) VECTOR3_Y(rot) = teleport->rotation[0];
     m_teleportActor->SetRotation(rot);
     //camera->UpdateCamera();
+    return true;
+}
+
+bool MapEventHandlerComponent::HandleFan(int item)
+{
+    if(m_handlers.Exists(item))
+    {
+        m_handlers.Remove(item);
+        return true;
+    }
+    GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + item;
+    int mask = 0;
+    if(mesh->item_type & NL_3D_ITEM_TYPE_FAN_HORIZONTAL)
+        mask |= MapEventHandler_fan::Fan_Roll;
+    if(mesh->item_type & NL_3D_ITEM_TYPE_FAN_VERTICAL)
+        mask |= MapEventHandler_fan::Fan_Yaw;
+    MapEventHandler_fan *handler = new MapEventHandler_fan(mask, false, mesh, m_teleportActor, false);
+    m_handlers.Add(item, handler);
+
     return true;
 }
 

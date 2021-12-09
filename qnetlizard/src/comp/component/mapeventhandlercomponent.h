@@ -70,6 +70,28 @@ private:
     bool m_invert;
 };
 
+class MapEventHandler_fan : public MapEventHandler
+{
+public:
+    enum Fan_Mask_e
+    {
+        Fan_Pitch = 1,
+        Fan_Yaw = 2,
+        Fan_Roll = 4
+    };
+public:
+    explicit MapEventHandler_fan(int mask, bool invert, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
+    virtual ~MapEventHandler_fan();
+    virtual void Update(float delta);
+
+private:
+    float m_xUnit;
+    float m_yUnit;
+    float m_zUnit;
+    int m_mask;
+    bool m_invert;
+};
+
 class MapEventHandlerContainer
 {
 public:
@@ -116,6 +138,7 @@ protected:
     NLSceneCamera * SceneCamera();
     bool HandleElevator(int item);
     bool HandleTeleport(int item);
+    bool HandleFan(int item);
 
 private:
     typedef QHash<NLint, const NETLizard_Level_Teleport *> MapTeleportMap;

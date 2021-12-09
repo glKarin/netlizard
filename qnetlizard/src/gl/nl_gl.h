@@ -72,7 +72,7 @@ typedef struct _GL_NETLizard_3D_Mesh
 	GLuint bsp_count;
 
     GLfloat position[3];
-    GLfloat rotation[2];
+    GLfloat rotation[3];
     GLint item_type;
     GLint obj_index;
 } GL_NETLizard_3D_Mesh;

@@ -142,6 +142,7 @@ GLvoid NETLizard_DebugRenderGL3DMeshVertexNormal(const GL_NETLizard_3D_Mesh *m)
             glTranslatef(m->position[0], m->position[1], m->position[2]);
             glRotatef(m->rotation[0], 1.0f, 0.0f, 0.0f);
             glRotatef(m->rotation[1], 0.0f, 0.0f, 1.0f);
+            glRotatef(m->rotation[2], 0.0f, 1.0f, 0.0f);
 
             GLuint j;
             GLuint i;
@@ -191,6 +192,7 @@ GLvoid NETLizard_DebugRenderGL3DMeshBound(const GL_NETLizard_3D_Mesh *m)
             glTranslatef(m->position[0], m->position[1], m->position[2]);
             glRotatef(m->rotation[0], 1.0f, 0.0f, 0.0f);
             glRotatef(m->rotation[1], 0.0f, 0.0f, 1.0f);
+            glRotatef(m->rotation[2], 0.0f, 1.0f, 0.0f);
 
             GLfloat vs[] = {
                 m->box.min[0], m->box.min[1], m->box.min[2],
@@ -249,6 +251,7 @@ GLvoid NETLizard_DebugRenderGL3DMeshPlane(const GL_NETLizard_3D_Mesh *m)
             glTranslatef(m->position[0], m->position[1], m->position[2]);
             glRotatef(m->rotation[0], 1.0f, 0.0f, 0.0f);
             glRotatef(m->rotation[1], 0.0f, 0.0f, 1.0f);
+            glRotatef(m->rotation[2], 0.0f, 1.0f, 0.0f);
 
             GLuint j;
 
