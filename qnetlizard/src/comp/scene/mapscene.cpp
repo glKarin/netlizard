@@ -58,7 +58,8 @@ MapScene::MapScene(QWidget *parent)
 {
     setObjectName("MapScene");
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
-    SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
+    SetFPS(settings->GetSetting<int>("ENGINE/fps", 0));
+    SetUpdateInterval(settings->GetSetting<int>("ENGINE/update_interval", 10));
 
     // render model
     m_mapActor = new NLActor;
@@ -217,7 +218,7 @@ void MapScene::Update(float delta)
             if(gravity && gravity->GetProperty_T("force", 0) != 0) // is jump
                 clear = true;
         }
-        //fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
+        fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
         float rglz = 0;
         obj.position = p;
         res = NETLizard_GetScenePointZCoord(m_model, &obj, scene, include_item, &scene, &rglz);
@@ -544,8 +545,10 @@ void MapScene::Reset()
 
 void MapScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)
 {
-    if(name == "RENDER/fps")
+    if(name == "ENGINE/fps")
         SetFPS(value.toInt());
+    else if(name == "ENGINE/update_interval")
+        SetUpdateInterval(value.toInt());
     else if(name == "RENDER/scene_cull")
     {
         m_renderer->SetCull(value.toBool());

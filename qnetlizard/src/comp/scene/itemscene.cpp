@@ -20,7 +20,8 @@ ItemScene::ItemScene(QWidget *parent)
 {
     setObjectName("ItemScene");
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
-    SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
+    SetFPS(settings->GetSetting<int>("ENGINE/fps", 0));
+    SetUpdateInterval(settings->GetSetting<int>("ENGINE/update_interval", 10));
 
     SimpleCameraActor *camera = new SimpleCameraActor(NLProperties("camera_z_is_up", true));
     camera->setObjectName("main_camera");
@@ -174,8 +175,10 @@ void ItemScene::Reset()
 
 void ItemScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)
 {
-    if(name == "RENDER/fps")
+    if(name == "ENGINE/fps")
         SetFPS(value.toInt());
+    else if(name == "ENGINE/update_interval")
+        SetUpdateInterval(value.toInt());
     else if(name == "CONTROL_3D/move_sens")
         m_control->SetMoveSens(value.toInt());
     else if(name == "CONTROL_3D/turn_sens")

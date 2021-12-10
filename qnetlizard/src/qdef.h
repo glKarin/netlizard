@@ -6,9 +6,11 @@
 #ifdef _DEV_TEST
 #define DEBUG_DESTROY_Q qDebug() << "Q ~" + objectName();
 #define DEBUG_DESTROY(name) qDebug() << QString("~") + (name);
+#define DEBUG_DESTROY_QQV(obj) qDebug() << "Q ~" + obj->objectName();
 #else
 #define DEBUG_DESTROY_Q
 #define DEBUG_DESTROY(name)
+#define DEBUG_DESTROY_QQV(obj)
 #endif
 
 #define LIB_NAME "libnetlizard"

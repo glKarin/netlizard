@@ -16,6 +16,9 @@ public:
 public Q_SLOTS:
     void Reset();
 
+    private Q_SLOTS:
+    void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
+
 protected:
     virtual void Init();
     virtual void paintGL();

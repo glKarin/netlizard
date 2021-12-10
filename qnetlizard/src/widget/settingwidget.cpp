@@ -22,6 +22,7 @@ SettingGroup::SettingGroup(QWidget *parent)
 
 SettingGroup::~SettingGroup()
 {
+    Clear();
     DEBUG_DESTROY_Q;
 }
 
@@ -158,6 +159,7 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
 
         if(widget)
         {
+            connect(widget, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
             if(label.isEmpty())
                 m_layout->addRow(widget);
             else
@@ -214,4 +216,11 @@ void SettingGroup::OnIntChanged(int i)
         }
         settings->SetSetting<int>(name, cs);
     }
+}
+
+void SettingGroup::OnItemDestroy(QObject *obj)
+{
+    QObject *o = obj ? obj : sender();
+    if(o)
+        DEBUG_DESTROY_QQV(obj)
 }

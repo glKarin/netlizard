@@ -35,7 +35,8 @@ NLScene::NLScene(QWidget *parent) :
     m_fps(0),
     m_updateGLInterval(0),
     m_updateGLLastTime(0),
-    m_currentFps(0)
+    m_currentFps(0),
+    m_updateInterval(LOOP_INTERVAL)
 {
     setObjectName("NLScene");
     SetupOpenGL();
@@ -234,7 +235,7 @@ void NLScene::RunLoop(bool b)
 void NLScene::ExecLoop()
 {
     if(m_loop)
-        QTimer::singleShot(LOOP_INTERVAL, this, SLOT(IdleTimer_slot()));
+        QTimer::singleShot(m_updateInterval, this, SLOT(IdleTimer_slot()));
 }
 
 void NLScene::IdleTimer_slot()
@@ -331,6 +332,16 @@ void NLScene::SetFPS(float fps)
             m_updateGLInterval = qRound(1000.0 / (float)m_fps);
             qDebug() << "SetFPS" << m_fps << "UpdateGLInterval" << m_updateGLInterval;
         }
+    }
+}
+
+void NLScene::SetUpdateInterval(int ui)
+{
+    if(m_updateInterval != ui)
+    {
+        m_updateInterval = ui;
+        if(m_updateInterval < 0)
+            m_updateInterval = 0;
     }
 }
 

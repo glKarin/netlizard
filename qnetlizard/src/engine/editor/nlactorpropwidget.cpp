@@ -161,7 +161,7 @@ NLActorPropWidget::NLActorPropWidget(QWidget *widget)
 
 NLActorPropWidget::~NLActorPropWidget()
 {
-    m_actor = 0;
+    Reset();
     DEBUG_DESTROY_Q
 }
 
@@ -182,6 +182,8 @@ void NLActorPropWidget::Init()
 
     m_actorGroupBox->setLayout(m_actorLayout);
     m_actorGroupBox->setTitle("Properties");
+    m_actorGroupBox->setCheckable(true);
+    connect(m_actorGroupBox, SIGNAL(toggled(bool)), this, SLOT(ToggleGroupBox(bool)));
     mainLayout->addWidget(m_actorGroupBox);
     mainLayout->addSpacing(2);
 
@@ -227,22 +229,24 @@ void NLActorPropWidget::Reset()
             comp->disconnect(this);
         }
     }
+
+    ClearSection(m_actorGroupBox);
+
     QLayoutItem *item;
-    while(!m_actorLayout->isEmpty())
-    {
-        item = m_actorLayout->takeAt(0);
-        delete item->widget();
-        delete item;
-    }
     while(!m_componentLayout->isEmpty())
     {
         item = m_componentLayout->takeAt(0);
-        delete item->widget();
+        QGroupBox *groupBox = static_cast<QGroupBox *>(item->widget());
+        ClearSection(groupBox);
+        delete groupBox;
         delete item;
     }
     m_propWidgetMap.clear();
     m_actor = 0;
     m_actorGroupBox->setTitle("Properties");
+    m_actorGroupBox->setProperty("_Layout_visible", QVariant());
+    m_actorGroupBox->setProperty("_Layout_items", QVariant());
+    m_actorGroupBox->setProperty("_Layout_item_maps", QVariant());
 }
 
 void NLActorPropWidget::UpdateActorData()
@@ -267,12 +271,20 @@ void NLActorPropWidget::SetupActorProperty()
 {
     NLPropertyInfoList list = NL::object_propertics(m_actor);
     SortProperties(list);
+    QStringList items;
+    QVariantHash itemMaps;
     Q_FOREACH(const NLPropertyInfo &item, list)
     {
         QWidget *widget = GenWidget(m_actor, item);
         m_propWidgetMap[m_actor].insert(item.name, widget);
         m_actorLayout->addRow(item.name, widget);
+        items.push_back(item.name);
+        itemMaps.insert(item.name, QVariant::fromValue(widget));
     }
+    m_actorGroupBox->setChecked(true);
+    m_actorGroupBox->setProperty("_Layout_visible", true);
+    m_actorGroupBox->setProperty("_Layout_items", items);
+    m_actorGroupBox->setProperty("_Layout_item_maps", itemMaps);
 }
 
 void NLActorPropWidget::SortProperties(NLPropertyInfoList &list)
@@ -284,8 +296,6 @@ void NLActorPropWidget::SetupComponentProperty(NLComponent *comp)
 {
     QFormLayout *layout = new QFormLayout;
     QGroupBox *groupBox = new QGroupBox;
-    groupBox->setCheckable(true);
-    groupBox->setChecked(true);
     QStringList items;
     QVariantHash itemMaps;
     groupBox->setTitle(comp->ClassName() + "(" + comp->Name() + ")");
@@ -299,13 +309,15 @@ void NLActorPropWidget::SetupComponentProperty(NLComponent *comp)
         items.push_back(item.name);
         itemMaps.insert(item.name, QVariant::fromValue(widget));
     }
+    groupBox->setCheckable(true);
+    groupBox->setChecked(true);
+    groupBox->setProperty("_Layout_visible", true);
     groupBox->setProperty("_Layout_items", items);
     groupBox->setProperty("_Layout_item_maps", itemMaps);
+    connect(groupBox, SIGNAL(toggled(bool)), this, SLOT(ToggleGroupBox(bool)));
     connect(comp, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
     groupBox->setLayout(layout);
-    connect(groupBox, SIGNAL(toggled(bool)), this, SLOT(ToggleGroupBox(bool)));
     m_componentLayout->addWidget(groupBox);
-    m_componentLayout->addSpacing(1);
 }
 
 void NLActorPropWidget::SetupComponentProperties()
@@ -328,6 +340,12 @@ void NLActorPropWidget::ToggleGroupBox(bool on)
     QGroupBox *groupBox = dynamic_cast<QGroupBox *>(s);
     if(!groupBox)
         return;
+    QVariant va = s->property("_Layout_visible");
+    if(!va.isValid())
+        return;
+    bool visible = va.toBool();
+    if(visible == on)
+        return;
     QStringList list = s->property("_Layout_items").toStringList();
     QVariantHash map = s->property("_Layout_item_maps").toHash();
     QFormLayout *layout = static_cast<QFormLayout *>(groupBox->layout());
@@ -344,9 +362,12 @@ void NLActorPropWidget::ToggleGroupBox(bool on)
     {
         while(!layout->isEmpty())
         {
-            layout->takeAt(0)->widget()->setVisible(false);
+            QLayoutItem *item = layout->takeAt(0);
+            item->widget()->setVisible(false);
+            delete item;
         }
     }
+    s->setProperty("_Layout_visible", on);
 }
 
 QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
@@ -365,6 +386,7 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
             w->setReadOnly(item.readonly);
             w->setValue(item.value.toInt());
             connect(w, SIGNAL(valueChanged(int)), this, SLOT(OnIntChanged(int)));
+            connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
             widget = w;
         }
         else
@@ -379,6 +401,7 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
             w->setValue(item.value.toFloat());
             //connect(w, SIGNAL(valueChanged(const QString &)), this, SLOT(OnValueChanged(const QString &)));
             connect(w, SIGNAL(valueChanged(double)), this, SLOT(OnDoubleChanged(double)));
+            connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
             widget = w;
         }
     }
@@ -390,6 +413,7 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
             w->setChecked(item.value.toBool());
             w->setCheckable(!item.readonly);
             connect(w, SIGNAL(clicked(bool)), this, SLOT(OnBoolChanged(bool)));
+            connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
             widget = w;
         }
 #if 0
@@ -440,6 +464,7 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
         w->setEnabled(!item.readonly);
         w->setCurrentIndex(cur);
         connect(w, SIGNAL(currentIndexChanged(int)), this, SLOT(OnIndexChanged(int)));
+        connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
         widget = w;
     }
     else if(item.widget == "vector3")
@@ -477,6 +502,7 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
                 }
             }
         }
+        connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
         widget = w;
     }
     else// if(item.widget == "lineedit")
@@ -485,6 +511,7 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
         w->setText(item.value.toString());
         w->setReadOnly(item.readonly);
         //connect(w, SIGNAL(clicked(bool)), this, SLOT(OnBoolChanged(bool)));
+        connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
         widget = w;
     }
 
@@ -604,4 +631,37 @@ void NLActorPropWidget::OnVector3Changed(const NLVector3 &v)
     if(!obj)
         return;
     obj->SetProperty(s->objectName(), NLProperty::fromValue<NLVector3>(v));
+}
+
+void NLActorPropWidget::ClearSection(QGroupBox *groupBox)
+{
+    QLayoutItem *item;
+    QLayout *layout = groupBox->layout();
+    QVariant va = groupBox->property("_Layout_visible");
+    bool visible = va.isValid() ? va.toBool() : true;
+    if(visible)
+    {
+        while(!layout->isEmpty())
+        {
+            item = layout->takeAt(0);
+            delete item->widget();
+            delete item;
+        }
+    }
+    else
+    {
+        QVariantHash map = groupBox->property("_Layout_item_maps").toHash();
+        Q_FOREACH(const QString &name, map.keys())
+        {
+            QWidget *widget = map[name].value<QWidget *>();
+            delete widget;
+        }
+    }
+}
+
+void NLActorPropWidget::OnItemDestroy(QObject *obj)
+{
+    QObject *o = obj ? obj : sender();
+    if(o)
+        DEBUG_DESTROY_QQV(obj)
 }

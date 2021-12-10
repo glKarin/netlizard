@@ -26,7 +26,8 @@ ImageScene::ImageScene(QWidget *parent)
 {
     setObjectName("ImageScene");
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
-    SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
+    SetFPS(settings->GetSetting<int>("ENGINE/fps", 0));
+    SetUpdateInterval(settings->GetSetting<int>("ENGINE/update_interval", 10));
 
     memset(&m_data.data, 0, sizeof(m_data.data));
     m_data.type = NL_TEXTURE_UNKNOWN;
@@ -360,8 +361,10 @@ void ImageScene::SetData(int type, void *data, int len, const QString &ext)
 
 void ImageScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)
 {
-    if(name == "RENDER/fps")
+    if(name == "ENGINE/fps")
         SetFPS(value.toInt());
+    else if(name == "ENGINE/update_interval")
+        SetUpdateInterval(value.toInt());
     else if(name == "CONTROL_2D/trans_sens")
         m_imageControl->SetTransSens(value.toFloat());
     else if(name == "CONTROL_2D/rot_sens")

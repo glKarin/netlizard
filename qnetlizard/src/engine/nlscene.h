@@ -29,6 +29,8 @@ public:
     void SetFPS(float fps);
     float CurrentFPS() const { return m_currentFps; }
     int ActorCount() const { return m_actors.Count(); }
+    int UpdateInterval() const { return m_updateInterval; }
+    void SetUpdateInterval(int ui);
 
     NLSceneCamera * CurrentCamera() { return m_currentCamera; }
     NLActor * GetActor(int index) { return m_actors.Get(index); }
@@ -99,6 +101,7 @@ private:
     qint64 m_updateGLInterval;
     qint64 m_updateGLLastTime;
     float m_currentFps;
+    int m_updateInterval;
 
     Q_DISABLE_COPY(NLScene)
 };

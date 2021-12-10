@@ -25,6 +25,7 @@ private Q_SLOTS:
     void OnValueChanged(const QString &val);
     void OnBoolChanged(bool b);
     void OnIntChanged(int i);
+    void OnItemDestroy(QObject *item = 0);
 
 private:
     QString m_name;

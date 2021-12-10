@@ -65,6 +65,7 @@ protected:
 private Q_SLOTS:
     void OnActorChanged();
     void ToggleGroupBox(bool on);
+    void OnItemDestroy(QObject *item = 0);
 
 private:
     void Init();
@@ -73,6 +74,7 @@ private:
     void SetupComponentProperties();
     void SetupComponentProperty(NLComponent *comp);
     void SortProperties(NLPropertyInfoList &list);
+    void ClearSection(QGroupBox *groupBox);
 
 private Q_SLOTS:
     void OnPropertyChanged(const QString &name, const NLProperty &value);

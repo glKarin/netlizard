@@ -22,7 +22,8 @@ SpriteScene::SpriteScene(QWidget *parent) :
     setObjectName("SpriteScene");
 
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
-    SetFPS(settings->GetSetting<int>("RENDER/fps", 0));
+    SetFPS(settings->GetSetting<int>("ENGINE/fps", 0));
+    SetUpdateInterval(settings->GetSetting<int>("ENGINE/update_interval", 10));
 
     SimpleCameraActor *camera = new SimpleCameraActor(NLProperties("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho))("enable_control", false));
     Qt::Alignment align = Qt::AlignLeft | Qt::AlignTop;
@@ -135,8 +136,10 @@ void SpriteScene::SetIndex(int i)
 
 void SpriteScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)
 {
-    if(name == "RENDER/fps")
+    if(name == "ENGINE/fps")
         SetFPS(value.toInt());
+    else if(name == "ENGINE/update_interval")
+        SetUpdateInterval(value.toInt());
     else if(name == "CONTROL_2D/trans_sens")
         m_control->SetTransSens(value.toFloat());
     else if(name == "CONTROL_2D/rot_sens")

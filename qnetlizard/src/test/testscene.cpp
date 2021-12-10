@@ -12,6 +12,9 @@ TestScene::TestScene(QWidget *parent)
     : NLScene(parent)
 {
     setObjectName("TestScene");
+    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+    SetFPS(settings->GetSetting<int>("ENGINE/fps", 0));
+    SetUpdateInterval(settings->GetSetting<int>("ENGINE/update_interval", 10));
 
     SimpleCameraActor *camera = new SimpleCameraActor;
     camera->setObjectName("Test_SimpleCameraActor");
@@ -24,6 +27,8 @@ TestScene::TestScene(QWidget *parent)
     actor = new NLActor;
     actor->setObjectName("Test_ObjectRenderActor");
     AddActor(actor);
+
+    connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
 
 TestScene::~TestScene()
@@ -62,7 +67,7 @@ void TestScene::Init()
     NLVector3 vr2 = VECTOR3(45,45,45);
     line->SetRotation(vr2);
 
-    SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("RENDER/fps", 0));
+    SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("ENGINE/fps", 0));
 
     NLScene::Init();
 }
@@ -92,4 +97,12 @@ void TestScene::Deinit()
 
 void TestScene::Reset()
 {
+}
+
+void TestScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)
+{
+    if(name == "ENGINE/fps")
+        SetFPS(value.toInt());
+    else if(name == "ENGINE/update_interval")
+        SetUpdateInterval(value.toInt());
 }

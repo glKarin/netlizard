@@ -680,6 +680,8 @@ int nlGetItemType(NETLizard_Game game, int index)
                 res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL | NL_3D_ITEM_TYPE_THIN;
             else if(index == 44)
                 res |= NL_3D_ITEM_TYPE_ELEVATOR | NL_3D_ITEM_TYPE_SWITCH | NL_3D_ITEM_TYPE_THIN;
+            else if(index == 39)
+                res |= NL_3D_ITEM_TYPE_ELEVATOR | NL_3D_ITEM_TYPE_SWITCH;
 			break;
 
         case NL_CONTR_TERRORISM_3D_EPISODE_3:
@@ -879,6 +881,10 @@ const NETLizard_Level_Teleport * nlGet3DGameTeleport(NLenum game, NLint level, N
     return ret;
 }
 
+static const NETLizard_Level_Elevator Specnaz3D_Level_Elevator_4[] = {
+    {NL_ARMY_RANGER_3D, 4, 14, 14, 3, 0, 1500, NL_FALSE},
+};
+
 static const NETLizard_Level_Elevator Specnaz3D_Level_Elevator_9[] = {
     {NL_ARMY_RANGER_3D, 9, 4, 4, 3, 0, 4500, NL_FALSE},
 };
@@ -889,13 +895,13 @@ static const NETLizard_Level_Elevator Specnaz3D_Level_Elevator_10[] = {
 
 static const NETLizard_Level_Elevator *Specnaz3D_Level_Elevator[] = {
     NULL, NULL, NULL, NULL,
-    NULL,
+    Specnaz3D_Level_Elevator_4,
     NULL, NULL, NULL, NULL,
     Specnaz3D_Level_Elevator_9, Specnaz3D_Level_Elevator_10,
 };
 static const NLint Specnaz3D_Level_Elevator_Count[] = {
     0, 0, 0, 0,
-    0,
+    COUNTOF(Specnaz3D_Level_Elevator_4),
     0, 0, 0, 0,
     COUNTOF(Specnaz3D_Level_Elevator_9), COUNTOF(Specnaz3D_Level_Elevator_10),
 };
