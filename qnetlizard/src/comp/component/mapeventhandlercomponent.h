@@ -3,6 +3,7 @@
 
 #include "nlcomponent.h"
 #include "gl/nl_gl.h"
+#include "bound.h"
 
 class NLRigidbody;
 class NLSceneCamera;
@@ -42,13 +43,6 @@ private:
 class MapEventHandler_elevator : public MapEventHandler
 {
 public:
-    enum Elevator_State_e
-    {
-        Elevator_At_Start = 0,
-        Elevator_Moving_Front,
-        Elevator_At_End,
-        Elevator_Moving_Back
-    };
     enum Elevator_Mask_e
     {
         Elevator_Front = 1,
@@ -60,6 +54,15 @@ public:
     virtual ~MapEventHandler_elevator();
     virtual void Update(float delta);
     virtual bool Start();
+
+private:
+    enum Elevator_State_e
+    {
+        Elevator_At_Start = 0,
+        Elevator_Moving_Front,
+        Elevator_At_End,
+        Elevator_Moving_Back
+    };
 
 private:
     Elevator_State_e m_elevatorState;
@@ -90,6 +93,46 @@ private:
     float m_zUnit;
     int m_mask;
     bool m_invert;
+};
+
+class MapEventHandler_door : public MapEventHandler
+{
+public:
+    enum Door_Mask_e
+    {
+        Door_1 = 1,
+        Door_2 = 2,
+        Door_1_And_2 = 3
+    };
+public:
+    explicit MapEventHandler_door(const float min[3], const float max[3], Door_Mask_e mask, Qt::Orientation orientation, float start2, float end2, GL_NETLizard_3D_Mesh *other, float start1, float end1, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
+    virtual ~MapEventHandler_door();
+    virtual void Update(float delta);
+    virtual bool Start();
+
+private:
+    enum Door_State_e
+    {
+        Door_At_Start = 0,
+        Door_Moving_Front,
+        Door_At_End,
+        Door_Moving_Back
+    };
+    void UpdateVerticalDoor(float delta);
+    void UpdateHorizontalDoor(float delta);
+
+private:
+    GL_NETLizard_3D_Mesh *m_otherPart;
+    Door_State_e m_doorState;
+    Door_State_e m_otherDoorState;
+    bound_t m_box;
+    float m_unit;
+    int m_mask;
+    Qt::Orientation m_orientation;
+    float m_start;
+    float m_end;
+    float m_start2;
+    float m_end2;
 };
 
 class MapEventHandlerContainer
@@ -139,15 +182,18 @@ protected:
     bool HandleElevator(int item);
     bool HandleTeleport(int item);
     bool HandleFan(int item);
+    bool HandleDoor(int item);
 
 private:
     typedef QHash<NLint, const NETLizard_Level_Teleport *> MapTeleportMap;
     typedef QList<const NETLizard_Level_Elevator *> MapElevatorList;
     typedef QHash<NLint, MapElevatorList> MapElevatorMap;
+    typedef QHash<NLint, const NETLizard_Level_Door *> MapDoorMap;
     GL_NETLizard_3D_Model *m_model;
     NLRigidbody *m_teleportActor;
     MapTeleportMap m_teleport;
     MapElevatorMap m_elevator;
+    MapDoorMap m_door;
     MapEventHandlerContainer m_handlers;
 };
 

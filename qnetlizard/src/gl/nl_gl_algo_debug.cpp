@@ -62,6 +62,8 @@ static GLboolean NETLizard_IsInteractiveItem(int item_type)
             || (item_type & NL_3D_ITEM_TYPE_PORTAL)
             || (item_type & NL_3D_ITEM_TYPE_FAN_VERTICAL)
             || (item_type & NL_3D_ITEM_TYPE_FAN_HORIZONTAL)
+            || (item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL)
+            || (item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL)
             )
         return GL_TRUE;
     return GL_FALSE;

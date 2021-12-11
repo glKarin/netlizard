@@ -220,14 +220,14 @@ void MapEventHandler_elevator::Update(float delta)
 
     m_elevatorState = newState;
 
-    if(newState == MapEventHandler_elevator::Elevator_At_Start)
+    if(m_elevatorState == MapEventHandler_elevator::Elevator_At_Start)
     {
         SetState(MapEventHandler::Handler_Finished);
     }
 
     if(m_mask == MapEventHandler_elevator::Elevator_Front)
     {
-        if(newState == MapEventHandler_elevator::Elevator_At_End)
+        if(m_elevatorState == MapEventHandler_elevator::Elevator_At_End)
         {
             SetState(MapEventHandler::Handler_Finished);
         }
@@ -279,6 +279,156 @@ void MapEventHandler_fan::Update(float delta)
     }
 }
 
+MapEventHandler_door::MapEventHandler_door(const float min[3], const float max[3], Door_Mask_e mask, Qt::Orientation orientation, float start2, float end2, GL_NETLizard_3D_Mesh *other, float start1, float end1, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop)
+    : MapEventHandler(item, actor, loop),
+      m_otherPart(other),
+      m_doorState(MapEventHandler_door::Door_At_Start),
+      m_otherDoorState(MapEventHandler_door::Door_At_Start),
+      m_unit(500),
+      m_mask(mask),
+      m_orientation(orientation),
+      m_start(start1),
+      m_end(end1),
+      m_start2(start2),
+      m_end2(end2)
+{
+    vector3_t b[2] = {VECTOR3V(min), VECTOR3V(max)};
+    bound_make(&m_box, b, b + 1);
+}
+
+MapEventHandler_door::~MapEventHandler_door()
+{
+    DEBUG_DESTROY("MapEventHandler_door")
+}
+
+bool MapEventHandler_door::Start()
+{
+    bool res = MapEventHandler::Start();
+    if(!res)
+        return false;
+    m_doorState = MapEventHandler_door::Door_Moving_Front;
+    m_otherDoorState = MapEventHandler_door::Door_Moving_Front;
+    return res;
+}
+
+void MapEventHandler_door::Update(float delta)
+{
+    if(!IsRunning())
+        return;
+    if(m_orientation == Qt::Horizontal)
+        UpdateHorizontalDoor(delta);
+    else
+        UpdateVerticalDoor(delta);
+}
+
+void MapEventHandler_door::UpdateHorizontalDoor(float delta)
+{
+
+}
+
+void MapEventHandler_door::UpdateVerticalDoor(float delta)
+{
+    NLRigidbody *actor = Actor();
+    NLScene *scene = actor->Scene();
+    NLSceneCamera *camera = scene->CurrentCamera();
+    bool inBox = false;
+    if(camera)
+    {
+        nl_vector3_t pos = actor->Position();
+        matrix_transformv_self_row(camera->RenderMatrix(), &pos);
+        inBox = bound_point_in_box(&m_box, &pos) ? true : false;
+    }
+
+    if((m_mask & MapEventHandler_door::Door_1) && m_doorState != MapEventHandler_door::Door_At_Start)
+    {
+        GL_NETLizard_3D_Mesh *item = Item();
+
+        bool is_downing = !inBox && (m_doorState == MapEventHandler_door::Door_At_End || m_doorState == MapEventHandler_door::Door_Moving_Back);
+        int neg = is_downing ? -1 : 1;
+        float length = m_unit * delta * neg;
+        float z = item->position[2];
+        float newZ = z + length;
+        MapEventHandler_door::Door_State_e newState = m_doorState;
+        if(is_downing)
+        {
+            if(newZ < m_start)
+            {
+                newZ = m_start;
+                newState = MapEventHandler_door::Door_At_Start;
+            }
+            else
+            {
+                //if(m_doorState == MapEventHandler_door::Door_At_End)
+                    newState = MapEventHandler_door::Door_Moving_Back;
+            }
+        }
+        else // up
+        {
+            if(newZ > m_end)
+            {
+                newZ = m_end;
+                newState = MapEventHandler_door::Door_At_End;
+            }
+            else
+            {
+                //if(m_doorState == MapEventHandler_door::Door_At_Start)
+                    newState = MapEventHandler_door::Door_Moving_Front;
+            }
+        }
+        item->position[2] = newZ;
+
+        m_doorState = newState;
+    }
+
+    // other part
+    if((m_mask & MapEventHandler_door::Door_2) && m_otherPart && (m_otherDoorState != MapEventHandler_door::Door_At_Start))
+    {
+        bool is_downing = !inBox && (m_otherDoorState == MapEventHandler_door::Door_At_End || m_otherDoorState == MapEventHandler_door::Door_Moving_Back);
+        is_downing = !is_downing;
+        int neg = is_downing ? -1 : 1;
+        float length = m_unit * delta * neg;
+        float z = m_otherPart->position[2];
+        float newZ = z + length;
+        MapEventHandler_door::Door_State_e newState = m_otherDoorState;
+        if(is_downing)
+        {
+            if(newZ < m_end2)
+            {
+                newZ = m_end2;
+                newState = MapEventHandler_door::Door_At_End;
+            }
+            else
+            {
+                //if(m_otherDoorState == MapEventHandler_door::Door_At_Start)
+                    newState = MapEventHandler_door::Door_Moving_Front;
+            }
+        }
+        else // up
+        {
+            if(newZ > m_start2)
+            {
+                newZ = m_start2;
+                newState = MapEventHandler_door::Door_At_Start;
+            }
+            else
+            {
+                //if(m_otherDoorState == MapEventHandler_door::Door_At_End)
+                    newState = MapEventHandler_door::Door_Moving_Back;
+            }
+        }
+        m_otherPart->position[2] = newZ;
+
+        m_otherDoorState = newState;
+    }
+
+
+    if(m_doorState == MapEventHandler_door::Door_At_Start && m_otherDoorState == MapEventHandler_door::Door_At_Start)
+    {
+        SetState(MapEventHandler::Handler_Finished);
+    }
+}
+
+
 
 
 MapEventHandlerComponent::MapEventHandlerComponent(const NLProperties &prop, NLActor *parent) :
@@ -323,6 +473,7 @@ void MapEventHandlerComponent::Reset()
     m_handlers.Clear();
     m_teleport.clear();
     m_elevator.clear();
+    m_door.clear();
 }
 
 void MapEventHandlerComponent::SetModel(GL_NETLizard_3D_Model *model, int level)
@@ -357,6 +508,19 @@ void MapEventHandlerComponent::SetModel(GL_NETLizard_3D_Model *model, int level)
                     m_elevator[e->switch_item].push_back(e);
                 }
             }
+            const NETLizard_Level_Door *door = nlGet3DGameDoor(m_model->game, level, -1, &count);
+            if(door)
+            {
+                for(int i = 0; i < count; i++)
+                {
+                    const NETLizard_Level_Door *d = door + i;
+                    for(unsigned j = 0; j < countof(d->item); j++)
+                    {
+                        if(d->item[j].item >= 0)
+                            m_door.insert(d->item[j].item, d);
+                    }
+                }
+            }
         }
     }
 }
@@ -374,6 +538,8 @@ bool MapEventHandlerComponent::Trigger(int item)
         return HandleTeleport(item);
     else if((mesh->item_type & NL_3D_ITEM_TYPE_FAN_HORIZONTAL) || (mesh->item_type & NL_3D_ITEM_TYPE_FAN_VERTICAL))
         return HandleFan(item);
+    else if((mesh->item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL) || (mesh->item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL))
+        return HandleDoor(item);
     return false;
 }
 
@@ -409,9 +575,10 @@ bool MapEventHandlerComponent::Collision(int item)
     if(item < 0)
         return false;
     const GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + item;
-    //qDebug() << item << m_teleport.keys() << mesh->item_type;
     if(mesh->item_type & NL_3D_ITEM_TYPE_PORTAL)
         return HandleTeleport(item);
+    else if((mesh->item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL) || (mesh->item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL))
+        return HandleDoor(item);
     return false;
 }
 
@@ -458,6 +625,32 @@ bool MapEventHandlerComponent::HandleFan(int item)
         mask |= MapEventHandler_fan::Fan_Yaw;
     MapEventHandler_fan *handler = new MapEventHandler_fan(mask, false, mesh, m_teleportActor, false);
     m_handlers.Add(item, handler);
+
+    return true;
+}
+
+bool MapEventHandlerComponent::HandleDoor(int item)
+{
+    if(m_door.isEmpty())
+        return false;
+    if(!m_door.contains(item))
+        return false;
+    const NETLizard_Level_Door *door = m_door[item];
+    int door_item = door->item[0].item;
+    if(m_handlers.Exists(door_item))
+        m_handlers.Remove(door_item);
+    int mask = MapEventHandler_door::Door_1;
+    GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + door_item;
+    GL_NETLizard_3D_Mesh *otherMesh = 0;
+    if(door->item[1].item >= 0)
+    {
+        otherMesh = m_model->item_meshes + door->item[1].item;
+        mask |= MapEventHandler_door::Door_2;
+    }
+    const float min[3] = {door->box.min[0], door->box.min[1], door->box.min[2]};
+    const float max[3] = {door->box.max[0], door->box.max[1], door->box.max[2]};
+    MapEventHandler_door *handler = new MapEventHandler_door(min, max, static_cast<MapEventHandler_door::Door_Mask_e>(mask), door->orientation == 1 ? Qt::Vertical : Qt::Horizontal, door->item[1].start, door->item[1].end, otherMesh, door->item[0].start, door->item[0].end, mesh, m_teleportActor, false);
+    m_handlers.Add(door_item, handler);
 
     return true;
 }

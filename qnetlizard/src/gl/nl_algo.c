@@ -130,6 +130,19 @@ static int NETLizard_IgnoreCollisionTestingItem(int item_type)
             || (item_type & NL_3D_ITEM_TYPE_EMPTY)
             || (item_type & NL_3D_ITEM_TYPE_2D)
             || (item_type & NL_3D_ITEM_TYPE_SKYBOX)
+            //|| (item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL)
+            //|| (item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL)
+            )
+        return 1;
+    return 0;
+}
+
+static int NETLizard_IgnoreFloorPlaneItem(int item_type)
+{
+    if((item_type & NL_3D_ITEM_TYPE_WEAPON)
+            || (item_type & NL_3D_ITEM_TYPE_EMPTY)
+            || (item_type & NL_3D_ITEM_TYPE_2D)
+            || (item_type & NL_3D_ITEM_TYPE_SKYBOX)
             || (item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL)
             || (item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL)
             )
@@ -410,7 +423,7 @@ static int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model
         for(j = mesh->item_index_range[0]; j < mesh->item_index_range[1]; j++)
         {
             const GL_NETLizard_3D_Mesh *im = netlizard_3d_model->item_meshes + j;
-            if(NETLizard_IgnoreCollisionTestingItem(im->item_type))
+            if(NETLizard_IgnoreFloorPlaneItem(im->item_type))
                 continue;
             bound_t aabb = SCENE_BOUND(im);
             nl_vector3_t expand = VECTOR3(obj->radius, obj->radius, 0);
@@ -437,7 +450,7 @@ static int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model
                 for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
                 {
                     const GL_NETLizard_3D_Mesh *im = netlizard_3d_model->item_meshes + j;
-                    if(NETLizard_IgnoreCollisionTestingItem(im->item_type))
+                    if(NETLizard_IgnoreFloorPlaneItem(im->item_type))
                         continue;
                     bound_t aabb = SCENE_BOUND(im);
                     nl_vector3_t expand = VECTOR3(obj->radius, obj->radius, 0);

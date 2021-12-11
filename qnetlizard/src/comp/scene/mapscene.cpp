@@ -218,7 +218,7 @@ void MapScene::Update(float delta)
             if(gravity && gravity->GetProperty_T("force", 0) != 0) // is jump
                 clear = true;
         }
-        fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
+        //fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
         float rglz = 0;
         obj.position = p;
         res = NETLizard_GetScenePointZCoord(m_model, &obj, scene, include_item, &scene, &rglz);
@@ -667,8 +667,16 @@ int MapScene::RayIntersect()
     if(res)
     {
        const GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + collision_id;
-        fprintf(stderr, "item -> %d: obj_index: %d, item_type: %d, count: %d\n", collision_id, mesh->obj_index, mesh->item_type, mesh->count); fflush(stderr);
+       fprintf(stderr, "item -> %d: obj_index: %d, item_type: %d, count: %d, plane_count: %d\n",
+                collision_id, mesh->obj_index, mesh->item_type, mesh->count, mesh->plane_count); fflush(stderr);
 
+       const char g[] = "NL_CLONE_3D";
+       fprintf(stderr, "{%s, %d, {{%d, %d, %d}, {}}, 3, 1, {{%d, %d, %d}, {%d, %d, %d}}},\n",
+               g, 0,
+               collision_id, (int)mesh->position[2] + (int)mesh->box.min[2], (int)mesh->position[2] + (int)mesh->box.max[2],
+               (int)mesh->position[0] + (int)mesh->box.min[0], (int)mesh->position[1] + (int)mesh->box.min[1], (int)mesh->position[2] + (int)mesh->box.min[2],
+               (int)mesh->position[0] + (int)mesh->box.max[0], (int)mesh->position[1] + (int)mesh->box.max[1], (int)mesh->position[2] + (int)mesh->box.max[2]
+               ); fflush(stderr);
         return collision_id;
     }
     return -1;

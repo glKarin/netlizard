@@ -407,7 +407,7 @@ typedef struct NETLizard_Level_Teleport_s
     NLenum game;
     NLint level;
     NLint item[2];
-    NLbitfield mask;
+    NLbitfield mask; // 1: x translate, 2: y translate, 4: z translate, 8: x rotate, 16: y rotate
     NLint position[3];
     NLint rotation[2];
 } NETLizard_Level_Teleport;
@@ -419,11 +419,29 @@ typedef struct NETLizard_Level_Elevator_s
     NLint level;
     NLint switch_item;
     NLint elevator_item;
-    NLbitfield mask;
+    NLbitfield mask; // 1: move up, 2: move down
     NLint min;
     NLint max;
     NLboolean invert;
 } NETLizard_Level_Elevator;
+
+/* NETLizard 3D map door config */
+typedef struct NETLizard_Level_Door_s
+{
+    NLenum game;
+    NLint level;
+    struct {
+        NLint item;
+        NLint start;
+        NLint end;
+    } item[2];
+    NLbitfield mask; // 1: left/bottom door can move to left/bottom, 2: right/top door can move to right/up
+    NLenum orientation; // 1: up-down, 2: left-right
+    struct {
+        NLint min[3];
+        NLint max[3];
+    } box;
+} NETLizard_Level_Door;
 
 ////////// function //////////
 /* PNG util */
@@ -487,6 +505,7 @@ NL_RET_PTR_CONST(char *) const char * nlGet3DGameName(NETLizard_Game game);
 const NETLizard_3D_Model_Config * nlGet3DGameModelConfig(NETLizard_Game game);
 const NETLizard_Level_Teleport * nlGet3DGameTeleport(NLenum game, NLint level, NLint item_id, NLint *length);
 const NETLizard_Level_Elevator * nlGet3DGameElevator(NLenum game, NLint level, NLint item_id, NLint *length);
+const NETLizard_Level_Door * nlGet3DGameDoor(NLenum game, NLint level, NLint item_id, NLint *length);
 
 // Contr Terrisiem 3D
 NLboolean nlReadCT3DModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
