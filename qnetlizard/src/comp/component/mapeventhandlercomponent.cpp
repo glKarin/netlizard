@@ -279,7 +279,7 @@ void MapEventHandler_fan::Update(float delta)
     }
 }
 
-MapEventHandler_door::MapEventHandler_door(const float min[3], const float max[3], Door_Mask_e mask, Qt::Orientation orientation, float start2, float end2, GL_NETLizard_3D_Mesh *other, float start1, float end1, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop)
+MapEventHandler_door::MapEventHandler_door(const float min[3], const float max[3], Door_Mask_e mask, MapEventHandler_door::Orientation_e orientation, float start2, float end2, GL_NETLizard_3D_Mesh *other, float start1, float end1, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop)
     : MapEventHandler(item, actor, loop),
       m_otherPart(other),
       m_doorState(MapEventHandler_door::Door_At_Start),
@@ -294,6 +294,21 @@ MapEventHandler_door::MapEventHandler_door(const float min[3], const float max[3
 {
     vector3_t b[2] = {VECTOR3V(min), VECTOR3V(max)};
     bound_make(&m_box, b, b + 1);
+
+    vector3_t ex = VECTOR3(0, 0, 0);
+    if(m_orientation == MapEventHandler_door::Orientation_Horizontal_X)
+        VECTOR3_Y(ex) = BOUND_MAX_Y(m_box) - BOUND_MIN_Y(m_box);
+    else if(m_orientation == MapEventHandler_door::Orientation_Horizontal_Y)
+        VECTOR3_X(ex) = BOUND_MAX_X(m_box) - BOUND_MIN_X(m_box);
+    else
+    {
+        float f = (BOUND_MAX_Z(m_box) - BOUND_MIN_Z(m_box)) / 2;
+        if((BOUND_MAX_X(m_box) - BOUND_MIN_X(m_box)) > (BOUND_MAX_Y(m_box) - BOUND_MIN_Y(m_box)))
+            VECTOR3_Y(ex) = f;
+        else
+            VECTOR3_X(ex) = f;
+    }
+    bound_expand(&m_box, &ex);
 }
 
 MapEventHandler_door::~MapEventHandler_door()
@@ -315,18 +330,20 @@ void MapEventHandler_door::Update(float delta)
 {
     if(!IsRunning())
         return;
-    if(m_orientation == Qt::Horizontal)
-        UpdateHorizontalDoor(delta);
+    if(m_orientation == MapEventHandler_door::Orientation_Horizontal_X)
+        UpdateHorizontalDoorX(delta);
+    else if(m_orientation == MapEventHandler_door::Orientation_Horizontal_Y)
+        UpdateHorizontalDoorY(delta);
     else
         UpdateVerticalDoor(delta);
+
+    if(m_doorState == MapEventHandler_door::Door_At_Start && m_otherDoorState == MapEventHandler_door::Door_At_Start)
+    {
+        SetState(MapEventHandler::Handler_Finished);
+    }
 }
 
-void MapEventHandler_door::UpdateHorizontalDoor(float delta)
-{
-
-}
-
-void MapEventHandler_door::UpdateVerticalDoor(float delta)
+bool MapEventHandler_door::ActorInBox()
 {
     NLRigidbody *actor = Actor();
     NLScene *scene = actor->Scene();
@@ -338,6 +355,12 @@ void MapEventHandler_door::UpdateVerticalDoor(float delta)
         matrix_transformv_self_row(camera->RenderMatrix(), &pos);
         inBox = bound_point_in_box(&m_box, &pos) ? true : false;
     }
+    return inBox;
+}
+
+void MapEventHandler_door::UpdateDoor(float delta, int coord)
+{
+    const bool inBox = ActorInBox();
 
     if((m_mask & MapEventHandler_door::Door_1) && m_doorState != MapEventHandler_door::Door_At_Start)
     {
@@ -346,7 +369,7 @@ void MapEventHandler_door::UpdateVerticalDoor(float delta)
         bool is_downing = !inBox && (m_doorState == MapEventHandler_door::Door_At_End || m_doorState == MapEventHandler_door::Door_Moving_Back);
         int neg = is_downing ? -1 : 1;
         float length = m_unit * delta * neg;
-        float z = item->position[2];
+        float z = item->position[coord];
         float newZ = z + length;
         MapEventHandler_door::Door_State_e newState = m_doorState;
         if(is_downing)
@@ -375,7 +398,7 @@ void MapEventHandler_door::UpdateVerticalDoor(float delta)
                     newState = MapEventHandler_door::Door_Moving_Front;
             }
         }
-        item->position[2] = newZ;
+        item->position[coord] = newZ;
 
         m_doorState = newState;
     }
@@ -387,7 +410,7 @@ void MapEventHandler_door::UpdateVerticalDoor(float delta)
         is_downing = !is_downing;
         int neg = is_downing ? -1 : 1;
         float length = m_unit * delta * neg;
-        float z = m_otherPart->position[2];
+        float z = m_otherPart->position[coord];
         float newZ = z + length;
         MapEventHandler_door::Door_State_e newState = m_otherDoorState;
         if(is_downing)
@@ -416,16 +439,25 @@ void MapEventHandler_door::UpdateVerticalDoor(float delta)
                     newState = MapEventHandler_door::Door_Moving_Back;
             }
         }
-        m_otherPart->position[2] = newZ;
+        m_otherPart->position[coord] = newZ;
 
         m_otherDoorState = newState;
     }
+}
 
+void MapEventHandler_door::UpdateHorizontalDoorX(float delta)
+{
+    UpdateDoor(delta, 0);
+}
 
-    if(m_doorState == MapEventHandler_door::Door_At_Start && m_otherDoorState == MapEventHandler_door::Door_At_Start)
-    {
-        SetState(MapEventHandler::Handler_Finished);
-    }
+void MapEventHandler_door::UpdateHorizontalDoorY(float delta)
+{
+    UpdateDoor(delta, 1);
+}
+
+void MapEventHandler_door::UpdateVerticalDoor(float delta)
+{
+    UpdateDoor(delta, 2);
 }
 
 
@@ -647,9 +679,24 @@ bool MapEventHandlerComponent::HandleDoor(int item)
         otherMesh = m_model->item_meshes + door->item[1].item;
         mask |= MapEventHandler_door::Door_2;
     }
+    MapEventHandler_door::Orientation_e orientation;
+    switch(door->orientation)
+    {
+    case 2:
+        orientation = MapEventHandler_door::Orientation_Horizontal_X;
+        break;
+    case 3:
+        orientation = MapEventHandler_door::Orientation_Horizontal_Y;
+        break;
+    case 1:
+    default:
+        orientation = MapEventHandler_door::Orientation_Vertical;
+        break;
+    }
+
     const float min[3] = {door->box.min[0], door->box.min[1], door->box.min[2]};
     const float max[3] = {door->box.max[0], door->box.max[1], door->box.max[2]};
-    MapEventHandler_door *handler = new MapEventHandler_door(min, max, static_cast<MapEventHandler_door::Door_Mask_e>(mask), door->orientation == 1 ? Qt::Vertical : Qt::Horizontal, door->item[1].start, door->item[1].end, otherMesh, door->item[0].start, door->item[0].end, mesh, m_teleportActor, false);
+    MapEventHandler_door *handler = new MapEventHandler_door(min, max, static_cast<MapEventHandler_door::Door_Mask_e>(mask), orientation, door->item[1].start, door->item[1].end, otherMesh, door->item[0].start, door->item[0].end, mesh, m_teleportActor, false);
     m_handlers.Add(door_item, handler);
 
     return true;

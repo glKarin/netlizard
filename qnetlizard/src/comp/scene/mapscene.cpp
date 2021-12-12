@@ -671,9 +671,11 @@ int MapScene::RayIntersect()
                 collision_id, mesh->obj_index, mesh->item_type, mesh->count, mesh->plane_count); fflush(stderr);
 
        const char g[] = "NL_CLONE_3D";
-       fprintf(stderr, "{%s, %d, {{%d, %d, %d}, {}}, 3, 1, {{%d, %d, %d}, {%d, %d, %d}}},\n",
+       fprintf(stderr, "{%s, %d, {{%d, %d, %d}, {}}, 3, 2, {{%d, %d, %d}, {%d, %d, %d}}},\n",
                g, 0,
-               collision_id, (int)mesh->position[2] + (int)mesh->box.min[2], (int)mesh->position[2] + (int)mesh->box.max[2],
+               collision_id,
+               //(int)mesh->position[2] + (int)mesh->box.min[2], (int)mesh->position[2] + (int)mesh->box.max[2],
+               (int)mesh->position[1] + (int)mesh->box.min[1], (int)mesh->position[1] + (int)mesh->box.max[1],
                (int)mesh->position[0] + (int)mesh->box.min[0], (int)mesh->position[1] + (int)mesh->box.min[1], (int)mesh->position[2] + (int)mesh->box.min[2],
                (int)mesh->position[0] + (int)mesh->box.max[0], (int)mesh->position[1] + (int)mesh->box.max[1], (int)mesh->position[2] + (int)mesh->box.max[2]
                ); fflush(stderr);

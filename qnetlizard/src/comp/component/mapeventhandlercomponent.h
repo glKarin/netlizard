@@ -104,8 +104,14 @@ public:
         Door_2 = 2,
         Door_1_And_2 = 3
     };
+    enum Orientation_e
+    {
+        Orientation_Vertical = 1,
+        Orientation_Horizontal_X = 2,
+        Orientation_Horizontal_Y = 3
+    };
 public:
-    explicit MapEventHandler_door(const float min[3], const float max[3], Door_Mask_e mask, Qt::Orientation orientation, float start2, float end2, GL_NETLizard_3D_Mesh *other, float start1, float end1, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
+    explicit MapEventHandler_door(const float min[3], const float max[3], Door_Mask_e mask, Orientation_e orientation, float start2, float end2, GL_NETLizard_3D_Mesh *other, float start1, float end1, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
     virtual ~MapEventHandler_door();
     virtual void Update(float delta);
     virtual bool Start();
@@ -119,7 +125,10 @@ private:
         Door_Moving_Back
     };
     void UpdateVerticalDoor(float delta);
-    void UpdateHorizontalDoor(float delta);
+    void UpdateHorizontalDoorY(float delta);
+    void UpdateHorizontalDoorX(float delta);
+    bool ActorInBox();
+    void UpdateDoor(float delta, int coord);
 
 private:
     GL_NETLizard_3D_Mesh *m_otherPart;
@@ -128,7 +137,7 @@ private:
     bound_t m_box;
     float m_unit;
     int m_mask;
-    Qt::Orientation m_orientation;
+    Orientation_e m_orientation;
     float m_start;
     float m_end;
     float m_start2;

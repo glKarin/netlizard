@@ -635,6 +635,8 @@ int nlGetItemType(NETLizard_Game game, int index)
                 res |= NL_3D_ITEM_TYPE_EMPTY;
             else if(index == 9 || index == 14)
                 res |= NL_3D_ITEM_TYPE_SWITCH;
+            else if(index == 2 || index == 3 || index == 1)
+                res |= NL_3D_ITEM_TYPE_PARTICLE;
 			break;
 
         case NL_CONTR_TERRORISM_3D:
@@ -642,8 +644,8 @@ int nlGetItemType(NETLizard_Game game, int index)
                 res |= NL_3D_ITEM_TYPE_DOOR_VERTICAL;
 			else if(index == 16 || index == 21 || index == 26)
                 res |= NL_3D_ITEM_TYPE_FAN_VERTICAL;
-			else if(index == 23)
-                res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
+//			else if(index == 23)
+//                res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
 			else if(index == 17)
                 res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
             else if(index == 45 || index == 46)
@@ -661,8 +663,8 @@ int nlGetItemType(NETLizard_Game game, int index)
                 res |= NL_3D_ITEM_TYPE_LADDER | NL_3D_ITEM_TYPE_TRANSPARENT;
 			else if(index == 12 || index == 15)
                 res |= NL_3D_ITEM_TYPE_FAN_VERTICAL;
-			else if(index == 13)
-                res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
+//			else if(index == 13)
+//                res |= NL_3D_ITEM_TYPE_FAN_HORIZONTAL;
             else if(index == 25 || index == 26)
                 res |= NL_3D_ITEM_TYPE_TRANSPARENT | NL_3D_ITEM_TYPE_THIN;
             else if(index == 28 || index == 27)
@@ -1226,8 +1228,17 @@ static const NETLizard_Level_Door Clone3D_Level_Door_3[] = {
     {NL_CLONE_3D, 3, {{45, 2150, 2300}, {46, 2150, 2000}}, 3, 1, {{300, -1800, 2000}, {450, -1200, 2300}}},
 };
 static const NETLizard_Level_Door Clone3D_Level_Door_4[] = {
+    {NL_CLONE_3D, 4, {{10, 0, 300}, {9, 0, -300}}, 3, 3, {{-1800, -300, 0}, {-1700, 300, 300}}},
+    {NL_CLONE_3D, 4, {{63, 0, 300}, {64, 0, -300}}, 3, 2, {{-300, 1400, 0}, {300, 1500, 300}}},
+    {NL_CLONE_3D, 4, {{28, 0, 300}, {29, 0, -300}}, 3, 2, {{-300, -1800, 0}, {300, -1700, 300}}},
 };
 static const NETLizard_Level_Door Clone3D_Level_Door_5[] = {
+    {NL_CLONE_3D, 0, {{86, 0, 300}, {87, 0, -300}}, 3, 2, {{-300, 2700, 0}, {300, 2800, 300}}},
+    {NL_CLONE_3D, 0, {{1, 300, 600}, {0, 300, 0}}, 3, 3, {{-900, 0, 0}, {-800, 600, 300}}},
+    {NL_CLONE_3D, 0, {{7, -1500, -1200}, {6, -1500, -1800}}, 3, 3, {{-300, -1800, 0}, {-200, -1200, 300}}},
+    {NL_CLONE_3D, 0, {{15, -1500, -1200}, {14, -1500, -1800}}, 3, 3, {{1200, -1800, 0}, {1300, -1200, 300}}},
+    {NL_CLONE_3D, 0, {{24, -2700, -2400}, {23, -2700, -3000}}, 3, 3, {{1200, -3000, 0}, {1300, -2400, 300}}},
+    {NL_CLONE_3D, 0, {{27, -4500, -4200}, {26, -4500, -4800}}, 3, 3, {{600, -4800, 300}, {700, -4200, 600}}},
 };
 static const NETLizard_Level_Door Clone3D_Level_Door_6[] = {
     {NL_CLONE_3D, 6, {{33, 1050, 1200}, {32, 1050, 900}}, 3, 1, {{900, 1800, 900}, {1500, 1950, 1200}}},

@@ -58,9 +58,10 @@ void NLScene::SetupOpenGL()
 {
     return;
     QGLFormat qglFormat = format();
-    qglFormat.setVersion(2, 1);
-    qglFormat.setStencil(true);
-    qglFormat.setProfile(QGLFormat::CompatibilityProfile);
+    qglFormat.setDepthBufferSize(32);
+//    qglFormat.setVersion(2, 1);
+//    qglFormat.setStencil(true);
+//    qglFormat.setProfile(QGLFormat::CompatibilityProfile);
     setFormat(qglFormat);
 }
 
