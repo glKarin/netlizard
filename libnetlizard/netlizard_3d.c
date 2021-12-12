@@ -685,7 +685,7 @@ int nlGetItemType(NETLizard_Game game, int index)
             else if(index == 44)
                 res |= NL_3D_ITEM_TYPE_ELEVATOR | NL_3D_ITEM_TYPE_SWITCH | NL_3D_ITEM_TYPE_THIN;
             else if(index == 39)
-                res |= NL_3D_ITEM_TYPE_ELEVATOR | NL_3D_ITEM_TYPE_SWITCH;
+                res |= NL_3D_ITEM_TYPE_ELEVATOR | NL_3D_ITEM_TYPE_SWITCH | NL_3D_ITEM_TYPE_SCENE;
 			break;
 
         case NL_CONTR_TERRORISM_3D_EPISODE_3:

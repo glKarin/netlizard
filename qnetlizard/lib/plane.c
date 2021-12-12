@@ -171,7 +171,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
                     *lamda = 0;
                 if(point)
                     *point = LINEV_A(line);
-                return 110;
+                return 0; // 110???
             }
             else
             {

@@ -71,6 +71,7 @@ private:
     float m_unit;
     int m_mask;
     bool m_invert;
+    bound_t m_box;
 };
 
 class MapEventHandler_fan : public MapEventHandler

@@ -128,7 +128,7 @@ typedef enum NETLizard_Texture_Type_e
 /* NETLizard 3D game item model category */
 typedef enum NETLizard_3D_Item_Type_e
 {
-    NL_3D_ITEM_TYPE_GENERAL = 0, // exam scene or general item
+    NL_3D_ITEM_TYPE_GENERAL = 0, // exam general item
     NL_3D_ITEM_TYPE_THIN = 1, // maybe not cull face when rendering. exam net
     NL_3D_ITEM_TYPE_2D = 1 << 1, // maybe no shadow when rendering. exam Stalin photo in CT 3D
     NL_3D_ITEM_TYPE_FAN_VERTICAL = 1 << 2, // can rotate on x/y-axis. exam fan on ceil, tail fan in helicopter
@@ -145,7 +145,8 @@ typedef enum NETLizard_3D_Item_Type_e
     NL_3D_ITEM_TYPE_SWITCH = 1 << 13, // it is a switch controller. exam elevator switch in Clone 3D
     NL_3D_ITEM_TYPE_TRANSPARENT = 1 << 14, // maybe no shadow when rendering. exam net
     NL_3D_ITEM_TYPE_EMPTY = 1 << 15, // maybe ignore when collision testing. exam tower in Egypt 3D level 0, 10
-    NL_3D_ITEM_TYPE_PARTICLE = 1 << 16 // it is a particle item. exam debris of bodys and box, bloods, bullet trace in Clone 3D
+    NL_3D_ITEM_TYPE_PARTICLE = 1 << 16, // it is a particle item. exam debris of bodys and box, bloods,
+    NL_3D_ITEM_TYPE_SCENE = 1 << 17 // exam scene. exam elevator in Specnaz 3D level 4
 } NETLizard_3D_Item_Type;
 
 /* NETLizard 3D game character animation category */

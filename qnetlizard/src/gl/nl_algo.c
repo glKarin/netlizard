@@ -132,6 +132,7 @@ static int NETLizard_IgnoreCollisionTestingItem(int item_type)
             || (item_type & NL_3D_ITEM_TYPE_SKYBOX)
             //|| (item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL)
             //|| (item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL)
+            || (item_type & NL_3D_ITEM_TYPE_SCENE)
             )
         return 1;
     return 0;

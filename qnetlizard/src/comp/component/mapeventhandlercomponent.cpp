@@ -119,7 +119,7 @@ MapEventHandler_elevator::MapEventHandler_elevator(float min, float max, MapEven
       m_mask(mask),
       m_invert(invert)
 {
-
+    NETLizard_GetSceneBound(item, &m_box);
 }
 
 MapEventHandler_elevator::~MapEventHandler_elevator()
@@ -155,9 +155,7 @@ void MapEventHandler_elevator::Update(float delta)
             {
                 nl_vector3_t pos = actor->Position();
                 matrix_transformv_self_row(camera->RenderMatrix(), &pos);
-                bound_t box;
-                NETLizard_GetSceneBound(item, &box);
-                if(VECTOR3_Z(pos) > BOUND_MAX_Z(box) && bound_point_in_box2d(&box, &pos))
+                if(VECTOR3_Z(pos) >= BOUND_MIN_Z(m_box) && bound_point_in_box2d(&m_box, &pos))
                 {
                     return;
                 }
