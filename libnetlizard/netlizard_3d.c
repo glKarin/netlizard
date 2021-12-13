@@ -1277,44 +1277,180 @@ static const NLint Clone3D_Level_Door_Count[] = {
     COUNTOF(Clone3D_Level_Door_11), COUNTOF(Clone3D_Level_Door_12)
 };
 
+static const NETLizard_Level_Door CT3DEp3_Level_Door_1[] = {
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{5, 150, 300}, {6, 0, -150}}, 3, 1, {{200, 1500, 0}, {300, 2100, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{8, 150, 300}, {7, 0, -150}}, 3, 1, {{200, -600, 0}, {300, 0, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{18, 150, 300}, {19, 0, -150}}, 3, 1, {{2400, -2400, 0}, {2500, -1800, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{21, 150, 300}, {20, 0, -150}}, 3, 1, {{3900, -4800, 0}, {4000, -4200, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{34, -150, 0}, {33, -300, -450}}, 3, 1, {{500, -9300, -300}, {600, -8700, 0}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{49, -150, 0}, {48, -300, -450}}, 3, 1, {{500, -6900, -300}, {600, -6300, 0}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{58, 450, 600}, {57, 300, 150}}, 3, 1, {{-1000, -2400, 300}, {-900, -1800, 600}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{64, 450, 600}, {63, 300, 150}}, 3, 1, {{-5600, -2400, 300}, {-5500, -1800, 600}}},
+};
+static const NETLizard_Level_Door CT3DEp3_Level_Door_2[] = {
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{3, 450, 600}, {4, 300, 150}}, 3, 1, {{1500, 1200, 300}, {2100, 1300, 600}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{5, -150, 0}, {6, -300, -450}}, 3, 1, {{-300, 1200, -300}, {300, 1300, 0}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{37, 450, 600}, {38, 300, 150}}, 3, 1, {{5100, -1600, 300}, {5700, -1500, 600}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{45, 450, 600}, {46, 300, 150}}, 3, 1, {{5100, -6200, 300}, {5700, -6100, 600}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{53, 450, 600}, {54, 300, 150}}, 3, 1, {{3900, -8100, 300}, {4500, -8000, 600}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{55, 450, 600}, {56, 300, 150}}, 3, 1, {{6300, -8100, 300}, {6900, -8000, 600}}},
+};
+static const NETLizard_Level_Door CT3DEp3_Level_Door_3[] = {
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{8, 150, 300}, {7, 0, -150}}, 3, 1, {{100, -1500, 0}, {200, -900, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{15, 150, 300}, {14, 0, -150}}, 3, 1, {{100, -3300, 0}, {200, -2700, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{17, -150, 0}, {16, -300, -450}}, 3, 1, {{-1700, -5100, -300}, {-1600, -4500, 0}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{26, -150, 0}, {25, -300, -450}}, 3, 1, {{800, -5100, -300}, {900, -4500, 0}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{30, -150, 0}, {29, -300, -450}}, 3, 1, {{2700, -5100, -300}, {2800, -4500, 0}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{42, 150, 300}, {41, 0, -150}}, 3, 1, {{9100, -900, 0}, {9700, -800, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{49, 450, 600}, {48, 300, 150}}, 3, 1, {{6700, 1300, 300}, {7300, 1400, 600}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{53, 450, 600}, {54, 300, 150}}, 3, 1, {{5200, 2600, 300}, {5800, 2700, 600}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{62, 150, 300}, {61, 0, -150}}, 3, 1, {{2000, -2100, 0}, {2100, -1500, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{64, 150, 300}, {63, 0, -150}}, 3, 1, {{2000, -900, 0}, {2100, -300, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{70, 450, 600}, {69, 300, 150}}, 3, 1, {{2300, 900, 300}, {2400, 1500, 600}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{81, 450, 600}, {82, 300, 150}}, 3, 1, {{-200, 900, 300}, {-100, 1500, 600}}},
+};
+static const NETLizard_Level_Door CT3DEp3_Level_Door_4[] = {
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{5, -150, 0}, {4, -300, -450}}, 3, 1, {{2200, -2100, -300}, {2300, -1500, 0}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{13, -150, 0}, {12, -300, -450}}, 3, 1, {{7100, -2100, -300}, {7200, -1500, 0}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{32, 150, 300}, {31, 0, -150}}, 3, 1, {{12900, 2900, 0}, {13500, 3000, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{54, -450, -300}, {53, -600, -750}}, 3, 1, {{11700, 4700, -600}, {12300, 4800, -300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{65, -450, -300}, {64, -600, -750}}, 3, 1, {{9600, 4700, -600}, {10200, 4800, -300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{73, -150, 0}, {74, -300, -450}}, 3, 1, {{7100, 6900, -300}, {7200, 7500, 0}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{104, -150, 0}, {105, -300, -450}}, 3, 1, {{2200, 1500, -300}, {2300, 2100, 0}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{106, -150, 0}, {107, -300, -450}}, 3, 1, {{13500, 7500, -300}, {14100, 7600, 0}}},
+};
+static const NETLizard_Level_Door CT3DEp3_Level_Door_5[] = {
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{5, 450, 600}, {6, 300, 150}}, 3, 1, {{-1800, 2800, 300}, {-1700, 3400, 600}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{19, 450, 600}, {20, 300, 150}}, 3, 1, {{-1800, -200, 300}, {-1700, 400, 600}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{21, 150, 300}, {22, 0, -150}}, 3, 1, {{-4200, -1800, 0}, {-3600, -1700, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{27, 150, 300}, {28, 0, -150}}, 3, 1, {{-3300, -5100, 0}, {-3200, -4500, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{42, 150, 300}, {43, 0, -150}}, 3, 1, {{100, -5100, 0}, {200, -4500, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{53, 150, 300}, {52, 0, -150}}, 3, 1, {{3200, -2700, 0}, {3300, -2100, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{54, 750, 900}, {55, 600, 450}}, 3, 1, {{7200, -7600, 600}, {7300, -7000, 900}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{80, 750, 900}, {81, 600, 450}}, 3, 1, {{-300, -12100, 600}, {-200, -11500, 900}}},
+};
+static const NETLizard_Level_Door CT3DEp3_Level_Door_6[] = {
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{1, 150, 300}, {0, 0, -150}}, 3, 1, {{-4000, -300, 0}, {-3900, 300, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{20, -450, -300}, {19, -600, -750}}, 3, 1, {{300, -600, -600}, {900, -500, -300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{30, -450, -300}, {31, -600, -750}}, 3, 1, {{3500, 100, -600}, {3600, 700, -300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{44, -450, -300}, {43, -600, -750}}, 3, 1, {{6000, 1600, -600}, {6600, 1700, -300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{51, -450, -300}, {50, -600, -750}}, 3, 1, {{3300, 3500, -600}, {3900, 3600, -300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{61, -450, -300}, {60, -600, -750}}, 3, 1, {{6000, 5400, -600}, {6600, 5500, -300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{69, -450, -300}, {70, -600, -750}}, 3, 1, {{2400, 5400, -600}, {3000, 5500, -300}}},
+};
+static const NETLizard_Level_Door CT3DEp3_Level_Door_7[] = {
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{0, 151, 301}, {1, 1, -149}}, 3, 1, {{0, 2100, 1}, {600, 2200, 301}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{10, 151, 301}, {11, 1, -149}}, 3, 1, {{-3900, -1600, 1}, {-3300, -1500, 301}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{17, 151, 301}, {18, 1, -149}}, 3, 1, {{-5700, -5200, 1}, {-5100, -5100, 301}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{44, 151, 301}, {45, 1, -149}}, 3, 1, {{-5700, -7700, 1}, {-5100, -7600, 301}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{46, 151, 301}, {47, 1, -149}}, 3, 1, {{-4800, -11600, 1}, {-4700, -11000, 301}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{50, -149, 1}, {51, -299, -449}}, 3, 1, {{-300, -9500, -299}, {300, -9400, 1}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{70, 751, 901}, {71, 601, 451}}, 3, 1, {{300, -1900, 601}, {900, -1800, 901}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{72, 751, 901}, {73, 601, 451}}, 3, 1, {{200, -600, 601}, {300, 0, 901}}},
+};
+static const NETLizard_Level_Door CT3DEp3_Level_Door_8[] = {
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{2, -450, -300}, {3, -600, -750}}, 3, 1, {{3300, -4800, -600}, {3400, -4200, -300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{24, -450, -300}, {23, -600, -750}}, 3, 1, {{10200, -7200, -600}, {10300, -6600, -300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{27, -450, -300}, {26, -600, -750}}, 3, 1, {{10200, -9600, -600}, {10300, -9000, -300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{53, 150, 300}, {52, 0, -150}}, 3, 1, {{6300, -9600, 0}, {6400, -9000, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{66, 150, 300}, {67, 0, -150}}, 3, 1, {{8800, -9600, 0}, {8900, -9000, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{77, 150, 300}, {78, 0, -150}}, 3, 1, {{10700, -12000, 0}, {10800, -11400, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{91, 150, 300}, {90, 0, -150}}, 3, 1, {{9100, -6600, 0}, {9200, -6000, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{92, 150, 300}, {93, 0, -150}}, 3, 1, {{7300, -7500, 0}, {7900, -7400, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{96, 750, 900}, {95, 600, 450}}, 3, 1, {{5500, -5400, 600}, {6100, -5300, 900}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{114, 750, 900}, {113, 600, 450}}, 3, 1, {{7900, -9100, 600}, {8500, -9000, 900}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{119, 750, 900}, {118, 600, 450}}, 3, 1, {{10600, -9100, 600}, {11200, -9000, 900}}},
+};
+static const NETLizard_Level_Door CT3DEp3_Level_Door_9[] = {
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{14, 151, 301}, {15, 1, -149}}, 3, 1, {{300, 1200, 1}, {900, 1300, 301}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{16, 151, 301}, {17, 1, -149}}, 3, 1, {{300, -100, 1}, {900, 0, 301}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{21, 151, 301}, {22, 1, -149}}, 3, 1, {{-3000, -100, 1}, {-2400, 0, 301}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{30, 751, 901}, {31, 601, 451}}, 3, 1, {{-4900, 1200, 601}, {-4300, 1300, 901}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{42, 751, 901}, {41, 601, 451}}, 3, 1, {{-4900, 2500, 601}, {-4300, 2600, 901}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{44, 751, 901}, {45, 601, 451}}, 3, 1, {{-5800, 2500, 601}, {-5200, 2600, 901}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{65, 751, 901}, {66, 601, 451}}, 3, 1, {{-5800, -100, 601}, {-5200, 0, 901}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{79, 751, 901}, {80, 601, 451}}, 3, 1, {{-7600, -2600, 601}, {-7000, -2500, 901}}},
+};
+static const NETLizard_Level_Door CT3DEp3_Level_Door_10[] = {
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{1, 151, 301}, {0, 1, -149}}, 3, 1, {{-5500, -3800, 1}, {-4900, -3700, 301}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{12, 151, 301}, {13, 1, -149}}, 3, 1, {{-4600, -6200, 1}, {-4500, -5600, 301}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{15, 151, 301}, {14, 1, -149}}, 3, 1, {{-3300, -5600, 1}, {-2700, -5500, 301}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{19, 451, 601}, {18, 301, 151}}, 3, 1, {{-300, -4400, 151}, {300, -4300, 451}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{20, 151, 301}, {21, 1, -149}}, 3, 1, {{-2400, -4300, 1}, {-2300, -3700, 301}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{45, 451, 601}, {44, 301, 151}}, 3, 1, {{-300, -100, 301}, {300, 0, 601}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{60, 451, 601}, {61, 301, 151}}, 3, 1, {{300, -4300, 301}, {400, -3700, 601}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{64, 451, 601}, {63, 301, 151}}, 3, 1, {{3000, -2500, 301}, {3600, -2400, 601}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{70, 451, 601}, {71, 301, 151}}, 3, 1, {{3900, 300, 301}, {4000, 900, 601}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{83, 1351, 1501}, {84, 1201, 1051}}, 3, 1, {{5400, -2400, 1201}, {5500, -1800, 1501}}},
+};
+static const NETLizard_Level_Door CT3DEp3_Level_Door_11[] = {
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{5, 150, 300}, {6, 0, -150}}, 3, 1, {{-300, -2200, 0}, {300, -2100, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{14, 150, 300}, {15, 0, -150}}, 3, 1, {{2100, -3400, 0}, {2700, -3300, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{20, 150, 300}, {21, 0, -150}}, 3, 1, {{4800, -1200, 0}, {4900, -600, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{29, 150, 300}, {30, 0, -150}}, 3, 1, {{2100, -300, 0}, {2200, 300, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{31, 150, 300}, {32, 0, -150}}, 3, 1, {{-300, 2100, 0}, {300, 2200, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{40, 150, 300}, {41, 0, -150}}, 3, 1, {{-5100, 5100, 0}, {-4500, 5200, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{46, 150, 300}, {47, 0, -150}}, 3, 1, {{-3400, 2100, 0}, {-3300, 2700, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{55, 150, 300}, {56, 0, -150}}, 3, 1, {{-2200, -300, 0}, {-2100, 300, 300}}},
+};
+static const NETLizard_Level_Door CT3DEp3_Level_Door_12[] = {
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 12, {{4, 450, 600}, {3, 300, 150}}, 3, 1, {{-2700, 2700, 300}, {-2100, 2800, 600}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 12, {{17, 150, 300}, {18, 0, -150}}, 3, 1, {{3900, -1200, 0}, {4000, -600, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 12, {{23, 150, 300}, {24, 0, -150}}, 3, 1, {{5400, 0, 0}, {5500, 600, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 12, {{28, 450, 600}, {27, 300, 150}}, 3, 1, {{3300, 2700, 300}, {3900, 2800, 600}}},
+};
+static const NETLizard_Level_Door CT3DEp3_Level_Door_14[] = {
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{1, 150, 300}, {0, 0, -150}}, 3, 1, {{1199, 2100, 0}, {1299, 2700, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{15, 150, 300}, {16, 0, -150}}, 3, 1, {{4599, 2100, 0}, {4699, 2700, 300}}},
+    {NL_CONTR_TERRORISM_3D_EPISODE_3, 0, {{25, 550, 700}, {26, 400, 250}}, 3, 1, {{8300, 600, 400}, {8400, 1200, 700}}},
+};
+static const NETLizard_Level_Door *CT3DEp3_Level_Door[] = {
+    NULL,
+    CT3DEp3_Level_Door_1, CT3DEp3_Level_Door_2, CT3DEp3_Level_Door_3, CT3DEp3_Level_Door_4, CT3DEp3_Level_Door_5,
+    CT3DEp3_Level_Door_6, CT3DEp3_Level_Door_7, CT3DEp3_Level_Door_8, CT3DEp3_Level_Door_9, CT3DEp3_Level_Door_10,
+    CT3DEp3_Level_Door_11, CT3DEp3_Level_Door_12, NULL, CT3DEp3_Level_Door_14, NULL
+};
+static const NLint CT3DEp3_Level_Door_Count[] = {
+    0,
+    COUNTOF(CT3DEp3_Level_Door_1), COUNTOF(CT3DEp3_Level_Door_2), COUNTOF(CT3DEp3_Level_Door_3), COUNTOF(CT3DEp3_Level_Door_4), COUNTOF(CT3DEp3_Level_Door_5),
+    COUNTOF(CT3DEp3_Level_Door_6), COUNTOF(CT3DEp3_Level_Door_7), COUNTOF(CT3DEp3_Level_Door_8), COUNTOF(CT3DEp3_Level_Door_9), COUNTOF(CT3DEp3_Level_Door_10),
+    COUNTOF(CT3DEp3_Level_Door_11), COUNTOF(CT3DEp3_Level_Door_12), 0 , COUNTOF(CT3DEp3_Level_Door_14), 0
+};
+
+static const NETLizard_Level_Door **Game3D_Level_Door[] = {
+    NULL,
+    CT3D_Level_Door,
+    Specnaz3D_Level_Door,
+    CT3DEp2_Level_Door,
+    Egypt3D_Level_Door,
+    Clone3D_Level_Door,
+    CT3DEp3_Level_Door,
+};
+
+static const NLint *Game3D_Level_Door_Count[] = {
+    NULL,
+    CT3D_Level_Door_Count,
+    Specnaz3D_Level_Door_Count,
+    CT3DEp2_Level_Door_Count,
+    Egypt3D_Level_Door_Count,
+    Clone3D_Level_Door_Count,
+    CT3DEp3_Level_Door_Count,
+};
+
 const NETLizard_Level_Door * nlGet3DGameDoor(NLenum game, NLint level, NLint item_id, NLint *length)
 {
-    if(game == NL_SHADOW_OF_EGYPT_3D)
+    const NETLizard_Level_Door **doors = Game3D_Level_Door[game];
+    if(!doors)
     {
-        const NETLizard_Level_Door *ret = Egypt3D_Level_Door[level];
         if(length)
-            *length = Egypt3D_Level_Door_Count[level];
-        return ret;
+            *length = 0;
+        return NULL;
     }
-    if(game == NL_CONTR_TERRORISM_3D)
-    {
-        const NETLizard_Level_Door *ret = CT3D_Level_Door[level];
-        if(length)
-            *length = CT3D_Level_Door_Count[level];
-        return ret;
-    }
-    if(game == NL_ARMY_RANGER_3D)
-    {
-        const NETLizard_Level_Door *ret = Specnaz3D_Level_Door[level];
-        if(length)
-            *length = Specnaz3D_Level_Door_Count[level];
-        return ret;
-    }
-    if(game == NL_CONTR_TERRORISM_3D_EPISODE_2)
-    {
-        const NETLizard_Level_Door *ret = CT3DEp2_Level_Door[level];
-        if(length)
-            *length = CT3DEp2_Level_Door_Count[level];
-        return ret;
-    }
-    if(game == NL_CLONE_3D)
-    {
-        const NETLizard_Level_Door *ret = Clone3D_Level_Door[level];
-        if(length)
-            *length = Clone3D_Level_Door_Count[level];
-        return ret;
-    }
-    return NULL;
+    const NLint *counts = Game3D_Level_Door_Count[game];
+    const NETLizard_Level_Door *ret = doors[level];
+    if(length)
+        *length = counts[level];
+    return ret;
 }
 
 char * make_resource_file_path(const char *format, int index, const char *resc_path)

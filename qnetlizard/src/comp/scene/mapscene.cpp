@@ -113,7 +113,7 @@ MapScene::MapScene(QWidget *parent)
     AddActor(m_shadowActor);
     m_shadowRenderer = new NETLizardShadowModelRenderer;
     m_shadowActor->SetRenderable(m_shadowRenderer);
-    m_shadowRenderer->SetCull(settings->GetSetting<bool>("RENDER/scene_cull"));
+    //m_shadowRenderer->SetCull(settings->GetSetting<bool>("RENDER/scene_cull"));
     int method = settings->GetSetting<int>("RENDER/shadow", SHADOW_Z_FAIL);
     m_shadowActor->SetEnabled(method > 0);
     m_shadowRenderer->SetStencilShadowMethod(method);
@@ -207,6 +207,10 @@ void MapScene::Update(float delta)
             //clear = true;
         }
         else if(res == NETLizard_Collision_Testing_Scene_Pass)
+        {
+            p = pos;
+        }
+        else if(res == NETLizard_Collision_Testing_Scene_Missing_Plane)
         {
             p = pos;
         }
@@ -552,7 +556,7 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
     else if(name == "RENDER/scene_cull")
     {
         m_renderer->SetCull(value.toBool());
-        m_shadowRenderer->SetCull(m_renderer->Cull());
+        //m_shadowRenderer->SetCull(m_renderer->Cull());
         m_debugRenderer->SetCull(m_renderer->Cull());
     }
     else if(name == "CONTROL_3D/move_sens")
@@ -670,15 +674,6 @@ int MapScene::RayIntersect()
        fprintf(stderr, "item -> %d: obj_index: %d, item_type: %d, count: %d, plane_count: %d\n",
                 collision_id, mesh->obj_index, mesh->item_type, mesh->count, mesh->plane_count); fflush(stderr);
 
-       const char g[] = "NL_CLONE_3D";
-       fprintf(stderr, "{%s, %d, {{%d, %d, %d}, {}}, 3, 2, {{%d, %d, %d}, {%d, %d, %d}}},\n",
-               g, 0,
-               collision_id,
-               //(int)mesh->position[2] + (int)mesh->box.min[2], (int)mesh->position[2] + (int)mesh->box.max[2],
-               (int)mesh->position[1] + (int)mesh->box.min[1], (int)mesh->position[1] + (int)mesh->box.max[1],
-               (int)mesh->position[0] + (int)mesh->box.min[0], (int)mesh->position[1] + (int)mesh->box.min[1], (int)mesh->position[2] + (int)mesh->box.min[2],
-               (int)mesh->position[0] + (int)mesh->box.max[0], (int)mesh->position[1] + (int)mesh->box.max[1], (int)mesh->position[2] + (int)mesh->box.max[2]
-               ); fflush(stderr);
         return collision_id;
     }
     return -1;

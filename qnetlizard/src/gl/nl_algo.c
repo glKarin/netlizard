@@ -350,12 +350,14 @@ static int NETLizard_GetTopSceneUnderPoint(const GL_NETLizard_3D_Model *netlizar
     return res;
 }
 
-static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *mesh, const nl_vector3_t *new_pos, unsigned under, float *rglz)
+static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *mesh, const nl_vector3_t *new_pos, unsigned under, float w, float *rglz)
 {
     if(!mesh || !new_pos)
         return 0;
     unsigned int j;
-    const bound_t box = SCENE_BOUND(mesh);
+    bound_t box = SCENE_BOUND(mesh);
+    nl_vector3_t expand = VECTOR3(w, w, 0);
+    bound_expand(&box, &expand);
     for(j = 0; j < mesh->plane_count; j++)
     {
         // 平面是否向上
@@ -393,9 +395,9 @@ static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *
             }
             else
             {
-                nl_vector3_t npoint = point;
-                vector3_moveve(&npoint, &dir, -1); // TODO: has precision problem: 0.0001
-                if(!NETLizard_PointInScenePlane(mesh, &npoint))
+                //nl_vector3_t npoint = point;
+                //vector3_moveve(&npoint, &dir, -1); // TODO: has precision problem: 0.0001
+                if(!NETLizard_PointInScenePlane(mesh, &point))
                     continue;
             }
             if(rglz)
@@ -419,6 +421,7 @@ static int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model
 
     unsigned has = 0;
     float zcoord;
+    //PRINT("plane_count %d %d", mesh->plane_count, mesh->plane_type);
     if(include_item)
     {
         unsigned int j;
@@ -433,7 +436,7 @@ static int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model
             if(!bound_point_in_box2d(&aabb, new_pos))
                 continue;
             float f;
-            int r = NETLizard_GetMeshFloorZCoordInScenePoint(netlizard_3d_model->item_meshes + j, new_pos, 1, &f);
+            int r = NETLizard_GetMeshFloorZCoordInScenePoint(netlizard_3d_model->item_meshes + j, new_pos, 1, obj->radius, &f);
             if(r)
             {
                 zcoord = (has++) ? _MAX(zcoord, f) : f;
@@ -460,7 +463,7 @@ static int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model
                     if(!bound_point_in_box2d(&aabb, new_pos))
                         continue;
                     float f;
-                    int r = NETLizard_GetMeshFloorZCoordInScenePoint(netlizard_3d_model->item_meshes + j, new_pos, 1, &f);
+                    int r = NETLizard_GetMeshFloorZCoordInScenePoint(netlizard_3d_model->item_meshes + j, new_pos, 1, obj->radius, &f);
                     if(r)
                     {
                         zcoord = (has++) ? _MAX(zcoord, f) : f;
@@ -472,7 +475,7 @@ static int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model
     }
 
     float f;
-    int r = NETLizard_GetMeshFloorZCoordInScenePoint(mesh, new_pos, 0, &f);
+    int r = NETLizard_GetMeshFloorZCoordInScenePoint(mesh, new_pos, 0, 1.0f, &f);
     if(r)
     {
         zcoord = (has++) ? _MAX(zcoord, f) : f;

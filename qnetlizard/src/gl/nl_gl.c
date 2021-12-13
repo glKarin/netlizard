@@ -12,6 +12,8 @@
 #include "lib/plane.h"
 #include "lib/bound.h"
 
+//#define MAKE_WITH_SCENE_BOUND_IF_NO_PLANE_DATA
+
 #define PRINT(fmt, args...) { fprintf(stderr, fmt, ##args); fprintf(stderr, "\n"); fflush(stderr); }
 
 GLvoid delete_GL_NETLizard_3D_Material(GL_NETLizard_3D_Material *mat)
@@ -98,7 +100,7 @@ void delete_GL_NETLizard_3D_Model(GL_NETLizard_3D_Model *model)
 	}
 }
 
-static GL_NETLizard_3D_Plane * NETLizard_CalePlaneWithVertex(const GL_NETLizard_3D_Mesh *m, GLint *count)
+static GL_NETLizard_3D_Plane * NETLizard_CalePlaneWithVertex(const GL_NETLizard_3D_Mesh *m, GLuint *count)
 {
     if(count)
         *count = 0;
@@ -417,6 +419,7 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
             }
             else // If not plane data, make a floor plane with bound data.
 			{
+#ifdef MAKE_WITH_SCENE_BOUND_IF_NO_PLANE_DATA
                 GLuint plane_count = 1;
                 plane_t ps[6];
 				bound_t item_box = {
@@ -447,9 +450,14 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                     planes[q].normal[2] = VECTOR3_Z(ps[o].normal);
 					q++;
 				}
-				m->plane_count = plane_count;
-				m->plane = planes;
+                m->plane_count = plane_count;
+                m->plane = planes;
                 m->plane_type = 3;
+#else
+                m->plane_count = 0;
+                m->plane = NULL;
+                m->plane_type = 0;
+#endif
             }
 
             m->box.min[0] = (GLfloat)mesh->box.min[0];
@@ -665,6 +673,33 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
             m->box.max[0] = (GLfloat)mesh->item_mesh.box.max[0];
             m->box.max[1] = (GLfloat)mesh->item_mesh.box.max[1];
             m->box.max[2] = (GLfloat)mesh->item_mesh.box.max[2];
+
+#if 0
+            if((m->item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL) || (m->item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL))
+            {
+                const char g[] = "NL_CONTR_TERRORISM_3D_EPISODE_3";
+                if(m->obj_index == 38 || m->obj_index == 40)
+                {
+                    fprintf(stderr, "{%s, %d, {{}, {%d, %d, %d}}, 3, 1, {{%d, %d, %d}, {%d, %d, %d}}},\n",
+                            g, 0,
+                            i,
+                            (int)m->position[2] + (int)m->box.max[2] - ((int)m->box.max[2] - (int)m->box.min[2]), (int)m->position[2] + (int)m->box.min[2] - ((int)m->box.max[2] - (int)m->box.min[2]),
+                            (int)m->position[0] + (int)m->box.min[0], (int)m->position[1] + (int)m->box.min[1], (int)m->position[2] + (int)m->box.min[2],
+                            (int)m->position[0] + (int)m->box.max[0], (int)m->position[1] + (int)m->box.max[1], (int)m->position[2] + (int)m->box.max[2]
+                            ); fflush(stderr);
+                }
+                else
+                {
+                    fprintf(stderr, "{%s, %d, {{%d, %d, %d}, {}}, 3, 1, {{%d, %d, %d}, {%d, %d, %d}}},\n",
+                            g, 0,
+                            i,
+                            (int)m->position[2] + (int)m->box.min[2], (int)m->position[2] + (int)m->box.max[2],
+                            (int)m->position[0] + (int)m->box.min[0], (int)m->position[1] + (int)m->box.min[1], (int)m->position[2] + (int)m->box.min[2],
+                            (int)m->position[0] + (int)m->box.max[0], (int)m->position[1] + (int)m->box.max[1], (int)m->position[2] + (int)m->box.max[2]
+                            ); fflush(stderr);
+                }
+            }
+#endif
 		}
 	}
 

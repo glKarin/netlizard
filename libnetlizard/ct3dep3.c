@@ -141,7 +141,7 @@ NLboolean nlLoadCT3DEp3ModelData(const char* data, NLsizei res, NLint paramInt, 
 	if(paramInt == 13 || paramInt == 15)
         return NL_FALSE; // TODO: Level 13 and 15 is not support now.
     int dr = 0; // has sky
-	if (paramInt == 6 || paramInt == 8 || paramInt == 9 || paramInt == 10) {
+    if (paramInt == 5 || paramInt == 6 || paramInt == 8 || paramInt == 9 || paramInt == 10) {
 		dr = 1;
 	}
     jboolean b = (paramInt >= 8) ? jtrue : jfalse;
