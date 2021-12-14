@@ -31,6 +31,7 @@ private Q_SLOTS:
     void OnTypeCurrentIndexChanged(int index);
     void SetLvlFile(const QString &file);
     void SetResourceDirPath(const QString &file);
+    void UpdateSceneInfo();
 
 private:
     MapScene *m_mapScene;

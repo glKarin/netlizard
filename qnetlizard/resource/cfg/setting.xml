@@ -50,6 +50,8 @@
             <option name="option" label="Linear" value="1"></option>
             <option name="option" label="Exp" value="2"></option>
         </item>
+        <item alias="RENDER/clear_color" name="Clear color" widget="color_dialog" type="color" default-value="#000000">
+        </item>
     </category>
 
     <category name="Globals" alias="GLOBALS" group="Viewer">

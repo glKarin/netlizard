@@ -23,7 +23,8 @@ HEADERS += \
     src/misc/settings.h \
     src/gl/nl_gl_algo_debug.h \
     src/comp/renderer/netlizardmapmodeldebugrenderer.h \
-    src/comp/component/mapeventhandlercomponent.h
+    src/comp/component/mapeventhandlercomponent.h \
+    src/widget/statusbar.h
 
 SOURCES += \
     main.cpp \
@@ -33,7 +34,8 @@ SOURCES += \
     src/misc/settings.cpp \
     src/gl/nl_gl_algo_debug.cpp \
     src/comp/renderer/netlizardmapmodeldebugrenderer.cpp \
-    src/comp/component/mapeventhandlercomponent.cpp
+    src/comp/component/mapeventhandlercomponent.cpp \
+    src/widget/statusbar.cpp
 
 # Widget
 HEADERS += \

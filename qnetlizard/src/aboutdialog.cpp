@@ -27,7 +27,7 @@ void AboutDialog::Init()
                  "<b>" LIB_NAME "</b> is a tools of NETLizard J2ME game resource." T_ENDL
                 T_ENDL
                 "Version: " APP_VER T_ENDL
-                "Build: %1" T_ENDL
+                "Build: %1(" APP_STATE ")" T_ENDL
                 "Dev: <a href='mailto:" APP_EMAIL "'>" APP_DEV "</a>" T_ENDL
                 "Github: <a href='" APP_GITHUB "'>glKarin/netlizard</a>" T_ENDL
                 ).arg(NETLizard::build_time_string());

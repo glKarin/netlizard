@@ -28,6 +28,7 @@ public:
 signals:
     void titleChanged(const QString &title);
     void statusTextChanged(const QString &statusText);
+    void labelTextChanged(const QString &labelText);
     
 public slots:
     virtual void Reset();

@@ -550,11 +550,11 @@ NLboolean nlLoadEgypt3DModelData(const char* data, NLsizei size, const char *res
     model->data.count = mesh_count;
     model->item_data.data = item_meshes;
     model->item_data.count = item_mesh_count;
-	model->start_angle[0] = lv->int__aL__rotation;
-	model->start_angle[1] = lv->int__aM__rotation;
-	model->start_pos[0] = lv->int_array__aN__translation[0] >> 16;
-	model->start_pos[1] = lv->int_array__aN__translation[1] >> 16;
-	model->start_pos[2] = lv->int_array__aN__translation[2] >> 16;
+	model->start_rotation[0] = lv->int__aL__rotation;
+	model->start_rotation[1] = lv->int__aM__rotation;
+	model->start_position[0] = lv->int_array__aN__translation[0] >> 16;
+	model->start_position[1] = lv->int_array__aN__translation[1] >> 16;
+	model->start_position[2] = lv->int_array__aN__translation[2] >> 16;
     model->type = NL_EGYPT_3D_MAP_MODEL;
     model->game = NL_SHADOW_OF_EGYPT_3D;
     model->has_sky = 0;

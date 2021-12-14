@@ -755,12 +755,12 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
 	glmodel->item_count = item_data_length;
 	glmodel->texes = texes;
 	glmodel->tex_count = tex_count;
-	glmodel->start_pos[0] = (GLfloat)model->start_pos[0];
-	glmodel->start_pos[1] = (GLfloat)model->start_pos[1];
-	glmodel->start_pos[2] = (GLfloat)model->start_pos[2];
-    PRINT("%d %d %d", model->start_pos[0] << 16,model->start_pos[1]  << 16,model->start_pos[2] << 16)
-	glmodel->start_angle[0] = (GLfloat)model->start_angle[0];
-	glmodel->start_angle[1] = (GLfloat)model->start_angle[1];
+	glmodel->start_position[0] = (GLfloat)model->start_position[0];
+	glmodel->start_position[1] = (GLfloat)model->start_position[1];
+	glmodel->start_position[2] = (GLfloat)model->start_position[2];
+    //PRINT("%d %d %d", model->start_position[0] << 16,model->start_position[1]  << 16,model->start_position[2] << 16)
+	glmodel->start_rotation[0] = (GLfloat)model->start_rotation[0];
+	glmodel->start_rotation[1] = (GLfloat)model->start_rotation[1];
 	glmodel->bsp_data = bsp_data;
 	glmodel->bsp_count = bsp_count;
     if(sky.texid)

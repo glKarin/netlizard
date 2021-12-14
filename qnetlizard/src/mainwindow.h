@@ -11,6 +11,7 @@ class SceneTreeWidget;
 class SceneInfoWidget;
 class ActorPropertyWidget;
 class NLScene;
+class StatusBar;
 
 class MainWindow : public QMainWindow
 {
@@ -38,7 +39,8 @@ private slots:
     void MenuActionSlot(QAction *action);
     void ToggleLogDialog();
     void OpenSceneEditor();
-    void SetStatusText(const QString &str = QString());
+    void SetLabelTitleText(const QString &str);
+    void SetStatusText(const QString &str);
 
 private:
     BaseViewer * GenViewer(const QString &type);
@@ -54,6 +56,7 @@ private:
     SceneTreeWidget *m_sceneTreeWidget;
     SceneInfoWidget *m_sceneInfoWidget;
     ActorPropertyWidget *m_actorWidget;
+    StatusBar *m_statusBar;
 
     Q_DISABLE_COPY(MainWindow)
     

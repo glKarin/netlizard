@@ -26,6 +26,7 @@ private Q_SLOTS:
     void OnBoolChanged(bool b);
     void OnIntChanged(int i);
     void OnItemDestroy(QObject *item = 0);
+    void ChooseColor();
 
 private:
     QString m_name;

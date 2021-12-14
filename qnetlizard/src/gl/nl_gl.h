@@ -96,8 +96,8 @@ typedef struct _GL_NETLizard_3D_Model
     texture_s **texes;
 	GLuint tex_count;
     texture_s *bg_tex;
-	GLfloat start_pos[3];
-	GLfloat start_angle[2];
+	GLfloat start_position[3];
+	GLfloat start_rotation[2];
 	GL_NETLizard_BSP_Tree_Node *bsp_data;
 	GLuint bsp_count;
 } GL_NETLizard_3D_Model;

@@ -358,11 +358,11 @@ NLboolean nlLoadSpecnaz3DModelData(const char* data, NLsizei res, NLint paramInt
 		}
 	}
 
-	model->start_angle[0] = lv->int__cC__rotation;
-	model->start_angle[1] = lv->int__cE__rotation;
-	model->start_pos[0] = lv->int_array__cF__translation[0] >> 16;
-	model->start_pos[1] = lv->int_array__cF__translation[1] >> 16;
-	model->start_pos[2] = lv->int_array__cF__translation[2] >> 16;
+	model->start_rotation[0] = lv->int__cC__rotation;
+	model->start_rotation[1] = lv->int__cE__rotation;
+	model->start_position[0] = lv->int_array__cF__translation[0] >> 16;
+	model->start_position[1] = lv->int_array__cF__translation[1] >> 16;
+	model->start_position[2] = lv->int_array__cF__translation[2] >> 16;
 
     // free
     delete_class__k__lvl(lv);

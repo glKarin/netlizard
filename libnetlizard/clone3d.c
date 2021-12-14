@@ -463,11 +463,11 @@ NLboolean nlLoadClone3DModelData(const char* data, NLsizei size, const char *res
     model->data.count = mesh_count;
     model->item_data.data = item_meshes;
     model->item_data.count = item_mesh_count;
-    model->start_angle[0] = lv->int__Z__rotation;
-    model->start_angle[1] = lv->int__aa__rotation;
-    model->start_pos[0] = lv->int_array__ab__translation[0] >> 16;
-    model->start_pos[1] = lv->int_array__ab__translation[1] >> 16;
-    model->start_pos[2] = lv->int_array__ab__translation[2] >> 16;
+    model->start_rotation[0] = lv->int__Z__rotation;
+    model->start_rotation[1] = lv->int__aa__rotation;
+    model->start_position[0] = lv->int_array__ab__translation[0] >> 16;
+    model->start_position[1] = lv->int_array__ab__translation[1] >> 16;
+    model->start_position[2] = lv->int_array__ab__translation[2] >> 16;
     model->game = NL_CLONE_3D;
     model->type = NL_CLONE_3D_MAP_MODEL;
     model->has_sky = 0;

@@ -82,6 +82,11 @@ void MapViewer::Init()
 
     connect(m_gameComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));
 
+    connect(m_mapScene, SIGNAL(currentSceneChanged(int)), this, SLOT(UpdateSceneInfo()));
+    connect(m_mapScene, SIGNAL(currentCollisionItemChanged(int)), this, SLOT(UpdateSceneInfo()));
+    connect(m_mapScene, SIGNAL(currentViewItemChanged(int)), this, SLOT(UpdateSceneInfo()));
+    connect(m_mapScene, SIGNAL(currentViewSceneChanged(int)), this, SLOT(UpdateSceneInfo()));
+
     SetCentralWidget(m_mapScene);
     SetTitle("NETLizard 3D FPS map viewer");
 }
@@ -185,7 +190,7 @@ bool MapViewer::OpenFile()
         QMessageBox::warning(this, "Error", "Unsupport 3D game!");
         break;
     }
-    SetStatusText(QString("%1(level-%2)  lvl: %3, resource directory: %4 -> %5").arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(level).arg(m_lvlPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
+    SetTitleLabel(QString("%1(level-%2)  lvl: %3, resource directory: %4 -> %5").arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(level).arg(m_lvlPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
     if(res)
     {
         m_mapScene->setFocus();
@@ -196,4 +201,15 @@ bool MapViewer::OpenFile()
         QMessageBox::warning(this, "Error", "Load 3D game map file fail!");
     }
     return res;
+}
+
+void MapViewer::UpdateSceneInfo()
+{
+    QString str = QString("Collision(Scene: %1, Item: %2) View(Scene: %3, Item: %4)")
+            .arg(m_mapScene->CurrentScene())
+            .arg(m_mapScene->CurrentCollisionItem())
+            .arg(m_mapScene->CurrentViewScene())
+            .arg(m_mapScene->CurrentViewItem())
+            ;
+    SetStatusText(str);
 }

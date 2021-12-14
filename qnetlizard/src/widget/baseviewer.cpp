@@ -45,7 +45,11 @@ void BaseViewer::SetStatusText(const QString &str)
 
 void BaseViewer::SetTitleLabel(const QString &str)
 {
-    m_titleLabel->setText(str);
+    if(m_titleLabel->text() != str)
+    {
+        m_titleLabel->setText(str);
+        emit labelTextChanged(str);
+    }
 }
 
 void BaseViewer::SetTitleLabelVisible(bool visible)

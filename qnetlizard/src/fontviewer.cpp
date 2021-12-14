@@ -164,7 +164,7 @@ bool FontViewer::LoadFont()
     {
         m_renderButton->setEnabled(true);
         m_textInput->setEnabled(true);
-        SetStatusText(QString("config file: %1, texture file: %2 -> character count: %3").arg(m_cfFile).arg(m_fntFile).arg(m_fontScene->Font()->char_count));
+        SetTitleLabel(QString("config file: %1, texture file: %2 -> character count: %3").arg(m_cfFile).arg(m_fntFile).arg(m_fontScene->Font()->char_count));
         QMessageBox::warning(this, "Success", "Load font success!");
     }
     else

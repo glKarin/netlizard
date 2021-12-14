@@ -31,6 +31,7 @@
 #include "sceneinfowidget.h"
 #include "scenetreewidget.h"
 #include "actorpropertywidget.h"
+#include "statusbar.h"
 
 #define MAIN_WINDOW_INTERNAL_STATE_VERSION -1
 
@@ -45,7 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_logDialog(0),
     m_sceneTreeWidget(0),
     m_sceneInfoWidget(0),
-    m_actorWidget(0)
+    m_actorWidget(0),
+    m_statusBar(0)
 {
     setObjectName("MainWindow");
     Init();
@@ -67,7 +69,7 @@ void MainWindow::Init()
     m_toolBar = new QToolBar(this);
     m_centralWidget = new QStackedWidget(this);
     m_toolBar->setObjectName("QToolBar_mainToolBar");
-
+    m_statusBar = new StatusBar;
     menuBar = new QMenuBar(this);
 
     const HomeCellItemMap &Map = IndexViewer::ActionMap();
@@ -132,6 +134,9 @@ void MainWindow::Init()
 //    int w = settings->GetSetting("WINDOW/width", 480);
 //    int h = settings->GetSetting("WINDOW/height", 360);
 //    resize(w, h);
+
+    setStatusBar(m_statusBar);
+
     setWindowTitle(qApp->applicationName());
     //resize(640, 480);
     MenuActionSlot(0);
@@ -155,7 +160,7 @@ void MainWindow::CloseCurrentWidget()
         m_sceneInfoWidget->Reset();
     if(m_actorWidget)
         m_actorWidget->Reset();
-    SetStatusText();
+    m_statusBar->Reset(true);
 }
 
 void MainWindow::MenuActionSlot(QAction *action)
@@ -272,6 +277,7 @@ BaseViewer * MainWindow::GenViewer(const QString &type)
         //SetCurrentWidget(viewer);
         connect(viewer, SIGNAL(titleChanged(const QString &)), this, SLOT(setWindowTitle(const QString &)));
         connect(viewer, SIGNAL(statusTextChanged(const QString &)), this, SLOT(SetStatusText(const QString &)));
+        connect(viewer, SIGNAL(labelTextChanged(const QString &)), this, SLOT(SetLabelTitleText(const QString &)));
         setWindowTitle(viewer->Title());
     }
     else
@@ -378,9 +384,22 @@ void MainWindow::moveEvent(QMoveEvent *event)
 
 void MainWindow::SetStatusText(const QString &str)
 {
-    QStatusBar *bar = statusBar();
-    bar->showMessage(str);
-    bar->setVisible(!str.isEmpty());
+    bool isEmpty = str.isEmpty();
+    if(isEmpty)
+        m_statusBar->ClearTemporaryMessage();
+    else
+        m_statusBar->ShowTemporaryMessage(str, 5000);
+    m_statusBar->setVisible(true);
+}
+
+void MainWindow::SetLabelTitleText(const QString &str)
+{
+    bool isEmpty = str.isEmpty();
+    if(isEmpty)
+        m_statusBar->ClearPermanentMessage();
+    else
+        m_statusBar->ShowPermanentMessage(str);
+    m_statusBar->setVisible(true);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

@@ -20,6 +20,11 @@
 #define APP_CODE "ct3d"
 #define APP_RELEASE 1
 #define APP_EMAIL "beyondk2000@gmail.com"
+#ifdef _DEV_TEST
+#define APP_STATE "testing"
+#else
+#define APP_STATE "stable"
+#endif
 
 #define APP_GITHUB "https://github.com/glKarin/netlizard"
 

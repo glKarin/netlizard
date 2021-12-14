@@ -8,6 +8,8 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QButtonGroup>
+#include <QPushButton>
+#include <QColorDialog>
 
 #include "settings.h"
 #include "qdef.h"
@@ -156,6 +158,17 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
             connect(w, SIGNAL(currentIndexChanged(int)), this, SLOT(OnIntChanged(int)));
             widget = w;
         }
+        else if(item.widget == "color_dialog")
+        {
+            QPushButton *w = new QPushButton;
+            w->setObjectName(item.name);
+            QString target = settings->GetSetting<QString>(item.name, item.value.toString());
+            w->setProperty("color", target);
+            w->setText(target.toUpper());
+            w->setStyleSheet(QString("QPushButton { color: %1; }").arg(target));
+            connect(w, SIGNAL(clicked()), this, SLOT(ChooseColor()));
+            widget = w;
+        }
 
         if(widget)
         {
@@ -223,4 +236,26 @@ void SettingGroup::OnItemDestroy(QObject *obj)
     QObject *o = obj ? obj : sender();
     if(o)
         DEBUG_DESTROY_QQV(obj)
+}
+
+void SettingGroup::ChooseColor()
+{
+    QObject *s = sender();
+    if(!s)
+        return;
+    QWidget *w = dynamic_cast<QWidget *>(s);
+    if(!w)
+        return;
+    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+    QString name = s->objectName();
+    QVariant va = s->property("color");
+    QColor color = QColorDialog::getColor(QColor(va.toString()), w);
+    QString c(color.name());
+    if(instanceofv(w, QPushButton))
+    {
+        QPushButton *button = static_cast<QPushButton *>(w);
+        button->setText(c.toUpper());
+        button->setStyleSheet(QString("QPushButton { color: %1; }").arg(c));
+    }
+    settings->SetSetting<QString>(name, c);
 }

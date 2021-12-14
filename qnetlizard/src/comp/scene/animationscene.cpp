@@ -29,6 +29,7 @@ AnimationScene::AnimationScene(QWidget *parent)
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
     SetFPS(settings->GetSetting<int>("ENGINE/fps", 0));
     SetUpdateInterval(settings->GetSetting<int>("ENGINE/update_interval", 10));
+    SetClearColor(QColor(settings->GetSetting<QString>("RENDER/clear_color", "#000000")));
     SetAnimFPS(10);
 
     SimpleCameraActor *camera = new SimpleCameraActor(NLProperties("camera_z_is_up", true));
@@ -316,4 +317,6 @@ void AnimationScene::OnSettingChanged(const QString &name, const QVariant &value
         m_control->SetFreelookSens(value.toFloat());
     else if(name == "CONTROL_3D/fovy_sens")
         m_control->SetFovySens(value.toFloat());
+    else if(name == "RENDER/clear_color")
+        SetClearColor(QColor(value.toString()));
 }

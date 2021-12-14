@@ -271,8 +271,8 @@ typedef struct NETLizard_3D_Model_s
 {
     NETLizard_Game game;
     NETLizard_3D_Model_Type type; // 3D model type
-    NLint start_pos[3]; // player start position
-    NLint start_angle[2]; // player start direction
+    NLint start_position[3]; // player start position
+    NLint start_rotation[2]; // player start direction
     struct {
         NETLizard_3D_Mesh *data;
         NLuint count;

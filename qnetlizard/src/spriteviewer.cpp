@@ -151,7 +151,7 @@ bool SpriteViewer::LoadSprite()
         const int Co = m_spriteScene->Count();
         for(int i = 0; i < Co; i++)
             m_indexList->addItem(QString::number(i));
-        SetStatusText(QString("config file: %1, texture file: %2 -> sprite count: %3").arg(m_cuFile).arg(m_uFile).arg(m_spriteScene->Sprite()->sprite_count));
+        SetTitleLabel(QString("config file: %1, texture file: %2 -> sprite count: %3").arg(m_cuFile).arg(m_uFile).arg(m_spriteScene->Sprite()->sprite_count));
     }
     else
     {

@@ -28,6 +28,7 @@ ImageScene::ImageScene(QWidget *parent)
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
     SetFPS(settings->GetSetting<int>("ENGINE/fps", 0));
     SetUpdateInterval(settings->GetSetting<int>("ENGINE/update_interval", 10));
+    SetClearColor(QColor(settings->GetSetting<QString>("RENDER/clear_color", "#000000")));
 
     memset(&m_data.data, 0, sizeof(m_data.data));
     m_data.type = NL_TEXTURE_UNKNOWN;
@@ -371,4 +372,6 @@ void ImageScene::OnSettingChanged(const QString &name, const QVariant &value, co
         m_imageControl->SetRotSens(value.toFloat());
     else if(name == "CONTROL_2D/trans_sens")
         m_control->SetMoveSens(value.toFloat());
+    else if(name == "RENDER/clear_color")
+        SetClearColor(QColor(value.toString()));
 }

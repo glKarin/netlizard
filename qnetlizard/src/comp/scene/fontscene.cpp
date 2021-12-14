@@ -24,6 +24,7 @@ FontScene::FontScene(QWidget *parent) :
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
     SetFPS(settings->GetSetting<int>("ENGINE/fps", 0));
     SetUpdateInterval(settings->GetSetting<int>("ENGINE/update_interval", 10));
+    SetClearColor(QColor(settings->GetSetting<QString>("RENDER/clear_color", "#000000")));
 
     SimpleCameraActor *camera = new SimpleCameraActor(NLProperties("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho))("enable_control", false));
     camera->setObjectName("main_camera_2d");
@@ -136,4 +137,6 @@ void FontScene::OnSettingChanged(const QString &name, const QVariant &value, con
         SetFPS(value.toInt());
     else if(name == "ENGINE/update_interval")
         SetUpdateInterval(value.toInt());
+    else if(name == "RENDER/clear_color")
+        SetClearColor(QColor(value.toString()));
 }

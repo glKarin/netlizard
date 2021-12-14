@@ -24,6 +24,16 @@ public:
     virtual ~MapScene();
     bool IsValid() const { return m_model != 0; }
     const GL_NETLizard_3D_Model * Model() const { return m_model; }
+    int CurrentScene() const { return m_currentScene; }
+    int CurrentViewItem() const { return m_currentViewItem; }
+    int CurrentCollisionItem() const { return m_currentCollisionItem; }
+    int CurrentViewScene() const { return m_currentViewScene; }
+
+    Q_SIGNALS:
+    void currentSceneChanged(int scene);
+    void currentViewSceneChanged(int scene);
+    void currentCollisionItemChanged(int item);
+    void currentViewItemChanged(int item);
 
 public Q_SLOTS:
     bool LoadFile(const QString &file, const QString &resourcePath, int game, int level);
@@ -46,7 +56,13 @@ protected:
     private:
     void ConvToAlgoVector3(vector3_t &v);
     void ConvToRenderVector3(vector3_t &v);
-    int RayIntersect();
+    void SetCurrentScene(int scene);
+    void SetCurrentViewScene(int scene);
+    void SetCurrentViewItem(int item);
+    void SetCurrentCollisionItem(int item);
+    bool RayIntersect();
+    void UpdateCullRenderScene();
+    bool CollisionTesting(const vector3_t &oldPos);
 
 private:
     GL_NETLizard_3D_Model *m_model;
@@ -69,6 +85,10 @@ private:
     int m_noclip;
     bool m_fog;
     int m_singleScene;
+    int m_currentScene;
+    int m_currentCollisionItem;
+    int m_currentViewItem;
+    int m_currentViewScene;
 
     Q_DISABLE_COPY(MapScene)
 };

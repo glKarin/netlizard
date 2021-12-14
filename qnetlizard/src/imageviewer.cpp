@@ -167,7 +167,7 @@ bool ImageViewer::OpenFile(const QString &file)
     }
     m_saveButton->setEnabled(true);
     const texture_s *tex = m_imageScene->Texture();
-    SetStatusText(QString("%1: size %2 x %3, format %4").arg(Types[selectedIndex].second).arg(tex->width).arg(tex->height).arg(tex->format == GL_RGB ? "RGB" : "RGBA"));
+    SetTitleLabel(QString("%1: size %2 x %3, format %4").arg(Types[selectedIndex].second).arg(tex->width).arg(tex->height).arg(tex->format == GL_RGB ? "RGB" : "RGBA"));
 
     return true;
 }

@@ -138,12 +138,41 @@ NLboolean nlReadCT3DEp3ModelFile(const char* name, NLint level, const char *resc
 
 NLboolean nlLoadCT3DEp3ModelData(const char* data, NLsizei res, NLint paramInt, const char *resc_path, NETLizard_3D_Model *model)
 {
-	if(paramInt == 13 || paramInt == 15)
+    if(paramInt == 13 || paramInt == 15)
         return NL_FALSE; // TODO: Level 13 and 15 is not support now.
     int dr = 0; // has sky
     if (paramInt == 5 || paramInt == 6 || paramInt == 8 || paramInt == 9 || paramInt == 10) {
 		dr = 1;
-	}
+    }
+    /*
+            if (k.cC || k.cE) {
+                if (k.cC) {
+                    k.aC = c.c(k.hb);
+                    b(k.dv, true);
+                    k.cE = false;
+                }
+                if (k.cE) {
+                    k.aC = c.j();
+                    b(k.dv, true);
+                    k.gr = System.currentTimeMillis();
+                    k.go = k.gr + 20000L;
+                }
+            }
+            else if (!k.dq) {
+                b(k.dv, false);
+            }
+            else {
+                if (k.dr >= k.cV) {
+                    k.cC = true;
+                    k.aC = c.c(k.dr);
+                    b(k.dr, true);
+                }
+                else {
+                    b(k.dr, false);
+                }
+                k.cE = false;
+            }
+      */
     jboolean b = (paramInt >= 8) ? jtrue : jfalse;
 	/*
 	if(b)
@@ -152,7 +181,7 @@ NLboolean nlLoadCT3DEp3ModelData(const char* data, NLsizei res, NLint paramInt, 
     byte_array rms_arr;
     ARRAY_NULL(rms_arr);
     const char *parse_data = NULL;
-	if(b)
+    if(b)
     {
         new_array_with_data(&rms_arr, 1, res, data, res * 1);
         ct3dep3_god_mode_version__class_b__function_a_1string_2int__decode_recordstore_record(&rms_arr); // in j2me, it is get record from record store, and decode data.
@@ -361,11 +390,11 @@ NLboolean nlLoadCT3DEp3ModelData(const char* data, NLsizei res, NLint paramInt, 
 	}
 
     // player position/direction
-	model->start_angle[0] = lv->int__fa__rotation;
-	model->start_angle[1] = lv->int__fc__rotation;
-	model->start_pos[0] = lv->int_array__fd__translation[0] >> 16;
-	model->start_pos[1] = lv->int_array__fd__translation[1] >> 16;
-	model->start_pos[2] = lv->int_array__fd__translation[2] >> 16;
+	model->start_rotation[0] = lv->int__fa__rotation;
+	model->start_rotation[1] = lv->int__fc__rotation;
+	model->start_position[0] = lv->int_array__fd__translation[0] >> 16;
+	model->start_position[1] = lv->int_array__fd__translation[1] >> 16;
+	model->start_position[2] = lv->int_array__fd__translation[2] >> 16;
 
     // free
     delete_class__t__lvl(lv);
@@ -518,17 +547,17 @@ class__t__lvl class_t__function_b_1int_2bool__scene(const byte arrayOfByte[], bo
     jint dL;
 
     jint i1 = -2;
-	if (online)
+    if (online)
 	{
 		i1 += 20;
-	}
+    }
 	i1 += 2;
     jint i2 = marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]);
 	if (i2 != 0) {
 		//eA = new short[i2];
-	}
+    }
     jint i5;
-	for (i5 = 0; i5 < i2; i5++)
+    for (i5 = 0; i5 < i2; i5++)
 	{
 		i1 += 2;
 		//eA[i5] = ((short)marge_digit(arrayOfByte[i1], arrayOfByte[(i1 + 1)]));

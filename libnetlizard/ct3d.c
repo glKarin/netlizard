@@ -335,11 +335,11 @@ NLboolean nlLoadCT3DModelData(const char* data, NLsizei res, NLint level, const 
 	}
 
     // player position/direction
-	model->start_angle[0] = lv->int__dd__rotation;
-	model->start_angle[1] = lv->int__df__rotation;
-	model->start_pos[0] = lv->int_array__dg__translation[0] >> 16;
-	model->start_pos[1] = lv->int_array__dg__translation[1] >> 16;
-	model->start_pos[2] = lv->int_array__dg__translation[2] >> 16;
+	model->start_rotation[0] = lv->int__dd__rotation;
+	model->start_rotation[1] = lv->int__df__rotation;
+	model->start_position[0] = lv->int_array__dg__translation[0] >> 16;
+	model->start_position[1] = lv->int_array__dg__translation[1] >> 16;
+	model->start_position[2] = lv->int_array__dg__translation[2] >> 16;
 
     // free
     delete_class__h__lvl(lv);

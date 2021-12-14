@@ -24,6 +24,7 @@ SpriteScene::SpriteScene(QWidget *parent) :
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
     SetFPS(settings->GetSetting<int>("ENGINE/fps", 0));
     SetUpdateInterval(settings->GetSetting<int>("ENGINE/update_interval", 10));
+    SetClearColor(QColor(settings->GetSetting<QString>("RENDER/clear_color", "#000000")));
 
     SimpleCameraActor *camera = new SimpleCameraActor(NLProperties("type", QVariant::fromValue((int)NLSceneCamera::Type_Ortho))("enable_control", false));
     Qt::Alignment align = Qt::AlignLeft | Qt::AlignTop;
@@ -144,4 +145,6 @@ void SpriteScene::OnSettingChanged(const QString &name, const QVariant &value, c
         m_control->SetTransSens(value.toFloat());
     else if(name == "CONTROL_2D/rot_sens")
         m_control->SetRotSens(value.toFloat());
+    else if(name == "RENDER/clear_color")
+        SetClearColor(QColor(value.toString()));
 }
