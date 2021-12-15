@@ -19,7 +19,7 @@ NLSceneCameraBase::NLSceneCameraChangedNotify::NLSceneCameraChangedNotify(int ty
 
 NLSceneCameraBase::NLSceneCameraChangedNotify::~NLSceneCameraChangedNotify()
 {
-    DEBUG_DESTROY("NLSceneCameraChangedNotify")
+    DEBUG_DESTROY(NLSceneCameraChangedNotify)
 }
 
 void NLSceneCameraBase::NLSceneCameraChangedNotify::SetType(int type)

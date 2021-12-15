@@ -20,27 +20,20 @@ HEADERS += \
     src/qdef.h \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
-    src/misc/settings.h \
-    src/gl/nl_gl_algo_debug.h \
-    src/comp/renderer/netlizardmapmodeldebugrenderer.h \
-    src/comp/component/mapeventhandlercomponent.h \
-    src/widget/statusbar.h
+    src/misc/settings.h
 
 SOURCES += \
     main.cpp \
     src/qdef.cpp \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
-    src/misc/settings.cpp \
-    src/gl/nl_gl_algo_debug.cpp \
-    src/comp/renderer/netlizardmapmodeldebugrenderer.cpp \
-    src/comp/component/mapeventhandlercomponent.cpp \
-    src/widget/statusbar.cpp
+    src/misc/settings.cpp
 
 # Widget
 HEADERS += \
     src/widget/baseviewer.h \
     src/widget/settingwidget.h \
+    src/widget/statusbar.h \
     src/mainwindow.h \
     src/imageviewer.h \
     src/textviewer.h \
@@ -60,6 +53,7 @@ HEADERS += \
 SOURCES += \
     src/widget/baseviewer.cpp \
     src/widget/settingwidget.cpp \
+    src/widget/statusbar.cpp \
     src/mainwindow.cpp \
     src/imageviewer.cpp \
     src/textviewer.cpp \
@@ -92,13 +86,15 @@ HEADERS += \
     src/comp/component/simplecontrol2dcomponent.h \
     src/comp/component/simpleimagecontrolcomponent.h \
     src/comp/component/simplecameracomponent.h \
-    src/comp/component/simplelightsourcecomponent.h
+    src/comp/component/simplelightsourcecomponent.h \
+    src/comp/component/mapeventhandlercomponent.h
 SOURCES += \
     src/comp/component/simplecontrolcomponent.cpp \
     src/comp/component/simplecontrol2dcomponent.cpp \
     src/comp/component/simpleimagecontrolcomponent.cpp \
     src/comp/component/simplecameracomponent.cpp \
     src/comp/component/simplelightsourcecomponent.cpp \
+    src/comp/component/mapeventhandlercomponent.cpp
 
 HEADERS += \
     src/comp/renderer/netlizardmapmodelrenderer.h \
@@ -107,7 +103,8 @@ HEADERS += \
     src/comp/renderer/netlizardfontrenderer.h \
     src/comp/renderer/netlizardanimationmodelrenderer.h \
     src/comp/renderer/netlizardshadowmodelrenderer.h \
-    src/comp/renderer/netlizardspriterenderer.h
+    src/comp/renderer/netlizardspriterenderer.h \
+    src/comp/renderer/netlizardmapmodeldebugrenderer.h
 SOURCES += \
     src/comp/renderer/netlizardmapmodelrenderer.cpp \
     src/comp/renderer/netlizarditemmodelrenderer.cpp \
@@ -115,7 +112,8 @@ SOURCES += \
     src/comp/renderer/netlizardfontrenderer.cpp \
     src/comp/renderer/netlizardanimationmodelrenderer.cpp \
     src/comp/renderer/netlizardshadowmodelrenderer.cpp \
-    src/comp/renderer/netlizardspriterenderer.cpp
+    src/comp/renderer/netlizardspriterenderer.cpp \
+    src/comp/renderer/netlizardmapmodeldebugrenderer.cpp
 
 HEADERS += \
     src/comp/scene/imagescene.h \
@@ -253,7 +251,8 @@ HEADERS += \
     src/gl/glk.h \
     src/gl/nl_util.h \
     src/gl/nl_gl_debug.h \
-    src/gl/nl_algo.h
+    src/gl/nl_algo.h \
+    src/gl/nl_gl_algo_debug.h
 
 SOURCES += \
     src/gl/gl_texture.c \
@@ -269,7 +268,8 @@ SOURCES += \
     src/gl/glk.c \
     src/gl/nl_util.c \
     src/gl/nl_gl_debug.c \
-    src/gl/nl_algo.c
+    src/gl/nl_algo.c \
+    src/gl/nl_gl_algo_debug.cpp
 
 # Mesa GL math
 DEPENDPATH += ./lib/mesa_math

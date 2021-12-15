@@ -14,10 +14,12 @@
 #include <QMessageBox>
 #include <QComboBox>
 #include <QSpinBox>
+#include <QCheckBox>
 
 #include "mapscene.h"
 #include "netlizard.h"
 #include "qdef.h"
+#include "settings.h"
 
 MapViewer::MapViewer(QWidget *parent) :
     BaseViewer(parent),
@@ -27,10 +29,13 @@ MapViewer::MapViewer(QWidget *parent) :
     m_resourceDirChooser(0),
     m_levelSpinBox(0),
     m_openLvlButton(0),
-    m_openResourcePathButton(0)
+    m_openResourcePathButton(0),
+    m_autoscan(false),
+    m_autoscanCheckBox(0)
 {
     setObjectName("MapViewer");
     Init();
+    SetAutoscan(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<bool>("APP/autoscan_level_and_index", false));
 }
 
 MapViewer::~MapViewer()
@@ -44,6 +49,7 @@ void MapViewer::Init()
     m_mapScene = new MapScene;
     //QHBoxLayout *toolLayout = ToolLayout();
     m_levelSpinBox = new QSpinBox;
+    m_autoscanCheckBox = new QCheckBox("Autoscan");
     SetTitleLabelVisible(false);
 
     for(int i = 0; i <= NL_CONTR_TERRORISM_3D_EPISODE_3; i++)
@@ -72,6 +78,8 @@ void MapViewer::Init()
     AddTool();
     AddTool(new QLabel("Level: "));
     AddTool(m_levelSpinBox);
+    AddTool(m_autoscanCheckBox);
+    connect(m_autoscanCheckBox, SIGNAL(clicked(bool)), this, SLOT(SetAutoscan(bool)));
 
     AddTool();
     button = new QPushButton;
@@ -139,6 +147,14 @@ void MapViewer::OnTypeCurrentIndexChanged(int index)
     //m_levelSpinBox->setEnabled(index == 2);
 }
 
+void MapViewer::Reset()
+{
+    BaseViewer::Reset();
+    m_mapScene->Reset();
+    if(m_autoscan)
+        m_levelSpinBox->setValue(-1);
+}
+
 bool MapViewer::OpenFile()
 {
     if(m_lvlPath.isEmpty())
@@ -146,7 +162,8 @@ bool MapViewer::OpenFile()
         QMessageBox::warning(this, "Error", "Choose lvl file and resource path!");
         return false;
     }
-    m_mapScene->Reset();
+    Reset();
+
     int selectedIndex = m_gameComboBox->currentIndex();
     int game = selectedIndex + NL_RACING_EVOLUTION_3D;
     int level = m_levelSpinBox->value();
@@ -212,4 +229,17 @@ void MapViewer::UpdateSceneInfo()
             .arg(m_mapScene->CurrentViewItem())
             ;
     SetStatusText(str);
+}
+
+void MapViewer::SetAutoscan(bool b)
+{
+    if(m_autoscan != b)
+    {
+        m_autoscan = b;
+        if(m_autoscan)
+            m_levelSpinBox->setValue(-1);
+        m_levelSpinBox->setEnabled(!m_autoscan);
+        if(m_autoscanCheckBox->isChecked() != m_autoscan)
+            m_autoscanCheckBox->setChecked(m_autoscan);
+    }
 }

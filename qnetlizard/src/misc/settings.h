@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSettings>
 #include <QVariant>
+#include <QDebug>
 
 #include "qdef.h"
 
@@ -11,51 +12,86 @@ class Settings : public QObject
 {
     Q_OBJECT
 public:
-    struct SettingItem {
+    struct SettingItem
+    {
+        enum ItemType_e
+        {
+            Item_Invalid = 0,
+            Item_Category = 1,
+            Item_Content = 2
+        };
+
         QString name;
-        QVariant value;
         QString title;
-        QString type;
-        QString widget;
+        ItemType_e item_type;
         QString description;
-        QVariantHash prop;
-        SettingItem(const QString &n, const QVariant &val, const QString &t, const QString &c, const QString &w, const QString &d)
+        SettingItem(const QString &n = QString(), const QString &t = QString(), ItemType_e c = Item_Invalid, const QString &d = QString())
             : name(n),
-              value(val),
               title(t),
-              type(c),
-              widget(w),
+              item_type(c),
               description(d)
         {
         }
-        SettingItem & AddProp(const QString &name, const QVariant &val)
+        virtual ~SettingItem()
+        {
+            DEBUG_DESTROY(SettingItem)
+        }
+
+        bool IsValid() const { return item_type != Item_Invalid; }
+        void Invalid() { item_type = Item_Invalid; }
+    };
+
+    struct SettingItemContent : public SettingItem
+    {
+        QVariant value;
+        QString type;
+        QString widget;
+        QVariantHash prop;
+        SettingItemContent(const QString &n = QString(), const QString &t = QString(), const QString &c = QString(), const QString &w = QString(), const QVariant &val = QVariant(), const QString &d = QString())
+            : SettingItem(n, t, SettingItem::Item_Content, d),
+              value(val),
+              type(c),
+              widget(w)
+        {
+        }
+        virtual ~SettingItemContent()
+        {
+            DEBUG_DESTROY(SettingItemContent)
+        }
+        SettingItem & operator()(const QString &name, const QVariant &val)
         {
             prop.insert(name, val);
             return *this;
         }
     };
-    typedef QList<SettingItem> SettingItemList;
-    struct SettingItemCategory {
-        QString name;
-        QString title;
-        QString group;
-        QString description;
+    typedef QList<SettingItem *> SettingItemList;
+
+    struct SettingItemCategory : public SettingItem
+    {
         SettingItemList settings;
-        SettingItemCategory(const QString &n, const QString &t, const QString &g, const QString &d)
-            : name(n),
-              title(t),
-              group(g),
-              description(d)
+        SettingItemCategory(const QString &n = QString(), const QString &t = QString(), const QString &d = QString())
+            : SettingItem(n, t, SettingItem::Item_Category, d)
         {
         }
-        SettingItemCategory & operator<<(const SettingItem &name)
+        virtual ~SettingItemCategory()
         {
-            settings.push_back(name);
+            Q_FOREACH(SettingItem *item, settings)
+                delete item;
+            settings.clear();
+            DEBUG_DESTROY(SettingItemCategory)
+        }
+
+        SettingItemCategory & operator<<(SettingItem *item)
+        {
+            settings.push_back(item);
             return *this;
         }
+
+    private:
+        Q_DISABLE_COPY(SettingItemCategory)
     };
 
-    typedef QList<SettingItemCategory> SettingItemMap;
+    typedef QList<SettingItemCategory *> SettingItemMap;
 
 public:
     virtual ~Settings();
@@ -72,11 +108,15 @@ signals:
 public slots:
 
 private:
+    static void ClearSettingsConfig();
     explicit Settings(QObject *parent = 0);
     static bool LoadSettings(SettingItemMap &map);
+    QVariant FindDefaultSetting(const Settings::SettingItemCategory *c, const QString &name);
 
 private:
     QSettings *m_settings;
+
+    static SettingItemMap _settingsConfig;
     
     Q_DISABLE_COPY(Settings)
 };

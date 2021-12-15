@@ -1,94 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <setting>
-    <category name="3D control" alias="CONTROL_3D" group="Viewer">
-        <item alias="CONTROL_3D/move_sens" name="Move sensitive" widget="spinbox" type="int" default-value="1800">
-            <option name="min" value="1"></option>
-            <option name="max" value="10000"></option>
-        </item>
-        <item alias="CONTROL_3D/turn_sens" name="Turn sensitive" widget="spinbox" type="int" default-value="180">
-            <option name="min" value="1"></option>
-            <option name="max" value="1000"></option>
-        </item>
-        <item alias="CONTROL_3D/freelook_sens" name="Freelook sensitive" widget="spinbox" type="float" default-value="0.5">
-            <option name="min" value="0.01"></option>
-            <option name="max" value="10"></option>
-        </item>
-        <item alias="CONTROL_3D/fovy_sens" name="Fovy sensitive" widget="spinbox" type="float" default-value="0.01">
-            <option name="min" value="0.01"></option>
-            <option name="max" value="0.1"></option>
-        </item>
+    <category name="Viewer" alias="VIEWER" description="Viewer settings">
+        <category name="3D control" alias="CONTROL_3D" description="Control settings in 3D scene">
+            <item alias="CONTROL_3D/move_sens" name="Move sensitive" widget="spinbox" type="int" default-value="1800">
+                <option name="min" value="1"></option>
+                <option name="max" value="10000"></option>
+            </item>
+            <item alias="CONTROL_3D/turn_sens" name="Turn sensitive" widget="spinbox" type="int" default-value="180">
+                <option name="min" value="1"></option>
+                <option name="max" value="1000"></option>
+            </item>
+            <item alias="CONTROL_3D/freelook_sens" name="Freelook sensitive" widget="spinbox" type="float" default-value="0.5">
+                <option name="min" value="0.01"></option>
+                <option name="max" value="10"></option>
+            </item>
+            <item alias="CONTROL_3D/fovy_sens" name="Fovy sensitive" widget="spinbox" type="float" default-value="0.01">
+                <option name="min" value="0.01"></option>
+                <option name="max" value="0.1"></option>
+            </item>
+        </category>
+
+        <category name="2D control" alias="CONTROL_2D" description="Control settings in 2D scene">
+            <item alias="CONTROL_2D/trans_sens" name="Translate sensitive" widget="spinbox" type="int" default-value="1000">
+                <option name="min" value="1"></option>
+                <option name="max" value="10000"></option>
+            </item>
+            <item alias="CONTROL_2D/rot_sens" name="Rotation sensitive" widget="spinbox" type="int" default-value="100">
+                <option name="min" value="1"></option>
+                <option name="max" value="10000"></option>
+            </item>
+        </category>
+
+        <category name="Render" alias="RENDER" description="Rendering settings in 3D map scene">
+            <item alias="RENDER/scene_cull" name="Cull scenes by frustum" widget="checkbox" type="bool" default-value="true">
+            </item>
+            <item alias="RENDER/shadow" name="Render simple shadow" widget="combobox" type="int" default-value="2">
+                <option name="option" label="No shadow" value="0"></option>
+                <option name="option" label="Stencil shadow: Z-FAIL" value="2"></option>
+                <option name="option" label="Stencil shadow: Z-PASS" value="1"></option>
+            </item>
+            <item alias="RENDER/shadow_object" name="Render shadow object" widget="combobox" type="int" default-value="1">
+                <option name="option" label="Only render item shadow" value="1"></option>
+                <option name="option" label="Only render scene wall shadow" value="4"></option>
+                <option name="option" label="Only render scene shadow" value="6"></option>
+                <option name="option" label="Render item and scene wall shadow" value="5"></option>
+                <option name="option" label="Render all shadow" value="255"></option>
+            </item>
+            <item alias="RENDER/fog" name="Render distance fog" widget="combobox" type="int" default-value="0">
+                <option name="option" label="No fog" value="0"></option>
+                <option name="option" label="Linear" value="1"></option>
+                <option name="option" label="Exp" value="2"></option>
+            </item>
+        </category>
+
+        <category name="Globals" alias="GLOBALS" description="Globals rendering settings">
+            <item alias="ENGINE/fps" name="FPS" description="0 to not limit" widget="spinbox" type="int" default-value="0">
+                <option name="min" value="0"></option>
+                <option name="max" value="300"></option>
+            </item>
+            <item alias="ENGINE/update_interval" name="Update interval(millisecond)" widget="spinbox" type="int" default-value="10">
+                <option name="min" value="0"></option>
+                <option name="max" value="1000"></option>
+            </item>
+            <item alias="RENDER/clear_color" name="Clear color" widget="color_dialog" type="color" default-value="#000000">
+            </item>
+        </category>
     </category>
 
-    <category name="2D control" alias="CONTROL_2D" group="Viewer">
-        <item alias="CONTROL_2D/trans_sens" name="Translate sensitive" widget="spinbox" type="int" default-value="1000">
-            <option name="min" value="1"></option>
-            <option name="max" value="10000"></option>
-        </item>
-        <item alias="CONTROL_2D/rot_sens" name="Rotation sensitive" widget="spinbox" type="int" default-value="100">
-            <option name="min" value="1"></option>
-            <option name="max" value="10000"></option>
-        </item>
+    <category name="General" alias="GENERAL" description="General settings">
+        <category name="Application" alias="APP" description="Application basic settings">
+            <item alias="APP/autoscan_level_and_index" name="Autoscan level/index from file name" widget="checkbox" type="bool" default-value="false">
+            </item>
+        </category>
     </category>
 
-    <category name="Render" alias="RENDER" group="Viewer">
-        <item alias="RENDER/scene_cull" name="Cull scenes by frustum" widget="checkbox" type="bool" default-value="true">
-        </item>
-        <item alias="RENDER/shadow" name="Render simple shadow" widget="combobox" type="int" default-value="2">
-            <option name="option" label="No shadow" value="0"></option>
-            <option name="option" label="Stencil shadow: Z-FAIL" value="2"></option>
-            <option name="option" label="Stencil shadow: Z-PASS" value="1"></option>
-        </item>
-        <item alias="RENDER/shadow_object" name="Render shadow object" widget="combobox" type="int" default-value="1">
-            <option name="option" label="Only render item shadow" value="1"></option>
-            <option name="option" label="Only render scene wall shadow" value="4"></option>
-            <option name="option" label="Only render scene shadow" value="6"></option>
-            <option name="option" label="Render item and scene wall shadow" value="5"></option>
-            <option name="option" label="Render all shadow" value="255"></option>
-        </item>
-        <item alias="RENDER/fog" name="Render distance fog" widget="combobox" type="int" default-value="0">
-            <option name="option" label="No fog" value="0"></option>
-            <option name="option" label="Linear" value="1"></option>
-            <option name="option" label="Exp" value="2"></option>
-        </item>
-        <item alias="RENDER/clear_color" name="Clear color" widget="color_dialog" type="color" default-value="#000000">
-        </item>
-    </category>
-
-    <category name="Globals" alias="GLOBALS" group="Viewer">
-        <item alias="ENGINE/fps" name="FPS" description="0 to not limit" widget="spinbox" type="int" default-value="0">
-            <option name="min" value="0"></option>
-            <option name="max" value="300"></option>
-        </item>
-        <item alias="ENGINE/update_interval" name="Update interval(millisecond)" widget="spinbox" type="int" default-value="10">
-            <option name="min" value="0"></option>
-            <option name="max" value="1000"></option>
-        </item>
-    </category>
-
-    <category name="Debug" alias="DEBUG" group="Others">
-        <item alias="DEBUG/noclip" name="Collision testing in map" widget="combobox" type="int" default-value="0">
-            <option name="option" label="No clip" value="0"></option>
-            <option name="option" label="Collision testing with scene" value="1"></option>
-            <option name="option" label="Collision testing with scene and item" value="2"></option>
-        </item>
-        <item alias="DEBUG/render" name="Render map model debug" widget="checkbox" type="int" default-value="0">
-            <option name="option" label="Render map bound" value="1"></option>
-            <option name="option" label="Render item vertex and normal" value="2"></option>
-            <option name="option" label="Render scene vertex and normal" value="4"></option>
-            <option name="option" label="Render item bound" value="8"></option>
-            <option name="option" label="Render scene bound" value="16"></option>
-            <option name="option" label="Render item plane" value="32"></option>
-            <option name="option" label="Render scene plane" value="64"></option>
-            <option name="option" label="Render scene BSP" value="128"></option>
-            <option name="option" label="Render highlight view scene plane" value="256"></option>
-            <option name="option" label="Render highlight view item" value="512"></option>
-        </item>
-        <item alias="DEBUG/single_scene" name="Render current single scene" widget="combobox" type="int" default-value="0">
-            <option name="option" label="No single scene" value="0"></option>
-            <option name="option" label="Only render current single scene" value="1"></option>
-            <option name="option" label="Render current scene and neighboring scene" value="2"></option>
-        </item>
-        <!--<item alias="DEBUG/single_scene" name="Only render current single scene" widget="checkbox" type="bool" default-value="false"></item>-->
+    <category name="Others" alias="OTHERS" description="Others settings">
+        <category name="Debug" alias="DEBUG" description="Debug rendering settings">
+            <item alias="DEBUG/noclip" name="Collision testing in map" widget="combobox" type="int" default-value="0">
+                <option name="option" label="No clip" value="0"></option>
+                <option name="option" label="Collision testing with scene" value="1"></option>
+                <option name="option" label="Collision testing with scene and item" value="2"></option>
+            </item>
+            <item alias="DEBUG/render" name="Render map model debug" widget="checkbox" type="int" default-value="0">
+                <option name="option" label="Render map bound" value="1"></option>
+                <option name="option" label="Render item vertex and normal" value="2"></option>
+                <option name="option" label="Render scene vertex and normal" value="4"></option>
+                <option name="option" label="Render item bound" value="8"></option>
+                <option name="option" label="Render scene bound" value="16"></option>
+                <option name="option" label="Render item plane" value="32"></option>
+                <option name="option" label="Render scene plane" value="64"></option>
+                <option name="option" label="Render scene BSP" value="128"></option>
+                <option name="option" label="Render highlight view scene plane" value="256"></option>
+                <option name="option" label="Render highlight view item" value="512"></option>
+            </item>
+            <item alias="DEBUG/single_scene" name="Render current single scene" widget="combobox" type="int" default-value="0">
+                <option name="option" label="No single scene" value="0"></option>
+                <option name="option" label="Only render current single scene" value="1"></option>
+                <option name="option" label="Render current scene and neighboring scene" value="2"></option>
+            </item>
+            <!--<item alias="DEBUG/single_scene" name="Only render current single scene" widget="checkbox" type="bool" default-value="false"></item>-->
+        </category>
     </category>
 
 </setting>

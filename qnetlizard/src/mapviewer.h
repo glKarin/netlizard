@@ -9,6 +9,7 @@ class QSpinBox;
 class QString;
 class MapScene;
 class QPushButton;
+class QCheckBox;
 
 class MapViewer : public BaseViewer
 {
@@ -20,6 +21,7 @@ public:
 signals:
     
 public slots:
+    virtual void Reset();
 
 private:
     void Init();
@@ -32,6 +34,7 @@ private Q_SLOTS:
     void SetLvlFile(const QString &file);
     void SetResourceDirPath(const QString &file);
     void UpdateSceneInfo();
+    void SetAutoscan(bool b);
 
 private:
     MapScene *m_mapScene;
@@ -43,6 +46,8 @@ private:
     QPushButton *m_openResourcePathButton;
     QString m_lvlPath;
     QString m_resourceDirPath;
+    bool m_autoscan;
+    QCheckBox *m_autoscanCheckBox;
 
     Q_DISABLE_COPY(MapViewer)
     

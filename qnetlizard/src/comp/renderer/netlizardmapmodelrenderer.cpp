@@ -18,7 +18,7 @@ NETLizardMapModelRenderer::~NETLizardMapModelRenderer()
 {
     m_model = 0;
     SetupScenes(false);
-    DEBUG_DESTROY("NETLizardMapModelRenderer")
+    DEBUG_DESTROY(NETLizardMapModelRenderer)
 }
 
 void NETLizardMapModelRenderer::InitRender()

@@ -20,7 +20,7 @@ NETLizardFontRenderer::NETLizardFontRenderer(NLActor *actor) :
 NETLizardFontRenderer::~NETLizardFontRenderer()
 {
     m_font = 0;
-    DEBUG_DESTROY("NETLizardFontRenderer")
+    DEBUG_DESTROY(NETLizardFontRenderer)
 }
 
 void NETLizardFontRenderer::InitRender()

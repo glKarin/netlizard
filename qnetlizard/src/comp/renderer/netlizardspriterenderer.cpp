@@ -19,7 +19,7 @@ NETLizardSpriteRenderer::NETLizardSpriteRenderer(NLActor *actor) :
 NETLizardSpriteRenderer::~NETLizardSpriteRenderer()
 {
     m_sprite = 0;
-    DEBUG_DESTROY("NETLizardSpriteRenderer")
+    DEBUG_DESTROY(NETLizardSpriteRenderer)
 }
 
 void NETLizardSpriteRenderer::InitRender()

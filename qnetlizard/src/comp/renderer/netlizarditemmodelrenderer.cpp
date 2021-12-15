@@ -17,7 +17,7 @@ NETLizardItemModelRenderer::~NETLizardItemModelRenderer()
 {
     m_itemMesh = 0;
     m_tex = 0;
-    DEBUG_DESTROY("NETLizardItemModelRenderer")
+    DEBUG_DESTROY(NETLizardItemModelRenderer)
 }
 
 void NETLizardItemModelRenderer::InitRender()

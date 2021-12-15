@@ -10,6 +10,7 @@ class QString;
 class ItemScene;
 class QColorDialog;
 class QPushButton;
+class QCheckBox;
 
 class ItemViewer : public BaseViewer
 {
@@ -21,6 +22,7 @@ public:
 signals:
 
 public slots:
+    virtual void Reset();
 
 private:
     void Init();
@@ -34,6 +36,7 @@ private Q_SLOTS:
     void SetObjFile(const QString &file);
     void SetResourceDirPath(const QString &file);
     void SetBackgroundColor(const QColor &color);
+    void SetAutoscan(bool b);
 
 private:
     ItemScene *m_itemScene;
@@ -46,7 +49,8 @@ private:
     QPushButton *m_openResourcePathButton;
     QString m_objPath;
     QString m_resourceDirPath;
-
+    bool m_autoscan;
+    QCheckBox *m_autoscanCheckBox;
 
     Q_DISABLE_COPY(ItemViewer)
 };

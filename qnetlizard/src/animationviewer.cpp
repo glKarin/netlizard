@@ -23,6 +23,7 @@
 #include "animationscene.h"
 #include "netlizard.h"
 #include "qdef.h"
+#include "settings.h"
 
 AnimationViewer::AnimationViewer(QWidget *parent) :
     BaseViewer(parent),
@@ -39,10 +40,13 @@ AnimationViewer::AnimationViewer(QWidget *parent) :
     m_playButton(0),
     m_animFPSSpinBox(0),
     m_playSeqCheckBox(0),
-    m_toolbar(0)
+    m_toolbar(0),
+    m_autoscan(false),
+    m_autoscanCheckBox(0)
 {
     setObjectName("AnimationViewer");
     Init();
+    SetAutoscan(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<bool>("APP/autoscan_level_and_index", false));
 }
 
 AnimationViewer::~AnimationViewer()
@@ -67,6 +71,7 @@ void AnimationViewer::Init()
     m_toolbar = new QToolBar;
     QToolButton *nextFrame = new QToolButton;
     QToolButton *prevFrame = new QToolButton;
+    m_autoscanCheckBox = new QCheckBox("Autoscan");
     SetTitleLabelVisible(false);
 
     for(int i = NL_FRAME_ANIMATION_IDLE; i < NL_FRAME_ANIMATION_TOTAL; i++)
@@ -141,6 +146,8 @@ void AnimationViewer::Init()
     AddTool();
     AddTool(new QLabel("Index: "));
     AddTool(m_indexSpinBox);
+    AddTool(m_autoscanCheckBox);
+    connect(m_autoscanCheckBox, SIGNAL(clicked(bool)), this, SLOT(SetAutoscan(bool)));
 
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenBackgroundColorChooser()));
@@ -284,12 +291,15 @@ void AnimationViewer::OnStopped()
 
 void AnimationViewer::Reset()
 {
+    BaseViewer::Reset();
     OnStopped();
     m_animationScene->Reset();
     m_animComboBox->setCurrentIndex(0);
     m_frameSlider->setMaximum(0);
     m_frameSlider->setValue(0);
     m_toolbar->setEnabled(false);
+    if(m_autoscan)
+        m_indexSpinBox->setValue(-1);
 }
 
 bool AnimationViewer::OpenFile()
@@ -353,4 +363,17 @@ bool AnimationViewer::OpenFile()
 NLScene * AnimationViewer::Scene()
 {
     return m_animationScene;
+}
+
+void AnimationViewer::SetAutoscan(bool b)
+{
+    if(m_autoscan != b)
+    {
+        m_autoscan = b;
+        if(m_autoscan)
+            m_indexSpinBox->setValue(-1);
+        m_indexSpinBox->setEnabled(!m_autoscan);
+        if(m_autoscanCheckBox->isChecked() != m_autoscan)
+            m_autoscanCheckBox->setChecked(m_autoscan);
+    }
 }

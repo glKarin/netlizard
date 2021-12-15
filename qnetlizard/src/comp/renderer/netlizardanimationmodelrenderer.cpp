@@ -18,7 +18,7 @@ NETLizardAnimationModelRenderer::~NETLizardAnimationModelRenderer()
 {
     m_model = 0;
     m_config = 0;
-    DEBUG_DESTROY("NETLizardAnimationModelRenderer")
+    DEBUG_DESTROY(NETLizardAnimationModelRenderer)
 }
 
 void NETLizardAnimationModelRenderer::InitRender()

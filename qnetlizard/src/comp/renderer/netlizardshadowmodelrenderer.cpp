@@ -23,7 +23,7 @@ NETLizardShadowModelRenderer::~NETLizardShadowModelRenderer()
 {
     m_model = 0;
     SetupScenes(false);
-    DEBUG_DESTROY("NETLizardShadowModelRenderer")
+    DEBUG_DESTROY(NETLizardShadowModelRenderer)
 }
 
 void NETLizardShadowModelRenderer::InitRender()

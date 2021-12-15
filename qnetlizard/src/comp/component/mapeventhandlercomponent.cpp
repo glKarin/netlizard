@@ -22,7 +22,7 @@ MapEventHandlerContainer::MapEventHandlerContainer()
 MapEventHandlerContainer::~MapEventHandlerContainer()
 {
     Clear();
-    DEBUG_DESTROY("MapEventHandlerContainer")
+    DEBUG_DESTROY(MapEventHandlerContainer)
 }
 
 bool MapEventHandlerContainer::Add(int itemIndex, MapEventHandler *item)
@@ -93,7 +93,7 @@ MapEventHandler::MapEventHandler(GL_NETLizard_3D_Mesh *item, NLRigidbody *actor,
 MapEventHandler::~MapEventHandler()
 {
     m_item = 0;
-    DEBUG_DESTROY("MapEventHandler")
+    DEBUG_DESTROY(MapEventHandler)
 }
 
 void MapEventHandler::SetState(MapEventHandler::Handler_State_e state)
@@ -124,7 +124,7 @@ MapEventHandler_elevator::MapEventHandler_elevator(float min, float max, MapEven
 
 MapEventHandler_elevator::~MapEventHandler_elevator()
 {
-    DEBUG_DESTROY("MapEventHandler_elevator")
+    DEBUG_DESTROY(MapEventHandler_elevator)
 }
 
 bool MapEventHandler_elevator::Start()
@@ -245,7 +245,7 @@ MapEventHandler_fan::MapEventHandler_fan(int mask, bool invert, GL_NETLizard_3D_
 
 MapEventHandler_fan::~MapEventHandler_fan()
 {
-    DEBUG_DESTROY("MapEventHandler_fan")
+    DEBUG_DESTROY(MapEventHandler_fan)
 }
 
 void MapEventHandler_fan::Update(float delta)
@@ -311,7 +311,7 @@ MapEventHandler_door::MapEventHandler_door(const float min[3], const float max[3
 
 MapEventHandler_door::~MapEventHandler_door()
 {
-    DEBUG_DESTROY("MapEventHandler_door")
+    DEBUG_DESTROY(MapEventHandler_door)
 }
 
 bool MapEventHandler_door::Start()

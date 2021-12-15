@@ -33,7 +33,7 @@ CameraNotifyFunc::CameraNotifyFunc(SimpleCameraComponent *comp)
 CameraNotifyFunc::~CameraNotifyFunc()
 {
     m_comp = 0;
-    DEBUG_DESTROY("CameraNotifyFunc")
+    DEBUG_DESTROY(CameraNotifyFunc)
 }
 
 void CameraNotifyFunc::PropertyChanged(const QString &name, const NLProperty &value)

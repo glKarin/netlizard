@@ -26,11 +26,11 @@ public:
 signals:
 
 public slots:
+    virtual void Reset();
 
 private:
     void Init();
     void UpdatePlayState(bool b);
-    void Reset();
 
 private Q_SLOTS:
     void OpenObjFileChooser();
@@ -45,6 +45,7 @@ private Q_SLOTS:
     void PrevFrame();
     void OnPlaying();
     void OnStopped();
+    void SetAutoscan(bool b);
 
 private:
     AnimationScene *m_animationScene;
@@ -63,6 +64,8 @@ private:
     QToolBar *m_toolbar;
     QString m_objPath;
     QString m_resourceDirPath;
+    bool m_autoscan;
+    QCheckBox *m_autoscanCheckBox;
 
     Q_DISABLE_COPY(AnimationViewer)
 };

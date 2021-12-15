@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QGroupBox>
 
-class QFormLayout;
+#include "settings.h"
 
 class SettingGroup : public QGroupBox
 {
@@ -17,9 +17,13 @@ public:
 
 private:
     void Init();
+    void GenSettingConfig(QWidget *parent, const Settings::SettingItemCategory *c);
+    bool IsGroupSettingConfig(const Settings::SettingItemCategory *c);
+    const Settings::SettingItemCategory * FindSettingConfig(const Settings::SettingItemCategory *c, const QString &name);
 
 Q_SIGNALS:
     void valueChanged(const QString &name, const QVariant &val);
+    void openSettingGroup(const QString &name);
 
 private Q_SLOTS:
     void OnValueChanged(const QString &val);
@@ -30,7 +34,6 @@ private Q_SLOTS:
 
 private:
     QString m_name;
-    QFormLayout *m_layout;
 
     Q_DISABLE_COPY(SettingGroup)
 };

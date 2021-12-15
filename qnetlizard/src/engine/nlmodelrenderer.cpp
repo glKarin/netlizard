@@ -192,7 +192,7 @@ NLModelRenderer::~NLModelRenderer()
 {
     if(m_model)
         delete m_model;
-    DEBUG_DESTROY("NLModelRenderer")
+    DEBUG_DESTROY(NLModelRenderer)
 }
 
 void NLModelRenderer::InitRender()

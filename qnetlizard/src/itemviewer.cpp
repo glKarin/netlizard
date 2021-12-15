@@ -14,10 +14,12 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QColorDialog>
+#include <QCheckBox>
 
 #include "itemscene.h"
 #include "netlizard.h"
 #include "qdef.h"
+#include "settings.h"
 
 ItemViewer::ItemViewer(QWidget *parent) :
     BaseViewer(parent),
@@ -28,10 +30,13 @@ ItemViewer::ItemViewer(QWidget *parent) :
     m_indexSpinBox(0),
     m_colorChooser(0),
     m_openObjButton(0),
-    m_openResourcePathButton(0)
+    m_openResourcePathButton(0),
+    m_autoscan(false),
+    m_autoscanCheckBox(0)
 {
     setObjectName("ItemViewer");
     Init();
+    SetAutoscan(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<bool>("APP/autoscan_level_and_index", false));
 }
 
 ItemViewer::~ItemViewer()
@@ -45,6 +50,7 @@ void ItemViewer::Init()
     m_itemScene = new ItemScene;
     //QHBoxLayout *toolLayout = ToolLayout();
     m_indexSpinBox = new QSpinBox;
+    m_autoscanCheckBox = new QCheckBox("Autoscan");
     SetTitleLabelVisible(false);
 
     for(int i = 0; i <= NL_CONTR_TERRORISM_3D_EPISODE_3; i++)
@@ -73,6 +79,8 @@ void ItemViewer::Init()
     AddTool();
     AddTool(new QLabel("Index: "));
     AddTool(m_indexSpinBox);
+    AddTool(m_autoscanCheckBox);
+    connect(m_autoscanCheckBox, SIGNAL(clicked(bool)), this, SLOT(SetAutoscan(bool)));
 
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenBackgroundColorChooser()));
@@ -157,6 +165,14 @@ void ItemViewer::OnTypeCurrentIndexChanged(int index)
     //m_levelSpinBox->setEnabled(index == 2);
 }
 
+void ItemViewer::Reset()
+{
+    BaseViewer::Reset();
+    m_itemScene->Reset();
+    if(m_autoscan)
+        m_indexSpinBox->setValue(-1);
+}
+
 bool ItemViewer::OpenFile()
 {
     if(m_objPath.isEmpty())
@@ -164,7 +180,8 @@ bool ItemViewer::OpenFile()
         QMessageBox::warning(this, "Error", "Choose obj file and resource path!");
         return false;
     }
-    m_itemScene->Reset();
+    Reset();
+
     int selectedIndex = m_gameComboBox->currentIndex();
     int game = selectedIndex + NL_RACING_EVOLUTION_3D;
     int index = m_indexSpinBox->value();
@@ -210,4 +227,17 @@ bool ItemViewer::OpenFile()
         QMessageBox::warning(this, "Error", "Load 3D game map file fail!");
     }
     return res;
+}
+
+void ItemViewer::SetAutoscan(bool b)
+{
+    if(m_autoscan != b)
+    {
+        m_autoscan = b;
+        if(m_autoscan)
+            m_indexSpinBox->setValue(-1);
+        m_indexSpinBox->setEnabled(!m_autoscan);
+        if(m_autoscanCheckBox->isChecked() != m_autoscan)
+            m_autoscanCheckBox->setChecked(m_autoscan);
+    }
 }

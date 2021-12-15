@@ -12,7 +12,7 @@ NLRenderable::NLRenderable(NLActor *actor)
 
 NLRenderable::~NLRenderable()
 {
-    DEBUG_DESTROY("NLRenderable")
+    DEBUG_DESTROY(NLRenderable)
 }
 
 void NLRenderable::SetActor(NLActor *actor)

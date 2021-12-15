@@ -3,8 +3,11 @@
 
 #include <QDialog>
 
-class SettingGroup;
+#include "settings.h"
+
 class QTreeWidgetItem;
+class QTreeWidget;
+class SettingGroup;
 
 class SettingDialog : public QDialog
 {
@@ -20,12 +23,17 @@ public slots:
 
 private:
     void Init();
+    void AddSettingNode(const Settings::SettingItemCategory *s, QTreeWidgetItem *parent);
+    QTreeWidgetItem * FindSettingNode(const QString &name, QTreeWidgetItem *parent);
 
 private Q_SLOTS:
     void InitSettingContent(QTreeWidgetItem *item, int column);
+    void OpenSettingGroup(const QString &name);
 
 private:
     SettingGroup *m_content;
+    QTreeWidget *m_tree;
+
     Q_DISABLE_COPY(SettingDialog)
 };
 

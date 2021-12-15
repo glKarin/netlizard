@@ -33,7 +33,7 @@ private Q_SLOTS:
 
 private:
     void Init();
-    void Reset();
+    virtual void Reset();
 
 private:
     QTextEdit *m_textInput;

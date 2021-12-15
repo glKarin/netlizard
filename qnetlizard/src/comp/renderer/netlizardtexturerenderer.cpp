@@ -16,7 +16,7 @@ NETLizardTextureRenderer::NETLizardTextureRenderer(NLActor *actor) :
 NETLizardTextureRenderer::~NETLizardTextureRenderer()
 {
     m_tex = 0;
-    DEBUG_DESTROY("NETLizardTextureRenderer")
+    DEBUG_DESTROY(NETLizardTextureRenderer)
 }
 
 void NETLizardTextureRenderer::InitRender()
