@@ -4,7 +4,6 @@
 
 #include <QScrollArea>
 #include <QAction>
-#include <QGridLayout>
 #include <QGroupBox>
 #include <QVBoxLayout>
 #include <QColor>
@@ -16,6 +15,7 @@
 #include "utils/ioutility.h"
 
 #include "netlizard.h"
+#include "flowlayout.h"
 #include "qdef.h"
 
 #define CELL_SIZE 128
@@ -48,8 +48,7 @@ void HomeCell::TriggerAction()
 IndexViewer::IndexViewer(QWidget *parent) :
     BaseViewer(parent),
     m_layout(0),
-    m_tools(0),
-    m_inited(false)
+    m_tools(0)
 {
     setObjectName("IndexViewer");
     Init();
@@ -115,8 +114,8 @@ const HomeCellItemMap & IndexViewer::ActionMap()
 void IndexViewer::Init()
 {
     QScrollArea *root = new QScrollArea;
-    m_layout = new QGridLayout;
     QGroupBox *container = new QGroupBox;
+    m_layout = new FlowLayout(container, CELL_SPACING, CELL_SPACING);
     SetTitleLabelVisible(false);
 
     //container->setMinimumWidth(CELL_SIZE);
@@ -138,96 +137,58 @@ void IndexViewer::Init()
 void IndexViewer::resizeEvent(QResizeEvent *event)
 {
     BaseViewer::resizeEvent(event);
-    Layout();
+
+    QScrollArea *container = static_cast<QScrollArea *>(CentralWidget());
+    m_tools->move(container->width() - 80, 0);
+    m_tools->setFixedHeight(container->height());
 }
 
 void IndexViewer::Layout()
 {
     QScrollArea *container = static_cast<QScrollArea *>(CentralWidget());
-    int w = container->width();
-    const int Col = qMax((w - 80) / (CELL_SIZE + m_layout->spacing()), 1);
-    int r = 0;
-    int c = 0;
-    if(!m_inited)
+
+    QStringList actions;
+    actions << "&Resource"
+               << "&3D"
+                  ;
+
+    const QString buttonStyle("QPushButton { border: 1px solid #8f8f91; font-size: 16px; font-weight: bold; color: #FFFFFF; background-color: %1 }");
+    const HomeCellItemMap &Map = ActionMap();
+    Q_FOREACH(const QString &name, actions)
     {
-        m_inited = true;
-        QStringList actions;
-        actions << "&Resource"
-                   << "&3D"
-                      ;
-
-        const QString buttonStyle("QPushButton { border: 1px solid #8f8f91; font-size: 16px; font-weight: bold; color: #FFFFFF; background-color: %1 }");
-        const HomeCellItemMap &Map = ActionMap();
-        Q_FOREACH(const QString &name, actions)
+        const HomeCellItemList &list = Map[name];
+        Q_FOREACH(const HomeCellItem &item, list)
         {
-            const HomeCellItemList &list = Map[name];
-            Q_FOREACH(const HomeCellItem &item, list)
-            {
-                HomeCell *cell = new HomeCell(item.label, item.data);
-                connect(cell, SIGNAL(actionTrigger(QAction*)), this, SIGNAL(openViewer(QAction*)));
-                cell->setStyleSheet(buttonStyle.arg(RandomColor()));
-                m_layout->addWidget(cell, r, c++);
-                if(c >= Col)
-                {
-                    r++;
-                    c = 0;
-                }
-            }
-        }
-
-        for(int i = 0; i < m_layout->columnCount(); i++)
-        {
-            m_layout->setColumnStretch(i, 0);
-            m_layout->setColumnMinimumWidth(i, CELL_SIZE);
-        }
-        for(int i = 0; i < m_layout->rowCount(); i++)
-        {
-            m_layout->setRowStretch(i, 0);
-            m_layout->setRowMinimumHeight(i, CELL_SIZE);
-        }
-
-        actions.clear();
-        actions << "&Others"
-                   << "&Exit"
-                      ;
-        const QString toolsButtonStyle("QPushButton { border: 1px solid #8f8f91; border-radius: 24px }");
-        HomeCell *cell;
-        QVBoxLayout *vLayout = new QVBoxLayout;
-        Q_FOREACH(const QString &name, actions)
-        {
-            const HomeCellItemList &list = Map[name];
-            Q_FOREACH(const HomeCellItem &item, list)
-            {
-                cell = new HomeCell(item.label, item.data);
-                cell->setFixedSize(48, 48);
-                cell->setStyleSheet(toolsButtonStyle);
-                connect(cell, SIGNAL(actionTrigger(QAction*)), this, SIGNAL(openViewer(QAction*)));
-                vLayout->addWidget(cell);
-            }
-        }
-        vLayout->addStretch();
-        m_tools = new QWidget(container);
-        m_tools->setFixedWidth(64);
-        m_tools->setLayout(vLayout);
-    }
-    else
-    {
-        QList<QLayoutItem *> list;
-        while(!m_layout->isEmpty())
-        {
-            QLayoutItem *item = m_layout->takeAt(0);
-            list.push_back(item);
-        }
-        Q_FOREACH(QLayoutItem *item, list)
-        {
-            m_layout->addItem(item, r, c++);
-            if(c >= Col)
-            {
-                r++;
-                c = 0;
-            }
+            HomeCell *cell = new HomeCell(item.label, item.data);
+            connect(cell, SIGNAL(actionTrigger(QAction*)), this, SIGNAL(openViewer(QAction*)));
+            cell->setStyleSheet(buttonStyle.arg(RandomColor()));
+            m_layout->addWidget(cell);
         }
     }
+
+    actions.clear();
+    actions << "&Others"
+               << "&Exit"
+                  ;
+    const QString toolsButtonStyle("QPushButton { border: 1px solid #8f8f91; border-radius: 24px }");
+    HomeCell *cell;
+    QVBoxLayout *vLayout = new QVBoxLayout;
+    Q_FOREACH(const QString &name, actions)
+    {
+        const HomeCellItemList &list = Map[name];
+        Q_FOREACH(const HomeCellItem &item, list)
+        {
+            cell = new HomeCell(item.label, item.data);
+            cell->setFixedSize(48, 48);
+            cell->setStyleSheet(toolsButtonStyle);
+            connect(cell, SIGNAL(actionTrigger(QAction*)), this, SIGNAL(openViewer(QAction*)));
+            vLayout->addWidget(cell);
+        }
+    }
+    vLayout->addStretch();
+    m_tools = new QWidget(container);
+    m_tools->setFixedWidth(64);
+    m_tools->setLayout(vLayout);
     m_tools->move(container->width() - 80, 0);
     m_tools->setFixedHeight(container->height());
 }

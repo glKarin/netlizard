@@ -7,7 +7,7 @@
 #include "baseviewer.h"
 
 class QAction;
-class QGridLayout;
+class FlowLayout;
 class QColor;
 
 struct HomeCellItem
@@ -65,9 +65,8 @@ private:
     QString RandomColor() const;
     
 private:
-    QGridLayout *m_layout;
+    FlowLayout *m_layout;
     QWidget *m_tools;
-    bool m_inited;
     
     Q_DISABLE_COPY(IndexViewer)
 };
