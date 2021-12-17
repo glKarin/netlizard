@@ -343,6 +343,7 @@ OTHER_FILES += README.md \
                 resource/img/lz.png \
                 resource/img/logo.png \
                 resource/cfg/help.xml \
+                resource/cfg/menu.xml \
                 resource/cfg/setting.xml
 
 INSTALLS += qnetlizard

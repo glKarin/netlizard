@@ -5,5 +5,6 @@
         <file alias="SETTING">resource/cfg/setting.xml</file>
         <file alias="LZ">resource/img/lz.png</file>
         <file alias="LOGO">resource/img/logo.png</file>
+        <file alias="MENU">resource/cfg/menu.xml</file>
     </qresource>
 </RCC>

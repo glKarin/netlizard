@@ -11,6 +11,7 @@
 
 #include "qdef.h"
 #include "ioutility.h"
+#include "settings.h"
 
 #define LOG_DIR_NAME "logs"
 #define LOG_FILE_NAME APP_NAME
@@ -36,6 +37,9 @@ LogOutput::LogOutput(QObject *parent) :
     m_maxCache(MAX_LOG)
 {
     setObjectName("LogOutput");
+    Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+    SetOutputChannel(settings->GetSetting<bool>("APP/log_file", false) ? m_outputChannel | LogOutput::Output_File : m_outputChannel & (~LogOutput::Output_File));
+    connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(Finish()));
 #ifndef _DEV_TEST
     Start();
@@ -178,6 +182,12 @@ void LogOutput::SetMaxCache(int c)
         else if(m_maxCache == 0)
             m_logList.clear();
     }
+}
+
+void LogOutput::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)
+{
+    if(name == "APP/log_file")
+        SetOutputChannel(value.toBool() ? m_outputChannel | LogOutput::Output_File : m_outputChannel & (~LogOutput::Output_File));
 }
 
 void log_output_msg_handler(QtMsgType type, const char *msg)

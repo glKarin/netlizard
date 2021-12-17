@@ -14,12 +14,51 @@
 
 #include "utils/ioutility.h"
 
+#include <QFile>
+#include <QXmlSimpleReader>
+#include <QXmlInputSource>
+#include <QDomDocument>
+#include <QDomNode>
+#include <QDomNodeList>
+
 #include "netlizard.h"
 #include "flowlayout.h"
 #include "qdef.h"
 
 #define CELL_SIZE 128
 #define CELL_SPACING 10
+
+static HomeCellItem LoadMenuItem(const QDomElement &category)
+{
+    HomeCellItem sc;
+    if(category.tagName() != "item")
+    {
+        return sc;
+    }
+
+    sc.label = category.attribute("name");
+    sc.data = category.attribute("alias");
+    sc.description = category.attribute("description");
+    sc.show = category.attribute("show");
+
+    QDomNodeList items = category.childNodes();
+    for(int j = 0; j < items.size(); j++)
+    {
+        QDomNode node = items.at(j);
+        if(!node.isElement())
+            continue;
+        QDomElement item = node.toElement();
+        if(item.tagName() == "item")
+        {
+            HomeCellItem si = LoadMenuItem(item);
+            if(si.IsValid())
+                sc << si;
+        }
+    }
+
+    return sc;
+}
+
 
 HomeCell::HomeCell(const QString &text, const QVariant &data, QWidget *parent)
     : QPushButton(text, parent),
@@ -58,55 +97,12 @@ IndexViewer::~IndexViewer()
 {
 }
 
-const HomeCellItemMap & IndexViewer::ActionMap()
+const HomeCellItemList & IndexViewer::ActionMap()
 {
-     static HomeCellItemMap _map;
+     static HomeCellItemList _map;
      if(_map.isEmpty())
      {
-        HomeCellItemList list;
-        list
-            << HomeCellItem("&Image viewer", "image_viewer")
-            << HomeCellItem("&Font viewer", "font_viewer")
-            << HomeCellItem("&Sprite viewer", "sprite_viewer")
-            << HomeCellItem("&Text viewer", "text_viewer")
-            << HomeCellItem("&String viewer", "string_viewer")
-               ;
-        _map.insert("&Resource", list);
-
-        list.clear();
-        list
-                << HomeCellItem("&Map viewer", "map_viewer")
-                << HomeCellItem("&Item viewer", "item_viewer")
-                << HomeCellItem("&Animation viewer", "animation_viewer")
-                ;
-        _map.insert("&3D", list);
-
-        list.clear();
-        list
-                << HomeCellItem("&Log", "log")
-                << HomeCellItem("&Scene", "scene")
-                << HomeCellItem("&Reset", "reset")
-#ifdef _DEV_TEST
-                << HomeCellItem("&Test", "test")
-#endif
-             << HomeCellItem("&Close", "close")
-                ;
-        _map.insert("&Viewer", list);
-
-        list.clear();
-        list
-                << HomeCellItem("&Setting", "setting")
-                           << HomeCellItem("&Help", "help")
-                           << HomeCellItem("&Changelog", "changelog")
-                              << HomeCellItem("&About", "about")
-                                 ;
-        _map.insert("&Others", list);
-
-        list.clear();
-        list
-                << HomeCellItem("&Exit", "exit")
-                   ;
-        _map.insert("&Exit", list);
+        LoadMenus(_map);
      }
      return _map;
 }
@@ -148,41 +144,68 @@ void IndexViewer::Layout()
     QScrollArea *container = static_cast<QScrollArea *>(CentralWidget());
 
     QStringList actions;
-    actions << "&Resource"
-               << "&3D"
+    actions << "resource"
+               << "3d"
                   ;
 
     const QString buttonStyle("QPushButton { border: 1px solid #8f8f91; font-size: 16px; font-weight: bold; color: #FFFFFF; background-color: %1 }");
-    const HomeCellItemMap &Map = ActionMap();
+    const HomeCellItemList &Map = ActionMap();
     Q_FOREACH(const QString &name, actions)
     {
-        const HomeCellItemList &list = Map[name];
-        Q_FOREACH(const HomeCellItem &item, list)
+        Q_FOREACH(const HomeCellItem &item, Map)
         {
-            HomeCell *cell = new HomeCell(item.label, item.data);
-            connect(cell, SIGNAL(actionTrigger(QAction*)), this, SIGNAL(openViewer(QAction*)));
-            cell->setStyleSheet(buttonStyle.arg(RandomColor()));
-            m_layout->addWidget(cell);
+            if(item.data.toString() == name)
+            {
+                Q_FOREACH(const HomeCellItem &a, item.items)
+                {
+                    if(a.IsMenu())
+                        continue;
+                    HomeCell *cell = new HomeCell(a.label, a.data);
+                    connect(cell, SIGNAL(actionTrigger(QAction *)), this, SIGNAL(openViewer(QAction *)));
+                    cell->setStyleSheet(buttonStyle.arg(RandomColor()));
+                    m_layout->addWidget(cell);
+                }
+                break;
+            }
         }
     }
 
     actions.clear();
-    actions << "&Others"
-               << "&Exit"
+    actions << "others"
+               << "exit"
                   ;
     const QString toolsButtonStyle("QPushButton { border: 1px solid #8f8f91; border-radius: 24px }");
     HomeCell *cell;
     QVBoxLayout *vLayout = new QVBoxLayout;
     Q_FOREACH(const QString &name, actions)
     {
-        const HomeCellItemList &list = Map[name];
-        Q_FOREACH(const HomeCellItem &item, list)
+        Q_FOREACH(const HomeCellItem &item, Map)
         {
-            cell = new HomeCell(item.label, item.data);
-            cell->setFixedSize(48, 48);
-            cell->setStyleSheet(toolsButtonStyle);
-            connect(cell, SIGNAL(actionTrigger(QAction*)), this, SIGNAL(openViewer(QAction*)));
-            vLayout->addWidget(cell);
+            if(item.data.toString() == name)
+            {
+                if(item.IsItem())
+                {
+                    cell = new HomeCell(item.label, item.data);
+                    cell->setFixedSize(48, 48);
+                    cell->setStyleSheet(toolsButtonStyle);
+                    connect(cell, SIGNAL(actionTrigger(QAction *)), this, SIGNAL(openViewer(QAction *)));
+                    vLayout->addWidget(cell);
+                }
+                else
+                {
+                    Q_FOREACH(const HomeCellItem &a, item.items)
+                    {
+                        if(a.IsMenu())
+                            continue;
+                        cell = new HomeCell(a.label, a.data);
+                        cell->setFixedSize(48, 48);
+                        cell->setStyleSheet(toolsButtonStyle);
+                        connect(cell, SIGNAL(actionTrigger(QAction *)), this, SIGNAL(openViewer(QAction *)));
+                        vLayout->addWidget(cell);
+                    }
+                }
+                break;
+            }
         }
     }
     vLayout->addStretch();
@@ -214,3 +237,35 @@ QString IndexViewer::RandomColor() const
         return color.name();
     } while(std::sqrt(r * r + g * g + b * b) >= Limit);
 }
+
+bool IndexViewer::LoadMenus(HomeCellItemList &map)
+{
+    const QString Help(":/MENU");
+
+    QFile f(Help);
+    QXmlSimpleReader reader;
+    QXmlInputSource source(&f);
+    QDomDocument doc;
+    if(!doc.setContent(&source, &reader))
+        return false;
+
+    QDomElement menu = doc.documentElement();
+    if (menu.tagName() != "menu")
+        return false;
+
+    QDomNodeList categorys = menu.childNodes();
+    for(int i = 0; i < categorys.size(); i++)
+    {
+        QDomNode node = categorys.at(i);
+        if(!node.isElement())
+            continue;
+        QDomElement category = node.toElement();
+        if(category.tagName() != "item")
+            continue;
+        HomeCellItem sc = LoadMenuItem(category);
+        if(sc.IsValid())
+            map.push_back(sc);
+    }
+    return true;
+}
+

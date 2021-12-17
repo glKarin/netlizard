@@ -104,7 +104,6 @@ void SettingDialog::AddSettingNode(const Settings::SettingItemCategory *s, QTree
     }
 }
 
-
 QTreeWidgetItem * SettingDialog::FindSettingNode(const QString &name, QTreeWidgetItem *parent)
 {
     const int Count = parent->childCount();

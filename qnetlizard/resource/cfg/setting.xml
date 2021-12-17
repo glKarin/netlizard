@@ -71,6 +71,8 @@
         <category name="Application" alias="APP" description="Application basic settings">
             <item alias="APP/autoscan_level_and_index" name="Autoscan level/index from file name" widget="checkbox" type="bool" default-value="false">
             </item>
+            <item alias="APP/log_file" name="Output log to file" widget="checkbox" type="bool" default-value="false">
+            </item>
         </category>
     </category>
 

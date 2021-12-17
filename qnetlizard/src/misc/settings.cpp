@@ -12,7 +12,6 @@
 #include "stencil_shadow.h"
 #include "nl_shadow_render.h"
 
-
 static Settings::SettingItemContent * LoadSettingContents(const QDomElement &item)
 {
     Settings::SettingItemContent *si = 0;
@@ -202,11 +201,11 @@ bool Settings::LoadSettings(Settings::SettingItemMap &map)
     if(!doc.setContent(&source, &reader))
         return false;
 
-    QDomElement help = doc.documentElement();
-    if (help.tagName() != "setting")
+    QDomElement setting = doc.documentElement();
+    if (setting.tagName() != "setting")
         return false;
 
-    QDomNodeList categorys = help.childNodes();
+    QDomNodeList categorys = setting.childNodes();
     for(int i = 0; i < categorys.size(); i++)
     {
         QDomNode node = categorys.at(i);

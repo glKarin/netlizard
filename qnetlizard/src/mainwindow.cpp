@@ -72,30 +72,35 @@ void MainWindow::Init()
     m_statusBar = new StatusBar;
     menuBar = new QMenuBar(this);
 
-    const HomeCellItemMap &Map = IndexViewer::ActionMap();
+    const HomeCellItemList &Map = IndexViewer::ActionMap();
     QStringList actions;
-        actions << "&Resource"
-        << "&3D"
-        << "&Viewer"
-        << "&Others"
-        << "&Exit"
+        actions << "resource"
+        << "3d"
+        << "viewer"
+        << "others"
+        << "exit"
            ;
     Q_FOREACH(const QString &name, actions)
     {
-        const HomeCellItemList &list = Map[name];
-        if(list.size() == 1)
+        Q_FOREACH(const HomeCellItem &item, Map)
         {
-            const HomeCellItem &item = list[0];
-            menuItem = menuBar->addAction(item.label);
-            menuItem->setData(item.data);
-        }
-        else
-        {
-            menu = menuBar->addMenu(name);
-            Q_FOREACH(const HomeCellItem &item, list)
+#ifndef _DEV_TEST
+            if(item.IsOnlyShowInDebug())
+                continue;
+#endif
+            if(item.data.toString() == name)
             {
-                menuItem = menu->addAction(item.label);
-                menuItem->setData(item.data);
+                if(item.IsItem())
+                {
+                    menuItem = menuBar->addAction(item.label);
+                    menuItem->setData(item.data);
+                }
+                else
+                {
+                    menu = menuBar->addMenu(item.label);
+                    AddMenuItem(item, menu);
+                }
+                break;
             }
         }
     }
@@ -326,26 +331,44 @@ NLScene * MainWindow::GetViewerScene(BaseViewer *v)
 void MainWindow::OpenSceneEditor()
 {
     NLScene *scene = GetViewerScene();
+    bool visible = m_sceneTreeWidget->isVisible();
 
-    if(scene)
+    if(visible)
     {
-        m_sceneTreeWidget->SetScene(scene);
-        m_sceneInfoWidget->SetScene(scene);
+        m_sceneTreeWidget->Reset();
+        m_sceneTreeWidget->setVisible(false);
     }
-    if(!m_sceneTreeWidget->isVisible())
+    else
     {
-        //m_sceneTreeWidget->setFloating(false);
+        if(scene)
+        {
+            m_sceneTreeWidget->SetScene(scene);
+        }
         m_sceneTreeWidget->setVisible(true);
     }
-    if(!m_sceneInfoWidget->isVisible())
+
+    if(visible)
     {
-        //m_sceneInfoWidget->setFloating(false);
+        m_sceneInfoWidget->Reset();
+        m_sceneInfoWidget->setVisible(false);
+    }
+    else
+    {
+        if(scene)
+        {
+            m_sceneInfoWidget->SetScene(scene);
+        }
         m_sceneInfoWidget->setVisible(true);
     }
-    if(!m_actorWidget->isVisible())
+
+    if(visible)
     {
         m_actorWidget->Reset();
-        //m_actorWidget->setFloating(false);
+        m_actorWidget->setVisible(false);
+    }
+    else
+    {
+        m_actorWidget->Reset();
         m_actorWidget->setVisible(true);
     }
 }
@@ -413,5 +436,31 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::Reset()
 {
     restoreState(m_state, MAIN_WINDOW_INTERNAL_STATE_VERSION);
+}
+
+void MainWindow::AddMenuItem(const HomeCellItem &s, QMenu *parent)
+{
+    Q_FOREACH(const HomeCellItem &a, s.items)
+    {
+        if(!a.IsValid())
+            continue;
+
+#ifndef _DEV_TEST
+            if(a.IsOnlyShowInDebug())
+                continue;
+#endif
+        if(a.IsItem())
+        {
+            QAction *subItem = parent->addAction(a.label);
+            subItem->setData(a.data);
+            subItem->setToolTip(a.description);
+        }
+        else
+        {
+            QMenu *subMenu = parent->addMenu(a.label);
+            subMenu->setToolTip(a.description);
+            AddMenuItem(a, subMenu);
+        }
+    }
 }
 

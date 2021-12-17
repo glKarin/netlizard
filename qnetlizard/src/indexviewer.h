@@ -14,16 +14,52 @@ struct HomeCellItem
 {
     QString label;
     QVariant data;
+    QString description;
+    QString show;
+    QList<HomeCellItem> items;
     // icon
-    explicit HomeCellItem(const QString &label, const QVariant &data = QVariant())
+    explicit HomeCellItem(const QString &label = QString(), const QVariant &data = QVariant(), const QString &desc = QString(), const QString &show = QString())
         : label(label),
-          data(data)
+          data(data),
+          description(desc),
+          show(show)
     {
+    }
+    virtual ~HomeCellItem()
+    {
+    }
+    bool IsValid() const
+    {
+        if(label.isEmpty())
+            return false;
+        if(IsItem())
+            return !data.isNull();
+        return true;
+    }
+    void Invalid()
+    {
+        data.clear();
+    }
+    bool IsItem() const
+    {
+        return items.isEmpty();
+    }
+    bool IsMenu() const
+    {
+        return !items.isEmpty();
+    }
+    bool IsOnlyShowInDebug() const
+    {
+        return show.toLower() == "debug";
+    }
+    HomeCellItem & operator<<(const HomeCellItem &item)
+    {
+        items.push_back(item);
+        return *this;
     }
 };
 
 typedef QList<HomeCellItem> HomeCellItemList;
-typedef QMap<QString, HomeCellItemList> HomeCellItemMap;
 
 class HomeCell : public QPushButton
 {
@@ -49,7 +85,7 @@ class IndexViewer : public BaseViewer
 public:
     explicit IndexViewer(QWidget *parent = 0);
     virtual ~IndexViewer();
-    static const HomeCellItemMap & ActionMap();
+    static const HomeCellItemList & ActionMap();
     
 signals:
     void openViewer(QAction *action);
@@ -63,6 +99,7 @@ private:
     void Init();
     void Layout();
     QString RandomColor() const;
+    static bool LoadMenus(HomeCellItemList &map);
     
 private:
     FlowLayout *m_layout;

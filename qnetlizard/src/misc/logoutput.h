@@ -55,6 +55,9 @@ private:
     void MkLogFile();
     bool MkLogDir();
     void OutputFile(const QString &item);
+
+private Q_SLOTS:
+    void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
     
 private:
     LogOutputList m_logList;
