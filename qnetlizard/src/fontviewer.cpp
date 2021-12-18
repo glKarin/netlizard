@@ -63,28 +63,28 @@ void FontViewer::Init()
     layout->addWidget(m_fontScene, 1);
 
     m_openCfButton = new QPushButton;
-    m_openCfButton->setText("config file(cf.png)");
+    m_openCfButton->setText(tr("config file(cf.png)"));
     m_openCfButton->setShortcut(QKeySequence::fromString("ctrl+f"));
     AddTool(m_openCfButton);
     connect(m_openCfButton, SIGNAL(clicked()), this, SLOT(OpenCfFileChooser()));
     m_openFntButton = new QPushButton(this);
-    m_openFntButton->setText("image file(fnt.png)");
+    m_openFntButton->setText(tr("image file(fnt.png)"));
     m_openFntButton->setShortcut(QKeySequence::fromString("ctrl+r"));
     connect(m_openFntButton, SIGNAL(clicked()), this, SLOT(OpenFntFileChooser()));
     AddTool(m_openFntButton);
     toolLayout->addStretch();
     button = new QPushButton;
-    button->setText("background color");
+    button->setText(tr("Background color"));
     connect(button, SIGNAL(clicked()), this, SLOT(OpenBackgroundColorChooser()));
     AddTool(button);
     button = new QPushButton;
-    button->setText("Load");
+    button->setText(tr("Load"));
     button->setShortcut(QKeySequence::fromString("ctrl+o"));
     connect(button, SIGNAL(clicked()), this, SLOT(LoadFont()));
     AddTool(button);
 
     CentralWidget()->setLayout(layout);
-    SetTitle("NETLizard font viewer");
+    SetTitle(tr("NETLizard font resource viewer"));
 }
 
 void FontViewer::OpenBackgroundColorChooser()

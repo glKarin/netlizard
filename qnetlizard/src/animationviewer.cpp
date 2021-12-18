@@ -67,40 +67,40 @@ void AnimationViewer::Init()
     m_frameSlider = new QSlider;
     m_playButton = new QToolButton;
     m_animFPSSpinBox = new QSpinBox;
-    m_playSeqCheckBox = new QCheckBox("Invert");
+    m_playSeqCheckBox = new QCheckBox(tr("Invert"));
     m_toolbar = new QToolBar;
     QToolButton *nextFrame = new QToolButton;
     QToolButton *prevFrame = new QToolButton;
-    m_autoscanCheckBox = new QCheckBox("Autoscan");
+    m_autoscanCheckBox = new QCheckBox(tr("Autoscan"));
     SetTitleLabelVisible(false);
 
     for(int i = NL_FRAME_ANIMATION_IDLE; i < NL_FRAME_ANIMATION_TOTAL; i++)
     {
         m_animComboBox->addItem(nlGet3DModelFrameAnimationName(static_cast<NETLizard_3D_Animation_Type>(i)), QVariant(i));
     }
-    widget->setTitle("Operation");
+    widget->setTitle(tr("Operation"));
     widget->setMinimumWidth(240);
     widget->setMaximumWidth(360);
-    vLayout->addWidget(new QLabel("Animation: "));
+    vLayout->addWidget(new QLabel(tr("Animation: ")));
     vLayout->addWidget(m_animComboBox);
     vLayout->addSpacing(1);
-    vLayout->addWidget(new QLabel("Frame: "));
+    vLayout->addWidget(new QLabel(tr("Frame: ")));
     m_frameSlider->setMinimum(0);
     m_frameSlider->setMaximum(0);
     m_frameSlider->setOrientation(Qt::Horizontal);
     m_frameSlider->setTickPosition(QSlider::TicksBelow);
     vLayout->addWidget(m_frameSlider);
     vLayout->addSpacing(1);
-    vLayout->addWidget(new QLabel("FPS: "));
+    vLayout->addWidget(new QLabel(tr("FPS: ")));
     m_animFPSSpinBox->setMinimum(0);
     m_animFPSSpinBox->setMaximum(60);
     m_animFPSSpinBox->setValue(m_animationScene->AnimFPS());
     vLayout->addWidget(m_animFPSSpinBox);
     vLayout->addSpacing(1);
-    vLayout->addWidget(new QLabel("Play sequence: "));
+    vLayout->addWidget(new QLabel(tr("Play sequence: ")));
     vLayout->addWidget(m_playSeqCheckBox);
     vLayout->addSpacing(1);
-    m_playButton->setText("Play");
+    m_playButton->setText(tr("Play"));
     m_playButton->setCheckable(true);
     m_toolbar->addWidget(m_playButton);
     prevFrame->setArrowType(Qt::LeftArrow);
@@ -129,35 +129,35 @@ void AnimationViewer::Init()
     m_indexSpinBox->setValue(-1);
     m_openObjButton = new QPushButton;
     connect(m_openObjButton, SIGNAL(clicked()), this, SLOT(OpenObjFileChooser()));
-    m_openObjButton->setText("un file");
+    m_openObjButton->setText(tr("un file"));
     m_openObjButton->setShortcut(QKeySequence::fromString("ctrl+f"));
     AddTool(m_openObjButton);
     AddTool();
 
     m_openResourcePathButton = new QPushButton;
     connect(m_openResourcePathButton, SIGNAL(clicked()), this, SLOT(OpenResourceDirChooser()));
-    m_openResourcePathButton->setText("Resource path");
+    m_openResourcePathButton->setText(tr("Resource path"));
     m_openResourcePathButton->setShortcut(QKeySequence::fromString("ctrl+r"));
     AddTool(m_openResourcePathButton);
     AddTool();
 
-    AddTool(new QLabel("Game: "));
+    AddTool(new QLabel(tr("Game: ")));
     AddTool(m_gameComboBox);
     AddTool();
-    AddTool(new QLabel("Index: "));
+    AddTool(new QLabel(tr("Index: ")));
     AddTool(m_indexSpinBox);
     AddTool(m_autoscanCheckBox);
     connect(m_autoscanCheckBox, SIGNAL(clicked(bool)), this, SLOT(SetAutoscan(bool)));
 
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenBackgroundColorChooser()));
-    button->setText("Color");
+    button->setText(tr("Color"));
     AddTool(button);
 
     AddTool();
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenFile()));
-    button->setText("Load");
+    button->setText(tr("Load"));
     button->setShortcut(QKeySequence::fromString("ctrl+o"));
     AddTool(button);
 
@@ -174,7 +174,7 @@ void AnimationViewer::Init()
     connect(m_animationScene, SIGNAL(stopped()), this, SLOT(OnStopped()));
 
     CentralWidget()->setLayout(layout);
-    SetTitle("NETLizard 3D FPS role viewer");
+    SetTitle(tr("NETLizard 3D animation model viewer"));
 }
 
 void AnimationViewer::OpenBackgroundColorChooser()
@@ -269,12 +269,12 @@ void AnimationViewer::UpdatePlayState(bool b)
 {
     if(b)
     {
-        m_playButton->setText("Stop");
+        m_playButton->setText(tr("Stop"));
         m_playButton->setChecked(true);
     }
     else
     {
-        m_playButton->setText("Play");
+        m_playButton->setText(tr("Play"));
         m_playButton->setChecked(false);
     }
 }

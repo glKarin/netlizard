@@ -48,29 +48,29 @@ void SpriteViewer::Init()
     // cu - u0
     // ccc - ccu
     m_openCuButton = new QPushButton;
-    m_openCuButton->setText("config file(cu|ccc.png)");
+    m_openCuButton->setText(tr("config file(cu|ccc.png)"));
     m_openCuButton->setShortcut(QKeySequence::fromString("ctrl+f"));
     AddTool(m_openCuButton);
     connect(m_openCuButton, SIGNAL(clicked()), this, SLOT(openCuFileChooser()));
     m_openUButton = new QPushButton(this);
-    m_openUButton->setText("image file(u0|ccu.png)");
+    m_openUButton->setText(tr("image file(u0|ccu.png)"));
     m_openUButton->setShortcut(QKeySequence::fromString("ctrl+r"));
     connect(m_openUButton, SIGNAL(clicked()), this, SLOT(OpenUFileChooser()));
     AddTool(m_openUButton);
     AddTool();
     button = new QPushButton;
-    button->setText("background color");
+    button->setText(tr("Background color"));
     connect(button, SIGNAL(clicked()), this, SLOT(OpenBackgroundColorChooser()));
     AddTool(button);
     button = new QPushButton;
-    button->setText("Load");
+    button->setText(tr("Load"));
     button->setShortcut(QKeySequence::fromString("ctrl+o"));
     connect(button, SIGNAL(clicked()), this, SLOT(LoadSprite()));
     AddTool(button);
     connect(m_indexList, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(RenderIndex(QListWidgetItem *)));
 
     CentralWidget()->setLayout(layout);
-    SetTitle("NETLizard sprite viewer");
+    SetTitle(tr("NETLizard sprite resource viewer"));
 }
 
 void SpriteViewer::OpenBackgroundColorChooser()

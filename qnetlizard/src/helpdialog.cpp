@@ -57,7 +57,7 @@ void HelpDialog::Init()
     SetContentText(list->item(0));
     list->setCurrentRow(0);
 
-    setWindowTitle("Help");
+    setWindowTitle(tr("Help"));
     resize(480, 360);
 }
 

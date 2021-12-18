@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu>
+    <item name="&amp;资源" alias="resource" description="资源查看">
+        <item alias="image_viewer" name="&amp;图像查看器" description="NETLizard游戏图片/纹理资源查看"></item>
+        <item alias="font_viewer" name="&amp;字体查看器" description="NETLizard游戏字体资源查看"></item>
+        <item alias="sprite_viewer" name="&amp;精灵图查看器" description="NETLizard游戏精灵图资源查看"></item>
+        <item alias="text_viewer" name="&amp;文本查看器" description="NETLizard游戏文本资源查看"></item>
+        <item alias="string_viewer" name="&amp;字符串查看器" description="NETLizard游戏源码字符串查看"></item>
+    </item>
+
+    <item name="&amp;3D" alias="3d" description="3D资源查看">
+        <item alias="map_viewer" name="&amp;地图查看器" description="NETLizard 3D游戏地图模型查看"></item>
+        <item alias="item_viewer" name="&amp;物品查看器" description="NETLizard 3D游戏物品模型查看"></item>
+        <item alias="animation_viewer" name="&amp;动画查看器" description="NETLizard 3D游戏动画模型查看"></item>
+    </item>
+
+    <item name="&amp;视图" alias="viewer" description="视图操作">
+        <item alias="log" name="&amp;日志" description="显示/隐藏日志"></item>
+        <item alias="scene" name="&amp;场景" description="显示/隐藏场景编辑器"></item>
+        <item alias="main_window" name="&amp;主窗口" description="主窗口操作">
+            <item alias="reset" name="&amp;重置" description="重置布局"></item>
+            <item alias="close" name="&amp;关闭" description="关闭当前视图"></item>
+            <item alias="minimize" name="&amp;最小化" description="窗口托盘化"></item>
+        </item>
+        <item alias="test" name="&amp;测试" description="测试场景" show="debug"></item>
+    </item>
+
+    <item name="&amp;其他" alias="others" description="其他操作">
+        <item alias="setting" name="&amp;设置" description="打开设置"></item>
+        <item alias="help" name="&amp;帮助" description="显示帮助信息"></item>
+        <item alias="changelog" name="&amp;更新日志" description="查看更新日志"></item>
+        <item alias="about" name="&amp;关于" description="关于此程序"></item>
+    </item>
+
+    <item name="&amp;退出" alias="exit" description="退出程序">
+    </item>
+</menu>
+

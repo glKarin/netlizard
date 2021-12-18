@@ -115,7 +115,7 @@ void ChangelogDialog::Init()
 
     setLayout(layout);
 
-    setWindowTitle("Changelog");
+    setWindowTitle(tr("Changelog"));
     resize(480, 360);
 }
 

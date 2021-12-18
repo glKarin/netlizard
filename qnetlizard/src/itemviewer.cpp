@@ -62,42 +62,42 @@ void ItemViewer::Init()
     m_indexSpinBox->setValue(-1);
     m_openObjButton = new QPushButton;
     connect(m_openObjButton, SIGNAL(clicked()), this, SLOT(OpenObjFileChooser()));
-    m_openObjButton->setText("obj/o/car file");
+    m_openObjButton->setText(tr("obj/o/car file"));
     m_openObjButton->setShortcut(QKeySequence::fromString("ctrl+f"));
     AddTool(m_openObjButton);
     AddTool();
 
     m_openResourcePathButton = new QPushButton;
     connect(m_openResourcePathButton, SIGNAL(clicked()), this, SLOT(OpenResourceDirChooser()));
-    m_openResourcePathButton->setText("Resource path");
+    m_openResourcePathButton->setText(tr("Resource path"));
     m_openResourcePathButton->setShortcut(QKeySequence::fromString("ctrl+r"));
     AddTool(m_openResourcePathButton);
     AddTool();
 
-    AddTool(new QLabel("Game: "));
+    AddTool(new QLabel(tr("Game: ")));
     AddTool(m_gameComboBox);
     AddTool();
-    AddTool(new QLabel("Index: "));
+    AddTool(new QLabel(tr("Index: ")));
     AddTool(m_indexSpinBox);
     AddTool(m_autoscanCheckBox);
     connect(m_autoscanCheckBox, SIGNAL(clicked(bool)), this, SLOT(SetAutoscan(bool)));
 
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenBackgroundColorChooser()));
-    button->setText("Color");
+    button->setText(tr("Color"));
     AddTool(button);
 
     AddTool();
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenFile()));
-    button->setText("Load");
+    button->setText(tr("Load"));
     button->setShortcut(QKeySequence::fromString("ctrl+o"));
     AddTool(button);
 
     connect(m_gameComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));
 
     SetCentralWidget(m_itemScene);
-    SetTitle("NETLizard 3D FPS item viewer");
+    SetTitle(tr("NETLizard 3D item model viewer"));
 }
 
 void ItemViewer::OpenBackgroundColorChooser()

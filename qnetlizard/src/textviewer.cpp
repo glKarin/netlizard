@@ -38,12 +38,12 @@ void TextViewer::Init()
     SetTitleLabelVisible(false);
 
     button = new QPushButton;
-    button->setText("Open file");
+    button->setText(tr("Open file"));
     button->setShortcut(QKeySequence::fromString("ctrl+f"));
     AddTool();
     AddTool(button);
     m_saveButton = new QPushButton;
-    m_saveButton->setText("Save data");
+    m_saveButton->setText(tr("Save data"));
     m_saveButton->setShortcut(QKeySequence::fromString("ctrl+s"));
     m_saveButton->setEnabled(false);
     AddTool(m_saveButton);
@@ -53,7 +53,7 @@ void TextViewer::Init()
 
     SetCentralWidget(m_textBrowser);
 
-    SetTitle("NETLizard text resource viewer");
+    SetTitle(tr("NETLizard text resource viewer"));
 }
 
 void TextViewer::OpenFileChooser()

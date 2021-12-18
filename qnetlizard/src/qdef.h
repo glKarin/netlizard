@@ -15,6 +15,7 @@
 
 #define LIB_NAME "libnetlizard"
 #define APP_NAME "QNETLizard"
+#define APP_PKG "qnetlizard"
 #define APP_DEV "Karin"
 #define APP_VER "2.0.0harmattan9"
 #define APP_CODE "ct3d"

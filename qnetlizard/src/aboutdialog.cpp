@@ -34,7 +34,7 @@ void AboutDialog::Init()
     setText("<h2 align='center'>" APP_NAME "</h2>");
     setInformativeText(text);
     addButton("Close", QMessageBox::AcceptRole);
-    setWindowTitle(QString("About ") + APP_NAME);
+    setWindowTitle(QString(tr("About ")) + APP_NAME);
 #undef T_ENDL
 }
 

@@ -82,30 +82,30 @@ void ImageViewer::Init()
     m_indexSpinBox->setMinimum(-1);
     m_indexSpinBox->setEnabled(false);
     m_indexSpinBox->setValue(-1);
-    AddTool(new QLabel("Type: "));
+    AddTool(new QLabel(tr("Type: ")));
     AddTool(m_typeComboBox);
     button = new QPushButton;
-    button->setText("Open file");
+    button->setText(tr("Open file"));
     button->setShortcut(QKeySequence::fromString("ctrl+f"));
     AddTool(button);
     connect(button, SIGNAL(clicked()), this, SLOT(OpenFileChooser()));
     m_saveButton = new QPushButton;
-    m_saveButton->setText("Save data");
+    m_saveButton->setText(tr("Save data"));
     m_saveButton->setShortcut(QKeySequence::fromString("ctrl+s"));
     m_saveButton->setEnabled(false);
     AddTool(m_saveButton);
     connect(m_saveButton, SIGNAL(clicked()), this, SLOT(OpenSaveChooser()));
     AddTool();
-    AddTool(new QLabel("Index: "));
+    AddTool(new QLabel(tr("Index: ")));
     AddTool(m_indexSpinBox);
-    AddTool(new QLabel("Align: "));
+    AddTool(new QLabel(tr("Align: ")));
     AddTool(m_alignComboBox);
 
     connect(m_typeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));
     connect(m_alignComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnAlignCurrentIndexChanged(int)));
 
     SetCentralWidget(m_imageScene);
-    SetTitle("NETLizard image/texture resource viewer");
+    SetTitle(tr("NETLizard image/texture resource viewer"));
 }
 
 void ImageViewer::OpenFileChooser()

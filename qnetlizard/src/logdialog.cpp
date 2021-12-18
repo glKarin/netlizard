@@ -39,7 +39,7 @@ void LogDialog::Init()
 
     m_textViewer->setAcceptRichText(true);
     layout->addWidget(m_textViewer, 1);
-    button->setText("Clear");
+    button->setText(tr("Clear"));
     toolLayout->addStretch();
     toolLayout->addWidget(button);
     connect(button, SIGNAL(clicked()), this, SLOT(ClearLog()));
@@ -53,7 +53,7 @@ void LogDialog::Init()
 
     setWidget(root);
 
-    setWindowTitle("Log output");
+    setWindowTitle(tr("Log output"));
 }
 
 void LogDialog::PushLog(int type, const QString &str)

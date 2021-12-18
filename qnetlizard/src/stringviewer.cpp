@@ -43,14 +43,14 @@ void StringViewer::Init()
     SetTitleLabelVisible(false);
 
     vLayout = new QVBoxLayout;
-    m_encodeLabel->setText("Encode text");
+    m_encodeLabel->setText(tr("Encode text"));
     m_encodeLabel->setWordWrap(true);
     vLayout->addWidget(m_encodeLabel);
     vLayout->addWidget(m_encodeInput);
     connect(m_encodeInput, SIGNAL(textChanged()), this, SLOT(OnTextChanged()));
     thLayout = new QHBoxLayout;
     m_encodeClearButton = new QPushButton;
-    m_encodeClearButton->setText("Clear");
+    m_encodeClearButton->setText(tr("Clear"));
     m_encodeClearButton->setEnabled(false);
     thLayout->addStretch();
     thLayout->addWidget(m_encodeClearButton);
@@ -78,14 +78,14 @@ void StringViewer::Init()
     layout->addLayout(toolLayout);
 
     vLayout = new QVBoxLayout;
-    m_decodeLabel->setText("Decode text");
+    m_decodeLabel->setText(tr("Decode text"));
     m_decodeLabel->setWordWrap(true);
     vLayout->addWidget(m_decodeLabel);
     vLayout->addWidget(m_decodeInput);
     connect(m_decodeInput, SIGNAL(textChanged()), this, SLOT(OnTextChanged()));
     thLayout = new QHBoxLayout;
     m_decodeClearButton = new QPushButton;
-    m_decodeClearButton->setText("Clear");
+    m_decodeClearButton->setText(tr("Clear"));
     m_decodeClearButton->setEnabled(false);
     thLayout->addStretch();
     thLayout->addWidget(m_decodeClearButton);
@@ -96,7 +96,7 @@ void StringViewer::Init()
 
     TitleLabel()->setVisible(false);
     CentralWidget()->setLayout(layout);
-    SetTitle("NETLizard string resource viewer");
+    SetTitle(tr("NETLizard string source viewer"));
 }
 
 bool StringViewer::DecodeString()

@@ -52,7 +52,7 @@ void SettingDialog::Init()
     connect(m_content, SIGNAL(openSettingGroup(const QString &)), this, SLOT(OpenSettingGroup(const QString &)));
 
     m_tree->expandAll();
-    m_tree->setHeaderLabel("Setting items");
+    m_tree->setHeaderLabel(tr("Setting items"));
     m_tree->setMaximumWidth(128);
     m_tree->setMinimumWidth(96);
     contentLayout->addWidget(m_tree);
@@ -68,7 +68,7 @@ void SettingDialog::Init()
     //SetContentText(list->item(0));
     //list->setCurrentRow(0);
 
-    setWindowTitle("Settings");
+    setWindowTitle(tr("Settings"));
     resize(480, 360);
 }
 

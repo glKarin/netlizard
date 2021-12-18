@@ -24,6 +24,20 @@ int main(int argc, char *argv[])
 
     Q_INIT_RESOURCE(qnetlizard);
 
+    QTranslator translator;
+    const QString locale = QLocale::system().name();
+    const QString qmFile(APP_PKG "." + locale);
+
+    qDebug() << "Load i18n -> " << qmFile << ".qm";
+
+    if(translator.load(qmFile, "E:\\qobject\\netlizard\\qnetlizard\\i18n"))
+    {
+        qDebug() << "Done";
+        app.installTranslator(&translator);
+    }
+    else
+        qDebug() << "Fail";
+
     NL::init_engine();
 
 #ifdef _DEV_TEST

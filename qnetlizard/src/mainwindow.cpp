@@ -532,10 +532,10 @@ void MainWindow::SetMainWindowState(int b)
             }
         }
 
-        menu->addAction("&Setting")->setData("setting");
-        menu->addAction("&Restore")->setData("restore");
-        menu->addAction("&Maximize")->setData("maximize");
-        menu->addAction("&Exit")->setData("exit");
+        menu->addAction("&" + tr("Setting"))->setData("setting");
+        menu->addAction("&" + tr("Restore"))->setData("restore");
+        menu->addAction("&" + tr("Maximize"))->setData("maximize");
+        menu->addAction("&" + tr("Exit"))->setData("exit");
         connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(TrayIconMenuActionSlot(QAction *)));
         m_trayIcon->setContextMenu(menu);
         connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(OnTrayIconActivated(QSystemTrayIcon::ActivationReason)));

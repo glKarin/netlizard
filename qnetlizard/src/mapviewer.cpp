@@ -49,7 +49,7 @@ void MapViewer::Init()
     m_mapScene = new MapScene;
     //QHBoxLayout *toolLayout = ToolLayout();
     m_levelSpinBox = new QSpinBox;
-    m_autoscanCheckBox = new QCheckBox("Autoscan");
+    m_autoscanCheckBox = new QCheckBox(tr("Autoscan"));
     SetTitleLabelVisible(false);
 
     for(int i = 0; i <= NL_CONTR_TERRORISM_3D_EPISODE_3; i++)
@@ -61,22 +61,22 @@ void MapViewer::Init()
     m_levelSpinBox->setValue(-1);
     m_openLvlButton = new QPushButton;
     connect(m_openLvlButton, SIGNAL(clicked()), this, SLOT(OpenFileChooser()));
-    m_openLvlButton->setText("lvl/dm/track file");
+    m_openLvlButton->setText(tr("lvl/dm/track file"));
     m_openLvlButton->setShortcut(QKeySequence::fromString("ctrl+f"));
     AddTool(m_openLvlButton);
     AddTool();
 
     m_openResourcePathButton = new QPushButton;
     connect(m_openResourcePathButton, SIGNAL(clicked()), this, SLOT(OpenResourceDirChooser()));
-    m_openResourcePathButton->setText("Resource path");
+    m_openResourcePathButton->setText(tr("Resource path"));
     m_openResourcePathButton->setShortcut(QKeySequence::fromString("ctrl+r"));
     AddTool(m_openResourcePathButton);
     AddTool();
 
-    AddTool(new QLabel("Game: "));
+    AddTool(new QLabel(tr("Game: ")));
     AddTool(m_gameComboBox);
     AddTool();
-    AddTool(new QLabel("Level: "));
+    AddTool(new QLabel(tr("Level: ")));
     AddTool(m_levelSpinBox);
     AddTool(m_autoscanCheckBox);
     connect(m_autoscanCheckBox, SIGNAL(clicked(bool)), this, SLOT(SetAutoscan(bool)));
@@ -84,7 +84,7 @@ void MapViewer::Init()
     AddTool();
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenFile()));
-    button->setText("Load");
+    button->setText(tr("Load"));
     button->setShortcut(QKeySequence::fromString("ctrl+o"));
     AddTool(button);
 
@@ -96,7 +96,7 @@ void MapViewer::Init()
     connect(m_mapScene, SIGNAL(currentViewSceneChanged(int)), this, SLOT(UpdateSceneInfo()));
 
     SetCentralWidget(m_mapScene);
-    SetTitle("NETLizard 3D FPS map viewer");
+    SetTitle(tr("NETLizard 3D map model viewer"));
 }
 
 void MapViewer::OpenFileChooser()

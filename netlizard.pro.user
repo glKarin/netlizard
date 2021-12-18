@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by Qt Creator 2.4.1, 2021-12-18T12:10:21. -->
+<!-- Written by Qt Creator 2.4.1, 2021-12-18T19:07:00. -->
 <qtcreator>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -75,7 +75,24 @@
       <value type="QString" key="Qt4ProjectManager.MakeStep.MakeArguments"></value>
       <value type="QString" key="Qt4ProjectManager.MakeStep.MakeCommand"></value>
      </valuemap>
-     <value type="int" key="ProjectExplorer.BuildStepList.StepsCount">2</value>
+     <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.2">
+      <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Make</value>
+      <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
+      <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.MakeStep</value>
+      <value type="bool" key="Qt4ProjectManager.MakeStep.Clean">false</value>
+      <value type="QString" key="Qt4ProjectManager.MakeStep.MakeArguments">%{buildDir} install</value>
+      <value type="QString" key="Qt4ProjectManager.MakeStep.MakeCommand"></value>
+     </valuemap>
+     <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.3">
+      <value type="QString" key="ProjectExplorer.ProcessStep.Arguments">install</value>
+      <value type="QString" key="ProjectExplorer.ProcessStep.Command">mingw32-make.exe</value>
+      <value type="bool" key="ProjectExplorer.ProcessStep.Enabled">false</value>
+      <value type="QString" key="ProjectExplorer.ProcessStep.WorkingDirectory">%{buildDir}</value>
+      <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">自定义进程步骤</value>
+      <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
+      <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">ProjectExplorer.ProcessStep</value>
+     </valuemap>
+     <value type="int" key="ProjectExplorer.BuildStepList.StepsCount">4</value>
      <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">构建</value>
      <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
      <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">ProjectExplorer.BuildSteps.Build</value>

@@ -126,8 +126,8 @@ void IndexViewer::Init()
 
     Layout();
 
-    SetTitleLabel("Home");
-    SetTitle("NETLizard resource viewer");
+    SetTitleLabel(tr("Home"));
+    SetTitle(tr("NETLizard resource viewer"));
 }
 
 void IndexViewer::resizeEvent(QResizeEvent *event)

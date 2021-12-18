@@ -333,12 +333,13 @@ OBJECTS_DIR = ./obj
 RCC_DIR = ./
 UI_DIR = ./ui
 
-#i18n.files = \
-#    i18n/$${TARGET}.zh_CN.ts \
-#    i18n/$${TARGET}.zh_CN.qm
-#i18n.path = ./i18n
+i18n.files = \
+    i18n/qnetlizard.zh_CN.qm
+i18n.path = ./i18n
 
-#INSTALLS        += i18n
+TRANSLATIONS += i18n/qnetlizard.zh_CN.ts
+
+INSTALLS        += i18n
 
 OTHER_FILES += README.md \
                 debian/changelog \
@@ -346,6 +347,7 @@ OTHER_FILES += README.md \
                 resource/img/logo.png \
                 resource/cfg/help.xml \
                 resource/cfg/menu.xml \
-                resource/cfg/setting.xml
+                resource/cfg/setting.xml \
+                resource/cfg/menu.zh_CN.xml
 
 INSTALLS += qnetlizard
