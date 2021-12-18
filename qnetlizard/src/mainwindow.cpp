@@ -35,6 +35,10 @@
 
 #define MAIN_WINDOW_INTERNAL_STATE_VERSION -1
 
+#define MAINWINDOW_MINIMIZE 0
+#define MAINWINDOW_RESTORE 1
+#define MAINWINDOW_MAXIMIZE 2
+
 #ifdef _DEV_TEST
 #include "testviewer.h"
 #endif
@@ -47,7 +51,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_sceneTreeWidget(0),
     m_sceneInfoWidget(0),
     m_actorWidget(0),
-    m_statusBar(0)
+    m_statusBar(0),
+    m_trayIcon(0)
 {
     setObjectName("MainWindow");
     Init();
@@ -168,6 +173,18 @@ void MainWindow::CloseCurrentWidget()
     m_statusBar->Reset(true);
 }
 
+void MainWindow::TrayIconMenuActionSlot(QAction *action)
+{
+    if(action)
+    {
+        if(action->data().toString() == "minimize")
+            return;
+    }
+    MenuActionSlot(action);
+    if(isHidden())
+        SetMainWindowState(MAINWINDOW_RESTORE);
+}
+
 void MainWindow::MenuActionSlot(QAction *action)
 {
     QString type(action ? action->data().toString() : "index_viewer");
@@ -200,9 +217,21 @@ void MainWindow::MenuActionSlot(QAction *action)
     {
         OpenSceneEditor();
     }
-    else if(type == "reset")
+    else if(type == "minimize")
     {
-        Reset();
+        SetMainWindowState(MAINWINDOW_MINIMIZE);
+    }
+    else if(type == "maximize")
+    {
+        SetMainWindowState(MAINWINDOW_MAXIMIZE);
+    }
+    else if(type == "restore")
+    {
+        SetMainWindowState(MAINWINDOW_RESTORE);
+    }
+    else if(type == "changelog")
+    {
+        ChangelogDialog::Show(this);
     }
     else
     {
@@ -464,3 +493,83 @@ void MainWindow::AddMenuItem(const HomeCellItem &s, QMenu *parent)
     }
 }
 
+void MainWindow::SetMainWindowState(int b)
+{
+    if(!QSystemTrayIcon::isSystemTrayAvailable())
+        return;
+    if(!m_trayIcon)
+    {
+        m_trayIcon = new QSystemTrayIcon(this);
+        m_trayIcon->setIcon(QIcon(":/LOGO"));
+        m_trayIcon->setToolTip(APP_NAME);
+        QMenu *menu = new QMenu(APP_NAME, this);
+        const HomeCellItemList &Map = IndexViewer::ActionMap();
+
+        QStringList actions;
+            actions << "resource"
+            << "3d"
+               ;
+        Q_FOREACH(const QString &name, actions)
+        {
+            Q_FOREACH(const HomeCellItem &item, Map)
+            {
+    #ifndef _DEV_TEST
+                if(item.IsOnlyShowInDebug())
+                    continue;
+    #endif
+                if(item.data.toString() == name)
+                {
+                    if(item.IsItem())
+                    {
+                        menu->addAction(item.label)->setData(item.data);
+                    }
+                    else
+                    {
+                        AddMenuItem(item, menu->addMenu(item.label));
+                    }
+                    break;
+                }
+            }
+        }
+
+        menu->addAction("&Setting")->setData("setting");
+        menu->addAction("&Restore")->setData("restore");
+        menu->addAction("&Maximize")->setData("maximize");
+        menu->addAction("&Exit")->setData("exit");
+        connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(TrayIconMenuActionSlot(QAction *)));
+        m_trayIcon->setContextMenu(menu);
+        connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(OnTrayIconActivated(QSystemTrayIcon::ActivationReason)));
+    }
+    if(b == MAINWINDOW_MINIMIZE)
+    {
+        hide();
+        m_trayIcon->show();
+    }
+    else
+    {
+        m_trayIcon->hide();
+        show();
+        if(b == MAINWINDOW_MAXIMIZE)
+        {
+            //showMaximized();
+            setWindowState(Qt::WindowMaximized);
+        }
+    }
+}
+
+void MainWindow::OnTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    switch(reason)
+    {
+        case QSystemTrayIcon::DoubleClick:
+        case QSystemTrayIcon::Trigger:
+        case QSystemTrayIcon::MiddleClick:
+        m_trayIcon->hide();
+        show();
+        break;
+        case QSystemTrayIcon::Context:
+        case QSystemTrayIcon::Unknown:
+        default:
+            break;
+    }
+}

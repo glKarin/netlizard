@@ -247,6 +247,7 @@ void NLActorPropWidget::Reset()
     m_actorGroupBox->setProperty("_Layout_visible", QVariant());
     m_actorGroupBox->setProperty("_Layout_items", QVariant());
     m_actorGroupBox->setProperty("_Layout_item_maps", QVariant());
+    m_actorGroupBox->setCheckable(false);
 }
 
 void NLActorPropWidget::UpdateActorData()
@@ -281,6 +282,7 @@ void NLActorPropWidget::SetupActorProperty()
         items.push_back(item.name);
         itemMaps.insert(item.name, QVariant::fromValue(widget));
     }
+    m_actorGroupBox->setCheckable(true);
     m_actorGroupBox->setChecked(true);
     m_actorGroupBox->setProperty("_Layout_visible", true);
     m_actorGroupBox->setProperty("_Layout_items", items);

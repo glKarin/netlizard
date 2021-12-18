@@ -2,6 +2,7 @@
 #define _KARIN_MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSystemTrayIcon>
 
 class QToolBar;
 class QStackedWidget;
@@ -42,6 +43,9 @@ private slots:
     void OpenSceneEditor();
     void SetLabelTitleText(const QString &str);
     void SetStatusText(const QString &str);
+    void SetMainWindowState(int b);
+    void OnTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
+    void TrayIconMenuActionSlot(QAction *action);
 
 private:
     BaseViewer * GenViewer(const QString &type);
@@ -59,6 +63,7 @@ private:
     SceneInfoWidget *m_sceneInfoWidget;
     ActorPropertyWidget *m_actorWidget;
     StatusBar *m_statusBar;
+    QSystemTrayIcon *m_trayIcon;
 
     Q_DISABLE_COPY(MainWindow)
     

@@ -20,6 +20,7 @@
         <item alias="main_window" name="&amp;Main Window" description="Main window operation">
             <item alias="reset" name="&amp;Reset" description="Reset window layout"></item>
             <item alias="close" name="&amp;Close" description="Close current central viewer"></item>
+            <item alias="minimize" name="&amp;Minimize" description="Minimize window"></item>
         </item>
         <item alias="test" name="&amp;Test" description="Test scene" show="debug"></item>
     </item>

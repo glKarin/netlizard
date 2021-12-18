@@ -192,7 +192,7 @@ static int NETLizard_PointInScenePlane(const GL_NETLizard_3D_Mesh *scene, const 
     for(j = 0; j < scene->plane_count; j++)
     {
         plane_t plane = SCENE_PLANE(scene, j);
-        int c = plane_point_clip(&plane, position);
+        int c = plane_point_clip_precision(&plane, position, 1);
         if(c < 0)
             return 0;
     }
