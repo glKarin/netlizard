@@ -21,7 +21,8 @@ HEADERS += \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
     src/misc/settings.h \
-    src/widget/flowlayout.h
+    src/widget/flowlayout.h \
+    src/gl/linkedlist.h
 
 SOURCES += \
     main.cpp \
@@ -29,7 +30,8 @@ SOURCES += \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
-    src/widget/flowlayout.cpp
+    src/widget/flowlayout.cpp \
+    src/gl/linkedlist.c
 
 # Widget
 HEADERS += \
@@ -265,13 +267,13 @@ SOURCES += \
     src/gl/nl_gl.c \
     src/gl/nl_gl_re3d.c \
     src/gl/nl_gl_sprite.c \
-    src/gl/nl_shadow_render.cpp \
-    src/gl/stencil_shadow.cpp \
+    src/gl/nl_shadow_render.c \
+    src/gl/stencil_shadow.c \
     src/gl/glk.c \
     src/gl/nl_util.c \
     src/gl/nl_gl_debug.c \
     src/gl/nl_algo.c \
-    src/gl/nl_gl_algo_debug.cpp
+    src/gl/nl_gl_algo_debug.c
 
 # Mesa GL math
 DEPENDPATH += ./lib/mesa_math

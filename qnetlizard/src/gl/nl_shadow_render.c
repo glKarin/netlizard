@@ -1,6 +1,5 @@
 #include "nl_shadow_render.h"
 
-#include <QDebug>
 #include <string.h>
 #include <stdio.h>
 

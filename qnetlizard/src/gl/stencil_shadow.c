@@ -1,12 +1,5 @@
 #include "stencil_shadow.h"
 
-// using cpp::std
-#include <list>
-#include <vector>
-
-#include <QDebug>
-//#include <QGLContext>
-
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -14,8 +7,8 @@
 
 #include "lib/line.h"
 #include "lib/triangle.h"
-#include "lib/mesa_gl_math.h"
-#include "nlmath.h"
+#include "lib/matrix.h"
+#include "linkedlist.h"
 
 #define F_ZERO 0.1
 #define SHADOW_VOLUME_LENGTH 5000
@@ -27,15 +20,28 @@
 #define VEC3CMP vector3_equals // compare_vector3
 #define LINECMP line_equals_ignore_seq // compare_line_segment
 
-typedef std::list<line_t> LineList;
-typedef std::vector<vector3_t> Vector3List;
-typedef std::vector<triangle_t> TriangleList;
+#define SWAP(T, a, b) {\
+    T tmp = a; \
+    a = b; \
+    b = tmp; \
+}
+
+typedef linkedlist(line_t) LineList;
+typedef linkedlist(vector3_t) Vector3List;
+typedef linkedlist(triangle_t) TriangleList;
 typedef struct _Shadow_Volume_s
 {
     LineList lines;
     TriangleList tops;
     TriangleList bottoms;
 } Shadow_Volume_s;
+
+static void clear_shadow_volume(Shadow_Volume_s *v)
+{
+    List_DeleteAll(&v->lines);
+    List_DeleteAll(&v->tops);
+    List_DeleteAll(&v->bottoms);
+}
 
 static int compare_vector3(const vector3_t *a, const vector3_t *b)
 {
@@ -63,8 +69,8 @@ static int compare_line_segment(const line_t *l1, const line_t *l2)
 
 static GLboolean shadow_volume_is_empty(const Shadow_Volume_s *sv)
 {
-    return sv->lines.empty()
-            //&& sv->tops.isEmpty() && sv->bottoms.isEmpty()
+    return List_Empty(&sv->lines)
+            //&& List_Empty(&sv->tops) && List_Empty(&sv->bottoms)
             ;
 }
 
@@ -81,17 +87,17 @@ static GLboolean normal_is_up_down(const float normal[3])
     return normal[2] > 0 || normal[2] < -UP_NORMAL_LIMIT;
 }
 
-static int push_edge_line(LineList &list, const line_t *lp)
+static int push_edge_line(LineList *list, const line_t *lp)
 {
     int has = 0;
-    LineList::iterator itor;
+    list_node(line_t) *p;
+    line_t *line;
 
-    for(itor = list.begin(); itor != list.end(); ++itor) // find in lines list
+    LISTV_DATA_FOREACH_T(line_t, p, line, list) // find in lines list
     {
-        const line_t &line = *itor;
-        if(LINECMP(lp, &line))
+        if(LINECMP(lp, line))
         {
-            //printf("%d exist\n", i);
+            //printf("%P exist\n", line);
             has = 1;
             break;
         }
@@ -99,16 +105,16 @@ static int push_edge_line(LineList &list, const line_t *lp)
 
     if(has) // if exists, remove this line
     {
-        list.erase(itor);
+        List_DeleteNode(list, p);
     }
     else // if not exists, add new line to list
     {
-        list.push_back(*lp);
+        List_PushBack(list, lp);
     }
     return has;
 }
 
-static void render_edge_lines(const LineList &lines)
+static void render_edge_lines(const LineList *lines)
 {
     glDisable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
@@ -121,17 +127,17 @@ static void render_edge_lines(const LineList &lines)
     glPushMatrix();
     {
         GLfloat vs[6];
-        LineList::const_iterator itor;
-        for(itor = lines.begin(); itor != lines.end(); ++itor)
+        const list_node(line_t) *p;
+        const line_t *lpptr;
+        LISTV_DATA_FOREACH_T(line_t, p, lpptr, lines)
         {
-            const line_t &lpptr = *itor;
-            vs[0] = VECTOR3_X(lpptr.a);
-            vs[1] = VECTOR3_Y(lpptr.a);
-            vs[2] = VECTOR3_Z(lpptr.a);
+            vs[0] = LINEV_A_X(lpptr);
+            vs[1] = LINEV_A_Y(lpptr);
+            vs[2] = LINEV_A_Z(lpptr);
 
-            vs[3] = VECTOR3_X(lpptr.b);
-            vs[4] = VECTOR3_Y(lpptr.b);
-            vs[5] = VECTOR3_Z(lpptr.b);
+            vs[3] = LINEV_B_X(lpptr);
+            vs[4] = LINEV_B_Y(lpptr);
+            vs[5] = LINEV_B_Z(lpptr);
             glVertexPointer(3, GL_FLOAT, 0, vs);
             glDrawArrays(GL_LINES, 0, 2);
         }
@@ -209,7 +215,7 @@ static GLboolean cale_mesh_transform(GL_NETLizard_3D_Mesh *r, const GL_NETLizard
     Mesa_glRotate(&mat, nl_mesh->rotation[1], 0.0f, 0.0f, 1.0f);
     Mesa_glRotate(&mat, nl_mesh->rotation[2], 0.0f, 1.0f, 0.0f);
 
-    NL::cale_normal_matrix(nor_mat, mat);
+   matrix_normal_matrix(&mat, &nor_mat);
 
 	for(i = 0; i < nl_mesh->count; i++)
 	{
@@ -335,13 +341,13 @@ static GLboolean cale_mesh_volume_data(Shadow_Volume_s *r, const vector3_t *ligh
                     int next_index = (n + 1) % 3;
 
                     line_t lp = LINEV(pa[n]->position, pa[next_index]->position);
-                    has = push_edge_line(r->lines, &lp);
+                    has = push_edge_line(&r->lines, &lp);
                 }
                 // top cap triangle
                 if(Cap)
                 {
                     triangle_t tri = TRIANGLEV(pa[0]->position, pa[1]->position, pa[2]->position);
-                    r->tops.push_back(tri);
+                    List_PushBack(&r->tops, &tri);
                 }
             }
             else
@@ -351,7 +357,7 @@ static GLboolean cale_mesh_volume_data(Shadow_Volume_s *r, const vector3_t *ligh
                 if(Cap)
                 {
                     triangle_t tri = TRIANGLEV(pa[0]->position, pa[1]->position, pa[2]->position);
-                    r->bottoms.push_back(tri);
+                    List_PushBack(&r->bottoms, &tri);
                 }
             }
         }
@@ -359,7 +365,7 @@ static GLboolean cale_mesh_volume_data(Shadow_Volume_s *r, const vector3_t *ligh
 
 //#define _TEST_RENDER_EDGE_LINES
 #ifdef _TEST_RENDER_EDGE_LINES
-    render_edge_lines(r->lines);
+    render_edge_lines(&r->lines);
 #endif
     return GL_TRUE;
 }
@@ -374,15 +380,18 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
     if(!r || !light_position || !mat || !mat->count)
         return GL_FALSE;
 
-    Shadow_Volume_s volume;
+    Shadow_Volume_s volume = {LIST(line_t), LIST(triangle_t), LIST(triangle_t)};
     if(!cale_mesh_volume_data(&volume, light_position, dirlight, mat, method, invert))
         return GL_FALSE;
     if(shadow_volume_is_empty(&volume))
+    {
+        clear_shadow_volume(&volume);
         return GL_FALSE;
+    }
 
-    const LineList &lines = volume.lines;
-    const TriangleList &tops = volume.tops;
-    const TriangleList &bottoms = volume.tops; // using top caps
+    const LineList *lines = &volume.lines;
+    const TriangleList *tops = &volume.tops;
+    const TriangleList *bottoms = &volume.tops; // using top caps
 
     const GLboolean Cap = shadow_volume_need_cap(method);
 
@@ -390,12 +399,13 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
     r->count = Cap ? 3 : 1; // top[1] bottom[2] caps, and side[0]
     r->materials = (GL_NETLizard_3D_Material *)calloc(r->count, sizeof(GL_NETLizard_3D_Material));
 	// cale sides of shadow volume
-    int vcount = lines.size() * 6; // 2 triangles(6 points) every a line
+    int vcount = List_Size(lines) * 6; // 2 triangles(6 points) every a line
     if(Cap)
     {
-        vcount += tops.size() * 3;
-        vcount += bottoms.size() * 3;
+        vcount += List_Size(tops) * 3;
+        vcount += List_Size(bottoms) * 3;
     }
+
     r->vertex_data.vertex_count = vcount;
     r->vertex_data.vertex = (GL_NETLizard_3D_Vertex *)calloc(r->vertex_data.vertex_count, sizeof(GL_NETLizard_3D_Vertex));
 //    r->vertex_data.index_count = vcount;
@@ -403,34 +413,31 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
     m = r->materials;
     m->mode = GL_TRIANGLES;
     m->index_start = 0;
-    m->index_count = lines.size() * 6;
+    m->index_count = List_Size(lines) * 6;
     m->index = (GLushort *)calloc(m->index_count, sizeof(GLushort));
     o = 0;
     vd = r->vertex_data.vertex;
 	// TODO: cale clock wise, now the lighting source must be above all cubes
-    LineList::const_iterator itor;
-    i = 0;
-    for(itor = lines.begin(); itor != lines.end(); ++itor)
+    list_node(line_t) *p;
+    line_t *lpptr;
+    LISTV_DATA_FOREACH_WITH_COUNTER_T(line_t, p, lpptr, i, lines)
     {
-        line_t lpptr = *itor;
 		// point lighting
-        vector3_t dir_a = cale_light_direction(&(LINE_A(lpptr)), light_position, dirlight);
+        vector3_t dir_a = cale_light_direction(&(LINEV_A(lpptr)), light_position, dirlight);
         vector3_scalev(&dir_a, SHADOW_VOLUME_LENGTH + SHADOW_CAP_OFFSET);
-        dir_a = vector3_add(&(LINE_A(lpptr)), &dir_a);
+        dir_a = vector3_add(&(LINEV_A(lpptr)), &dir_a);
 
-        vector3_t dir_b = cale_light_direction(&(LINE_B(lpptr)), light_position, dirlight);
+        vector3_t dir_b = cale_light_direction(&(LINEV_B(lpptr)), light_position, dirlight);
         vector3_scalev(&dir_b, SHADOW_VOLUME_LENGTH + SHADOW_CAP_OFFSET);
-        dir_b = vector3_add(&(LINE_B(lpptr)), &dir_b);
+        dir_b = vector3_add(&(LINEV_B(lpptr)), &dir_b);
 
         if(SHADOW_CAP_OFFSET)
         {
-            vector3_t dir_offset_a = cale_light_direction(&(LINE_A(lpptr)), light_position, dirlight);
-            vector3_scalev(&dir_offset_a, SHADOW_CAP_OFFSET);
-            LINE_A(lpptr) = vector3_add(&(LINE_A(lpptr)), &dir_offset_a);
+            vector3_t dir_offset_a = cale_light_direction(&(LINEV_A(lpptr)), light_position, dirlight);
+            vector3_moveve(&LINEV_A(lpptr), &dir_offset_a, SHADOW_CAP_OFFSET);
 
-            vector3_t dir_offset_b = cale_light_direction(&(LINE_B(lpptr)), light_position, dirlight);
-            vector3_scalev(&dir_offset_b, SHADOW_CAP_OFFSET);
-            LINE_B(lpptr) = vector3_add(&(LINE_B(lpptr)), &dir_offset_b);
+            vector3_t dir_offset_b = cale_light_direction(&(LINEV_B(lpptr)), light_position, dirlight);
+            vector3_moveve(&LINEV_B(lpptr), &dir_offset_b, SHADOW_CAP_OFFSET);
         }
 
 //#define _TEST_RENDER_SHADOW_VOLUME
@@ -441,19 +448,18 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
     glDepthFunc(GL_LEQUAL);
 	glPushMatrix();
     {
-		GLfloat vs[18];
-			//printf("%d %d\n", o, lines.count);
-            vs[0] = VECTOR3_X(lpptr.a);
-            vs[1] = VECTOR3_Y(lpptr.a);
-            vs[2] = VECTOR3_Z(lpptr.a);
+        GLfloat vs[18];
+            vs[0] = LINEV_A_X(lpptr);
+            vs[1] = LINEV_A_Y(lpptr);
+            vs[2] = LINEV_A_Z(lpptr);
 
             vs[3] = VECTOR3_X(dir_a);
             vs[4] = VECTOR3_Y(dir_a);
             vs[5] = VECTOR3_Z(dir_a);
 
-            vs[6] = VECTOR3_X(lpptr.b);
-            vs[7] = VECTOR3_Y(lpptr.b);
-            vs[8] = VECTOR3_Z(lpptr.b);
+            vs[6] = LINEV_B_X(lpptr);
+            vs[7] = LINEV_B_Y(lpptr);
+            vs[8] = LINEV_B_Z(lpptr);
 
             vs[9] = VECTOR3_X(dir_a);
             vs[10] = VECTOR3_Y(dir_a);
@@ -463,9 +469,9 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
             vs[13] = VECTOR3_Y(dir_b);
             vs[14] = VECTOR3_Z(dir_b);
 
-            vs[15] = VECTOR3_X(lpptr.b);
-            vs[16] = VECTOR3_Y(lpptr.b);
-            vs[17] = VECTOR3_Z(lpptr.b);
+            vs[15] = LINEV_B_X(lpptr);
+            vs[16] = LINEV_B_Y(lpptr);
+            vs[17] = LINEV_B_Z(lpptr);
 
 			glVertexPointer(3, GL_FLOAT, 0, vs);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -478,18 +484,18 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
 #endif
 		// triangle 1
         pa = vd + i * 6;
-        pa->position[0] = LINE_A_X(lpptr);
-        pa->position[1] = LINE_A_Y(lpptr);
-        pa->position[2] = LINE_A_Z(lpptr);
+        pa->position[0] = LINEV_A_X(lpptr);
+        pa->position[1] = LINEV_A_Y(lpptr);
+        pa->position[2] = LINEV_A_Z(lpptr);
         pa = vd + i * 6 + 1;
         pa->position[0] = VECTOR3_X(dir_a);
         pa->position[1] = VECTOR3_Y(dir_a);
         pa->position[2] = VECTOR3_Z(dir_a);
         //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
         pa = vd + i * 6 + 2;
-        pa->position[0] = LINE_B_X(lpptr);
-        pa->position[1] = LINE_B_Y(lpptr);
-        pa->position[2] = LINE_B_Z(lpptr);
+        pa->position[0] = LINEV_B_X(lpptr);
+        pa->position[1] = LINEV_B_Y(lpptr);
+        pa->position[2] = LINEV_B_Z(lpptr);
 
 		// triangle 2
         pa = vd + i * 6 + 3;
@@ -503,9 +509,9 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
         pa->position[2] = VECTOR3_Z(dir_b);
         //pa->vertex[3] = SHADOW_VOLUME_FAR_W;
         pa = vd + i * 6 + 5;
-        pa->position[0] = LINE_B_X(lpptr);
-        pa->position[1] = LINE_B_Y(lpptr);
-        pa->position[2] = LINE_B_Z(lpptr);
+        pa->position[0] = LINEV_B_X(lpptr);
+        pa->position[1] = LINEV_B_Y(lpptr);
+        pa->position[2] = LINEV_B_Z(lpptr);
 
         for(q = 0; q < 6; q++)
         {
@@ -513,7 +519,6 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
             m->index[n] = n;
         }
         o += 6;
-        i++;
 	}
 
     if(Cap)
@@ -523,27 +528,27 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
         vd = r->vertex_data.vertex + o;
         m = r->materials + 1;
         m->mode = GL_TRIANGLES;
-        m->index_count = tops.size() * 3;
+        m->index_count = List_Size(tops) * 3;
         m->index_start = o;
         m->index = (GLushort *)calloc(m->index_count, sizeof(GLushort));
 
-        for(i = 0; i < tops.size(); i++)
-		{
-            const triangle_t &tri = tops[i];
-
+        list_node(triangle_t) *p;
+        triangle_t *tri;
+        LISTV_DATA_FOREACH_WITH_COUNTER_T(triangle_t, p, tri, i, tops)
+        {
             if(SHADOW_CAP_OFFSET)
             {
-                vector3_t dir_a = cale_light_direction(&(TRIANGLE_A(tri)), light_position, dirlight);
+                vector3_t dir_a = cale_light_direction(&(TRIANGLEV_A(tri)), light_position, dirlight);
                 vector3_scalev(&dir_a, SHADOW_CAP_OFFSET);
-                dir_a = vector3_add(&(TRIANGLE_A(tri)), &dir_a);
+                dir_a = vector3_add(&(TRIANGLEV_A(tri)), &dir_a);
 
-                vector3_t dir_b = cale_light_direction(&(TRIANGLE_B(tri)), light_position, dirlight);
+                vector3_t dir_b = cale_light_direction(&(TRIANGLEV_B(tri)), light_position, dirlight);
                 vector3_scalev(&dir_b, SHADOW_CAP_OFFSET);
-                dir_b = vector3_add(&(TRIANGLE_B(tri)), &dir_b);
+                dir_b = vector3_add(&(TRIANGLEV_B(tri)), &dir_b);
 
-                vector3_t dir_c = cale_light_direction(&(TRIANGLE_C(tri)), light_position, dirlight);
+                vector3_t dir_c = cale_light_direction(&(TRIANGLEV_C(tri)), light_position, dirlight);
                 vector3_scalev(&dir_c, SHADOW_CAP_OFFSET);
-                dir_c = vector3_add(&(TRIANGLE_C(tri)), &dir_c);
+                dir_c = vector3_add(&(TRIANGLEV_C(tri)), &dir_c);
 
                 pa = vd + i * 3;
                 pa->position[0] = VECTOR3_X(dir_a);
@@ -563,17 +568,17 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
             else
             {
                 pa = vd + i * 3;
-                pa->position[0] = TRIANGLE_A_X(tri);
-                pa->position[1] = TRIANGLE_A_Y(tri);
-                pa->position[2] = TRIANGLE_A_Z(tri);
+                pa->position[0] = TRIANGLEV_A_X(tri);
+                pa->position[1] = TRIANGLEV_A_Y(tri);
+                pa->position[2] = TRIANGLEV_A_Z(tri);
                 pa = vd + i * 3 + 1;
-                pa->position[0] = TRIANGLE_B_X(tri);
-                pa->position[1] = TRIANGLE_B_Y(tri);
-                pa->position[2] = TRIANGLE_B_Z(tri);
+                pa->position[0] = TRIANGLEV_B_X(tri);
+                pa->position[1] = TRIANGLEV_B_Y(tri);
+                pa->position[2] = TRIANGLEV_B_Z(tri);
                 pa = vd + i * 3 + 2;
-                pa->position[0] = TRIANGLE_C_X(tri);
-                pa->position[1] = TRIANGLE_C_Y(tri);
-                pa->position[2] = TRIANGLE_C_Z(tri);
+                pa->position[0] = TRIANGLEV_C_X(tri);
+                pa->position[1] = TRIANGLEV_C_Y(tri);
+                pa->position[2] = TRIANGLEV_C_Z(tri);
             }
 
             for(q = 0; q < 3; q++)
@@ -590,17 +595,17 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
             glPushMatrix();
             {
                 GLfloat vs[9];
-                vs[0] = TRIANGLE_A_X(tri);
-                vs[1] = TRIANGLE_A_Y(tri);
-                vs[2] = TRIANGLE_A_Z(tri);
+                vs[0] = TRIANGLEV_A_X(tri);
+                vs[1] = TRIANGLEV_A_Y(tri);
+                vs[2] = TRIANGLEV_A_Z(tri);
 
-                vs[3] = TRIANGLE_B_X(tri);
-                vs[4] = TRIANGLE_B_Y(tri);
-                vs[5] = TRIANGLE_B_Z(tri);
+                vs[3] = TRIANGLEV_B_X(tri);
+                vs[4] = TRIANGLEV_B_Y(tri);
+                vs[5] = TRIANGLEV_B_Z(tri);
 
-                vs[6] = TRIANGLE_C_X(tri);
-                vs[7] = TRIANGLE_C_Y(tri);
-                vs[8] = TRIANGLE_C_Z(tri);
+                vs[6] = TRIANGLEV_C_X(tri);
+                vs[7] = TRIANGLEV_C_Y(tri);
+                vs[8] = TRIANGLEV_C_Z(tri);
 
                 glVertexPointer(3, GL_FLOAT, 0, vs);
                 glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -619,27 +624,25 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
         vd = r->vertex_data.vertex + o;
         m = r->materials + 2;
         m->mode = GL_TRIANGLES;
-        m->index_count = bottoms.size() * 3;
+        m->index_count = List_Size(bottoms) * 3;
         m->index_start = o;
         m->index = (GLushort *)calloc(m->index_count, sizeof(GLushort));
 
-        for(i = 0; i < bottoms.size(); i++)
+        LISTV_DATA_FOREACH_WITH_COUNTER_T(triangle_t, p, tri, i, bottoms)
         {
-            const triangle_t &tri = bottoms[i];
-
-            vector3_t dir_a = cale_light_direction(&(TRIANGLE_A(tri)), light_position, dirlight);
+            vector3_t dir_a = cale_light_direction(&(TRIANGLEV_A(tri)), light_position, dirlight);
             vector3_scalev(&dir_a, SHADOW_VOLUME_LENGTH + SHADOW_CAP_OFFSET);
-            dir_a = vector3_add(&(TRIANGLE_A(tri)), &dir_a);
+            dir_a = vector3_add(&(TRIANGLEV_A(tri)), &dir_a);
 
-            vector3_t dir_b = cale_light_direction(&(TRIANGLE_B(tri)), light_position, dirlight);
+            vector3_t dir_b = cale_light_direction(&(TRIANGLEV_B(tri)), light_position, dirlight);
             vector3_scalev(&dir_b, SHADOW_VOLUME_LENGTH + SHADOW_CAP_OFFSET);
-            dir_b = vector3_add(&(TRIANGLE_B(tri)), &dir_b);
+            dir_b = vector3_add(&(TRIANGLEV_B(tri)), &dir_b);
 
-            vector3_t dir_c = cale_light_direction(&(TRIANGLE_C(tri)), light_position, dirlight);
+            vector3_t dir_c = cale_light_direction(&(TRIANGLEV_C(tri)), light_position, dirlight);
             vector3_scalev(&dir_c, SHADOW_VOLUME_LENGTH + SHADOW_CAP_OFFSET);
-            dir_c = vector3_add(&(TRIANGLE_C(tri)), &dir_c);
+            dir_c = vector3_add(&(TRIANGLEV_C(tri)), &dir_c);
 
-            qSwap(dir_a, dir_b);
+            SWAP(vector3_t, dir_a, dir_b);
 
             pa = vd + i * 3;
             pa->position[0] = VECTOR3_X(dir_a);
@@ -694,6 +697,7 @@ static GLboolean make_shadow_volume_mesh(GL_NETLizard_3D_Mesh *r, const vector3_
 #endif
 		}
 	}
+    clear_shadow_volume(&volume);
     return GL_TRUE;
 }
 

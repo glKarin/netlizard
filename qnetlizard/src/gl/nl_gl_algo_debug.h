@@ -3,9 +3,17 @@
 
 #include "nl_gl.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct vector3_s;
 
 void NETLizard_DebugHighlightRenderGL3DModelPlane(const GL_NETLizard_3D_Model *model, GLuint scene, GLuint plane_index);
 void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model *model, GLuint scene, GLuint item_index, const struct vector3_s *pos, const struct vector3_s *dir);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

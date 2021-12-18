@@ -4,6 +4,10 @@
 #include "nl_gl.h"
 #include "lib/vector3.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define NETLIZARD_SHADOW_RENDER_NONE 0
 #define NETLIZARD_SHADOW_RENDER_ITEM 1
 #define NETLIZARD_SHADOW_RENDER_SCENE_CEIL_AND_FLOOR (1 << 1)
@@ -17,5 +21,9 @@ void NETLizard_RenderNETLizardModelShadow(const GL_NETLizard_3D_Model *map_model
 void Shadow_RenderNETLizard3DAnimationModel(const GL_NETLizard_3D_Animation_Model *m, int a, int f, const float pos[3], float xangle, float yangle, const Light_Source_s *light, int method);
 #endif
 void NETLizard_RenderNETLizard3DMeshShadow(const GL_NETLizard_3D_Mesh *m, const vector3_t *light_position, int dirlight, int method);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

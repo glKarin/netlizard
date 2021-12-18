@@ -2,12 +2,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <list>
 
 #include "lib/vector3.h"
 #include "lib/line.h"
 #include "lib/bound.h"
 #include "nl_util.h"
+#include "linkedlist.h"
 
 #define PRINT(fmt, args...) { fprintf(stderr, fmt, ##args); fprintf(stderr, "\n"); fflush(stderr); }
 
@@ -53,8 +53,8 @@
 //#define POINT_CLIP(p, x) plane_point_clip(p, x)
 #define POINT_CLIP(p, x) plane_point_clip_precision(p, x, 1)
 
-typedef std::list<vector3_t> Vector3List;
-typedef std::list<line_t> LineList;
+typedef linkedlist(vector3_t) Vector3List;
+typedef linkedlist(line_t) LineList;
 
 static GLboolean NETLizard_IsInteractiveItem(int item_type)
 {
@@ -69,17 +69,17 @@ static GLboolean NETLizard_IsInteractiveItem(int item_type)
     return GL_FALSE;
 }
 
-static int push_edge_line(LineList &list, const line_t *lp)
+static int push_edge_line(LineList *list, const line_t *lp)
 {
     int has = 0;
-    LineList::iterator itor;
+    list_node(line_t) *p;
+    line_t *line;
 
-    for(itor = list.begin(); itor != list.end(); ++itor) // find in lines list
+    LISTV_DATA_FOREACH_T(line_t, p, line, list) // find in lines list
     {
-        const line_t &line = *itor;
-        if(line_equals_ignore_seq(lp, &line))
+        if(line_equals_ignore_seq(lp, line))
         {
-            //printf("%d exist\n", i);
+            //printf("%P exist\n", line);
             has = 1;
             break;
         }
@@ -87,18 +87,18 @@ static int push_edge_line(LineList &list, const line_t *lp)
 
     if(has) // if exists, remove this line
     {
-        list.erase(itor);
+        List_DeleteNode(list, p);
     }
     else // if not exists, add new line to list
     {
-        list.push_back(*lp);
+        List_PushBack(list, lp);
     }
     return has;
 }
 
-static void render_highlight_lines(const LineList &lines, const GLfloat color[4], const GLfloat position[3], const GLfloat rotation[3])
+static void render_highlight_lines(const LineList *lines, const GLfloat color[4], const GLfloat position[3], const GLfloat rotation[3])
 {
-    if(lines.empty())
+    if(List_Empty(lines))
         return;
     BEGIN_DEBUG_RENDER
     {
@@ -118,13 +118,13 @@ static void render_highlight_lines(const LineList &lines, const GLfloat color[4]
             else
                 glColor4f(LINE_COLOR);
 
-            for(LineList::const_iterator itor = lines.begin();
-                itor != lines.end(); ++itor)
+            const list_node(line_t) *p;
+            const line_t *line;
+            LISTV_DATA_FOREACH_T(line_t, p, line, lines)
             {
-                const line_t &line = *itor;
                 GLfloat vs[] = {
-                    LINE_A_X(line), LINE_A_Y(line), LINE_A_Z(line),
-                    LINE_B_X(line), LINE_B_Y(line), LINE_B_Z(line),
+                    LINEV_A_X(line), LINEV_A_Y(line), LINEV_A_Z(line),
+                    LINEV_B_X(line), LINEV_B_Y(line), LINEV_B_Z(line),
                 };
                 glVertexPointer(3, GL_FLOAT, 0, vs);
                 glDrawArrays(GL_LINES, 0, 2);
@@ -146,7 +146,7 @@ void NETLizard_DebugHighlightRenderGL3DModelPlane(const GL_NETLizard_3D_Model *m
     const GL_NETLizard_3D_Plane *p = mesh->plane + plane_index;
     const GL_NETLizard_3D_Vertex *vertex = mesh->vertex_data.vertex;
     const plane_t plane = PLANEV(p->position, p->normal);
-    LineList lines;
+    LineList lines = LIST(line_t);
 
     unsigned int i;
     for(i = 0; i < mesh->count; i++)
@@ -184,11 +184,13 @@ void NETLizard_DebugHighlightRenderGL3DModelPlane(const GL_NETLizard_3D_Model *m
                 int next_index = (n + 1) % 3;
 
                 line_t lp = LINEV(pa[n]->position, pa[next_index]->position);
-                push_edge_line(lines, &lp);
+                push_edge_line(&lines, &lp);
             }
         }
     }
-    render_highlight_lines(lines, NULL, mesh->position, mesh->rotation);
+    render_highlight_lines(&lines, NULL, mesh->position, mesh->rotation);
+
+    List_DeleteAll(&lines);
 }
 
 void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model *model, GLuint scene, GLuint item_index, const vector3_t *pos, const vector3_t *dir)
@@ -198,7 +200,7 @@ void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model
 
     const GL_NETLizard_3D_Mesh *mesh = model->item_meshes + item_index;
     const GL_NETLizard_3D_Vertex *vertex = mesh->vertex_data.vertex;
-    LineList lines;
+    LineList lines = LIST(line_t);
     GLmatrix mat, nor_mat;
     Mesa_AllocGLMatrix(&mat);
     Mesa_AllocGLMatrix(&nor_mat);
@@ -253,7 +255,7 @@ void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model
                 int next_index = (n + 1) % 3;
 
                 line_t lp = LINEV(pa[n]->position, pa[next_index]->position);
-                push_edge_line(lines, &lp);
+                push_edge_line(&lines, &lp);
             }
         }
     }
@@ -268,5 +270,6 @@ void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model
 
     Mesa_FreeGLMatrix(&mat);
     Mesa_FreeGLMatrix(&nor_mat);
-    render_highlight_lines(lines, color, mesh->position, mesh->rotation);
+    render_highlight_lines(&lines, color, mesh->position, mesh->rotation);
+    List_DeleteAll(&lines);
 }
