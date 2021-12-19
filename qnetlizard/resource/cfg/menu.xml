@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu>
-    <item name="&amp;Resource" alias="resource" description="Resource viewer">
-        <item alias="image_viewer" name="&amp;Image viewer" description="NETLizard game's image/texture resource viewer"></item>
-        <item alias="font_viewer" name="&amp;Font viewer" description="NETLizard game's font resource viewer"></item>
-        <item alias="sprite_viewer" name="&amp;Sprite viewer" description="NETLizard's game sprite resource viewer"></item>
-        <item alias="text_viewer" name="&amp;Text viewer" description="NETLizard game's text resource viewer"></item>
-        <item alias="string_viewer" name="&amp;String viewer" description="NETLizard game's source string viewer"></item>
+    <item name="Resource" alias="resource" description="Resource viewer">
+        <item alias="image_viewer" name="Image viewer" description="NETLizard game's image/texture resource viewer"></item>
+        <item alias="font_viewer" name="Font viewer" description="NETLizard game's font resource viewer"></item>
+        <item alias="sprite_viewer" name="Sprite viewer" description="NETLizard's game sprite resource viewer"></item>
+        <item alias="text_viewer" name="Text viewer" description="NETLizard game's text resource viewer"></item>
+        <item alias="string_viewer" name="String viewer" description="NETLizard game's source string viewer"></item>
     </item>
 
-    <item name="&amp;3D" alias="3d" description="3D resource viewer">
-        <item alias="map_viewer" name="&amp;Map viewer" description="NETLizard 3D game's map model viewer"></item>
-        <item alias="item_viewer" name="&amp;Item viewer" description="NETLizard 3D game's item model viewer"></item>
-        <item alias="animation_viewer" name="&amp;Animation viewer" description="NETLizard 3D game's animation model viewer"></item>
+    <item name="3D" alias="3d" description="3D resource viewer">
+        <item alias="map_viewer" name="Map viewer" description="NETLizard 3D game's map model viewer"></item>
+        <item alias="item_viewer" name="Item viewer" description="NETLizard 3D game's item model viewer"></item>
+        <item alias="animation_viewer" name="Animation viewer" description="NETLizard 3D game's animation model viewer"></item>
     </item>
 
-    <item name="&amp;Viewer" alias="viewer" description="Viewer operation">
-        <item alias="log" name="&amp;Log" description="Show/hide log window"></item>
-        <item alias="scene" name="&amp;Scene" description="Show/hide scene window"></item>
-        <item alias="main_window" name="&amp;Main Window" description="Main window operation">
-            <item alias="reset" name="&amp;Reset" description="Reset window layout"></item>
-            <item alias="close" name="&amp;Close" description="Close current central viewer"></item>
-            <item alias="minimize" name="&amp;Minimize" description="Minimize window"></item>
+    <item name="Viewer" alias="viewer" description="Viewer operation">
+        <item alias="log" name="Log" description="Show/hide log window"></item>
+        <item alias="scene" name="Scene" description="Show/hide scene window"></item>
+        <item alias="main_window" name="Main Window" description="Main window operation">
+            <item alias="reset" name="Reset" description="Reset window layout"></item>
+            <item alias="close" name="Close" description="Close current central viewer"></item>
+            <item alias="minimize" name="Minimize" description="Minimize window"></item>
         </item>
-        <item alias="test" name="&amp;Test" description="Test scene" show="debug"></item>
+        <item alias="test" name="Test" description="Test scene" show="debug"></item>
     </item>
 
-    <item name="&amp;Others" alias="others" description="Others operation">
-        <item alias="setting" name="&amp;Setting" description="Open setting config"></item>
-        <item alias="help" name="&amp;Help" description="Show help info"></item>
-        <item alias="changelog" name="&amp;Changelog" description="Show changelog"></item>
-        <item alias="about" name="&amp;About" description="About this application"></item>
+    <item name="Others" alias="others" description="Others operation">
+        <item alias="setting" name="Setting" description="Open setting config"></item>
+        <item alias="help" name="Help" description="Show help info"></item>
+        <item alias="changelog" name="Changelog" description="Show changelog"></item>
+        <item alias="about" name="About" description="About this application"></item>
     </item>
 
-    <item name="&amp;Exit" alias="exit" description="Exit application">
+    <item name="Exit" alias="exit" description="Exit application">
     </item>
 </menu>
 

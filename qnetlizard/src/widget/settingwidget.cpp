@@ -14,6 +14,7 @@
 #include <QTabWidget>
 
 #include "qdef.h"
+#include "lang.h"
 
 SettingGroup::SettingGroup(QWidget *parent)
     : QGroupBox(parent)
@@ -86,13 +87,14 @@ void SettingGroup::SetSettingConfig(const QString &name, const QString &title)
                 QTabWidget *tabWidget = new QTabWidget;
                 m_layout->addWidget(tabWidget);
                 setLayout(m_layout);
+                const LangHelper lang("SETTING");
                 Q_FOREACH(const Settings::SettingItem *cc, sc->settings)
                 {
                     if(cc->item_type != Settings::SettingItem::Item_Category)
                         continue;
                     QWidget *widget = new QWidget(tabWidget);
                     GenSettingConfig(widget, static_cast<const Settings::SettingItemCategory *>(cc));
-                    tabWidget->addTab(widget, cc->title);
+                    tabWidget->addTab(widget, lang[cc->title]);
                 }
             }
             else
@@ -120,6 +122,7 @@ void SettingGroup::GenSettingConfig(QWidget *parent, const Settings::SettingItem
     m_layout->setRowWrapPolicy(QFormLayout::WrapLongRows);
     parent->setLayout(m_layout);
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
+    const LangHelper lang("SETTING");
 
     Q_FOREACH(const Settings::SettingItem *si, c->settings)
     {
@@ -127,13 +130,13 @@ void SettingGroup::GenSettingConfig(QWidget *parent, const Settings::SettingItem
             continue;
 
         QWidget *widget = 0;
-        QString tail = si->description.isEmpty() ? "" : QString("(%1)").arg(si->description);
-        QString label(si->title + tail);
+        QString tail = si->description.isEmpty() ? "" : QString("(%1)").arg(lang[si->description]);
+        QString label(lang[si->title] + tail);
         if(si->item_type == Settings::SettingItem::Item_Category)
         {
             QLabel *w = new QLabel;
             w->setObjectName(si->name);
-            w->setText(QString("<a href='%1'>%2 &gt;&gt;</a>").arg(si->name).arg(si->title));
+            w->setText(QString("<a href='%1'>%2 &gt;&gt;</a>").arg(si->name).arg(lang[si->title]));
             connect(w, SIGNAL(linkActivated(const QString &)), this, SIGNAL(openSettingGroup(const QString &)));
             widget = w;
         }
@@ -191,7 +194,7 @@ void SettingGroup::GenSettingConfig(QWidget *parent, const Settings::SettingItem
                         const QVariantHash p = items[i].toHash();
                         const QVariant v = p.value("value");
                         int iv = v.toInt();
-                        QCheckBox *cb = new QCheckBox(p.value("label").toString());
+                        QCheckBox *cb = new QCheckBox(lang[p.value("label").toString()]);
                         g->addButton(cb, iv);
 
                         if(target & iv)
@@ -201,7 +204,7 @@ void SettingGroup::GenSettingConfig(QWidget *parent, const Settings::SettingItem
                     vbox->addStretch(1);
 
                     w->setLayout(vbox);
-                    w->setTitle(item.title);
+                    w->setTitle(lang[item.title]);
                     label.clear();
                     //w->setCheckable(true);
                     connect(g, SIGNAL(buttonClicked(int)), this, SLOT(OnIntChanged(int)));
@@ -219,7 +222,7 @@ void SettingGroup::GenSettingConfig(QWidget *parent, const Settings::SettingItem
                 {
                     const QVariantHash p = items[i].toHash();
                     const QVariant v = p.value("value");
-                    w->addItem(p.value("label").toString(), v);
+                    w->addItem(lang[p.value("label").toString()], v);
                     if(v.toInt() == target)
                         cur = i;
                 }

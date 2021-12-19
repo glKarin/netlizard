@@ -7,6 +7,7 @@
 #include "logoutput.h"
 #include "qdef.h"
 #include "nlglobals.h"
+#include "lang.h"
 #include "nldef.h"
 
 static int Test(int argc, char **argv);
@@ -38,6 +39,8 @@ int main(int argc, char *argv[])
     else
         qDebug() << "Fail";
 
+    SINGLE_INSTANCE_OBJ(Lang)->Load();
+
     NL::init_engine();
 
 #ifdef _DEV_TEST
@@ -48,7 +51,6 @@ int main(int argc, char *argv[])
     //TestWidget w;
     //w.show();
 #endif
-    qRegisterMetaType<NLVector3>("NLVector3");
 
     LogOutput::Instance();
     nlEnable(NL_LOG);

@@ -6,8 +6,6 @@
         <file alias="LZ">resource/img/lz.png</file>
         <file alias="LOGO">resource/img/logo.png</file>
         <file alias="MENU">resource/cfg/menu.xml</file>
-    </qresource>
-    <qresource prefix="/" lang="zh_CN">
-        <file alias="MENU">resource/cfg/menu.zh_CN.xml</file>
+        <file alias="LANG">resource/cfg/lang.zh_CN.xml</file>
     </qresource>
 </RCC>

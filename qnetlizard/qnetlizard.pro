@@ -22,7 +22,8 @@ HEADERS += \
     src/misc/logoutput.h \
     src/misc/settings.h \
     src/widget/flowlayout.h \
-    src/gl/linkedlist.h
+    src/gl/linkedlist.h \
+    src/misc/lang.h
 
 SOURCES += \
     main.cpp \
@@ -31,7 +32,8 @@ SOURCES += \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
     src/widget/flowlayout.cpp \
-    src/gl/linkedlist.c
+    src/gl/linkedlist.c \
+    src/misc/lang.cpp
 
 # Widget
 HEADERS += \
@@ -348,6 +350,6 @@ OTHER_FILES += README.md \
                 resource/cfg/help.xml \
                 resource/cfg/menu.xml \
                 resource/cfg/setting.xml \
-                resource/cfg/menu.zh_CN.xml
+    resource/cfg/lang.zh_CN.xml
 
 INSTALLS += qnetlizard

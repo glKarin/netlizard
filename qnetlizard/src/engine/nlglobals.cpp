@@ -15,6 +15,7 @@ bool init_engine()
     if(_engine_inited)
         return true;
 
+    qRegisterMetaType<NLVector3>("NLVector3");
     qRegisterMetaType<NL::Physics::m>("NLPhysics_m");
     qRegisterMetaType<NL::Physics::a>("NLPhysics_a");
     qRegisterMetaType<NL::Physics::g>("NLPhysics_g");

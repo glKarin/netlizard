@@ -7,13 +7,6 @@
 #include <QGroupBox>
 #include <QVBoxLayout>
 #include <QColor>
-
-#include <cmath>
-#include <cstdlib>
-#include <ctime>
-
-#include "utils/ioutility.h"
-
 #include <QFile>
 #include <QXmlSimpleReader>
 #include <QXmlInputSource>
@@ -21,9 +14,16 @@
 #include <QDomNode>
 #include <QDomNodeList>
 
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+
+#include "utils/ioutility.h"
+
 #include "netlizard.h"
 #include "flowlayout.h"
 #include "qdef.h"
+#include "lang.h"
 
 #define CELL_SIZE 128
 #define CELL_SPACING 10
@@ -148,6 +148,7 @@ void IndexViewer::Layout()
                << "3d"
                   ;
 
+    const LangHelper lang("MENU");
     const QString buttonStyle("QPushButton { border: 1px solid #8f8f91; font-size: 16px; font-weight: bold; color: #FFFFFF; background-color: %1 }");
     const HomeCellItemList &Map = ActionMap();
     Q_FOREACH(const QString &name, actions)
@@ -160,7 +161,7 @@ void IndexViewer::Layout()
                 {
                     if(a.IsMenu())
                         continue;
-                    HomeCell *cell = new HomeCell(a.label, a.data);
+                    HomeCell *cell = new HomeCell(lang[a.label], a.data);
                     connect(cell, SIGNAL(actionTrigger(QAction *)), this, SIGNAL(openViewer(QAction *)));
                     cell->setStyleSheet(buttonStyle.arg(RandomColor()));
                     m_layout->addWidget(cell);
@@ -185,7 +186,7 @@ void IndexViewer::Layout()
             {
                 if(item.IsItem())
                 {
-                    cell = new HomeCell(item.label, item.data);
+                    cell = new HomeCell(lang[item.label], item.data);
                     cell->setFixedSize(48, 48);
                     cell->setStyleSheet(toolsButtonStyle);
                     connect(cell, SIGNAL(actionTrigger(QAction *)), this, SIGNAL(openViewer(QAction *)));
@@ -197,7 +198,7 @@ void IndexViewer::Layout()
                     {
                         if(a.IsMenu())
                             continue;
-                        cell = new HomeCell(a.label, a.data);
+                        cell = new HomeCell(lang[a.label], a.data);
                         cell->setFixedSize(48, 48);
                         cell->setStyleSheet(toolsButtonStyle);
                         connect(cell, SIGNAL(actionTrigger(QAction *)), this, SIGNAL(openViewer(QAction *)));
@@ -240,9 +241,9 @@ QString IndexViewer::RandomColor() const
 
 bool IndexViewer::LoadMenus(HomeCellItemList &map)
 {
-    const QString Help(":/MENU");
+    const QString Menu(":/MENU");
 
-    QFile f(Help);
+    QFile f(Menu);
     QXmlSimpleReader reader;
     QXmlInputSource source(&f);
     QDomDocument doc;

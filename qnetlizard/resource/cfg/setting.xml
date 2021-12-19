@@ -36,8 +36,8 @@
             </item>
             <item alias="RENDER/shadow" name="Render simple shadow" widget="combobox" type="int" default-value="2">
                 <option name="option" label="No shadow" value="0"></option>
-                <option name="option" label="Stencil shadow: Z-FAIL" value="2"></option>
-                <option name="option" label="Stencil shadow: Z-PASS" value="1"></option>
+                <option name="option" label="Stencil shadow(Z-FAIL)" value="2"></option>
+                <option name="option" label="Stencil shadow(Z-PASS)" value="1"></option>
             </item>
             <item alias="RENDER/shadow_object" name="Render shadow object" widget="combobox" type="int" default-value="1">
                 <option name="option" label="Only render item shadow" value="1"></option>
@@ -100,7 +100,6 @@
                 <option name="option" label="Only render current single scene" value="1"></option>
                 <option name="option" label="Render current scene and neighboring scene" value="2"></option>
             </item>
-            <!--<item alias="DEBUG/single_scene" name="Only render current single scene" widget="checkbox" type="bool" default-value="false"></item>-->
         </category>
     </category>
 

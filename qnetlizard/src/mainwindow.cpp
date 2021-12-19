@@ -32,6 +32,7 @@
 #include "scenetreewidget.h"
 #include "actorpropertywidget.h"
 #include "statusbar.h"
+#include "lang.h"
 
 #define MAIN_WINDOW_INTERNAL_STATE_VERSION -1
 
@@ -85,6 +86,7 @@ void MainWindow::Init()
         << "others"
         << "exit"
            ;
+    const LangHelper lang("MENU");
     Q_FOREACH(const QString &name, actions)
     {
         Q_FOREACH(const HomeCellItem &item, Map)
@@ -97,12 +99,14 @@ void MainWindow::Init()
             {
                 if(item.IsItem())
                 {
-                    menuItem = menuBar->addAction(item.label);
+                    menuItem = menuBar->addAction(lang[item.label]);
+                    menuItem->setToolTip(lang[item.description]);
                     menuItem->setData(item.data);
                 }
                 else
                 {
-                    menu = menuBar->addMenu(item.label);
+                    menu = menuBar->addMenu(lang[item.label]);
+                    menu->setToolTip(lang[item.description]);
                     AddMenuItem(item, menu);
                 }
                 break;
@@ -469,6 +473,7 @@ void MainWindow::Reset()
 
 void MainWindow::AddMenuItem(const HomeCellItem &s, QMenu *parent)
 {
+    const LangHelper lang("MENU");
     Q_FOREACH(const HomeCellItem &a, s.items)
     {
         if(!a.IsValid())
@@ -480,14 +485,14 @@ void MainWindow::AddMenuItem(const HomeCellItem &s, QMenu *parent)
 #endif
         if(a.IsItem())
         {
-            QAction *subItem = parent->addAction(a.label);
+            QAction *subItem = parent->addAction(lang[a.label]);
             subItem->setData(a.data);
-            subItem->setToolTip(a.description);
+            subItem->setToolTip(lang[a.description]);
         }
         else
         {
-            QMenu *subMenu = parent->addMenu(a.label);
-            subMenu->setToolTip(a.description);
+            QMenu *subMenu = parent->addMenu(lang[a.label]);
+            subMenu->setToolTip(lang[a.description]);
             AddMenuItem(a, subMenu);
         }
     }
@@ -509,6 +514,7 @@ void MainWindow::SetMainWindowState(int b)
             actions << "resource"
             << "3d"
                ;
+        const LangHelper lang("MENU");
         Q_FOREACH(const QString &name, actions)
         {
             Q_FOREACH(const HomeCellItem &item, Map)
@@ -521,21 +527,21 @@ void MainWindow::SetMainWindowState(int b)
                 {
                     if(item.IsItem())
                     {
-                        menu->addAction(item.label)->setData(item.data);
+                        menu->addAction(lang[item.label])->setData(item.data);
                     }
                     else
                     {
-                        AddMenuItem(item, menu->addMenu(item.label));
+                        AddMenuItem(item, menu->addMenu(lang[item.label]));
                     }
                     break;
                 }
             }
         }
 
-        menu->addAction("&" + tr("Setting"))->setData("setting");
-        menu->addAction("&" + tr("Restore"))->setData("restore");
-        menu->addAction("&" + tr("Maximize"))->setData("maximize");
-        menu->addAction("&" + tr("Exit"))->setData("exit");
+        menu->addAction(tr("Setting"))->setData("setting");
+        menu->addAction(tr("Restore"))->setData("restore");
+        menu->addAction(tr("Maximize"))->setData("maximize");
+        menu->addAction(tr("Exit"))->setData("exit");
         connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(TrayIconMenuActionSlot(QAction *)));
         m_trayIcon->setContextMenu(menu);
         connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(OnTrayIconActivated(QSystemTrayIcon::ActivationReason)));

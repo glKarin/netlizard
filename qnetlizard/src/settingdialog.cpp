@@ -12,6 +12,7 @@
 
 #include "settingwidget.h"
 #include "qdef.h"
+#include "lang.h"
 
 SettingDialog::SettingDialog(QWidget *parent) :
     QDialog(parent),
@@ -33,14 +34,15 @@ void SettingDialog::Init()
     QHBoxLayout *contentLayout = new QHBoxLayout;
     m_tree = new QTreeWidget;
     QScrollArea *area = new QScrollArea;
+    const LangHelper lang("SETTING");
 
     const Settings::SettingItemMap &_settingsConfig = Settings::SettingsConfig();
     Q_FOREACH(const Settings::SettingItemCategory *c, _settingsConfig)
     {
         QTreeWidgetItem *subItem = new QTreeWidgetItem;
-        subItem->setText(0, c->title);
+        subItem->setText(0, lang[c->title]);
         subItem->setData(0, Qt::UserRole, c->name);
-        subItem->setToolTip(0, c->description);
+        subItem->setToolTip(0, lang[c->description]);
         m_tree->addTopLevelItem(subItem);
 
         AddSettingNode(c, subItem);
@@ -86,15 +88,17 @@ void SettingDialog::InitSettingContent(QTreeWidgetItem *item, int column)
 
 void SettingDialog::AddSettingNode(const Settings::SettingItemCategory *s, QTreeWidgetItem *parent)
 {
+    const LangHelper lang("SETTING");
+
     Q_FOREACH(const Settings::SettingItem *a, s->settings)
     {
         if(a->item_type != Settings::SettingItem::Item_Category)
             continue;
 
         QTreeWidgetItem *subItem = new QTreeWidgetItem;
-        subItem->setText(0, a->title);
+        subItem->setText(0, lang[a->title]);
         subItem->setData(0, Qt::UserRole, a->name);
-        subItem->setToolTip(0, a->description);
+        subItem->setToolTip(0, lang[a->description]);
         if(parent)
             parent->addChild(subItem);
         else

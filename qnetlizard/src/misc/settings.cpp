@@ -1,6 +1,5 @@
 #include "settings.h"
 
-#include <QDebug>
 #include <QStringList>
 #include <QFile>
 #include <QXmlSimpleReader>

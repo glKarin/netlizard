@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lang locale="zh_CN">
+    <context name="SETTING">
+        <item source="Viewer" translation="查看器"></item>
+        <item source="Viewer settings" translation="查看器设置"></item>
+        <item source="3D control" translation="3D控制"></item>
+        <item source="Control settings in 3D scene" translation="3D场景的控制设置"></item>
+        <item source="Move sensitive" translation="移动灵敏度"></item>
+        <item source="Turn sensitive" translation="旋转灵敏度"></item>
+        <item source="Freelook sensitive" translation="鼠标灵敏度"></item>
+        <item source="Fovy sensitive" translation="Fovy灵敏度"></item>
+        <item source="2D control" translation="2D控制"></item>
+        <item source="Control settings in 2D scene" translation="2D场景的控制设置"></item>
+        <item source="Translate sensitive" translation="移动灵敏度"></item>
+        <item source="Rotation sensitive" translation="旋转灵敏度"></item>
+        <item source="Render" translation="渲染"></item>
+        <item source="Rendering settings in 3D map scene" translation="3D场景的渲染设置"></item>
+        <item source="Cull scenes by frustum" translation="视景体场景剔除"></item>
+        <item source="Render simple shadow" translation="渲染简单阴影"></item>
+        <item source="No shadow" translation="无阴影"></item>
+        <item source="Stencil shadow(Z-FAIL)" translation="模板缓冲区阴影(Z-FAIL)"></item>
+        <item source="Stencil shadow(Z-PASS)" translation="模板缓冲区阴影(Z-PASS)"></item>
+        <item source="Render shadow object" translation="渲染阴影对象"></item>
+        <item source="Only render item shadow" translation="仅渲染物品阴影"></item>
+        <item source="Only render scene wall shadow" translation="仅渲染场景墙壁阴影"></item>
+        <item source="Only render scene shadow" translation="仅渲染场景阴影"></item>
+        <item source="Render item and scene wall shadow" translation="渲染物品和场景墙壁阴影"></item>
+        <item source="Render all shadow" translation="渲染所有阴影"></item>
+        <item source="Render distance fog" translation="渲染距离雾"></item>
+        <item source="No fog" translation="无"></item>
+        <item source="Linear" translation="线性"></item>
+        <item source="Exp" translation="指数"></item>
+        <item source="Globals" translation="全局"></item>
+        <item source="Globals rendering settings" translation="全局渲染设置"></item>
+        <item source="FPS" translation="最大FPS"></item>
+        <item source="Update interval(millisecond)" translation="刷新间隔(毫秒)"></item>
+        <item source="Clear color" translation="清除颜色"></item>
+        <item source="General" translation="通用"></item>
+        <item source="General settings" translation="通用设置"></item>
+        <item source="Application" translation="程序"></item>
+        <item source="Application basic settings" translation="程序基本设置"></item>
+        <item source="Autoscan level/index from file name" translation="从文件名自动获取关卡/索引"></item>
+        <item source="Output log to file" translation="输出日志到文件"></item>
+        <item source="Others" translation="其他"></item>
+        <item source="Others settings" translation="其他设置"></item>
+        <item source="Debug" translation="调试"></item>
+        <item source="Debug rendering settings" translation="调试渲染设置"></item>
+        <item source="Collision testing in map" translation="地图碰撞测试"></item>
+        <item source="No clip" translation="不碰撞测试"></item>
+        <item source="Collision testing with scene" translation="仅对场景进行碰撞测试"></item>
+        <item source="Collision testing with scene and item" translation="对场景和物品进行碰撞测试"></item>
+        <item source="Render map model debug" translation="渲染地图模型数据"></item>
+        <item source="Render map bound" translation="渲染地图包围盒"></item>
+        <item source="Render item vertex and normal" translation="渲染物品顶点和法线"></item>
+        <item source="Render scene vertex and normal" translation="渲染场景顶点和法线"></item>
+        <item source="Render item bound" translation="渲染物品包围盒"></item>
+        <item source="Render scene bound" translation="渲染场景包围盒"></item>
+        <item source="Render item plane" translation="渲染物品碰撞面"></item>
+        <item source="Render scene plane" translation="渲染场景碰撞面"></item>
+        <item source="Render scene BSP" translation="渲染场景BSP"></item>
+        <item source="Render highlight view scene plane" translation="渲染高亮指向的场景碰撞面"></item>
+        <item source="Render highlight view item" translation="渲染高亮指向的物品轮廓线"></item>
+        <item source="Render current single scene" translation="渲染场景"></item>
+        <item source="No single scene" translation="不限制"></item>
+        <item source="Only render current single scene" translation="仅渲染所在场景"></item>
+        <item source="Render current scene and neighboring scene" translation="仅渲染所在场景和相邻场景"></item>
+    </context>
+
+    <context name="MENU">
+        <item source="Resource" translation="资源"></item>
+        <item source="Image viewer" translation="图片/纹理查看"></item>
+        <item source="Font viewer" translation="字体查看"></item>
+        <item source="Sprite viewer" translation="精灵图查看"></item>
+        <item source="Text viewer" translation="文本查看"></item>
+        <item source="String viewer" translation="源码字符串查看"></item>
+        <item source="Resource viewer" translation="资源查看"></item>
+        <item source="NETLizard game's image/texture resource viewer" translation="NETLizard游戏图片/纹理资源查看"></item>
+        <item source="NETLizard game's font resource viewer" translation="NETLizard游戏字体资源查看"></item>
+        <item source="NETLizard's game sprite resource viewer" translation="NETLizard游戏精灵图资源查看"></item>
+        <item source="NETLizard game's text resource viewer" translation="NETLizard游戏文本资源查看"></item>
+        <item source="NETLizard game's source string viewer" translation="NETLizard游戏源码字符串查看"></item>
+
+        <item source="3D" translation="3D资源"></item>
+        <item source="Map viewer" translation="地图模型查看"></item>
+        <item source="Item viewer" translation="物品模型查看"></item>
+        <item source="Animation viewer" translation="动画模型查看"></item>
+        <item source="3D resource viewer" translation="3D资源查看"></item>
+        <item source="NETLizard 3D game's map model viewer" translation="NETLizard 3D游戏地图模型查看"></item>
+        <item source="NETLizard 3D game's item model viewer" translation="NETLizard 3D游戏物品模型查看"></item>
+        <item source="NETLizard 3D game's animation model viewer" translation="NETLizard 3D游戏动画模型查看"></item>
+
+        <item source="Viewer" translation="视图"></item>
+        <item source="Log" translation="日志"></item>
+        <item source="Scene" translation="场景"></item>
+        <item source="Main Window" translation="主窗口"></item>
+        <item source="Reset" translation="重置"></item>
+        <item source="Close" translation="关闭"></item>
+        <item source="Minimize" translation="最小化"></item>
+        <item source="Test" translation="测试"></item>
+        <item source="Viewer operation" translation="视图操作"></item>
+        <item source="Show/hide log window" translation="显示/隐藏日志"></item>
+        <item source="Show/hide scene window" translation="显示/隐藏场景编辑器"></item>
+        <item source="Main window operation" translation="主窗口操作"></item>
+        <item source="Reset window layout" translation="重置布局"></item>
+        <item source="Close current central viewer" translation="关闭当前视图"></item>
+        <item source="Minimize window" translation="窗口托盘化"></item>
+        <item source="Test scene" translation="测试场景"></item>
+
+        <item source="Others" translation="其他"></item>
+        <item source="Setting" translation="设置"></item>
+        <item source="Help" translation="帮助"></item>
+        <item source="Changelog" translation="更新日志"></item>
+        <item source="About" translation="关于"></item>
+        <item source="Others operation" translation="其他操作"></item>
+        <item source="Open setting config" translation="打开设置"></item>
+        <item source="Show help info" translation="显示帮助信息"></item>
+        <item source="Show changelog" translation="查看更新日志"></item>
+        <item source="About this application" translation="关于此程序"></item>
+
+        <item source="Exit" translation="退出"></item>
+        <item source="Exit application" translation="退出程序"></item>
+    </context>
+</lang>
+
