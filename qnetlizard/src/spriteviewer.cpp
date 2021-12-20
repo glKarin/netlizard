@@ -136,7 +136,7 @@ bool SpriteViewer::LoadSprite()
 {
     if(m_cuFile.isEmpty())
     {
-        QMessageBox::warning(this, "Error", "Choose sprite config file and texture file!");
+        QMessageBox::warning(this, tr("Error"), tr("Choose sprite config file and texture file!"));
         return false;
     }
     Reset();
@@ -151,11 +151,11 @@ bool SpriteViewer::LoadSprite()
         const int Co = m_spriteScene->Count();
         for(int i = 0; i < Co; i++)
             m_indexList->addItem(QString::number(i));
-        SetTitleLabel(QString("config file: %1, texture file: %2 -> sprite count: %3").arg(m_cuFile).arg(m_uFile).arg(m_spriteScene->Sprite()->sprite_count));
+        SetTitleLabel(QString(tr("config file: %1, texture file: %2 -> sprite count: %3")).arg(m_cuFile).arg(m_uFile).arg(m_spriteScene->Sprite()->sprite_count));
     }
     else
     {
-        QMessageBox::warning(this, "Error", "Load sprite fail!");
+        QMessageBox::warning(this, tr("Error"), tr("Load NETLizard sprite fail!"));
     }
     return res;
 }

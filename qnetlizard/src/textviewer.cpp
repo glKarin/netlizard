@@ -76,11 +76,11 @@ bool TextViewer::OpenFile(const QString &file)
     char *data = nlReadAndHandleTextFile(ba.data(), &len);
     if(!data)
     {
-        QMessageBox::warning(this, "Error", "Load NETLizard text fail!");
+        QMessageBox::warning(this, tr("Error"), tr("Load NETLizard text fail!"));
         return false;
     }
 
-    SetTitleLabel(QString("%1 - Length: %2").arg(file).arg(len));
+    SetTitleLabel(QString(tr("%1 - Length: %2")).arg(file).arg(len));
     m_textBrowser->setText(QString::fromLocal8Bit(data));
     SetData(data, len);
     m_saveButton->setEnabled(true);
@@ -137,13 +137,13 @@ bool TextViewer::SaveData(const QString &file)
 {
     if(!m_data.data)
     {
-        QMessageBox::warning(this, "Error", "No data!");
+        QMessageBox::warning(this, tr("Error"), tr("No data!"));
         return false;
     }
     bool res = IOUtility::file_put_contents(file, m_data.data, (quint64)m_data.len);
     if(res)
-        QMessageBox::information(this, "Success", "File path is " + file);
+        QMessageBox::information(this, tr("Success"), tr("File path is ") + file);
     else
-        QMessageBox::warning(this, "Error", "Save data fail!");
+        QMessageBox::warning(this, tr("Error"), tr("Save data fail!"));
     return res;
 }

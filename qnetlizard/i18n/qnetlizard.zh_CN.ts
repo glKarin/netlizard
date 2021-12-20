@@ -19,6 +19,10 @@
         <source>Close</source>
         <translation type="unfinished">关闭</translation>
     </message>
+    <message>
+        <source>Dev: </source>
+        <translation type="unfinished">Dev: </translation>
+    </message>
 </context>
 <context>
     <name>AnimationViewer</name>
@@ -86,6 +90,34 @@
         <source>NETLizard 3D animation model viewer</source>
         <translation type="unfinished">NETLizard 3D动画模型查看器</translation>
     </message>
+    <message>
+        <source>Animation: %1, frame range: %2 - %3, frame count: %4</source>
+        <translation type="unfinished">动画: %1, 帧范围: %2 - %3, 帧数量: %4</translation>
+    </message>
+    <message>
+        <source>Invalid frame animation!</source>
+        <translation type="unfinished">无效帧动画!</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">错误</translation>
+    </message>
+    <message>
+        <source>Choose un file and resource path!</source>
+        <translation type="unfinished">选择un文件和资源路径!</translation>
+    </message>
+    <message>
+        <source>Unsupport NETLizard 3D game!</source>
+        <translation type="unfinished">不支持的NETLizard 3D游戏</translation>
+    </message>
+    <message>
+        <source>%1(index-%2) object: %3, resource directory: %4 -&gt; %5</source>
+        <translation type="unfinished">%1(索引-%2) 对象: %3, 资源路径: %4 -&gt; %5</translation>
+    </message>
+    <message>
+        <source>Load NETLizard 3D game animation model file fail!</source>
+        <translation type="unfinished">加载NETLizard 3D游戏动画模型文件失败!</translation>
+    </message>
 </context>
 <context>
     <name>ChangelogDialog</name>
@@ -115,6 +147,30 @@
     <message>
         <source>NETLizard font resource viewer</source>
         <translation type="unfinished">NETLizard字体资源查看器</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">错误</translation>
+    </message>
+    <message>
+        <source>Choose font config file and texture file!</source>
+        <translation type="unfinished">选择字体配置文件和纹理图片!</translation>
+    </message>
+    <message>
+        <source>Success</source>
+        <translation type="unfinished">成功</translation>
+    </message>
+    <message>
+        <source>Load NETLizard font success!</source>
+        <translation type="unfinished">加载NETLizard字体成功!</translation>
+    </message>
+    <message>
+        <source>Load NETLizard font fail!</source>
+        <translation type="unfinished">加载NETLizard字体失败!</translation>
+    </message>
+    <message>
+        <source>config file: %1, texture file: %2 -&gt; character count: %3</source>
+        <translation type="unfinished">配置文件: %1, 纹理图片: %2 -&gt; 字符数: %3</translation>
     </message>
 </context>
 <context>
@@ -149,6 +205,82 @@
     <message>
         <source>NETLizard image/texture resource viewer</source>
         <translation type="unfinished">NETLizard 图片/纹理资源查看器</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">错误</translation>
+    </message>
+    <message>
+        <source>Load NETLizard image/texture file fail!</source>
+        <translation type="unfinished">加载NETLizard纹理图片文件失败!</translation>
+    </message>
+    <message>
+        <source>%1: size %2 x %3, format %4</source>
+        <translation type="unfinished">%1: 大小 %2 x %3, 格式: %4</translation>
+    </message>
+    <message>
+        <source>No data!</source>
+        <translation type="unfinished">无数据!</translation>
+    </message>
+    <message>
+        <source>Success</source>
+        <translation type="unfinished">成功</translation>
+    </message>
+    <message>
+        <source>File path is </source>
+        <translation type="unfinished">文件路径为</translation>
+    </message>
+    <message>
+        <source>Save data fail!</source>
+        <translation type="unfinished">保存数据失败!</translation>
+    </message>
+    <message>
+        <source>Raw data(exam jpg, jpeg)</source>
+        <translation type="unfinished">原数据(例如 jpg,jpeg)</translation>
+    </message>
+    <message>
+        <source>PNG(stable png file)</source>
+        <translation type="unfinished">PNG(标准png文件)</translation>
+    </message>
+    <message>
+        <source>Encode PNG(encode png file)</source>
+        <translation type="unfinished">加密PNG(加密的png文件)</translation>
+    </message>
+    <message>
+        <source>Texture v2(3D CT, 3D Spacnaz, 3D CT2, 3D CT3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Texture v3(3D Egypt, 3D Clone)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Texture v3 compress(3D Egypt, 3D Clone)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Left-Top</source>
+        <translation type="unfinished">左上</translation>
+    </message>
+    <message>
+        <source>Center</source>
+        <translation type="unfinished">中心</translation>
+    </message>
+    <message>
+        <source>Left-Bottom</source>
+        <translation type="unfinished">左下</translation>
+    </message>
+    <message>
+        <source>Center-Top</source>
+        <translation type="unfinished">中上</translation>
+    </message>
+    <message>
+        <source>Center-Bottom</source>
+        <translation type="unfinished">中下</translation>
+    </message>
+    <message>
+        <source>Left-Center</source>
+        <translation type="unfinished">左中</translation>
     </message>
 </context>
 <context>
@@ -191,6 +323,30 @@
     <message>
         <source>NETLizard 3D item model viewer</source>
         <translation type="unfinished">NETLizard 3D物品模型查看器</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">错误</translation>
+    </message>
+    <message>
+        <source>Choose obj/o/car file and resource path!</source>
+        <translation type="unfinished">选择obj/o/car文件和资源路径!</translation>
+    </message>
+    <message>
+        <source>Unsupport NETLizard 3D game!</source>
+        <translation type="unfinished">不支持的NETLizard 3D游戏</translation>
+    </message>
+    <message>
+        <source>%1(index-%2) object: %3, resource directory: %4 -&gt; %5</source>
+        <translation type="unfinished">%1(索引-%2) 对象: %3, 资源路径: %4 -&gt; %5</translation>
+    </message>
+    <message>
+        <source>Load NETLizard 3D game item model file fail!</source>
+        <translation type="unfinished">加载NETLizard 3D游戏物品模型文件失败!</translation>
+    </message>
+    <message>
+        <source>Autoscan</source>
+        <translation type="unfinished">自动获取</translation>
     </message>
 </context>
 <context>
@@ -253,6 +409,26 @@
         <source>NETLizard 3D map model viewer</source>
         <translation type="unfinished">NETLizard 3D地图模型查看器</translation>
     </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">错误</translation>
+    </message>
+    <message>
+        <source>Choose lvl/dm/track file and resource path!</source>
+        <translation type="unfinished">选择lvl/dm/track文件和资源路径!</translation>
+    </message>
+    <message>
+        <source>Unsupport NETLizard 3D game!</source>
+        <translation type="unfinished">不支持的NETLizard 3D游戏</translation>
+    </message>
+    <message>
+        <source>%1(level-%2) object: %3, resource directory: %4 -&gt; %5</source>
+        <translation type="unfinished">%1(关卡-%2) 对象: %3, 资源路径: %4 -&gt; %5</translation>
+    </message>
+    <message>
+        <source>Load NETLizard 3D game map model file fail!</source>
+        <translation type="unfinished">加载NETLizard 3D游戏地图模型文件失败!</translation>
+    </message>
 </context>
 <context>
     <name>SettingDialog</name>
@@ -287,6 +463,22 @@
         <source>NETLizard sprite resource viewer</source>
         <translation type="unfinished">NETLizard精灵图资源查看器</translation>
     </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">错误</translation>
+    </message>
+    <message>
+        <source>Choose sprite config file and texture file!</source>
+        <translation type="unfinished">选择精灵图配置文件和纹路图片!</translation>
+    </message>
+    <message>
+        <source>config file: %1, texture file: %2 -&gt; sprite count: %3</source>
+        <translation type="unfinished">配置文件: %1, 纹理图片: %2 -&gt; 精灵图数量: %3</translation>
+    </message>
+    <message>
+        <source>Load NETLizard sprite fail!</source>
+        <translation type="unfinished">加载NETLizard精灵图失败!</translation>
+    </message>
 </context>
 <context>
     <name>StringViewer</name>
@@ -320,6 +512,34 @@
     <message>
         <source>NETLizard text resource viewer</source>
         <translation type="unfinished">NETLizard文本资源查看器</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">错误</translation>
+    </message>
+    <message>
+        <source>Load NETLizard text fail!</source>
+        <translation type="unfinished">加载NETLizard文本失败!</translation>
+    </message>
+    <message>
+        <source>No data!</source>
+        <translation type="unfinished">无数据!</translation>
+    </message>
+    <message>
+        <source>Success</source>
+        <translation type="unfinished">成功</translation>
+    </message>
+    <message>
+        <source>File path is </source>
+        <translation type="unfinished">文件路径为</translation>
+    </message>
+    <message>
+        <source>Save data fail!</source>
+        <translation type="unfinished">保存数据失败!</translation>
+    </message>
+    <message>
+        <source>%1 - Length: %2</source>
+        <translation type="unfinished">%1 - 长度: %2</translation>
     </message>
 </context>
 </TS>

@@ -378,6 +378,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
 
     return true;
 }
+
 bool MapScene::KeyEventHandler(int key, bool pressed, int modifier)
 {
     if(!pressed)
@@ -648,7 +649,7 @@ void MapScene::UpdateCullRenderScene()
     if(scenes)
     {
         int count;
-        if(m_noclip != 0 && m_singleScene)
+        if(/*m_noclip != 0 && */m_singleScene)
         {
             if(m_currentScene >= 0)
             {
@@ -679,82 +680,89 @@ void MapScene::UpdateCullRenderScene()
 
 bool MapScene::CollisionTesting(const vector3_t &op)
 {
-    if(!m_model || m_model->game == NL_RACING_EVOLUTION_3D || m_noclip == 0)
+    if(!m_model || m_model->game == NL_RACING_EVOLUTION_3D/* || m_noclip == 0*/)
         return false;
 
     int scene = -1;
     int item = -1;
-    nl_vector3_t oldPos = op;
     nl_vector3_t pos = m_mainCameraActor->Position();
-    unsigned include_item = m_noclip == 2;
 
-    ConvToAlgoVector3(oldPos);
     ConvToAlgoVector3(pos);
-
     //fprintf(stderr,"Old pos : %f %f %f\n", oldPos.v[0], oldPos.v[1], oldPos.v[2]);fflush(stderr);
     //fprintf(stderr,"Tmp pos : %f %f %f\n", pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
-    collision_object_t obj = {oldPos, OBJ_RADIUS, OBJ_HEIGHT, OBJ_LEG_HEIGHT, OBJ_HEAD_HEIGHT};
-    int res = NETLizard_MapCollisionTesting(m_model, &obj, &pos, &scene, include_item, &item);
-    //fprintf(stderr,"new_pos : %f %f %f\n", pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
-    vector3_t p;
-    bool clear = false;
-    if(res == NETLizard_Collision_Testing_Scene_Movement)
+
+    if(m_noclip == 0)
     {
-        p = pos;
-        //clear = true;
-    }
-    else if(res == NETLizard_Collision_Testing_Scene_Pass)
-    {
-        p = pos;
-    }
-    else if(res == NETLizard_Collision_Testing_Scene_Missing_Plane)
-    {
-        p = pos;
+        scene = NETLizard_FindScenePointIn(m_model, &pos);
     }
     else
     {
-        //fprintf(stderr,"<>  : %d : %d| \n\n", res, item);fflush(stderr);
-        p = oldPos;
-        NLForce_gravity *gravity = m_mainCameraActor->GetTypeForce<NLForce_gravity>();
-        if(gravity && gravity->GetProperty_T("force", 0) != 0) // is jump
-            clear = true;
-    }
-    //fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
-    float rglz = 0;
-    obj.position = p;
-    res = NETLizard_GetScenePointZCoord(m_model, &obj, scene, include_item, &scene, &rglz);
-    //fprintf(stderr,"NETLizard_GetScenePointZCoord : %d - scene(%d): %f <> %f\n\n", res, scene, VECTOR3_Z(p), rglz);fflush(stderr);
-    if(clear)
-        m_mainCameraActor->Collision();
-
-    if(res)
-    {
-        if(VECTOR3_Z(p) > OBJ_HEIGHT + rglz)
+        nl_vector3_t oldPos = op;
+        ConvToAlgoVector3(oldPos);
+        unsigned include_item = m_noclip == 2;
+        collision_object_t obj = {oldPos, OBJ_RADIUS, OBJ_HEIGHT, OBJ_LEG_HEIGHT, OBJ_HEAD_HEIGHT};
+        int res = NETLizard_MapCollisionTesting(m_model, &obj, &pos, &scene, include_item, &item);
+        //fprintf(stderr,"new_pos : %f %f %f\n", pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
+        vector3_t p;
+        bool clear = false;
+        if(res == NETLizard_Collision_Testing_Scene_Movement)
         {
-            if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())
-            {
-                // pre cale
-                vector3_t de;
-                vector3_subtractv(&de, &p, &oldPos);
-                VECTOR3_Z(de) = 0;
-                float d0 = vector3_length(&de) / 2.0;
-                //fprintf(stderr,"res222 : %f %f %f\n\n", d0, VECTOR3_Z(p), OBJ_HEIGHT + rglz);fflush(stderr);
-                if(VECTOR3_Z(p) - d0 > OBJ_HEIGHT + rglz)
-                    m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", _g), m_mainCameraActor));
-                else
-                    VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
-            }
+            p = pos;
+            //clear = true;
+        }
+        else if(res == NETLizard_Collision_Testing_Scene_Pass)
+        {
+            p = pos;
+        }
+        else if(res == NETLizard_Collision_Testing_Scene_Missing_Plane)
+        {
+            p = pos;
         }
         else
         {
-            if(m_mainCameraActor->HasTypeForce<NLForce_gravity>())
-                m_mainCameraActor->RemoveTypeForces<NLForce_gravity>();
-            VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
+            //fprintf(stderr,"<>  : %d : %d| \n\n", res, item);fflush(stderr);
+            p = oldPos;
+            NLForce_gravity *gravity = m_mainCameraActor->GetTypeForce<NLForce_gravity>();
+            if(gravity && gravity->GetProperty_T("force", 0) != 0) // is jump
+                clear = true;
         }
+        //fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
+        float rglz = 0;
+        obj.position = p;
+        res = NETLizard_GetScenePointZCoord(m_model, &obj, scene, include_item, &scene, &rglz);
+        //fprintf(stderr,"NETLizard_GetScenePointZCoord : %d - scene(%d): %f <> %f\n\n", res, scene, VECTOR3_Z(p), rglz);fflush(stderr);
+        if(clear)
+            m_mainCameraActor->Collision();
+
+        if(res)
+        {
+            if(VECTOR3_Z(p) > OBJ_HEIGHT + rglz)
+            {
+                if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())
+                {
+                    // pre cale
+                    vector3_t de;
+                    vector3_subtractv(&de, &p, &oldPos);
+                    VECTOR3_Z(de) = 0;
+                    float d0 = vector3_length(&de) / 2.0;
+                    //fprintf(stderr,"res222 : %f %f %f\n\n", d0, VECTOR3_Z(p), OBJ_HEIGHT + rglz);fflush(stderr);
+                    if(VECTOR3_Z(p) - d0 > OBJ_HEIGHT + rglz)
+                        m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", _g), m_mainCameraActor));
+                    else
+                        VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
+                }
+            }
+            else
+            {
+                if(m_mainCameraActor->HasTypeForce<NLForce_gravity>())
+                    m_mainCameraActor->RemoveTypeForces<NLForce_gravity>();
+                VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
+            }
+        }
+        ConvToRenderVector3(p);
+        m_mainCameraActor->SetPosition(p);
+        m_mainCameraActor->UpdateCamera();
     }
-    ConvToRenderVector3(p);
-    m_mainCameraActor->SetPosition(p);
-    m_mainCameraActor->UpdateCamera();
 
     SetCurrentScene(scene);
     SetCurrentCollisionItem(item);

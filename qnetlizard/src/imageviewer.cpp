@@ -20,21 +20,21 @@
 #include "qdef.h"
 
 static const QPair<int, QString> Types[] = {
-    QPair<int, QString>(NL_TEXTURE_UNKNOWN, "Raw data(exam jpg, jpeg)"),
-    QPair<int, QString>(NL_TEXTURE_NORMAL_PNG, "PNG(stable png file)"),
-    QPair<int, QString>(NL_TEXTURE_ENCODE_PNG, "Encode PNG(encode png file)"),
-    QPair<int, QString>(NL_TEXTURE_3D_ENGINE_V2, "Texture v2(3D CT, 3D Spacnaz, 3D CT2, 3D CT3)"),
-    QPair<int, QString>(NL_TEXTURE_3D_ENGINE_V3, "Texture v3(3D Egypt, 3D Clone)"),
-    QPair<int, QString>(NL_TEXTURE_3D_ENGINE_V3_COMPRESS, "Texture v3 compress(3D Egypt, 3D Clone)"),
+    QPair<int, QString>(NL_TEXTURE_UNKNOWN, ImageViewer::tr("Raw data(exam jpg, jpeg)")),
+    QPair<int, QString>(NL_TEXTURE_NORMAL_PNG, ImageViewer::tr("PNG(stable png file)")),
+    QPair<int, QString>(NL_TEXTURE_ENCODE_PNG, ImageViewer::tr("Encode PNG(encode png file)")),
+    QPair<int, QString>(NL_TEXTURE_3D_ENGINE_V2, ImageViewer::tr("Texture v2(3D CT, 3D Spacnaz, 3D CT2, 3D CT3)")),
+    QPair<int, QString>(NL_TEXTURE_3D_ENGINE_V3, ImageViewer::tr("Texture v3(3D Egypt, 3D Clone)")),
+    QPair<int, QString>(NL_TEXTURE_3D_ENGINE_V3_COMPRESS, ImageViewer::tr("Texture v3 compress(3D Egypt, 3D Clone)")),
 };
 
 static const QPair<Qt::Alignment, QString> Aligns[] = {
-    QPair<Qt::Alignment, QString>(Qt::AlignLeft | Qt::AlignTop, "Left-Top"),
-    QPair<Qt::Alignment, QString>(Qt::AlignCenter, "Center"),
-    QPair<Qt::Alignment, QString>(Qt::AlignLeft | Qt::AlignBottom, "Left-Bottom"),
-    QPair<Qt::Alignment, QString>(Qt::AlignTop | Qt::AlignHCenter, "Center-Top"),
-    QPair<Qt::Alignment, QString>(Qt::AlignBottom | Qt::AlignHCenter, "Center-Bottom"),
-    QPair<Qt::Alignment, QString>(Qt::AlignLeft | Qt::AlignVCenter, "Left-Center"),
+    QPair<Qt::Alignment, QString>(Qt::AlignLeft | Qt::AlignTop, ImageViewer::tr("Left-Top")),
+    QPair<Qt::Alignment, QString>(Qt::AlignCenter, ImageViewer::tr("Center")),
+    QPair<Qt::Alignment, QString>(Qt::AlignLeft | Qt::AlignBottom, ImageViewer::tr("Left-Bottom")),
+    QPair<Qt::Alignment, QString>(Qt::AlignTop | Qt::AlignHCenter, ImageViewer::tr("Center-Top")),
+    QPair<Qt::Alignment, QString>(Qt::AlignBottom | Qt::AlignHCenter, ImageViewer::tr("Center-Bottom")),
+    QPair<Qt::Alignment, QString>(Qt::AlignLeft | Qt::AlignVCenter, ImageViewer::tr("Left-Center")),
 };
 
 ImageViewer::ImageViewer(QWidget *parent) :
@@ -162,12 +162,12 @@ bool ImageViewer::OpenFile(const QString &file)
     bool res = m_imageScene->LoadFile(file, type, m_indexSpinBox->value());
     if(!res)
     {
-        QMessageBox::warning(this, "Error", "Load image/texture file fail!");
+        QMessageBox::warning(this, tr("Error"), tr("Load NETLizard image/texture file fail!"));
         return false;
     }
     m_saveButton->setEnabled(true);
     const texture_s *tex = m_imageScene->Texture();
-    SetTitleLabel(QString("%1: size %2 x %3, format %4").arg(Types[selectedIndex].second).arg(tex->width).arg(tex->height).arg(tex->format == GL_RGB ? "RGB" : "RGBA"));
+    SetTitleLabel(QString(tr("%1: size %2 x %3, format %4")).arg(Types[selectedIndex].second).arg(tex->width).arg(tex->height).arg(tex->format == GL_RGB ? "RGB" : "RGBA"));
 
     return true;
 }
@@ -183,14 +183,14 @@ bool ImageViewer::SaveData(const QString &file)
 {
     if(!m_imageScene->IsValid())
     {
-        QMessageBox::warning(this, "Error", "No data!");
+        QMessageBox::warning(this, tr("Error"), tr("No data!"));
         return false;
     }
 
     bool res = m_imageScene->SaveData(file);
     if(res)
-        QMessageBox::information(this, "Success", "File path is " + file);
+        QMessageBox::information(this, tr("Success"), tr("File path is ") + file);
     else
-        QMessageBox::warning(this, "Error", "Save data fail!");
+        QMessageBox::warning(this, tr("Error"), tr("Save data fail!"));
     return res;
 }

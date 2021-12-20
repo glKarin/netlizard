@@ -50,7 +50,7 @@ void ItemViewer::Init()
     m_itemScene = new ItemScene;
     //QHBoxLayout *toolLayout = ToolLayout();
     m_indexSpinBox = new QSpinBox;
-    m_autoscanCheckBox = new QCheckBox("Autoscan");
+    m_autoscanCheckBox = new QCheckBox(tr("Autoscan"));
     SetTitleLabelVisible(false);
 
     for(int i = 0; i <= NL_CONTR_TERRORISM_3D_EPISODE_3; i++)
@@ -177,7 +177,7 @@ bool ItemViewer::OpenFile()
 {
     if(m_objPath.isEmpty())
     {
-        QMessageBox::warning(this, "Error", "Choose obj file and resource path!");
+        QMessageBox::warning(this, tr("Error"), tr("Choose obj/o/car file and resource path!"));
         return false;
     }
     Reset();
@@ -214,17 +214,17 @@ bool ItemViewer::OpenFile()
         res = m_itemScene->LoadFile(m_objPath, m_resourceDirPath, game, index);
     break;
     default:
-        QMessageBox::warning(this, "Error", "Unsupport 3D game!");
+        QMessageBox::warning(this, tr("Error"), tr("Unsupport NETLizard 3D game!"));
         break;
     }
-    SetTitleLabel(QString("%1(index-%2)  obj: %3, resource directory: %4 -> %5").arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(index).arg(m_objPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
+    SetTitleLabel(QString(tr("%1(index-%2) object: %3, resource directory: %4 -> %5")).arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(index).arg(m_objPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
     if(res)
     {
         m_itemScene->setFocus();
     }
     else
     {
-        QMessageBox::warning(this, "Error", "Load 3D game map file fail!");
+        QMessageBox::warning(this, tr("Error"), tr("Load NETLizard 3D game item model file fail!"));
     }
     return res;
 }

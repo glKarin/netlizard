@@ -150,7 +150,7 @@ bool FontViewer::LoadFont()
 {
     if(m_cfFile.isEmpty())
     {
-        QMessageBox::warning(this, "Error", "Choose font config file and texture file!");
+        QMessageBox::warning(this, tr("Error"), tr("Choose font config file and texture file!"));
         return false;
     }
     Reset();
@@ -164,12 +164,12 @@ bool FontViewer::LoadFont()
     {
         m_renderButton->setEnabled(true);
         m_textInput->setEnabled(true);
-        SetTitleLabel(QString("config file: %1, texture file: %2 -> character count: %3").arg(m_cfFile).arg(m_fntFile).arg(m_fontScene->Font()->char_count));
-        QMessageBox::warning(this, "Success", "Load font success!");
+        SetTitleLabel(QString(tr("config file: %1, texture file: %2 -> character count: %3")).arg(m_cfFile).arg(m_fntFile).arg(m_fontScene->Font()->char_count));
+        QMessageBox::warning(this, tr("Success"), tr("Load NETLizard font success!"));
     }
     else
     {
-        QMessageBox::warning(this, "Error", "Load font fail!");
+        QMessageBox::warning(this, tr("Error"), tr("Load NETLizard font fail!"));
     }
     return res;
 }

@@ -159,7 +159,7 @@ bool MapViewer::OpenFile()
 {
     if(m_lvlPath.isEmpty())
     {
-        QMessageBox::warning(this, "Error", "Choose lvl file and resource path!");
+        QMessageBox::warning(this, tr("Error"), tr("Choose lvl/dm/track file and resource path!"));
         return false;
     }
     Reset();
@@ -204,10 +204,10 @@ bool MapViewer::OpenFile()
         res = m_mapScene->LoadFile(m_lvlPath, m_resourceDirPath, game, level);
     break;
     default:
-        QMessageBox::warning(this, "Error", "Unsupport 3D game!");
+        QMessageBox::warning(this, tr("Error"), tr("Unsupport NETLizard 3D game!"));
         break;
     }
-    SetTitleLabel(QString("%1(level-%2)  lvl: %3, resource directory: %4 -> %5").arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(level).arg(m_lvlPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
+    SetTitleLabel(QString(tr("%1(level-%2) object: %3, resource directory: %4 -> %5")).arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(level).arg(m_lvlPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
     if(res)
     {
         m_mapScene->setFocus();
@@ -215,7 +215,7 @@ bool MapViewer::OpenFile()
     }
     else
     {
-        QMessageBox::warning(this, "Error", "Load 3D game map file fail!");
+        QMessageBox::warning(this, tr("Error"), tr("Load NETLizard 3D game map model file fail!"));
     }
     return res;
 }

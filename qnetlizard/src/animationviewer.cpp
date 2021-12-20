@@ -255,12 +255,12 @@ void AnimationViewer::OnAnimChanged(int index)
     const NETLizard_3D_Frame_Animation *config = m_animationScene->CurrentAnimation();
     if(config)
     {
-        SetStatusText(QString("Animation: %1, frame range: %2 - %3, frame count: %4").arg(nlGet3DModelFrameAnimationName(config->type)).arg(config->begin_frame).arg(config->end_frame).arg(config->count));
+        SetStatusText(QString(tr("Animation: %1, frame range: %2 - %3, frame count: %4")).arg(nlGet3DModelFrameAnimationName(config->type)).arg(config->begin_frame).arg(config->end_frame).arg(config->count));
         m_frameSlider->setMaximum(config->count - 1);
     }
     else
     {
-        SetStatusText("Invalid frame animation!");
+        SetStatusText(tr("Invalid frame animation!"));
         m_frameSlider->setMaximum(0);
     }
 }
@@ -306,7 +306,7 @@ bool AnimationViewer::OpenFile()
 {
     if(m_objPath.isEmpty())
     {
-        QMessageBox::warning(this, "Error", "Choose obj file and resource path!");
+        QMessageBox::warning(this, tr("Error"), tr("Choose un file and resource path!"));
         return false;
     }
     Reset();
@@ -342,10 +342,10 @@ bool AnimationViewer::OpenFile()
         res = m_animationScene->LoadFile(m_objPath, m_resourceDirPath, game, index);
     break;
     default:
-        QMessageBox::warning(this, "Error", "Unsupport 3D game!");
+        QMessageBox::warning(this, tr("Error"), tr("Unsupport NETLizard 3D game!"));
         break;
     }
-    SetTitleLabel(QString("%1(index-%2)  obj: %3, resource directory: %4 -> %5").arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(index).arg(m_objPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
+    SetTitleLabel(QString(tr("%1(index-%2) object: %3, resource directory: %4 -> %5")).arg(nlGet3DGameName(static_cast<NETLizard_Game>(game))).arg(index).arg(m_objPath).arg(m_resourceDirPath).arg(res ? "Success" : "Fail"));
     if(res)
     {
         m_toolbar->setEnabled(true);
@@ -355,7 +355,7 @@ bool AnimationViewer::OpenFile()
     }
     else
     {
-        QMessageBox::warning(this, "Error", "Load 3D game animation file fail!");
+        QMessageBox::warning(this, tr("Error"), tr("Load NETLizard 3D game animation model file fail!"));
     }
     return res;
 }
