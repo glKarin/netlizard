@@ -28,12 +28,30 @@ static ContextLangDict LoadLangContext(const QDomElement &context)
         if(!node.isElement())
             continue;
         QDomElement item = node.toElement();
-        if(item.tagName() != "item")
+        if(item.tagName() != "translation")
             continue;
         QString name = item.attribute("source");
         if(name.isEmpty())
             continue;
-        sc.insert(name, item.attribute("translation"));
+        QString text("");
+        if(item.hasChildNodes())
+        {
+            QDomNodeList textNodes = node.childNodes();
+            for(int k = 0; k < textNodes.size(); k++)
+            {
+                QDomNode textNode = textNodes.at(k);
+                if(!textNode.isCDATASection())
+                    continue;
+                QDomCDATASection cdata = textNode.toCDATASection();
+                text.append(cdata.data());
+            }
+        }
+        else
+        {
+            text = item.attribute("translation");
+        }
+
+        sc.insert(name, text);
     }
 
     return sc;

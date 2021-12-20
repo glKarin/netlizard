@@ -28,6 +28,8 @@
 #endif
 
 #define APP_GITHUB "https://github.com/glKarin/netlizard"
+#define APP_GITHUB_USER_NAME "glKarin"
+#define APP_GITHUB_REPO_NAME "netlizard"
 
 #define qClamp(t, min, max) qMax(min, qMin(t, max))
 

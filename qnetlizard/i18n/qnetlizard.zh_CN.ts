@@ -7,6 +7,18 @@
         <source>About </source>
         <translation type="unfinished">关于</translation>
     </message>
+    <message>
+        <source>Version: </source>
+        <translation type="unfinished">版本: </translation>
+    </message>
+    <message>
+        <source>Build: </source>
+        <translation type="unfinished">编译: </translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">关闭</translation>
+    </message>
 </context>
 <context>
     <name>AnimationViewer</name>
@@ -101,12 +113,8 @@
         <translation type="unfinished">加载</translation>
     </message>
     <message>
-        <source>NETLizard font viewer</source>
-        <translation type="obsolete">NETLizard字体查看器</translation>
-    </message>
-    <message>
         <source>NETLizard font resource viewer</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">NETLizard字体资源查看器</translation>
     </message>
 </context>
 <context>
@@ -204,7 +212,7 @@
     </message>
     <message>
         <source>Restore</source>
-        <translation type="unfinished">恢复</translation>
+        <translation type="unfinished">还原</translation>
     </message>
     <message>
         <source>Maximize</source>

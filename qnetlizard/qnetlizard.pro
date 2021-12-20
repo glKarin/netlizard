@@ -21,8 +21,6 @@ HEADERS += \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
     src/misc/settings.h \
-    src/widget/flowlayout.h \
-    src/gl/linkedlist.h \
     src/misc/lang.h
 
 SOURCES += \
@@ -31,8 +29,6 @@ SOURCES += \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
-    src/widget/flowlayout.cpp \
-    src/gl/linkedlist.c \
     src/misc/lang.cpp
 
 # Widget
@@ -54,6 +50,7 @@ HEADERS += \
     src/settingdialog.h \
     src/indexviewer.h \
     src/spriteviewer.h \
+    src/widget/flowlayout.h \
     src/changelogdialog.h
 
 SOURCES += \
@@ -74,6 +71,7 @@ SOURCES += \
     src/settingdialog.cpp \
     src/indexviewer.cpp \
     src/spriteviewer.cpp \
+    src/widget/flowlayout.cpp \
     src/changelogdialog.cpp
 
 # Component
@@ -258,6 +256,7 @@ HEADERS += \
     src/gl/nl_util.h \
     src/gl/nl_gl_debug.h \
     src/gl/nl_algo.h \
+    src/gl/linkedlist.h \
     src/gl/nl_gl_algo_debug.h
 
 SOURCES += \
@@ -275,6 +274,7 @@ SOURCES += \
     src/gl/nl_util.c \
     src/gl/nl_gl_debug.c \
     src/gl/nl_algo.c \
+    src/gl/linkedlist.c \
     src/gl/nl_gl_algo_debug.c
 
 # Mesa GL math
@@ -336,7 +336,9 @@ RCC_DIR = ./
 UI_DIR = ./ui
 
 i18n.files = \
-    i18n/qnetlizard.zh_CN.qm
+    i18n/qnetlizard.zh_CN.ts \
+    i18n/qnetlizard.zh_CN.qm \
+    resource/cfg/lang.zh_CN.xml
 i18n.path = ./i18n
 
 TRANSLATIONS += i18n/qnetlizard.zh_CN.ts

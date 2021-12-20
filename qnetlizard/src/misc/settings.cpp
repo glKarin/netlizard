@@ -191,9 +191,9 @@ QVariant Settings::FindDefaultSetting(const Settings::SettingItemCategory *c, co
 
 bool Settings::LoadSettings(Settings::SettingItemMap &map)
 {
-    const QString Help(":/SETTING");
+    const QString Setting(":/SETTING");
 
-    QFile f(Help);
+    QFile f(Setting);
     QXmlSimpleReader reader;
     QXmlInputSource source(&f);
     QDomDocument doc;

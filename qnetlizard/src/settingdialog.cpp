@@ -129,7 +129,6 @@ QTreeWidgetItem * SettingDialog::FindSettingNode(const QString &name, QTreeWidge
 
 void SettingDialog::OpenSettingGroup(const QString &name)
 {
-    qDebug() << name;
     const int Count = m_tree->topLevelItemCount();
     for(int i = 0; i < Count; i++)
     {

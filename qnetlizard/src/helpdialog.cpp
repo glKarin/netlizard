@@ -12,8 +12,10 @@
 #include <QDomDocument>
 #include <QDomNode>
 #include <QDomNodeList>
+#include <QListWidgetItem>
 
 #include "qdef.h"
+#include "lang.h"
 
 HelpDialog::HelpDialog(QWidget *parent) :
     QDialog(parent),
@@ -37,12 +39,15 @@ void HelpDialog::Init()
     QHBoxLayout *contentLayout = new QHBoxLayout;
     QListWidget *list = new QListWidget;
     m_textViewer = new QTextBrowser;
-    QStringList menuText;
+    const LangHelper lang("HELP");
 
     Q_FOREACH(const HelpDialog::HelpItem &item, m_helpList)
-        menuText.append(item.category);
+    {
+        QListWidgetItem *listItem = new QListWidgetItem(lang[item.category], list);
+        listItem->setData(Qt::UserRole, item.category);
+        list->addItem(listItem);
+    }
 
-    list->addItems(menuText);
     list->setMaximumWidth(128);
     list->setMinimumWidth(96);
     contentLayout->addWidget(list);
@@ -63,7 +68,7 @@ void HelpDialog::Init()
 
 void HelpDialog::SetContentText(QListWidgetItem *item)
 {
-    QString label = item->text();
+    const QString label(item->data(Qt::UserRole).toString());
     Q_FOREACH(const HelpDialog::HelpItem &item, m_helpList)
     {
         if(item.category == label)
@@ -96,6 +101,7 @@ bool HelpDialog::LoadHelp()
     if (help.tagName() != "help")
         return false;
 
+    const LangHelper lang("HELP");
     QDomNodeList categorys = help.childNodes();
     for(int i = 0; i < categorys.size(); i++)
     {
@@ -117,13 +123,14 @@ bool HelpDialog::LoadHelp()
             if(item.tagName() != "item")
                 continue;
             QDomNodeList texts = item.childNodes();
+            QString text;
             for(int k = 0; k < texts.size(); k++)
             {
                 QDomNode node = texts.at(k);
                 if(!node.isCDATASection())
                     continue;
                 QDomCDATASection cdata = node.toCDATASection();
-                QString t = cdata.data();
+                QString t(lang[cdata.data()]);
                 QString fontWeight = item.attribute("font-weight");
                 if(fontWeight == "bold")
                     t = "<b>" + t + "</b>";
@@ -136,8 +143,9 @@ bool HelpDialog::LoadHelp()
                 QString color = item.attribute("color");
                 if(!color.isEmpty())
                     t = QString("<font color=\"%1\">").arg(color) + t + "</font>";
-                list.push_back(t);
+                text.append(t);
             }
+            list.push_back(text);
         }
 
         m_helpList.push_back(HelpDialog::HelpItem(categroyName, list));
