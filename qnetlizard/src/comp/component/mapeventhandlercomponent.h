@@ -145,6 +145,24 @@ private:
     float m_end2;
 };
 
+class MapEventHandler_ladder : public MapEventHandler
+{
+public:
+    enum Ladder_Movment_e
+    {
+        Ladder_Move_Up = 1,
+        Ladder_Move_Down = 2
+    };
+public:
+    explicit MapEventHandler_ladder(Ladder_Movment_e movment, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
+    virtual ~MapEventHandler_ladder();
+    virtual void Update(float delta);
+
+private:
+    float m_unit;
+    Ladder_Movment_e m_movment;
+};
+
 class MapEventHandlerContainer
 {
 public:
@@ -193,6 +211,7 @@ protected:
     bool HandleTeleport(int item);
     bool HandleFan(int item);
     bool HandleDoor(int item);
+    bool HandleLadder(int item);
 
 private:
     typedef QHash<NLint, const NETLizard_Level_Teleport *> MapTeleportMap;

@@ -13,7 +13,7 @@ class SceneInfoWidget;
 class ActorPropertyWidget;
 class NLScene;
 class StatusBar;
-class HomeCellItem;
+class MenuItem;
 
 class MainWindow : public QMainWindow
 {
@@ -52,7 +52,7 @@ private:
     void CloseCurrentWidget();
     void SetCurrentWidget(BaseViewer *viewer = 0);
     BaseViewer * CurrentWidget();
-    void AddMenuItem(const HomeCellItem &s, QMenu *parent);
+    void AddMenuItem(const MenuItem &s, QMenu *parent);
 
 private:
     QByteArray m_state;

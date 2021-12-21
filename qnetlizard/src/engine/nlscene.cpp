@@ -39,6 +39,8 @@ NLScene::NLScene(QWidget *parent) :
     m_updateInterval(LOOP_INTERVAL)
 {
     setObjectName("NLScene");
+    memset(m_keyState, 0, sizeof(m_keyState));
+    memset(m_mouseState, 0, sizeof(m_mouseState));
     SetupOpenGL();
     m_actors.SetScene(this);
     m_actors.setObjectName("SceneRootActorContainer");
@@ -125,9 +127,12 @@ void NLScene::mousePressEvent(QMouseEvent* event)
     int y = event->y();
     m_lastPos.setX(x);
     m_lastPos.setY(y);
+    const int button = event->button();
+    SetButtonState(button, true);
+    const int modifiers = event->modifiers();
 
-    bool res = m_actors.MouseEventHandler(event->button(), true, x, y, event->modifiers());
-    res = MouseEventHandler(event->button(), true, x, y, event->modifiers()) || res;
+    bool res = m_actors.MouseEventHandler(button, true, x, y, modifiers);
+    res = MouseEventHandler(button, true, x, y, modifiers) || res;
     if(res)
         event->accept();
 
@@ -141,9 +146,12 @@ void NLScene::mouseReleaseEvent(QMouseEvent* event)
     int y = event->y();
     m_lastPos.setX(x);
     m_lastPos.setY(y);
+    const int button = event->button();
+    SetButtonState(button, false);
+    const int modifiers = event->modifiers();
 
-    bool res = m_actors.MouseEventHandler(event->button(), false, x, y, event->modifiers());
-    res = MouseEventHandler(event->button(), false, x, y, event->modifiers()) || res;
+    bool res = m_actors.MouseEventHandler(button, false, x, y, modifiers);
+    res = MouseEventHandler(button, false, x, y, modifiers) || res;
     if(res)
         event->accept();
     QGLWidget::mouseReleaseEvent(event);
@@ -153,8 +161,10 @@ void NLScene::mouseMoveEvent(QMouseEvent* event)
 {
     int x = event->x();
     int y = event->y();
-    bool res = m_actors.MouseMotionHandler(event->button(), m_pressed, x, y, m_lastPos.x(), m_lastPos.y(), event->modifiers());
-    res = MouseMotionHandler(event->button(), m_pressed, x, y, m_lastPos.x(), m_lastPos.y(), event->modifiers()) || res;
+    const int modifiers = event->modifiers();
+    const int button = event->button();
+    bool res = m_actors.MouseMotionHandler(button, m_pressed, x, y, m_lastPos.x(), m_lastPos.y(), modifiers);
+    res = MouseMotionHandler(button, m_pressed, x, y, m_lastPos.x(), m_lastPos.y(), modifiers) || res;
     if(res)
         event->accept();
     m_lastPos.setX(x);
@@ -166,8 +176,11 @@ void NLScene::mouseMoveEvent(QMouseEvent* event)
 
 void NLScene::keyPressEvent(QKeyEvent *event)
 {
-    bool res = m_actors.KeyEventHandler(event->key(), true, event->modifiers());
-    res = KeyEventHandler(event->key(), true, event->modifiers()) || res;
+    const int key = event->key();
+    SetKeyState(key, true);
+    const int modifiers = event->modifiers();
+    bool res = m_actors.KeyEventHandler(key, true, modifiers);
+    res = KeyEventHandler(key, true, modifiers) || res;
     if(res)
         event->accept();
     QGLWidget::keyPressEvent(event);
@@ -175,8 +188,11 @@ void NLScene::keyPressEvent(QKeyEvent *event)
 
 void NLScene::keyReleaseEvent(QKeyEvent *event)
 {
-    bool res = m_actors.KeyEventHandler(event->key(), false, event->modifiers());
-    res = KeyEventHandler(event->key(), false, event->modifiers()) || res;
+    const int key = event->key();
+    SetKeyState(key, false);
+    const int modifiers = event->modifiers();
+    bool res = m_actors.KeyEventHandler(key, false, modifiers);
+    res = KeyEventHandler(key, false, modifiers) || res;
     if(res)
         event->accept();
    QGLWidget::keyReleaseEvent(event);
@@ -184,8 +200,10 @@ void NLScene::keyReleaseEvent(QKeyEvent *event)
 
 void NLScene::wheelEvent(QWheelEvent *event)
 {
-    bool res = m_actors.WheelEventHandler(event->buttons(), event->orientation(), event->delta(), event->x(), event->y(), event->modifiers());
-    res = WheelEventHandler(event->buttons(), event->orientation(), event->delta(), event->x(), event->y(), event->modifiers()) || res;
+    const int modifiers = event->modifiers();
+    const int buttons = event->buttons();
+    bool res = m_actors.WheelEventHandler(buttons, event->orientation(), event->delta(), event->x(), event->y(), modifiers);
+    res = WheelEventHandler(buttons, event->orientation(), event->delta(), event->x(), event->y(), modifiers) || res;
     if(res)
         event->accept();
    QGLWidget::wheelEvent(event);
@@ -288,6 +306,8 @@ void NLScene::SetClearColor(const QColor &color)
 void NLScene::Reset()
 {
     m_actors.Reset();
+    memset(m_keyState, 0, sizeof(m_keyState));
+    memset(m_mouseState, 0, sizeof(m_mouseState));
 }
 
 void NLScene::Update(float f)
@@ -390,5 +410,59 @@ bool NLScene::WheelEventHandler(int mouse, int orientation, int delta, int x, in
     Q_UNUSED(x);
     Q_UNUSED(y);
     Q_UNUSED(modifier);
+    return false;
+}
+
+void NLScene::SetKeyState(int key, bool pressed)
+{
+    if(key > Qt::Key_AsciiTilde)
+        return;
+    if(key >= Qt::Key_Space && key <= Qt::Key_AsciiTilde)
+    {
+        m_keyState[key] = pressed;
+        return;
+    }
+    if(key <= Qt::Key_PageDown)
+    {
+        m_keyState[key - 0x01000000] = pressed;
+        return;
+    }
+    if(key >= Qt::Key_Shift && key <= Qt::Key_Control)
+    {
+        m_keyState[key - 0x01000000 - 2] = pressed;
+    }
+}
+
+void NLScene::SetButtonState(int button, bool pressed)
+{
+    if(button & Qt::LeftButton)
+        m_keyState[0] = pressed;
+    if(button & Qt::RightButton)
+        m_keyState[1] = pressed;
+    if(button & Qt::MiddleButton)
+        m_keyState[2] = pressed;
+}
+
+bool NLScene::KeyState(int key)
+{
+    if(key > Qt::Key_AsciiTilde)
+        return false;
+    if(key >= Qt::Key_Space && key <= Qt::Key_AsciiTilde)
+        return m_keyState[key];
+    if(key <= Qt::Key_PageDown)
+        return m_keyState[key - 0x01000000];
+    if(key >= Qt::Key_Shift && key <= Qt::Key_Control)
+        return m_keyState[key - 0x01000000 - 2];
+    return false;
+}
+
+bool NLScene::MouseState(int button)
+{
+    if(button == Qt::LeftButton)
+        return m_keyState[0];
+    else if(button == Qt::RightButton)
+        return m_keyState[1];
+    else if(button == Qt::MiddleButton)
+        return m_keyState[2];
     return false;
 }

@@ -11,6 +11,7 @@ class SimpleControlComponent : public NLComponent
     Q_PROPERTY(float turnSens READ TurnSens WRITE SetTurnSens FINAL)
     Q_PROPERTY(float freelookSens READ FreelookSens WRITE SetFreelookSens FINAL)
     Q_PROPERTY(float fovySens READ FovySens WRITE SetFovySens FINAL)
+    Q_PROPERTY(bool upAndDownEnabled READ UpAndDownEnabled WRITE SetUpAndDownEnabled FINAL)
 public:
     explicit SimpleControlComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleControlComponent();
@@ -19,6 +20,8 @@ public:
     NLSETTER(turnSens) void SetTurnSens(float turnSens);
     NLSETTER(freelookSens) void SetFreelookSens(float freelookSens);
     NLSETTER(fovySens) void SetFovySens(float fovySens);
+    NLSETTER(upAndDownEnabled) void SetUpAndDownEnabled(bool upAndDownEnabled);
+    NLGETTER(upAndDownEnabled) bool UpAndDownEnabled() const{ return m_upAndDownEnabled; }
     NLGETTER(moveSens) float MoveSens() const{ return m_moveSens; }
     NLGETTER(turnSens) float TurnSens() const { return m_turnSens; }
     NLGETTER(freelookSens) float FreelookSens() const { return m_freelookSens; }
@@ -44,6 +47,7 @@ private:
     NLPROPERTY(float, turnSens) float m_turnSens;
     NLPROPERTY(float, freelookSens)float m_freelookSens;
     NLPROPERTY(float, fovySens) float m_fovySens;
+    NLPROPERTY(bool, upAndDownEnabled) bool m_upAndDownEnabled;
     bool m_action[NLAction_Total];
 
     static const int M_Move_Sens;

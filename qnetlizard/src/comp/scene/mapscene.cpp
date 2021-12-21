@@ -541,6 +541,11 @@ void MapScene::SetNoclip(int b)
         m_mainCameraActor->SetFree(m_noclip == 0);
         if(m_noclip == 0)
             m_mainCameraActor->ClearAllForces();
+        SimpleControlComponent *control = dynamic_cast<SimpleControlComponent *>(m_mainCameraActor->Control());
+        if(control)
+        {
+            control->SetUpAndDownEnabled(m_noclip == 0);
+        }
     }
 }
 
@@ -727,38 +732,59 @@ bool MapScene::CollisionTesting(const vector3_t &op)
                 clear = true;
         }
         //fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
-        float rglz = 0;
-        obj.position = p;
-        res = NETLizard_GetScenePointZCoord(m_model, &obj, scene, include_item, &scene, &rglz);
-        //fprintf(stderr,"NETLizard_GetScenePointZCoord : %d - scene(%d): %f <> %f\n\n", res, scene, VECTOR3_Z(p), rglz);fflush(stderr);
+
+        bool caleFloorZ = true;
+        if(item >= 0)
+        {
+            const GL_NETLizard_3D_Mesh *itemMesh = m_model->item_meshes + item;
+            if(itemMesh->item_type & NL_3D_ITEM_TYPE_LADDER)
+            {
+                caleFloorZ = false;
+                if(!clear)
+                {
+                    NLForce_gravity *gravity = m_mainCameraActor->GetTypeForce<NLForce_gravity>();
+                    if(gravity && gravity->GetProperty_T("force", 0) != 0) // is jump
+                        clear = true;
+                }
+            }
+        }
         if(clear)
             m_mainCameraActor->Collision();
 
-        if(res)
+        if(caleFloorZ)
         {
-            if(VECTOR3_Z(p) > OBJ_HEIGHT + rglz)
+            float rglz = 0;
+            obj.position = p;
+            res = NETLizard_GetScenePointZCoord(m_model, &obj, scene, include_item, &scene, &rglz);
+            //fprintf(stderr,"NETLizard_GetScenePointZCoord : %d - scene(%d): %f <> %f\n\n", res, scene, VECTOR3_Z(p), rglz);fflush(stderr);
+
+            if(res)
             {
-                if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())
+                if(VECTOR3_Z(p) > OBJ_HEIGHT + rglz)
                 {
-                    // pre cale
-                    vector3_t de;
-                    vector3_subtractv(&de, &p, &oldPos);
-                    VECTOR3_Z(de) = 0;
-                    float d0 = vector3_length(&de) / 2.0;
-                    //fprintf(stderr,"res222 : %f %f %f\n\n", d0, VECTOR3_Z(p), OBJ_HEIGHT + rglz);fflush(stderr);
-                    if(VECTOR3_Z(p) - d0 > OBJ_HEIGHT + rglz)
-                        m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", _g), m_mainCameraActor));
-                    else
-                        VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
+                    if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())
+                    {
+                        // pre cale
+                        vector3_t de;
+                        vector3_subtractv(&de, &p, &oldPos);
+                        VECTOR3_Z(de) = 0;
+                        float d0 = vector3_length(&de) / 2.0;
+                        //fprintf(stderr,"res222 : %f %f %f\n\n", d0, VECTOR3_Z(p), OBJ_HEIGHT + rglz);fflush(stderr);
+                        if(VECTOR3_Z(p) - d0 > OBJ_HEIGHT + rglz)
+                            m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", _g), m_mainCameraActor));
+                        else
+                            VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
+                    }
+                }
+                else
+                {
+                    if(m_mainCameraActor->HasTypeForce<NLForce_gravity>())
+                        m_mainCameraActor->RemoveTypeForces<NLForce_gravity>();
+                    VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
                 }
             }
-            else
-            {
-                if(m_mainCameraActor->HasTypeForce<NLForce_gravity>())
-                    m_mainCameraActor->RemoveTypeForces<NLForce_gravity>();
-                VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
-            }
         }
+
         ConvToRenderVector3(p);
         m_mainCameraActor->SetPosition(p);
         m_mainCameraActor->UpdateCamera();

@@ -26,7 +26,7 @@ void perspective_make(perspective_t *bo, float fovy, float aspect, float z_near,
 
 void perspective_make_with_wh(perspective_t *bo, float fovy, float width, float height, float z_near, float z_far)
 {
-    if(height == 0)
+    if(height == 0.0)
         return;
     perspective_make(bo, fovy, width / height, z_near, z_far);
 }

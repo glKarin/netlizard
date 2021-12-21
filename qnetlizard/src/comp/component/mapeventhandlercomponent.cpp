@@ -459,6 +459,37 @@ void MapEventHandler_door::UpdateVerticalDoor(float delta)
 }
 
 
+MapEventHandler_ladder::MapEventHandler_ladder(MapEventHandler_ladder::Ladder_Movment_e movment, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop)
+    : MapEventHandler(item, actor, loop),
+      m_unit(500),
+      m_movment(movment)
+{
+}
+
+MapEventHandler_ladder::~MapEventHandler_ladder()
+{
+    DEBUG_DESTROY(MapEventHandler_ladder)
+}
+
+void MapEventHandler_ladder::Update(float delta)
+{
+    if(!IsRunning())
+        return;
+    NLRigidbody *actor = Actor();
+    NLScene *scene = actor->Scene();
+    NLSceneCamera *camera = scene->CurrentCamera();
+    if(camera)
+    {
+        nl_vector3_t pos = actor->Position();
+        matrix_transformv_self_row(camera->RenderMatrix(), &pos);
+        VECTOR3_Z(pos) += (m_unit * delta * (m_movment == MapEventHandler_ladder::Ladder_Move_Down ? -1 : 1));
+        matrix_transformv_self(camera->RenderMatrix(), &pos);
+        actor->SetPosition(pos);
+    }
+    SetState(MapEventHandler::Handler_Finished);
+}
+
+
 
 
 MapEventHandlerComponent::MapEventHandlerComponent(const NLProperties &prop, NLActor *parent) :
@@ -609,6 +640,8 @@ bool MapEventHandlerComponent::Collision(int item)
         return HandleTeleport(item);
     else if((mesh->item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL) || (mesh->item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL))
         return HandleDoor(item);
+    else if(mesh->item_type & NL_3D_ITEM_TYPE_LADDER)
+        return HandleLadder(item);
     return false;
 }
 
@@ -696,6 +729,19 @@ bool MapEventHandlerComponent::HandleDoor(int item)
     const float max[3] = {door->box.max[0], door->box.max[1], door->box.max[2]};
     MapEventHandler_door *handler = new MapEventHandler_door(min, max, static_cast<MapEventHandler_door::Door_Mask_e>(mask), orientation, door->item[1].start, door->item[1].end, otherMesh, door->item[0].start, door->item[0].end, mesh, m_teleportActor, false);
     m_handlers.Add(door_item, handler);
+
+    return true;
+}
+
+bool MapEventHandlerComponent::HandleLadder(int item)
+{
+    if(m_handlers.Exists(item))
+        m_handlers.Remove(item);
+    GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + item;
+    NLScene *scene = Scene();
+    MapEventHandler_ladder::Ladder_Movment_e m = scene && scene->KeyState(Qt::Key_Q) ? MapEventHandler_ladder::Ladder_Move_Down : MapEventHandler_ladder::Ladder_Move_Up;
+    MapEventHandler_ladder *handler = new MapEventHandler_ladder(m, mesh, m_teleportActor, false);
+    m_handlers.Add(item, handler);
 
     return true;
 }

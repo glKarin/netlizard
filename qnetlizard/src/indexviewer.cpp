@@ -13,6 +13,11 @@
 #include <QDomDocument>
 #include <QDomNode>
 #include <QDomNodeList>
+#include <QPaintEvent>
+#include <QDateTime>
+#include <QPainter>
+#include <QTimer>
+#include <QLinearGradient>
 
 #include <cmath>
 #include <cstdlib>
@@ -23,14 +28,15 @@
 #include "netlizard.h"
 #include "flowlayout.h"
 #include "qdef.h"
+#include "nlmath.h"
 #include "lang.h"
 
 #define CELL_SIZE 128
 #define CELL_SPACING 10
 
-static HomeCellItem LoadMenuItem(const QDomElement &category)
+static MenuItem LoadMenuItem(const QDomElement &category)
 {
-    HomeCellItem sc;
+    MenuItem sc;
     if(category.tagName() != "item")
     {
         return sc;
@@ -50,7 +56,7 @@ static HomeCellItem LoadMenuItem(const QDomElement &category)
         QDomElement item = node.toElement();
         if(item.tagName() == "item")
         {
-            HomeCellItem si = LoadMenuItem(item);
+            MenuItem si = LoadMenuItem(item);
             if(si.IsValid())
                 sc << si;
         }
@@ -83,6 +89,124 @@ void HomeCell::TriggerAction()
 
 
 
+class GroupBox : public QGroupBox
+{
+public:
+    explicit GroupBox(QWidget *parent = 0)
+        : QGroupBox(parent),
+          m_timer(0),
+          m_angle(0),
+          m_lastTime(0),
+          m_speed(20),
+          m_alphaFactory(0),
+          m_alphaAnim(1)
+    {
+        setObjectName("GroupBox");
+        Init();
+    }
+    GroupBox(const QString &title, QWidget *parent = 0)
+        : QGroupBox(title, parent),
+          m_timer(0),
+          m_angle(0),
+          m_lastTime(0),
+          m_speed(20),
+          m_alphaFactory(0),
+          m_alphaAnim(1)
+    {
+        setObjectName("GroupBox");
+        Init();
+    }
+    virtual ~GroupBox()
+    {
+        DEBUG_DESTROY_Q
+    }
+
+protected:
+    void paintEvent(QPaintEvent *event);
+
+private:
+    void Init();
+
+private:
+    QTimer *m_timer;
+    float m_angle;
+    quint64 m_lastTime;
+    float m_speed;
+    float m_alphaFactory;
+    float m_alphaAnim;
+};
+
+void GroupBox::Init()
+{
+    m_lastTime = QDateTime::currentMSecsSinceEpoch();
+    m_timer = new QTimer(this);
+    m_timer->setSingleShot(false);
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(update()));
+    m_timer->start(100);
+}
+
+void GroupBox::paintEvent(QPaintEvent *event)
+{
+    QGroupBox::paintEvent(event);
+    QPainter p(this);
+    quint64 ts = QDateTime::currentMSecsSinceEpoch();
+    float delta = (ts - m_lastTime) / 1000.0f;
+    m_alphaFactory = m_alphaFactory + delta * 0.1 * m_alphaAnim;
+    if(m_alphaFactory >= 1.0)
+    {
+        m_alphaFactory = 1.0;
+        m_alphaAnim = -0.5;
+    }
+    else if(m_alphaFactory <= 0.1)
+    {
+        m_alphaFactory = 0.1;
+        m_alphaAnim = 1;
+    }
+    m_lastTime = ts;
+    m_angle = NL::clamp_angle(m_angle - delta * m_speed);
+    const int W = width();
+    const int H = height();
+    const int R = qMax(qMin(W, H) / 2 - 18, 18);
+    const int X = W / 2 - R;
+    const int Y = H / 2 - R;
+    const QRectF Rect(-R, -R, R * 2, R * 2);
+    const QPoint Center(W / 2, H / 2);
+    p.translate(Center);
+    p.rotate(m_angle);
+    p.save();
+    {
+        QLinearGradient gradient(QPoint(-R, 0), QPoint(R, 0));
+        gradient.setColorAt(0.0, QColor::fromRgbF(0.0f, 0.0f, 1.0f, 0.8f * m_alphaFactory));
+        gradient.setColorAt(0.5, QColor::fromRgbF(0.5f, 0.0f, 0.5f, 0.618f * m_alphaFactory));
+        gradient.setColorAt(1.0, QColor::fromRgbF(1.0f, 0.0f, 0.0f, 0.8f * m_alphaFactory));
+        QBrush brush(gradient);
+        brush.setStyle(Qt::LinearGradientPattern);
+        QPainterPath path;
+        path.arcTo(Rect, 90, 360);
+        p.fillPath(path, brush);
+
+        QFont font = p.font();
+        font.setBold(true);
+        font.setPixelSize(R);
+        p.setFont(font);
+        QPen pen = p.pen();
+
+        pen.setColor(QColor::fromRgbF(1.0f, 0.0f, 0.0f, 0.618f * m_alphaFactory));
+        p.setPen(pen);
+        p.drawText(-R, -R, R, R * 2, Qt::AlignCenter, "V");
+
+        pen.setColor(QColor::fromRgbF(0.0f, 0.0f, 1.0f, 0.618f * m_alphaFactory));
+        p.setPen(pen);
+        p.drawText(0, -R, R, R * 2, Qt::AlignCenter, "C");
+
+        font.setPixelSize(R / 2);
+        p.setFont(font);
+        pen.setColor(QColor::fromRgbF(0.5f, 0.0f, 0.5f, 0.618f * m_alphaFactory));
+        p.setPen(pen);
+        p.drawText(-R, -R, R * 2, R * 2, Qt::AlignCenter, "x");
+    }
+    p.restore();
+}
 
 IndexViewer::IndexViewer(QWidget *parent) :
     BaseViewer(parent),
@@ -97,9 +221,9 @@ IndexViewer::~IndexViewer()
 {
 }
 
-const HomeCellItemList & IndexViewer::ActionMap()
+const MenuItemList & IndexViewer::ActionMap()
 {
-     static HomeCellItemList _map;
+     static MenuItemList _map;
      if(_map.isEmpty())
      {
         LoadMenus(_map);
@@ -110,7 +234,7 @@ const HomeCellItemList & IndexViewer::ActionMap()
 void IndexViewer::Init()
 {
     QScrollArea *root = new QScrollArea;
-    QGroupBox *container = new QGroupBox;
+    QGroupBox *container = new GroupBox;
     m_layout = new FlowLayout(container, CELL_SPACING, CELL_SPACING);
     SetTitleLabelVisible(false);
 
@@ -150,14 +274,14 @@ void IndexViewer::Layout()
 
     const LangHelper lang("MENU");
     const QString buttonStyle("QPushButton { border: 1px solid #8f8f91; font-size: 16px; font-weight: bold; color: #FFFFFF; background-color: %1 }");
-    const HomeCellItemList &Map = ActionMap();
+    const MenuItemList &Map = ActionMap();
     Q_FOREACH(const QString &name, actions)
     {
-        Q_FOREACH(const HomeCellItem &item, Map)
+        Q_FOREACH(const MenuItem &item, Map)
         {
             if(item.data.toString() == name)
             {
-                Q_FOREACH(const HomeCellItem &a, item.items)
+                Q_FOREACH(const MenuItem &a, item.items)
                 {
                     if(a.IsMenu())
                         continue;
@@ -180,7 +304,7 @@ void IndexViewer::Layout()
     QVBoxLayout *vLayout = new QVBoxLayout;
     Q_FOREACH(const QString &name, actions)
     {
-        Q_FOREACH(const HomeCellItem &item, Map)
+        Q_FOREACH(const MenuItem &item, Map)
         {
             if(item.data.toString() == name)
             {
@@ -194,7 +318,7 @@ void IndexViewer::Layout()
                 }
                 else
                 {
-                    Q_FOREACH(const HomeCellItem &a, item.items)
+                    Q_FOREACH(const MenuItem &a, item.items)
                     {
                         if(a.IsMenu())
                             continue;
@@ -238,8 +362,9 @@ QString IndexViewer::RandomColor() const
         return color.name();
     } while(std::sqrt(r * r + g * g + b * b) >= Limit);
 }
+#undef CRAND
 
-bool IndexViewer::LoadMenus(HomeCellItemList &map)
+bool IndexViewer::LoadMenus(MenuItemList &map)
 {
     const QString Menu(":/MENU");
 
@@ -263,10 +388,9 @@ bool IndexViewer::LoadMenus(HomeCellItemList &map)
         QDomElement category = node.toElement();
         if(category.tagName() != "item")
             continue;
-        HomeCellItem sc = LoadMenuItem(category);
+        MenuItem sc = LoadMenuItem(category);
         if(sc.IsValid())
             map.push_back(sc);
     }
     return true;
 }
-

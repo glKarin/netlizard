@@ -78,7 +78,7 @@ void MainWindow::Init()
     m_statusBar = new StatusBar;
     menuBar = new QMenuBar(this);
 
-    const HomeCellItemList &Map = IndexViewer::ActionMap();
+    const MenuItemList &Map = IndexViewer::ActionMap();
     QStringList actions;
         actions << "resource"
         << "3d"
@@ -89,7 +89,7 @@ void MainWindow::Init()
     const LangHelper lang("MENU");
     Q_FOREACH(const QString &name, actions)
     {
-        Q_FOREACH(const HomeCellItem &item, Map)
+        Q_FOREACH(const MenuItem &item, Map)
         {
 #ifndef _DEV_TEST
             if(item.IsOnlyShowInDebug())
@@ -471,10 +471,10 @@ void MainWindow::Reset()
     restoreState(m_state, MAIN_WINDOW_INTERNAL_STATE_VERSION);
 }
 
-void MainWindow::AddMenuItem(const HomeCellItem &s, QMenu *parent)
+void MainWindow::AddMenuItem(const MenuItem &s, QMenu *parent)
 {
     const LangHelper lang("MENU");
-    Q_FOREACH(const HomeCellItem &a, s.items)
+    Q_FOREACH(const MenuItem &a, s.items)
     {
         if(!a.IsValid())
             continue;
@@ -508,7 +508,7 @@ void MainWindow::SetMainWindowState(int b)
         m_trayIcon->setIcon(QIcon(":/LOGO"));
         m_trayIcon->setToolTip(APP_NAME);
         QMenu *menu = new QMenu(APP_NAME, this);
-        const HomeCellItemList &Map = IndexViewer::ActionMap();
+        const MenuItemList &Map = IndexViewer::ActionMap();
 
         QStringList actions;
             actions << "resource"
@@ -517,7 +517,7 @@ void MainWindow::SetMainWindowState(int b)
         const LangHelper lang("MENU");
         Q_FOREACH(const QString &name, actions)
         {
-            Q_FOREACH(const HomeCellItem &item, Map)
+            Q_FOREACH(const MenuItem &item, Map)
             {
     #ifndef _DEV_TEST
                 if(item.IsOnlyShowInDebug())

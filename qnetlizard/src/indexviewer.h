@@ -10,22 +10,22 @@ class QAction;
 class FlowLayout;
 class QColor;
 
-struct HomeCellItem
+struct MenuItem
 {
     QString label;
     QVariant data;
     QString description;
     QString show;
-    QList<HomeCellItem> items;
+    QList<MenuItem> items;
     // icon
-    explicit HomeCellItem(const QString &label = QString(), const QVariant &data = QVariant(), const QString &desc = QString(), const QString &show = QString())
+    explicit MenuItem(const QString &label = QString(), const QVariant &data = QVariant(), const QString &desc = QString(), const QString &show = QString())
         : label(label),
           data(data),
           description(desc),
           show(show)
     {
     }
-    virtual ~HomeCellItem()
+    virtual ~MenuItem()
     {
     }
     bool IsValid() const
@@ -52,14 +52,14 @@ struct HomeCellItem
     {
         return show.toLower() == "debug";
     }
-    HomeCellItem & operator<<(const HomeCellItem &item)
+    MenuItem & operator<<(const MenuItem &item)
     {
         items.push_back(item);
         return *this;
     }
 };
 
-typedef QList<HomeCellItem> HomeCellItemList;
+typedef QList<MenuItem> MenuItemList;
 
 class HomeCell : public QPushButton
 {
@@ -85,7 +85,7 @@ class IndexViewer : public BaseViewer
 public:
     explicit IndexViewer(QWidget *parent = 0);
     virtual ~IndexViewer();
-    static const HomeCellItemList & ActionMap();
+    static const MenuItemList & ActionMap();
     
 signals:
     void openViewer(QAction *action);
@@ -93,13 +93,13 @@ signals:
 public slots:
 
 protected:
-    void resizeEvent(QResizeEvent *event);
+    virtual void resizeEvent(QResizeEvent *event);
 
 private:
     void Init();
     void Layout();
     QString RandomColor() const;
-    static bool LoadMenus(HomeCellItemList &map);
+    static bool LoadMenus(MenuItemList &map);
     
 private:
     FlowLayout *m_layout;

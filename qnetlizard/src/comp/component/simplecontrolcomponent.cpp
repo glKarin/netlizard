@@ -17,7 +17,8 @@ SimpleControlComponent::SimpleControlComponent(const NLProperties &prop, NLActor
       m_moveSens(M_Move_Sens),
       m_turnSens(M_Turn_Sens),
         m_freelookSens(M_Freelook_Sens),
-    m_fovySens(M_Fovy_Sens)
+    m_fovySens(M_Fovy_Sens),
+    m_upAndDownEnabled(true)
 {
     CLASS_NAME(SimpleControlComponent);
     setObjectName("SimpleControlComponent");
@@ -69,6 +70,9 @@ void SimpleControlComponent::InitProperty()
     v = GetInitProperty("fovySens");
     if(v.isValid())
         SetFovySens(v.toFloat());
+    v = GetInitProperty("upAndDownEnabled");
+    if(v.isValid())
+        SetUpAndDownEnabled(v.toBool());
 }
 
 bool SimpleControlComponent::keyev(int key, bool pressed, int modifier)
@@ -104,10 +108,12 @@ bool SimpleControlComponent::keyev(int key, bool pressed, int modifier)
             break;
 
         case Qt::Key_Up:
-            i = NLAction_Turn_Up;
+            if(m_upAndDownEnabled)
+                i = NLAction_Turn_Up;
             break;
         case Qt::Key_Down:
-            i = NLAction_Turn_Down;
+            if(m_upAndDownEnabled)
+                i = NLAction_Turn_Down;
             break;
         case Qt::Key_Left:
             i = NLAction_Turn_Left;
@@ -216,7 +222,7 @@ void SimpleControlComponent::Transform(float delta)
 
     if(m_action[NLAction_Move_Forward] || m_action[NLAction_Move_Backward]
             || m_action[NLAction_Move_Left] || m_action[NLAction_Move_Right]
-            || m_action[NLAction_Move_Down] || m_action[NLAction_Move_Up]
+            || (m_upAndDownEnabled && (m_action[NLAction_Move_Down] || m_action[NLAction_Move_Up]))
             )
     {
         vector3_t m_move = VECTOR3(0, 0, 0);
@@ -232,10 +238,13 @@ void SimpleControlComponent::Transform(float delta)
         else if(m_action[NLAction_Move_Right])
             VECTOR3_X(m_move) = movesens;
 
-        if(m_action[NLAction_Move_Down])
-            VECTOR3_Y(m_move) = -movesens;
-        else if(m_action[NLAction_Move_Up])
-            VECTOR3_Y(m_move) = movesens;
+        if(m_upAndDownEnabled)
+        {
+            if(m_action[NLAction_Move_Down])
+                VECTOR3_Y(m_move) = -movesens;
+            else if(m_action[NLAction_Move_Up])
+                VECTOR3_Y(m_move) = movesens;
+        }
 
         actor->Move(m_move);
     }
@@ -300,6 +309,16 @@ void SimpleControlComponent::SetFovySens(float fovySens)
     {
         m_fovySens = fovySens;
         emit propertyChanged("fovySens", m_fovySens);
+    }
+}
+
+void SimpleControlComponent::SetUpAndDownEnabled(bool upAndDownEnabled)
+{
+    if(m_upAndDownEnabled != upAndDownEnabled)
+    {
+        m_upAndDownEnabled = upAndDownEnabled;
+        m_action[NLAction_Move_Up] = m_action[NLAction_Move_Down] = false;
+        emit propertyChanged("upAndDownEnabled", m_upAndDownEnabled);
     }
 }
 

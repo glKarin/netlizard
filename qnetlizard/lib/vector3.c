@@ -2,9 +2,6 @@
 
 #include <math.h>
 
-#define K_ZERO 0.00001
-#define IS_ZERO(n) ((n) < K_ZERO && (n) > -K_ZERO)
-
 #define IF_NULL_RETURN(a) //if(!a) return;
 #define IF_NULL_RETURN2(a, b) //if(!a || !b) return;
 #define IF_NULL_RETURN3(a, b, c) //if(!a || !b || !c) return;
@@ -193,7 +190,7 @@ void vector3_dividev(vector3_t *r, const vector3_t *a, const vector3_t *b)
 {
 	IF_NULL_RETURN3(a, b, r)
 	
-	if(IS_ZERO(VECTOR3V_X(b)) || IS_ZERO(VECTOR3V_Y(b)) || IS_ZERO(VECTOR3V_Z(b)))
+    if(VECTOR3V_X(b) == 0.0 || VECTOR3V_Y(b) == 0.0  || VECTOR3V_Z(b) == 0.0)
 		return;
 	
 	VECTOR3V_X(r) = VECTOR3V_X(a) / VECTOR3V_X(b);
@@ -264,7 +261,7 @@ void vector3_divideve(vector3_t *r, const vector3_t *a)
 {
     IF_NULL_RETURN2(a, r)
 
-    if(IS_ZERO(VECTOR3V_X(a)) || IS_ZERO(VECTOR3V_Y(a)) || IS_ZERO(VECTOR3V_Z(a)))
+    if(VECTOR3V_X(a) == 0.0 || VECTOR3V_Y(a) == 0.0  || VECTOR3V_Z(a) == 0.0)
         return;
 
     VECTOR3V_X(r) /= VECTOR3V_X(a);

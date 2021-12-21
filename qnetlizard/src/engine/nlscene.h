@@ -5,6 +5,9 @@
 
 #include "nlactorcontainer.h"
 
+#define NL_MAX_KEY (Qt::Key_AsciiTilde + 1)
+#define NL_MAX_BUTTON 3
+
 class QColor;
 class NLSceneCamera;
 
@@ -31,6 +34,8 @@ public:
     int ActorCount() const { return m_actors.Count(); }
     int UpdateInterval() const { return m_updateInterval; }
     void SetUpdateInterval(int ui);
+    bool KeyState(int key);
+    bool MouseState(int button);
 
     NLSceneCamera * CurrentCamera() { return m_currentCamera; }
     NLActor * GetActor(int index) { return m_actors.Get(index); }
@@ -85,6 +90,8 @@ private:
     void ExecLoop();
     void UpdateCurrentFPS(qint64 delta);
     void SetupOpenGL();
+    void SetKeyState(int key, bool pressed);
+    void SetButtonState(int button, bool pressed);
 
 private:
     QColor m_clearColor;
@@ -102,6 +109,8 @@ private:
     qint64 m_updateGLLastTime;
     float m_currentFps;
     int m_updateInterval;
+    bool m_keyState[NL_MAX_KEY];
+    bool m_mouseState[NL_MAX_BUTTON];
 
     Q_DISABLE_COPY(NLScene)
 };

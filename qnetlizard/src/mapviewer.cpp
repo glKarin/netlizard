@@ -222,7 +222,7 @@ bool MapViewer::OpenFile()
 
 void MapViewer::UpdateSceneInfo()
 {
-    QString str = QString("Collision(Scene: %1, Item: %2) View(Scene: %3, Item: %4)")
+    QString str = QString(tr("Collision(Scene: %1, Item: %2) View(Scene: %3, Item: %4)"))
             .arg(m_mapScene->CurrentScene())
             .arg(m_mapScene->CurrentCollisionItem())
             .arg(m_mapScene->CurrentViewScene())

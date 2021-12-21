@@ -1,6 +1,9 @@
 #include "line.h"
 
+#include <math.h>
+
 #include "plane.h"
+#include "math_std.h"
 
 void line_make(line_t *obj, const vector3_t *a, const vector3_t *b)
 {
@@ -38,14 +41,10 @@ void ray_make(ray_t *obj, const vector3_t *a, const vector3_t *b)
     RAYV_DIRECTION_Z(obj) = VECTOR3V_Z(b);
 }
 
-#define COLLISION_ZERO 0.0
 int ray_to_plane_intersect(const ray_t *line, const plane_t *plane, vector3_t *point)
 {
     float d = vector3_dot(&(PLANEV_NORMAL(plane)), &(RAYV_DIRECTION(line)));
-    //if ( d == 0.0 ) return 0;
-    if((d <= COLLISION_ZERO) && (d >= -COLLISION_ZERO))
-        return 0;
-    if(d == 0)
+    if(IS_ZERO(d))
         return 0;
     if(point)
     {
@@ -64,17 +63,14 @@ int ray_to_plane_collision(const ray_t *line, const plane_t *plane, float *lamda
     float l2;
 
     //判断是否平行于平面
-    if((dotProduct <= COLLISION_ZERO) && (dotProduct >= -COLLISION_ZERO))
-        return 0;
-
-    if(dotProduct == 0)
+    if(IS_ZERO(dotProduct))
         return 0;
 
     vector3_t vec;
     vector3_subtractv(&vec, &(PLANEV_POSITION(plane)), &(RAYV_POSITION(line)));
     l2 = (vector3_dot(&(PLANEV_NORMAL(plane)), &vec)) / dotProduct;
 
-    if (l2 <= -COLLISION_ZERO)
+    if (l2 < 0 || IS_ZERO(l2))
         return 0;
 
     if(normal)

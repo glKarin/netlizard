@@ -38,16 +38,12 @@ int plane_equals(const plane_t *plane, const plane_t *o)
             && plane_d(plane) == plane_d(o);
 }
 
-#define COLLISION_ZERO 0.0
 int plane_ray_intersect(const plane_t *plane, const ray_t *line, float *lamda, vector3_t *point, float *scale)
 {
     float dotProduct = vector3_dot(&(RAYV_DIRECTION(line)), &(PLANEV_NORMAL(plane)));
     float l2;
 
-    if(dotProduct == 0)
-        return 0;
-
-    if((dotProduct <= COLLISION_ZERO) && (dotProduct >= -COLLISION_ZERO))
+    if(IS_ZERO(dotProduct))
         return 0;
 
     vector3_t vec;
@@ -135,7 +131,11 @@ int plane_point_clip_precision(const plane_t *plane, const vector3_t *v, float p
       0: 平行
       1: 相交
   */
-#define CMP_ZERO 0.0001
+#ifdef _DEV_TEST
+#define _RET_SIGN(x, y) ((x) + (y))
+#else
+#define _RET_SIGN(x, y) (x)
+#endif
 int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda, vector3_t *point, int *dir, int *mask)
 {
     vector3_t p;
@@ -157,7 +157,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
                 *lamda = 0;
             if(point)
                 *point = LINEV_A(line);
-            return 100; // 0;
+            return _RET_SIGN(1, 100); // 0;
         }
         else
         {
@@ -197,9 +197,9 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
     }
 
     if(m == 0) // 如果两点都在平面下方, 则不相交
-        return -200;
+        return _RET_SIGN(-1, -200);
     if(m == (1 | 2)) // 如果两点都在平面上方, 则不相交
-        return -210;
+        return _RET_SIGN(-1, -210);
     if(ac == 0 && bc < 0) // 点A在平面上
     {
         if(lamda)
@@ -208,7 +208,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
             *point = LINEV_A(line);
         if(dir)
             *dir = 1;
-        return 200;
+        return _RET_SIGN(1, 200);
     }
     if(bc == 0 && ac < 0) // 点B在平面上
     {
@@ -218,7 +218,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
             *point = LINEV_B(line);
         if(dir)
             *dir = -1;
-        return 210;
+        return _RET_SIGN(1, 210);
     }
 
     ray_line_to_ray(&a, line);
@@ -240,11 +240,10 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
         //fprintf(stderr, " a->b } %f, %f %f\n", l, bl, length);fflush(stderr);
 
         if(l > bl)
-        //if(FLOAT_GREATER(l, length, CMP_ZERO))
         {
             if(dir)
                 *dir = 1;
-            return -300;
+            return _RET_SIGN(-1, -300);
         }
         else
         {
@@ -254,7 +253,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
                 *point = p;
             if(dir)
                 *dir = 1;
-            return 300;
+            return _RET_SIGN(1, 300);
         }
     }
 
@@ -262,7 +261,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
     ray_line_to_ray(&a, &inv);
     res = plane_ray_intersect(plane, &a, &l, &p, NULL);
     if(res <= 0)
-        return -500;
+        return _RET_SIGN(-1, -500);
 
     // cale $line.a point with $plane.normal and inverse ray's collsion's distance, instead of line's $length
     plane_t bp;
@@ -272,11 +271,10 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
     //fprintf(stderr, " b->a } %f, %f %f\n", l, length, al);fflush(stderr);
 
     if(l > al)
-    //if(FLOAT_GREATER(l, length, CMP_ZERO))
     {
         if(dir)
             *dir = 2;
-        return -510;
+        return _RET_SIGN(-1, -510);
     }
     else
     {
@@ -286,6 +284,7 @@ int plane_line_intersect(const plane_t *plane, const line_t *line, float *lamda,
             *point = p;
         if(dir)
             *dir = -1;
-        return 500;
+        return _RET_SIGN(1, 500);
     }
 }
+#undef _RET_SIGN

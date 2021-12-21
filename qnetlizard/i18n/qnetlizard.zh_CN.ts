@@ -429,6 +429,10 @@
         <source>Load NETLizard 3D game map model file fail!</source>
         <translation type="unfinished">加载NETLizard 3D游戏地图模型文件失败!</translation>
     </message>
+    <message>
+        <source>Collision(Scene: %1, Item: %2) View(Scene: %3, Item: %4)</source>
+        <translation type="unfinished">碰撞(场景: %1, 物品: %2) 视野(场景: %3, 物品: %4)</translation>
+    </message>
 </context>
 <context>
     <name>SettingDialog</name>
