@@ -738,6 +738,53 @@ static collision_result_t NETLizard_SceneItemCollisionTesting(const GL_NETLizard
     return result;
 }
 
+static int NETLizard_FindSceneRayIn(const GL_NETLizard_3D_Model *map, const nl_vector3_t *position, const nl_vector3_t *new_position, int scene, nl_vector3_t *cpoint)
+{
+    if(!map || !position || !new_position || scene < 0)
+        return -1;
+
+    unsigned has = 0;
+    int s = -1;
+    nl_vector3_t point = VECTOR3(0, 0, 0);
+    int *scenes = calloc(map->count, sizeof(int));
+    scenes[0] = scene;
+    int c = NETLizard_GetNETLizard3DMapNeighboringScenes(map, scene, scenes + 1);
+    c += 1;
+    const line_t line = LINEV(VECTOR3V_V(position), VECTOR3V_V(new_position));
+    unsigned int i;
+    for(i = 0; i < c; i++)
+    {
+        const GL_NETLizard_3D_Mesh *mesh = map->meshes + scenes[i];
+        bound_t scene_box = SCENE_BOUND(mesh);
+        unsigned int j;
+        for(j = 0; j < mesh->plane_count; j++)
+        {
+            plane_t plane = SCENE_PLANE(mesh, j);
+            int mask = 0;
+            int dir = 0;
+            int r = plane_line_intersect(&plane, &line, NULL, &point, &dir, &mask);
+            if(r <= 0)
+                continue;
+            if(dir == 2)
+                continue;
+
+            int gs = bound_point_in_box(&scene_box, &point);
+            if(!gs)
+                continue;
+            s = scenes[i];
+            has = 1;
+        }
+    }
+
+    if(has)
+    {
+        if(cpoint)
+            *cpoint = point;
+    }
+    free(scenes);
+    return s;
+}
+
 static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, const nl_vector3_t *new_pos, unsigned include_item)
 {
     collision_result_t result = {-1, -1, *new_pos, -1};
@@ -780,6 +827,13 @@ static collision_result_t NETLizard_SceneCollisionTesting_r(const GL_NETLizard_3
         s = NETLizard_FindScenePointIn(map, &obj->position/*&pos*/); // 尝试获取原位置的场景
         if(s == -1)
             return result;
+#if 0
+        s = NETLizard_FindSceneRayIn(map, &obj->position, new_pos, s, &npos);
+        if(s < 0)
+            return result;
+        //PRINT("new pos %d ", s);
+        VECTOR3_Z(npos) -= body_length;
+#endif
     }
 
     const GL_NETLizard_3D_Mesh *mesh = map->meshes + s;
@@ -1074,6 +1128,8 @@ int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collis
 
 int NETLizard_RayIntersect(const GL_NETLizard_3D_Model *map, const nl_vector3_t *position, const nl_vector3_t *direction, unsigned collision_object, int *scene, int *collision_id, int *collision_type, nl_vector3_t *cpoint, float *dis)
 {
+    if(!map || !position || !direction)
+        return 0;
     unsigned has = 0;
     int item_id = -1;
     int type = -1;

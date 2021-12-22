@@ -184,6 +184,7 @@ void MapScene::Update(float delta)
 
     vector3_t oldPos = m_mainCameraActor->Position();
     NLScene::Update(delta);
+
     VECTOR3_Y(oldPos) = VECTOR3_Y(m_mainCameraActor->Position()); // if has gravity effect
 
     m_sky3DCameraActor->SetRotation(CurrentCamera()->Rotation());
@@ -734,7 +735,7 @@ bool MapScene::CollisionTesting(const vector3_t &op)
             if(gravity && gravity->Force() != 0) // is jump
                 clear = true;
         }
-        //fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f, %d\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2], IsCought);fflush(stderr);
+        fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
 
         bool caleFloorZ = true;
         if(item >= 0)

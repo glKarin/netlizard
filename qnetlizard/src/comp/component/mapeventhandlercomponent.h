@@ -173,6 +173,8 @@ public:
     void Clear();
     bool Exists(int item);
     bool Remove(int itemIndex);
+    template <class T>
+    bool HasType();
 
 private:
     QList<MapEventHandler *> m_handlers;
@@ -196,6 +198,8 @@ public:
     void SetTeleportActor(NLRigidbody *actor);
     NLRigidbody * TeleportActor() { return m_teleportActor; }
     QObject * TeleportActorObject();
+    template <class T>
+    bool HasEventHandler();
     
 public slots:
 
@@ -224,6 +228,27 @@ private:
     MapElevatorMap m_elevator;
     MapDoorMap m_door;
     MapEventHandlerContainer m_handlers;
+
+    Q_DISABLE_COPY(MapEventHandlerComponent)
 };
+
+template <class T>
+bool MapEventHandlerContainer::HasType()
+{
+    Q_FOREACH(MapEventHandler *item, m_handlers)
+    {
+        if(!item)
+            continue;
+        if(dynamic_cast<T *>(item))
+            return true;
+    }
+    return false;
+}
+
+template <class T>
+bool MapEventHandlerComponent::HasEventHandler()
+{
+    return m_handlers.HasType<T>();
+}
 
 #endif // _KARIN_MAPEVENTHANDLERCOMPONENT_H
