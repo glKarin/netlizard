@@ -196,6 +196,9 @@
         <translation source="condig translator: "><![CDATA[配置翻译: ]]></translation>
         <translation source="File name is &lt;b&gt;`qnetlizard.COUNTRY-CODE.qm`&lt;/b&gt;. Edit `qnetlizard.COUNTRY-CODE.ts` xml file and compile to `qnetlizard.COUNTRY-CODE.qm` file with `lrelease` tool. Exam `Simplified Chinese` is `qnetlizard.zh_CN.qm`."><![CDATA[文件名为`<b>qnetlizard.国家代码.qm</b>`. 可以通过编辑`qnetlizard.COUNTRY-CODE.ts` xml文件, 然后使用`lrelease`工具编译为`qnetlizard.COUNTRY-CODE.qm`. 例如`简体中文`为`qnetlizard.zh_CN.qm`.]]></translation>
         <translation source="File name is &lt;b&gt;`lang.COUNTRY-CODE.xml`&lt;/b&gt;. Exam `Simplified Chinese` is `lang.zh_CN.xml`."><![CDATA[文件名为<b>lang.国家代码.xml</b>. 例如`简体中文`为`lang.zh_CN.xml`.]]></translation>
+        <translation source="Walk"><![CDATA[慢行]]></translation>
+        <translation source="Crouch"><![CDATA[下蹲]]></translation>
+        <translation source="Run"><![CDATA[快跑]]></translation>
     </context>
 </lang>
 

@@ -231,6 +231,18 @@
             <![CDATA[Jump]]>
         </item>
         <item>
+            <![CDATA[<b>Ctrl</b> - ]]>
+            <![CDATA[Crouch]]>
+        </item>
+        <item>
+            <![CDATA[<b>Shift</b> - ]]>
+            <![CDATA[Walk]]>
+        </item>
+        <item>
+            <![CDATA[<b>Alt</b> - ]]>
+            <![CDATA[Run]]>
+        </item>
+        <item>
             <![CDATA[<b>M</b> - ]]>
             <![CDATA[Grab mouse pointer(If pointer is hidden, moving mouse for turning)]]>
         </item>

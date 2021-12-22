@@ -225,8 +225,14 @@ void SimpleControlComponent::Transform(float delta)
             || (m_upAndDownEnabled && (m_action[NLAction_Move_Down] || m_action[NLAction_Move_Up]))
             )
     {
+        const bool IsWalk = Scene()->KeyState(Qt::Key_Shift);
+        const bool IsRun = Scene()->KeyState(Qt::Key_Alt);
         vector3_t m_move = VECTOR3(0, 0, 0);
         float movesens = m_moveSens * delta;
+        if(IsWalk && !IsRun)
+            movesens *= 0.5;
+        else if(IsRun && !IsWalk)
+            movesens *= 2;
 
         if(m_action[NLAction_Move_Forward])
             VECTOR3_Z(m_move) = movesens;

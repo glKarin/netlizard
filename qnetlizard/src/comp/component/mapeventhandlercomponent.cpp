@@ -739,6 +739,8 @@ bool MapEventHandlerComponent::HandleLadder(int item)
         m_handlers.Remove(item);
     GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + item;
     NLScene *scene = Scene();
+    if(!scene->KeyState(Qt::Key_W) && !scene->KeyState(Qt::Key_S) && !scene->KeyState(Qt::Key_A) && !scene->KeyState(Qt::Key_D))
+        return false;
     MapEventHandler_ladder::Ladder_Movment_e m = scene && scene->KeyState(Qt::Key_Q) ? MapEventHandler_ladder::Ladder_Move_Down : MapEventHandler_ladder::Ladder_Move_Up;
     MapEventHandler_ladder *handler = new MapEventHandler_ladder(m, mesh, m_teleportActor, false);
     m_handlers.Add(item, handler);

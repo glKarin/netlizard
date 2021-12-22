@@ -30,6 +30,7 @@
 #define OBJ_HEIGHT 180
 #define OBJ_LEG_HEIGHT 50
 #define OBJ_HEAD_HEIGHT 20
+#define OBJ_HEIGHT_CROUCH 120
 
 static const float _g = NL::Physics::EARTH_G * 1000;
 
@@ -705,7 +706,9 @@ bool MapScene::CollisionTesting(const vector3_t &op)
         nl_vector3_t oldPos = op;
         ConvToAlgoVector3(oldPos);
         unsigned include_item = m_noclip == 2;
-        collision_object_t obj = {oldPos, OBJ_RADIUS, OBJ_HEIGHT, OBJ_LEG_HEIGHT, OBJ_HEAD_HEIGHT};
+        const bool IsCrouch = KeyState(Qt::Key_Control);
+        const float ObjHeight = IsCrouch ? OBJ_HEIGHT_CROUCH : OBJ_HEIGHT;
+        collision_object_t obj = {oldPos, OBJ_RADIUS, ObjHeight, OBJ_LEG_HEIGHT, OBJ_HEAD_HEIGHT};
         int res = NETLizard_MapCollisionTesting(m_model, &obj, &pos, &scene, include_item, &item);
         //fprintf(stderr,"new_pos : %f %f %f\n", pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
         vector3_t p;
@@ -728,10 +731,10 @@ bool MapScene::CollisionTesting(const vector3_t &op)
             //fprintf(stderr,"<>  : %d : %d| \n\n", res, item);fflush(stderr);
             p = oldPos;
             NLForce_gravity *gravity = m_mainCameraActor->GetTypeForce<NLForce_gravity>();
-            if(gravity && gravity->GetProperty_T("force", 0) != 0) // is jump
+            if(gravity && gravity->Force() != 0) // is jump
                 clear = true;
         }
-        //fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
+        //fprintf(stderr,"NETLizard_MapCollisionTesting : %d - scene(%d), item(%d): %f %f %f, %d\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2], IsCought);fflush(stderr);
 
         bool caleFloorZ = true;
         if(item >= 0)
@@ -743,7 +746,7 @@ bool MapScene::CollisionTesting(const vector3_t &op)
                 if(!clear)
                 {
                     NLForce_gravity *gravity = m_mainCameraActor->GetTypeForce<NLForce_gravity>();
-                    if(gravity && gravity->GetProperty_T("force", 0) != 0) // is jump
+                    if(gravity && gravity->Force() != 0) // is jump
                         clear = true;
                 }
             }
@@ -760,7 +763,8 @@ bool MapScene::CollisionTesting(const vector3_t &op)
 
             if(res)
             {
-                if(VECTOR3_Z(p) > OBJ_HEIGHT + rglz)
+                const float TargetHeight = ObjHeight + rglz;
+                if(VECTOR3_Z(p) > TargetHeight)
                 {
                     if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())
                     {
@@ -770,17 +774,17 @@ bool MapScene::CollisionTesting(const vector3_t &op)
                         VECTOR3_Z(de) = 0;
                         float d0 = vector3_length(&de) / 2.0;
                         //fprintf(stderr,"res222 : %f %f %f\n\n", d0, VECTOR3_Z(p), OBJ_HEIGHT + rglz);fflush(stderr);
-                        if(VECTOR3_Z(p) - d0 > OBJ_HEIGHT + rglz)
+                        if(VECTOR3_Z(p) - d0 > TargetHeight)
                             m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", _g), m_mainCameraActor));
                         else
-                            VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
+                            VECTOR3_Z(p) = TargetHeight;
                     }
                 }
                 else
                 {
                     if(m_mainCameraActor->HasTypeForce<NLForce_gravity>())
                         m_mainCameraActor->RemoveTypeForces<NLForce_gravity>();
-                    VECTOR3_Z(p) = OBJ_HEIGHT + rglz;
+                    VECTOR3_Z(p) = TargetHeight;
                 }
             }
         }

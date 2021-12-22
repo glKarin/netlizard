@@ -5,7 +5,7 @@
 
 #include "nlactorcontainer.h"
 
-#define NL_MAX_KEY (Qt::Key_AsciiTilde + 1)
+#define NL_MAX_KEY (Qt::Key_AsciiTilde + (Qt::Key_Direction_R - Qt::Key_Shift) + 1)
 #define NL_MAX_BUTTON 3
 
 class QColor;

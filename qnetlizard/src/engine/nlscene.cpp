@@ -415,21 +415,19 @@ bool NLScene::WheelEventHandler(int mouse, int orientation, int delta, int x, in
 
 void NLScene::SetKeyState(int key, bool pressed)
 {
-    if(key > Qt::Key_AsciiTilde)
-        return;
     if(key >= Qt::Key_Space && key <= Qt::Key_AsciiTilde)
     {
         m_keyState[key] = pressed;
         return;
     }
-    if(key <= Qt::Key_PageDown)
+    if(key < Qt::Key_Shift)
     {
         m_keyState[key - 0x01000000] = pressed;
         return;
     }
-    if(key >= Qt::Key_Shift && key <= Qt::Key_Control)
+    if(key >= Qt::Key_Shift && key <= Qt::Key_Direction_R)
     {
-        m_keyState[key - 0x01000000 - 2] = pressed;
+        m_keyState[Qt::Key_AsciiTilde + (key - Qt::Key_Shift) + 1] = pressed;
     }
 }
 
@@ -445,14 +443,12 @@ void NLScene::SetButtonState(int button, bool pressed)
 
 bool NLScene::KeyState(int key)
 {
-    if(key > Qt::Key_AsciiTilde)
-        return false;
     if(key >= Qt::Key_Space && key <= Qt::Key_AsciiTilde)
         return m_keyState[key];
-    if(key <= Qt::Key_PageDown)
+    if(key < Qt::Key_Shift)
         return m_keyState[key - 0x01000000];
-    if(key >= Qt::Key_Shift && key <= Qt::Key_Control)
-        return m_keyState[key - 0x01000000 - 2];
+    if(key >= Qt::Key_Shift && key <= Qt::Key_Direction_R)
+        return m_keyState[Qt::Key_AsciiTilde + (key - Qt::Key_Shift) + 1];
     return false;
 }
 
