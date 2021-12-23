@@ -24,6 +24,7 @@ public:
     int Debug() const { return m_debug; }
     void SetRenderScenes(const int scenes[], int count);
     void SetCamera(NLSceneCamera *camera);
+    void SetAllScene();
 
 protected:
     virtual void InitRender();

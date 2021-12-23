@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu>
     <item name="Resource" alias="resource" description="Resource viewer">
-        <item alias="image_viewer" name="Image viewer" description="NETLizard game's image/texture resource viewer"></item>
-        <item alias="font_viewer" name="Font viewer" description="NETLizard game's font resource viewer"></item>
-        <item alias="sprite_viewer" name="Sprite viewer" description="NETLizard's game sprite resource viewer"></item>
-        <item alias="text_viewer" name="Text viewer" description="NETLizard game's text resource viewer"></item>
-        <item alias="string_viewer" name="String viewer" description="NETLizard game's source string viewer"></item>
+        <item alias="image_viewer" name="Image viewer" description="NETLizard game's image/texture resource viewer" shortcut="shift+alt+p"></item>
+        <item alias="font_viewer" name="Font viewer" description="NETLizard game's font resource viewer" shortcut="shift+alt+f"></item>
+        <item alias="sprite_viewer" name="Sprite viewer" description="NETLizard's game sprite resource viewer" shortcut="shift+alt+s"></item>
+        <item alias="text_viewer" name="Text viewer" description="NETLizard game's text resource viewer" shortcut="shift+alt+t"></item>
+        <item alias="string_viewer" name="String viewer" description="NETLizard game's source string viewer" shortcut="shift+alt+c"></item>
     </item>
 
     <item name="3D" alias="3d" description="3D resource viewer">
-        <item alias="map_viewer" name="Map viewer" description="NETLizard 3D game's map model viewer"></item>
-        <item alias="item_viewer" name="Item viewer" description="NETLizard 3D game's item model viewer"></item>
-        <item alias="animation_viewer" name="Animation viewer" description="NETLizard 3D game's animation model viewer"></item>
+        <item alias="map_viewer" name="Map viewer" description="NETLizard 3D game's map model viewer" shortcut="shift+alt+m"></item>
+        <item alias="item_viewer" name="Item viewer" description="NETLizard 3D game's item model viewer" shortcut="shift+alt+i"></item>
+        <item alias="animation_viewer" name="Animation viewer" description="NETLizard 3D game's animation model viewer" shortcut="shift+alt+a"></item>
     </item>
 
     <item name="Viewer" alias="viewer" description="Viewer operation">
-        <item alias="log" name="Log" description="Show/hide log window"></item>
-        <item alias="scene" name="Scene" description="Show/hide scene window"></item>
+        <item alias="log" name="Log" description="Show/hide log window" shortcut="f6"></item>
+        <item alias="scene" name="Scene" description="Show/hide scene window" shortcut="f7"></item>
         <item alias="main_window" name="Main Window" description="Main window operation">
-            <item alias="reset" name="Reset" description="Reset window layout"></item>
-            <item alias="close" name="Close" description="Close current central viewer"></item>
-            <item alias="minimize" name="Minimize" description="Minimize window"></item>
+            <item alias="reset" name="Reset" description="Reset window layout" shortcut="f5"></item>
+            <item alias="close" name="Close" description="Close current central viewer" shortcut="f4"></item>
+            <item alias="minimize" name="Minimize" description="Minimize window" shortcut="f10"></item>
         </item>
-        <item alias="test" name="Test" description="Test scene" show="debug"></item>
+        <item alias="test" name="Test" description="Test scene" show="debug" shortcut="shift+alt+d"></item>
     </item>
 
     <item name="Others" alias="others" description="Others operation">
-        <item alias="setting" name="Setting" description="Open setting config"></item>
-        <item alias="help" name="Help" description="Show help info"></item>
-        <item alias="changelog" name="Changelog" description="Show changelog"></item>
-        <item alias="about" name="About" description="About this application"></item>
+        <item alias="setting" name="Setting" description="Open setting config" shortcut="f9"></item>
+        <item alias="help" name="Help" description="Show help info" shortcut="f1"></item>
+        <item alias="changelog" name="Changelog" description="Show changelog" shortcut="f3"></item>
+        <item alias="about" name="About" description="About this application" shortcut="f2"></item>
     </item>
 
-    <item name="Exit" alias="exit" description="Exit application">
+    <item name="Exit" alias="exit" description="Exit application" shortcut="f12">
     </item>
 </menu>
 

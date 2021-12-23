@@ -46,6 +46,7 @@ static MenuItem LoadMenuItem(const QDomElement &category)
     sc.data = category.attribute("alias");
     sc.description = category.attribute("description");
     sc.show = category.attribute("show");
+    sc.shortcut = category.attribute("shortcut");
 
     QDomNodeList items = category.childNodes();
     for(int j = 0; j < items.size(); j++)

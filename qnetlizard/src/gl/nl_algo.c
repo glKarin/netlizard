@@ -147,6 +147,7 @@ static int NETLizard_IgnoreFloorPlaneItem(int item_type)
             || (item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL)
             || (item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL)
             || (item_type & NL_3D_ITEM_TYPE_PARTICLE)
+            || (item_type & NL_3D_ITEM_TYPE_LADDER)
             )
         return 1;
     return 0;
@@ -533,6 +534,7 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
         }
     }
     res = NETLizard_GetSceneFloorZCoordUnderPoint(netlizard_3d_model, obj, include_item, rscene, rglz);
+    PRINT("22222222222 %d %d %d", res, scene, rscene);
     if(res)
         return 1;
     bound_t bound;
@@ -541,6 +543,7 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
     vector3_t pos = *new_pos;
     VECTOR3_Z(pos) = BOUND_MIN_Z(bound);
     res = NETLizard_FindScenePointIn(netlizard_3d_model, &pos);
+    PRINT("eeeeeeeeeeeeee %d", res);
     if(res >= 0)
     {
         if(rscene)
@@ -594,6 +597,10 @@ static collision_result_t NETLizard_ItemCollisionTesting(const GL_NETLizard_3D_M
 
     bound_t bound = SCENE_BOUND(mesh);
     nl_vector3_t expand = VECTOR3(width, width, 0);
+    if(mesh->item_type & NL_3D_ITEM_TYPE_LADDER)
+    {
+        VECTOR3_Z(expand) = body_length;
+    }
     bound_expand(&bound, &expand);
     if(!bound_point_in_box(&bound, &npos))
     {

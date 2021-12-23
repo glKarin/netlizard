@@ -104,3 +104,12 @@ void NETLizardMapModelRenderer::SetRenderScenes(const int scenes[], int count)
     if(count > 0)
         memcpy(m_scenes, scenes, count * sizeof(int));
 }
+
+void NETLizardMapModelRenderer::SetAllScene()
+{
+    if(!m_scenes)
+        return;
+    for(int i = 0; i < m_model->count; i++)
+        m_scenes[i] = i;
+    m_sceneCount = m_model->count;
+}

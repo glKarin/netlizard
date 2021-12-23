@@ -16,13 +16,15 @@ struct MenuItem
     QVariant data;
     QString description;
     QString show;
+    QString shortcut;
     QList<MenuItem> items;
     // icon
-    explicit MenuItem(const QString &label = QString(), const QVariant &data = QVariant(), const QString &desc = QString(), const QString &show = QString())
+    explicit MenuItem(const QString &label = QString(), const QVariant &data = QVariant(), const QString &desc = QString(), const QString &show = QString(), const QString &shortcut = QString())
         : label(label),
           data(data),
           description(desc),
-          show(show)
+          show(show),
+          shortcut(shortcut)
     {
     }
     virtual ~MenuItem()

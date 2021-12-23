@@ -19,6 +19,7 @@ public:
     void SetSceneCount(int i);
     int SceneCount() const { return m_sceneCount; } 
     void SetRenderScenes(const int scenes[], int count);
+    void SetAllScene();
 
 protected:
     virtual void InitRender();

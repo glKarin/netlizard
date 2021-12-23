@@ -232,3 +232,12 @@ void NETLizardMapModelDebugRenderer::RenderHighlight()
         //fprintf(stderr, "%d: scene %d, id %d, type %d, %f | %f %f %f\n", res, scene, collision_id, collision_type, distance, cpoint.v[0], cpoint.v[1], cpoint.v[2]);
     }
 }
+
+void NETLizardMapModelDebugRenderer::SetAllScene()
+{
+    if(!m_scenes)
+        return;
+    for(int i = 0; i < m_model->count; i++)
+        m_scenes[i] = i;
+    m_sceneCount = m_model->count;
+}

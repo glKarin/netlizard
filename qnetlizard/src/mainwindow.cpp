@@ -102,6 +102,7 @@ void MainWindow::Init()
                     menuItem = menuBar->addAction(lang[item.label]);
                     menuItem->setToolTip(lang[item.description]);
                     menuItem->setData(item.data);
+                    menuItem->setShortcut(item.shortcut);
                 }
                 else
                 {
@@ -488,6 +489,7 @@ void MainWindow::AddMenuItem(const MenuItem &s, QMenu *parent)
             QAction *subItem = parent->addAction(lang[a.label]);
             subItem->setData(a.data);
             subItem->setToolTip(lang[a.description]);
+            subItem->setShortcut(a.shortcut);
         }
         else
         {
@@ -508,6 +510,7 @@ void MainWindow::SetMainWindowState(int b)
         m_trayIcon->setIcon(QIcon(":/LOGO"));
         m_trayIcon->setToolTip(APP_NAME);
         QMenu *menu = new QMenu(APP_NAME, this);
+        QAction *action;
         const MenuItemList &Map = IndexViewer::ActionMap();
 
         QStringList actions;
@@ -538,10 +541,18 @@ void MainWindow::SetMainWindowState(int b)
             }
         }
 
-        menu->addAction(tr("Setting"))->setData("setting");
-        menu->addAction(tr("Restore"))->setData("restore");
-        menu->addAction(tr("Maximize"))->setData("maximize");
-        menu->addAction(tr("Exit"))->setData("exit");
+        action = menu->addAction(tr("Setting"));
+        action->setData("setting");
+        //action->setShortcut(QString("f9"));
+        action = menu->addAction(tr("Restore"));
+        action->setData("restore");
+        //action->setShortcut(QString("f8"));
+        action = menu->addAction(tr("Maximize"));
+        action->setData("maximize");
+        //action->setShortcut(QString("f11"));
+        action = menu->addAction(tr("Exit"));
+        action->setData("exit");
+        //action->setShortcut(QString("f12"));
         connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(TrayIconMenuActionSlot(QAction *)));
         m_trayIcon->setContextMenu(menu);
         connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(OnTrayIconActivated(QSystemTrayIcon::ActivationReason)));
