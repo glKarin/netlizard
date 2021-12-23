@@ -31,6 +31,7 @@
 #define OBJ_LEG_HEIGHT 50
 #define OBJ_HEAD_HEIGHT 20
 #define OBJ_HEIGHT_CROUCH 120
+#define OBJ_LEG_HEIGHT_CROUCH 20
 
 static const float _g = NL::Physics::EARTH_G * 1000;
 
@@ -690,10 +691,8 @@ bool MapScene::CollisionTesting(const vector3_t &op)
     if(!m_model || m_model->game == NL_RACING_EVOLUTION_3D/* || m_noclip == 0*/)
         return false;
     nl_vector3_t pos = m_mainCameraActor->Position();
-    if(vector3_equals(&pos, &op))
-        return false;
 
-    int scene = -1;
+    int scene = m_currentScene;
     int item = -1;
 
     ConvToAlgoVector3(pos);
@@ -711,11 +710,12 @@ bool MapScene::CollisionTesting(const vector3_t &op)
         unsigned include_item = m_noclip == 2;
         const bool IsCrouch = KeyState(Qt::Key_Control);
         const float ObjHeight = IsCrouch ? OBJ_HEIGHT_CROUCH : OBJ_HEIGHT;
-        collision_object_t obj = {oldPos, OBJ_RADIUS, ObjHeight, OBJ_LEG_HEIGHT, OBJ_HEAD_HEIGHT};
+        const float ObjLegHeight = IsCrouch ? OBJ_LEG_HEIGHT_CROUCH : OBJ_LEG_HEIGHT;
+        collision_object_t obj = {oldPos, OBJ_RADIUS, ObjHeight, ObjLegHeight, OBJ_HEAD_HEIGHT};
 
         if(VECTOR3_Z(oldPos) != VECTOR3_Z(pos)) // jump/fall down/ladder/elevator
         {
-            nl_vector3_t zpos = VECTOR3(VECTOR3_X(oldPos), VECTOR3_Y(oldPos), VECTOR3_X(pos));
+            nl_vector3_t zpos = VECTOR3(VECTOR3_X(oldPos), VECTOR3_Y(oldPos), VECTOR3_Z(pos));
             int res = NETLizard_MapCollisionTesting(m_model, &obj, &zpos, &scene, include_item, NULL);
             //fprintf(stderr,"new_pos : %f %f %f\n", pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
             bool clear = false;
@@ -751,7 +751,7 @@ bool MapScene::CollisionTesting(const vector3_t &op)
 
         bool caleFloorZ = true;
         nl_vector3_t p = oldPos;
-        if(VECTOR3_X(oldPos) != VECTOR3_X(pos) || VECTOR3_Y(oldPos) != VECTOR3_Y(pos)) // move
+        if(1 || VECTOR3_X(oldPos) != VECTOR3_X(pos) || VECTOR3_Y(oldPos) != VECTOR3_Y(pos)) // move
         {
             obj.position = oldPos;
             int res = NETLizard_MapCollisionTesting(m_model, &obj, &pos, &scene, include_item, &item);
@@ -793,6 +793,7 @@ bool MapScene::CollisionTesting(const vector3_t &op)
             }
             if(clear)
                 m_mainCameraActor->Collision();
+            SetCurrentCollisionItem(item);
         }
 
         if(caleFloorZ)
@@ -811,12 +812,8 @@ bool MapScene::CollisionTesting(const vector3_t &op)
                     if(!m_mainCameraActor->HasTypeForce<NLForce_gravity>())
                     {
                         // pre cale
-                        vector3_t de;
-                        vector3_subtractv(&de, &p, &oldPos);
-                        VECTOR3_Z(de) = 0;
-                        float d0 = vector3_length(&de) / 2.0;
                         //fprintf(stderr,"res222 : %f %f %f\n\n", d0, VECTOR3_Z(p), OBJ_HEIGHT + rglz);fflush(stderr);
-                        if(VECTOR3_Z(p) - d0 > TargetHeight)
+                        if(VECTOR3_Z(p) - ObjLegHeight > TargetHeight)
                             m_mainCameraActor->AddForce(new NLForce_gravity(NLProperties("g", _g), m_mainCameraActor));
                         else
                             VECTOR3_Z(p) = TargetHeight;
@@ -837,7 +834,6 @@ bool MapScene::CollisionTesting(const vector3_t &op)
     }
 
     SetCurrentScene(scene);
-    SetCurrentCollisionItem(item);
 
     return item >= 0;
 }

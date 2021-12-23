@@ -534,7 +534,6 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
         }
     }
     res = NETLizard_GetSceneFloorZCoordUnderPoint(netlizard_3d_model, obj, include_item, rscene, rglz);
-    PRINT("22222222222 %d %d %d", res, scene, rscene);
     if(res)
         return 1;
     bound_t bound;
@@ -543,7 +542,6 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
     vector3_t pos = *new_pos;
     VECTOR3_Z(pos) = BOUND_MIN_Z(bound);
     res = NETLizard_FindScenePointIn(netlizard_3d_model, &pos);
-    PRINT("eeeeeeeeeeeeee %d", res);
     if(res >= 0)
     {
         if(rscene)

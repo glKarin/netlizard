@@ -30,7 +30,7 @@ private Q_SLOTS:
     void OpenFileChooser();
     void OpenResourceDirChooser();
     bool OpenFile();
-    void OnTypeCurrentIndexChanged(int index);
+    void SetGameLevels(int index);
     void SetLvlFile(const QString &file);
     void SetResourceDirPath(const QString &file);
     void UpdateSceneInfo();
@@ -41,7 +41,7 @@ private:
     QComboBox *m_gameComboBox;
     QFileDialog *m_fileChooser;
     QFileDialog *m_resourceDirChooser;
-    QSpinBox *m_levelSpinBox;
+    QComboBox *m_levelSpinBox;
     QPushButton *m_openLvlButton;
     QPushButton *m_openResourcePathButton;
     QString m_lvlPath;

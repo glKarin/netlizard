@@ -48,7 +48,7 @@ void MapViewer::Init()
     m_gameComboBox = new QComboBox;
     m_mapScene = new MapScene;
     //QHBoxLayout *toolLayout = ToolLayout();
-    m_levelSpinBox = new QSpinBox;
+    m_levelSpinBox = new QComboBox;
     m_autoscanCheckBox = new QCheckBox(tr("Autoscan"));
     SetTitleLabelVisible(false);
 
@@ -57,8 +57,6 @@ void MapViewer::Init()
         m_gameComboBox->addItem(nlGet3DGameName(static_cast<NETLizard_Game>(i)), QVariant(i));
     }
     m_gameComboBox->setMaximumWidth(180);
-    m_levelSpinBox->setMinimum(-1);
-    m_levelSpinBox->setValue(-1);
     m_openLvlButton = new QPushButton;
     connect(m_openLvlButton, SIGNAL(clicked()), this, SLOT(OpenFileChooser()));
     m_openLvlButton->setText(tr("lvl/dm/track file"));
@@ -73,6 +71,7 @@ void MapViewer::Init()
     AddTool(m_openResourcePathButton);
     AddTool();
 
+    SetGameLevels(0);
     AddTool(new QLabel(tr("Game: ")));
     AddTool(m_gameComboBox);
     AddTool();
@@ -88,7 +87,7 @@ void MapViewer::Init()
     button->setShortcut(QKeySequence::fromString("ctrl+o"));
     AddTool(button);
 
-    connect(m_gameComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));
+    connect(m_gameComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetGameLevels(int)));
 
     connect(m_mapScene, SIGNAL(currentSceneChanged(int)), this, SLOT(UpdateSceneInfo()));
     connect(m_mapScene, SIGNAL(currentCollisionItemChanged(int)), this, SLOT(UpdateSceneInfo()));
@@ -142,9 +141,23 @@ void MapViewer::SetResourceDirPath(const QString &file)
     }
 }
 
-void MapViewer::OnTypeCurrentIndexChanged(int index)
+void MapViewer::SetGameLevels(int index)
 {
-    //m_levelSpinBox->setEnabled(index == 2);
+    m_levelSpinBox->clear();
+    m_levelSpinBox->addItem(tr("AutoScan"), -1);
+    int selectedIndex = m_gameComboBox->itemData(index).toInt();
+    NETLizard_Game game = static_cast<NETLizard_Game>(selectedIndex + NL_RACING_EVOLUTION_3D);
+    NLint start = 0;
+    NLint count = 0;
+    NLboolean res = nlGet3DGameLevelRange(game, &start, &count);
+    if(!res)
+        return;
+    for(int i = start; i < count; i++)
+    {
+        const char *name = nlGet3DGameLevelName(game, i);
+        if(name)
+            m_levelSpinBox->addItem(QString("%1 - %2").arg(i).arg(name), i);
+    }
 }
 
 void MapViewer::Reset()
@@ -152,7 +165,7 @@ void MapViewer::Reset()
     BaseViewer::Reset();
     m_mapScene->Reset();
     if(m_autoscan)
-        m_levelSpinBox->setValue(-1);
+        m_levelSpinBox->setCurrentIndex(0);
 }
 
 bool MapViewer::OpenFile()
@@ -166,7 +179,7 @@ bool MapViewer::OpenFile()
 
     int selectedIndex = m_gameComboBox->currentIndex();
     int game = selectedIndex + NL_RACING_EVOLUTION_3D;
-    int level = m_levelSpinBox->value();
+    int level = m_levelSpinBox->itemData(m_levelSpinBox->currentIndex()).toInt();
     if(m_resourceDirPath.isEmpty())
     {
         QFileInfo info(m_lvlPath);
@@ -180,7 +193,7 @@ bool MapViewer::OpenFile()
         if(pos != -1)
         {
             level = regexp.cap(1).toInt();
-            m_levelSpinBox->setValue(level);
+            m_levelSpinBox->setCurrentIndex(m_levelSpinBox->findData(level));
         }
         // Egypt 3D survive mode: dm1.png
         regexp.setPattern("dm(\\d+)");
@@ -188,7 +201,7 @@ bool MapViewer::OpenFile()
         if(pos != -1)
         {
             level = regexp.cap(1).toInt();
-            m_levelSpinBox->setValue(level);
+            m_levelSpinBox->setCurrentIndex(17 + m_levelSpinBox->findData(level));
         }
     }
     bool res = false;
@@ -237,7 +250,7 @@ void MapViewer::SetAutoscan(bool b)
     {
         m_autoscan = b;
         if(m_autoscan)
-            m_levelSpinBox->setValue(-1);
+            m_levelSpinBox->setCurrentIndex(0);
         m_levelSpinBox->setEnabled(!m_autoscan);
         if(m_autoscanCheckBox->isChecked() != m_autoscan)
             m_autoscanCheckBox->setChecked(m_autoscan);
