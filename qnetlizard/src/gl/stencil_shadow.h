@@ -14,7 +14,7 @@ extern "C" {
 #define SHADOW_INVERT_ALL 1
 #define SHADOW_INVERT_EXCLUDE_CEIL_AND_FLOOR 2
 
-void NETLizard_RenderMehShadow(const GL_NETLizard_3D_Mesh *mesh, const vector3_t *light_position, int dirlight, int method, int invert);
+void NETLizard_RenderMeshShadow(const GL_NETLizard_3D_Mesh *mesh, const vector3_t *light_position, int dirlight, int method, int invert);
 
 #ifdef __cplusplus
 }

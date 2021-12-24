@@ -26,6 +26,28 @@ int NETLizard_GetMapRenderScenes(const GL_NETLizard_3D_Model *model, int scenes[
     return count;
 }
 
+int NETLizard_GetMapRenderItems(const GL_NETLizard_3D_Model *model, int items[], float frustum[6][4])
+{
+    if(!model || !items || !frustum)
+        return -1;
+
+    unsigned int i;
+    unsigned int count = 0;
+    for(i = 0; i < model->item_count; i++)
+    {
+        const GL_NETLizard_3D_Mesh *item_mesh = model->item_meshes + i;
+        bound_t bound;
+        NETLizard_GetMeshBound(item_mesh, &bound);
+        int r = bound_in_frustum(&bound, frustum);
+        if(r)
+        {
+            items[count] = i;
+            count++;
+        }
+    }
+    return count;
+}
+
 void NETLizard_GetNETLizard3DMapBound(const GL_NETLizard_3D_Model *model, int scenes[], unsigned int count, bound_t *box)
 {
     if(!model || !box)
@@ -299,7 +321,7 @@ int NETLizard_GetNETLizard3DMapNeighboringScenes(const GL_NETLizard_3D_Model *mo
     return index;
 }
 
-void NETLizard_GetSceneBound(const GL_NETLizard_3D_Mesh *scene, bound_t *bound)
+void NETLizard_GetMeshBound(const GL_NETLizard_3D_Mesh *scene, bound_t *bound)
 {
     if(!scene || !bound)
         return;
@@ -329,18 +351,18 @@ void NETLizard_GetSceneFullBound(const GL_NETLizard_3D_Model *model, GLuint s, b
     if(!model || !bound)
         return;
     const GL_NETLizard_3D_Mesh *scene = model->meshes + s;
-    NETLizard_GetSceneBound(scene, bound);
+    NETLizard_GetMeshBound(scene, bound);
     unsigned int i;
     for(i = scene->item_index_range[0]; i < scene->item_index_range[1]; i++)
     {
         bound_t b;
         const GL_NETLizard_3D_Mesh *im = model->item_meshes + i;
-        NETLizard_GetSceneBound(im, &b);
+        NETLizard_GetMeshBound(im, &b);
         bound_combine(bound, &b);
     }
 }
 
-void NETLizard_GetScenePlane(const GL_NETLizard_3D_Mesh *scene, int j, plane_t *p)
+void NETLizard_GetMeshPlane(const GL_NETLizard_3D_Mesh *scene, int j, plane_t *p)
 {
     const GL_NETLizard_3D_Plane *plane = scene->plane + j;
     nl_vector3_t normal = VECTOR3V(plane->normal);

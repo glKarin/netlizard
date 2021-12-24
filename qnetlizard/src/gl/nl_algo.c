@@ -73,7 +73,7 @@ static void * push_back(int size, void **arr, int *count, const void *t)
 static bound_t NETLizard_SceneBound(const GL_NETLizard_3D_Mesh *scene)
 {
     bound_t bound;
-    NETLizard_GetSceneBound(scene, &bound);
+    NETLizard_GetMeshBound(scene, &bound);
     return bound;
 }
 
@@ -87,7 +87,7 @@ static bound_t NETLizard_SceneFullBound(const GL_NETLizard_3D_Model *model, int 
 static plane_t NETLizard_ScenePlane(const GL_NETLizard_3D_Mesh *scene, int j)
 {
     plane_t p;
-    NETLizard_GetScenePlane(scene, j, &p);
+    NETLizard_GetMeshPlane(scene, j, &p);
     return p;
 }
 
@@ -526,6 +526,7 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
     if(scene >= 0)
     {
         res = NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, obj, scene, include_item, rglz);
+        PRINT("qqqqqqqqq %d", res);
         if(res)
         {
             if(rscene)
@@ -537,7 +538,7 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
     if(res)
         return 1;
     bound_t bound;
-    NETLizard_GetNETLizard3DMapBound(netlizard_3d_model, 0, 0, &bound);
+    NETLizard_GetNETLizard3DMapBound(netlizard_3d_model, NULL, 0, &bound);
     const nl_vector3_t *new_pos = &obj->position;
     vector3_t pos = *new_pos;
     VECTOR3_Z(pos) = BOUND_MIN_Z(bound);

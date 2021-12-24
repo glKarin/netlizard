@@ -51,7 +51,7 @@ public:
     template <class T>
     bool HasType() const;
     template <class T>
-    T * GetType();
+    T * GetType(int index = 0);
     template <class T>
     QList<T *> GetTypes();
     template <class T>
@@ -133,13 +133,18 @@ bool NLObjectContainer::HasType() const
 }
 
 template <class T>
-T * NLObjectContainer::GetType()
+T * NLObjectContainer::GetType(int index)
 {
+    int i = 0;
     Q_FOREACH(NLObject *obj, m_objectList)
     {
         T *r = dynamic_cast<T *>(obj);
         if(r != 0)
-            return r;
+        {
+            if(i == index)
+                return r;
+            i++;
+        }
     }
     return 0;
 }

@@ -110,8 +110,10 @@ typedef struct _GL_NETLizard_3D_Item_Model
 
 GLvoid NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model);
 GLvoid NETLizard_RenderGL3DItemModel(const GL_NETLizard_3D_Item_Model *m);
-GLvoid NETLizard_RenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint *scenes, GLuint count);
+GLvoid NETLizard_RenderGL3DMapModel(const GL_NETLizard_3D_Model *model, GLint *scenes, GLuint count);
 GLvoid NETLizard_RenderGL3DModelFrameAnimation(const GL_NETLizard_3D_Model *m, const NETLizard_3D_Frame_Animation *config, GLuint anim, GLuint frame);
+GLvoid NETLizard_RenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint *scene, GLuint count);
+GLvoid NETLizard_RenderGL3DMapModelItem(const GL_NETLizard_3D_Model *model, GLint *items, GLuint count);
 
 GLvoid delete_GL_NETLizard_3D_Material(GL_NETLizard_3D_Material *mat);
 GLvoid delete_GL_NETLizard_3D_Mesh(GL_NETLizard_3D_Mesh *mesh);

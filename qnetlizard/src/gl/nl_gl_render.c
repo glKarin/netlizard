@@ -12,7 +12,7 @@ static GLboolean NETLizard_NotCullFace(int item_type)
     return GL_FALSE;
 }
 
-void NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
+GLvoid NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
 {
 	if(!model)
 		return;
@@ -55,11 +55,9 @@ void NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
 	}
 }
 
-void NETLizard_RenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint *scene, GLuint count)
+GLvoid NETLizard_RenderGL3DMapModel(const GL_NETLizard_3D_Model *model, GLint *scene, GLuint count)
 {
-    if(!model)
-        return;
-    if(!model->meshes)
+    if(!model || !model->meshes)
         return;
 
     GLuint c = scene ? count : model->count;
@@ -84,6 +82,42 @@ void NETLizard_RenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint
                     NETLizard_RenderGL3DMesh(im, model->texes);
                 }
             }
+        }
+    }
+}
+
+GLvoid NETLizard_RenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint *scene, GLuint count)
+{
+    if(!model || !model->meshes)
+        return;
+
+    GLuint c = scene ? count : model->count;
+    GLuint i;
+    for(i = 0; i < c; i++)
+    {
+        int s = scene ? scene[i] : i;
+        if(s >= 0 && s < model->count)
+        {
+            const GL_NETLizard_3D_Mesh *m = model->meshes + s;
+            NETLizard_RenderGL3DMesh(m, model->texes);
+        }
+    }
+}
+
+GLvoid NETLizard_RenderGL3DMapModelItem(const GL_NETLizard_3D_Model *model, GLint *items, GLuint count)
+{
+    if(!model || !model->item_meshes)
+        return;
+
+    GLuint c = items ? count : model->item_count;
+    GLuint i;
+    for(i = 0; i < c; i++)
+    {
+        int s = items ? items[i] : i;
+        if(s >= 0 && s < model->item_count)
+        {
+            const GL_NETLizard_3D_Mesh *im = model->item_meshes + s;
+            NETLizard_RenderGL3DMesh(im, model->texes);
         }
     }
 }

@@ -179,7 +179,7 @@ void NETLizardShadowModelRenderer::SetAllScene()
 {
     if(!m_scenes)
         return;
-    for(int i = 0; i < m_model->count; i++)
+    for(GLuint i = 0; i < m_model->count; i++)
         m_scenes[i] = i;
     m_sceneCount = m_model->count;
 }

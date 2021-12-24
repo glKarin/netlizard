@@ -61,7 +61,7 @@ public:
     template <class T>
     bool HasTypeForce() const;
     template <class T>
-    T * GetTypeForce();
+    T * GetTypeForce(int index = 0);
     template <class T>
     QList<T *> GetTypeForces();
     template <class T>
@@ -149,11 +149,11 @@ bool NLRigidbody::HasTypeForce() const
 }
 
 template <class T>
-T * NLRigidbody::GetTypeForce()
+T * NLRigidbody::GetTypeForce(int index)
 {
     if(!m_forces)
         return 0;
-    return m_forces->GetType<T>();
+    return m_forces->GetType<T>(index);
 }
 
 template <class T>

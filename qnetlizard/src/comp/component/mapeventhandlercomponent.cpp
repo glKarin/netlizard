@@ -119,7 +119,7 @@ MapEventHandler_elevator::MapEventHandler_elevator(float min, float max, MapEven
       m_mask(mask),
       m_invert(invert)
 {
-    NETLizard_GetSceneBound(item, &m_box);
+    NETLizard_GetMeshBound(item, &m_box);
 }
 
 MapEventHandler_elevator::~MapEventHandler_elevator()

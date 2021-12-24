@@ -92,7 +92,7 @@ public:
     template <class T>
     bool HasTypeChild() const;
     template <class T>
-    T * GetTypeChild();
+    T * GetTypeChild(int index = 0);
     template <class T>
     QList<T *> GetTypeChildren();
     template <class T>
@@ -109,7 +109,7 @@ public:
     template <class T>
     bool HasTypeComponent() const;
     template <class T>
-    T * GetTypeComponent();
+    T * GetTypeComponent(int index = 0);
     template <class T>
     QList<T *> GetTypeComponents();
     template <class T>
@@ -240,11 +240,11 @@ bool NLActor::HasTypeChild() const
 }
 
 template <class T>
-T * NLActor::GetTypeChild()
+T * NLActor::GetTypeChild(int index)
 {
     if(!m_children)
         return 0;
-    return m_children->GetType<T>();
+    return m_children->GetType<T>(index);
 }
 
 template <class T>
@@ -314,11 +314,11 @@ bool NLActor::HasTypeComponent() const
 }
 
 template <class T>
-T * NLActor::GetTypeComponent()
+T * NLActor::GetTypeComponent(int index)
 {
     if(!m_components)
         return 0;
-    return m_components->GetType<T>();
+    return m_components->GetType<T>(index);
 }
 
 template <class T>
