@@ -597,7 +597,7 @@ bool MapEventHandlerComponent::Trigger(int item)
         return HandleElevator(item);
     else if(mesh->item_type & NL_3D_ITEM_TYPE_PORTAL)
         return HandleTeleport(item);
-    else if((mesh->item_type & NL_3D_ITEM_TYPE_FAN_HORIZONTAL) || (mesh->item_type & NL_3D_ITEM_TYPE_FAN_VERTICAL))
+    else if((mesh->item_type & NL_3D_ITEM_TYPE_FAN_Y_AXIS) || (mesh->item_type & NL_3D_ITEM_TYPE_FAN_Z_AXIS) || (mesh->item_type & NL_3D_ITEM_TYPE_FAN_X_AXIS))
         return HandleFan(item);
     else if((mesh->item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL) || (mesh->item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL))
         return HandleDoor(item);
@@ -682,10 +682,12 @@ bool MapEventHandlerComponent::HandleFan(int item)
     }
     GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + item;
     int mask = 0;
-    if(mesh->item_type & NL_3D_ITEM_TYPE_FAN_HORIZONTAL)
+    if(mesh->item_type & NL_3D_ITEM_TYPE_FAN_Y_AXIS)
         mask |= MapEventHandler_fan::Fan_Roll;
-    if(mesh->item_type & NL_3D_ITEM_TYPE_FAN_VERTICAL)
+    if(mesh->item_type & NL_3D_ITEM_TYPE_FAN_Z_AXIS)
         mask |= MapEventHandler_fan::Fan_Yaw;
+    if(mesh->item_type & NL_3D_ITEM_TYPE_FAN_X_AXIS)
+        mask |= MapEventHandler_fan::Fan_Pitch;
     MapEventHandler_fan *handler = new MapEventHandler_fan(mask, false, mesh, m_teleportActor, false);
     m_handlers.Add(item, handler);
 

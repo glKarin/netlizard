@@ -175,7 +175,7 @@ void NETLizardShadowModelRenderer::SetShadowObject(int obj)
         m_shadowObject = obj;
 }
 
-void NETLizardShadowModelRenderer::SetAllScene()
+void NETLizardShadowModelRenderer::SetAllScenes()
 {
     if(!m_scenes)
         return;

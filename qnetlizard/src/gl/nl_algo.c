@@ -526,7 +526,6 @@ int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *netlizard_3d_mode
     if(scene >= 0)
     {
         res = NETLizard_GetSceneFloorZCoordInScenePoint(netlizard_3d_model, obj, scene, include_item, rglz);
-        PRINT("qqqqqqqqq %d", res);
         if(res)
         {
             if(rscene)

@@ -566,6 +566,7 @@ void MapScene::SetSingleScene(int b)
     if(m_singleScene != b)
     {
         m_singleScene = b;
+        m_renderer->SetRenderItemMode(m_singleScene > 0 ? NETLizardMapModelRenderer::RenderItem_Scene : NETLizardMapModelRenderer::RenderItem_Cull);
     }
 }
 
@@ -590,7 +591,13 @@ bool MapScene::RayIntersect()
     if(res)
     {
        if(collision_type == 2)
+       {
            vitem = collision_id;
+#if 0
+           const GL_NETLizard_3D_Mesh *im = m_model->item_meshes + vitem;
+           fprintf(stderr, "%d: type 0x%x, index %d, rotation %f %f %f\n", vitem, im->item_type, im->obj_index, im->rotation[0], im->rotation[1], im->rotation[2]);
+#endif
+       }
     }
     SetCurrentViewScene(scene);
     SetCurrentViewItem(vitem);
@@ -680,9 +687,11 @@ void MapScene::UpdateCullRenderScene()
             const GLmatrix *viewMat = camera->ViewMatrix();
             matrix_cale_frustum(projMat, viewMat, frustum);
             count = NETLizard_GetMapRenderScenes(m_model, scenes, frustum);
+            int *items = m_renderer->Items();
+            m_renderer->SetItemCount(NETLizard_GetMapRenderItems(m_model, items, frustum));
         }
         m_renderer->SetSceneCount(count);
-        m_shadowRenderer->SetRenderScenes(scenes, count);
+        //m_shadowRenderer->SetRenderScenes(scenes, count);
         m_debugRenderer->SetRenderScenes(scenes, count);
     }
 }
@@ -749,7 +758,7 @@ bool MapScene::CollisionTesting(const vector3_t &op)
                     if(gravity && gravity->Force() != 0) // is jump
                         clear = true;
                 }
-                fprintf(stderr,"NETLizard_MapCollisionTesting 1 : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
+                //fprintf(stderr,"NETLizard_MapCollisionTesting 1 : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
 
                 if(clear)
                     m_mainCameraActor->Collision();
@@ -781,7 +790,7 @@ bool MapScene::CollisionTesting(const vector3_t &op)
                     //fprintf(stderr,"<>  : %d : %d| \n\n", res, item);fflush(stderr);
                     p = oldPos;
                 }
-                fprintf(stderr,"NETLizard_MapCollisionTesting 2 : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
+                //fprintf(stderr,"NETLizard_MapCollisionTesting 2 : %d - scene(%d), item(%d): %f %f %f\n", res, scene, item, pos.v[0], pos.v[1], pos.v[2]);fflush(stderr);
 
                 if(item >= 0)
                 {
@@ -811,7 +820,7 @@ bool MapScene::CollisionTesting(const vector3_t &op)
                 VECTOR3_Z(obj.position) = VECTOR3_Z(oldPos);
             int zscene = -1;
             int res = NETLizard_GetScenePointZCoord(m_model, &obj, scene, include_item, &zscene, &rglz);
-            fprintf(stderr,"NETLizard_GetScenePointZCoord : %d - scene(%d): %f <> %f\n\n", res, zscene, VECTOR3_Z(p), rglz);fflush(stderr);
+            //fprintf(stderr,"NETLizard_GetScenePointZCoord : %d - scene(%d): %f <> %f\n\n", res, zscene, VECTOR3_Z(p), rglz);fflush(stderr);
 
             const float TargetHeight = ObjHeight + rglz;
             if(VECTOR3_Z(p) > TargetHeight)

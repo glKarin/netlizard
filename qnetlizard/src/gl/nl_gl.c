@@ -675,28 +675,28 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
             m->box.max[2] = (GLfloat)mesh->item_mesh.box.max[2];
 
 #if 0
-            if((m->item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL) || (m->item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL))
+            if(/*(m->item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL) || */(m->item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL))
             {
-                const char g[] = "NL_CONTR_TERRORISM_3D_EPISODE_3";
-                if(m->obj_index == 38 || m->obj_index == 40)
+                const char g[] = "NL_CLONE_3D";
+                if(m->obj_index == 32 || m->obj_index == 33)
                 {
-                    fprintf(stderr, "{%s, %d, {{}, {%d, %d, %d}}, 3, 1, {{%d, %d, %d}, {%d, %d, %d}}},\n",
+                    fprintf(stderr, "{%s, %d, {{%d, %d, %d}, {}}, 3, 3, {{%d, %d, %d}, {%d, %d, %d}}},\n",
                             g, 0,
                             i,
-                            (int)m->position[2] + (int)m->box.max[2] - ((int)m->box.max[2] - (int)m->box.min[2]), (int)m->position[2] + (int)m->box.min[2] - ((int)m->box.max[2] - (int)m->box.min[2]),
+                            (int)m->position[1] + (int)m->box.min[1], (int)m->position[1] + (int)m->box.max[1],
                             (int)m->position[0] + (int)m->box.min[0], (int)m->position[1] + (int)m->box.min[1], (int)m->position[2] + (int)m->box.min[2],
                             (int)m->position[0] + (int)m->box.max[0], (int)m->position[1] + (int)m->box.max[1], (int)m->position[2] + (int)m->box.max[2]
                             ); fflush(stderr);
                 }
                 else
                 {
-                    fprintf(stderr, "{%s, %d, {{%d, %d, %d}, {}}, 3, 1, {{%d, %d, %d}, {%d, %d, %d}}},\n",
-                            g, 0,
-                            i,
-                            (int)m->position[2] + (int)m->box.min[2], (int)m->position[2] + (int)m->box.max[2],
-                            (int)m->position[0] + (int)m->box.min[0], (int)m->position[1] + (int)m->box.min[1], (int)m->position[2] + (int)m->box.min[2],
-                            (int)m->position[0] + (int)m->box.max[0], (int)m->position[1] + (int)m->box.max[1], (int)m->position[2] + (int)m->box.max[2]
-                            ); fflush(stderr);
+//                    fprintf(stderr, "{%s, %d, {{%d, %d, %d}, {}}, 3, 1, {{%d, %d, %d}, {%d, %d, %d}}},\n",
+//                            g, 0,
+//                            i,
+//                            (int)m->position[2] + (int)m->box.min[2], (int)m->position[2] + (int)m->box.max[2],
+//                            (int)m->position[0] + (int)m->box.min[0], (int)m->position[1] + (int)m->box.min[1], (int)m->position[2] + (int)m->box.min[2],
+//                            (int)m->position[0] + (int)m->box.max[0], (int)m->position[1] + (int)m->box.max[1], (int)m->position[2] + (int)m->box.max[2]
+//                            ); fflush(stderr);
                 }
             }
 #endif

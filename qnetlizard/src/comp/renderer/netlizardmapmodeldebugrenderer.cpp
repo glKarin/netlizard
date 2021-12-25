@@ -233,7 +233,7 @@ void NETLizardMapModelDebugRenderer::RenderHighlight()
     }
 }
 
-void NETLizardMapModelDebugRenderer::SetAllScene()
+void NETLizardMapModelDebugRenderer::SetAllScenes()
 {
     if(!m_scenes)
         return;

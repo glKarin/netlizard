@@ -26,7 +26,7 @@ public:
     void SetLightSourceType(bool dirlight);
     int ShadowObject() const { return m_shadowObject; }
     void SetShadowObject(int obj);
-    void SetAllScene();
+    void SetAllScenes();
 
 protected:
     virtual void InitRender();

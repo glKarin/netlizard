@@ -131,8 +131,8 @@ typedef enum NETLizard_3D_Item_Type_e
     NL_3D_ITEM_TYPE_GENERAL = 0, // exam general item
     NL_3D_ITEM_TYPE_THIN = 1, // maybe not cull face when rendering. exam net
     NL_3D_ITEM_TYPE_2D = 1 << 1, // maybe no shadow when rendering. exam Stalin photo in CT 3D
-    NL_3D_ITEM_TYPE_FAN_VERTICAL = 1 << 2, // can rotate on x/y-axis. exam fan on ceil, tail fan in helicopter
-    NL_3D_ITEM_TYPE_FAN_HORIZONTAL = 1 << 3, // can rotate on z-axis. exam fan on wall, top fan in helicopter
+    NL_3D_ITEM_TYPE_FAN_Z_AXIS = 1 << 2, // can rotate on x/y-axis. exam fan on ceil, tail fan in helicopter
+    NL_3D_ITEM_TYPE_FAN_Y_AXIS = 1 << 3, // can rotate on z-axis. exam fan on wall, top fan in helicopter
     NL_3D_ITEM_TYPE_ROLE = 1 << 4, // has frame animation. exam character in Egypt 3D and Clone 3D
     NL_3D_ITEM_TYPE_SKYBOX = 1 << 5, // it is a skybox. exam skybox in Egypt 3D level 0, 8, 9, 10, 12
     NL_3D_ITEM_TYPE_DOOR_VERTICAL = 1 << 6, // can translate on z-axis. exam door that move vertical
@@ -146,7 +146,8 @@ typedef enum NETLizard_3D_Item_Type_e
     NL_3D_ITEM_TYPE_TRANSPARENT = 1 << 14, // maybe no shadow when rendering. exam net
     NL_3D_ITEM_TYPE_EMPTY = 1 << 15, // maybe ignore when collision testing. exam tower in Egypt 3D level 0, 10
     NL_3D_ITEM_TYPE_PARTICLE = 1 << 16, // it is a particle item. exam debris of bodys and box, bloods,
-    NL_3D_ITEM_TYPE_SCENE = 1 << 17 // exam scene. exam elevator in Specnaz 3D level 4
+    NL_3D_ITEM_TYPE_SCENE = 1 << 17, // exam scene. exam elevator in Specnaz 3D level 4
+    NL_3D_ITEM_TYPE_FAN_X_AXIS = 1 << 18 // can rotate on z-axis. exam fan on wall, top fan in helicopter
 } NETLizard_3D_Item_Type;
 
 /* NETLizard 3D game character animation category */
