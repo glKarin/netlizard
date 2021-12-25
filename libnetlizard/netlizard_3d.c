@@ -753,7 +753,7 @@ NLboolean nlGet3DGameLevelRange(NETLizard_Game game, NLint *start, NLint *count)
 {
     if(game > NL_CONTR_TERRORISM_3D_EPISODE_3)
         return NL_FALSE;
-    int max_level = Game_Level[game];
+    const int max_level = Game_Level[game];
     if(count)
         *count = max_level;
     if(start)

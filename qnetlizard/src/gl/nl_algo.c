@@ -385,7 +385,8 @@ static int NETLizard_GetMeshFloorZCoordInScenePoint(const GL_NETLizard_3D_Mesh *
         nl_vector3_t dir = VECTOR3(0, 0, -1);
 #endif
 
-        ray_t l = {*new_pos, dir};
+        ray_t l;
+        ray_make(&l, new_pos, &dir);
         float lamda = 0;
         if(plane_ray_intersect(&plane, &l, &lamda, &point, NULL) > 0)
         {
@@ -434,7 +435,7 @@ static int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model
             bound_t aabb = SCENE_BOUND(im);
             nl_vector3_t expand = VECTOR3(obj->radius, obj->radius, 0);
             bound_expand(&aabb, &expand);
-            if(!bound_point_in_box2d(&aabb, new_pos))
+            if(!bound_point_in_box2d(&aabb, new_pos) || VECTOR3V_Z(new_pos) < BOUND_MIN_Z(aabb))
                 continue;
             float f;
             int r = NETLizard_GetMeshFloorZCoordInScenePoint(netlizard_3d_model->item_meshes + j, new_pos, 1, obj->radius, &f);
@@ -461,10 +462,10 @@ static int NETLizard_GetSceneFloorZCoordInScenePoint(const GL_NETLizard_3D_Model
                     bound_t aabb = SCENE_BOUND(im);
                     nl_vector3_t expand = VECTOR3(obj->radius, obj->radius, 0);
                     bound_expand(&aabb, &expand);
-                    if(!bound_point_in_box2d(&aabb, new_pos))
+                    if(!bound_point_in_box2d(&aabb, new_pos) || VECTOR3V_Z(new_pos) < BOUND_MIN_Z(aabb))
                         continue;
                     float f;
-                    int r = NETLizard_GetMeshFloorZCoordInScenePoint(netlizard_3d_model->item_meshes + j, new_pos, 1, obj->radius, &f);
+                    int r = NETLizard_GetMeshFloorZCoordInScenePoint(im, new_pos, 1, obj->radius, &f);
                     if(r)
                     {
                         zcoord = (has++) ? _MAX(zcoord, f) : f;

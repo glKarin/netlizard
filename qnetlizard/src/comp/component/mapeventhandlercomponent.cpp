@@ -596,11 +596,32 @@ bool MapEventHandlerComponent::Trigger(int item)
     if(mesh->item_type & NL_3D_ITEM_TYPE_SWITCH)
         return HandleElevator(item);
     else if(mesh->item_type & NL_3D_ITEM_TYPE_PORTAL)
-        return HandleTeleport(item);
+    {
+        if((mesh->item_type & NL_3D_ITEM_TYPE_FAN_Z_AXIS) == 0) // egypt 3d teleporter
+            return HandleTeleport(item);
+        else
+            return HandleFan(item);
+    }
     else if((mesh->item_type & NL_3D_ITEM_TYPE_FAN_Y_AXIS) || (mesh->item_type & NL_3D_ITEM_TYPE_FAN_Z_AXIS) || (mesh->item_type & NL_3D_ITEM_TYPE_FAN_X_AXIS))
         return HandleFan(item);
     else if((mesh->item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL) || (mesh->item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL))
         return HandleDoor(item);
+    return false;
+}
+
+bool MapEventHandlerComponent::Collision(int item)
+{
+    if(!m_model)
+        return false;
+    if(item < 0)
+        return false;
+    const GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + item;
+    if(mesh->item_type & NL_3D_ITEM_TYPE_PORTAL)
+        return HandleTeleport(item);
+    else if((mesh->item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL) || (mesh->item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL))
+        return HandleDoor(item);
+    else if(mesh->item_type & NL_3D_ITEM_TYPE_LADDER)
+        return HandleLadder(item);
     return false;
 }
 
@@ -627,22 +648,6 @@ bool MapEventHandlerComponent::HandleElevator(int item)
     }
 
     return true;
-}
-
-bool MapEventHandlerComponent::Collision(int item)
-{
-    if(!m_model)
-        return false;
-    if(item < 0)
-        return false;
-    const GL_NETLizard_3D_Mesh *mesh = m_model->item_meshes + item;
-    if(mesh->item_type & NL_3D_ITEM_TYPE_PORTAL)
-        return HandleTeleport(item);
-    else if((mesh->item_type & NL_3D_ITEM_TYPE_DOOR_VERTICAL) || (mesh->item_type & NL_3D_ITEM_TYPE_DOOR_HORIZONTAL))
-        return HandleDoor(item);
-    else if(mesh->item_type & NL_3D_ITEM_TYPE_LADDER)
-        return HandleLadder(item);
-    return false;
 }
 
 bool MapEventHandlerComponent::HandleTeleport(int item)

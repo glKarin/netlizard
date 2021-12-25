@@ -12,6 +12,14 @@ static GLboolean NETLizard_NotCullFace(int item_type)
     return GL_FALSE;
 }
 
+static GLboolean NETLizard_NotRenderDirectly(int item_type)
+{
+    if((item_type & NL_3D_ITEM_TYPE_SKYBOX)
+            )
+        return GL_TRUE;
+    return GL_FALSE;
+}
+
 GLvoid NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
 {
 	if(!model)
@@ -46,9 +54,7 @@ GLvoid NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model)
 		for(i = 0; i < model->item_count; i++)
         {
             const GL_NETLizard_3D_Item_Mesh *m = model->item_meshes + i;
-            if(!m->materials) // REDO
-				continue;
-            if(m->item_type & NL_3D_ITEM_TYPE_SKYBOX)
+            if(NETLizard_NotRenderDirectly(m->item_type))
                 continue;
             NETLizard_RenderGL3DMesh(m, model->texes);
 		}
@@ -75,9 +81,7 @@ GLvoid NETLizard_RenderGL3DMapModel(const GL_NETLizard_3D_Model *model, GLint *s
                 for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
                 {
                     const GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
-                    if(!im->materials) // REDO
-                        continue;
-                    if(im->item_type & NL_3D_ITEM_TYPE_SKYBOX)
+                    if(NETLizard_NotRenderDirectly(im->item_type))
                         continue;
                     NETLizard_RenderGL3DMesh(im, model->texes);
                 }
@@ -117,6 +121,8 @@ GLvoid NETLizard_RenderGL3DMapModelItem(const GL_NETLizard_3D_Model *model, GLin
         if(s >= 0 && s < model->item_count)
         {
             const GL_NETLizard_3D_Mesh *im = model->item_meshes + s;
+            if(NETLizard_NotRenderDirectly(im->item_type))
+                continue;
             NETLizard_RenderGL3DMesh(im, model->texes);
         }
     }
@@ -146,7 +152,7 @@ GLvoid NETLizard_RenderGL3DModelFrameAnimation(const GL_NETLizard_3D_Model *m, c
 
 GLvoid NETLizard_RenderGL3DMesh(const GL_NETLizard_3D_Mesh *m, texture_s **const texes)
 {
-    if(!m)
+    if(!m || !m->materials)
 		return;
 
     glEnableClientState(GL_VERTEX_ARRAY);
