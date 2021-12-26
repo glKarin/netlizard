@@ -1,6 +1,8 @@
 #ifndef _KARIN_MAPSCENE_H
 #define _KARIN_MAPSCENE_H
 
+#include <QHash>
+
 #include "nlscene.h"
 #include "gl/nl_gl.h"
 
@@ -63,6 +65,7 @@ protected:
     bool RayIntersect();
     void UpdateCullRenderScene();
     bool CollisionTesting(const vector3_t &oldPos);
+    void UpdateSkybox();
 
 private:
     GL_NETLizard_3D_Model *m_model;
@@ -89,6 +92,7 @@ private:
     int m_currentCollisionItem;
     int m_currentViewItem;
     int m_currentViewScene;
+    QHash<int, int> m_skyboxs;
 
     Q_DISABLE_COPY(MapScene)
 };

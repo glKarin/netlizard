@@ -408,7 +408,7 @@ typedef struct NETLizard_Level_Teleport_s
 {
     NLenum game;
     NLint level;
-    NLint item[2];
+    NLint item;
     NLbitfield mask; // 1: x translate, 2: y translate, 4: z translate, 8: x rotate, 16: y rotate
     NLint position[3];
     NLint rotation[2];

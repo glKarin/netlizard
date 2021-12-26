@@ -305,17 +305,47 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     NLVector3 lp;
     bound_center(&bound, &lp);
 
-    glColor4f(1, 1, 1, 1);
-    if(hasSky)
+    // color
+    if(game == NL_SHADOW_OF_EGYPT_3D)
     {
-        GLfloat color[4] = {1, 1, 1, 0.2};
+        glColor4f(0, 0, 0, 1); // black
+        GLfloat color[4] = {0, 0, 0, 0.2};
         glFogfv(GL_FOG_COLOR, color);
+        // Egypt 3D level 0(main menu) 8 9 10 12 has a cube sky model
+        if(level == 0 || level == 8 || level == 9 || level == 10 || level == 12)
+        {
+            for(GLuint i = 0; i < m_model->count; i++)
+            {
+                const GL_NETLizard_3D_Mesh *scene = m_model->meshes + i;
+                for(GLuint j = scene->item_index_range[0]; j < scene->item_index_range[1]; j++)
+                {
+                    const GL_NETLizard_3D_Mesh *im = m_model->item_meshes + j;
+                    if(im->item_type & NL_3D_ITEM_TYPE_SKYBOX)
+                    {
+                        m_skyboxs.insert(i, j);
+                        break; // only set 1, some level has many sky box
+                    }
+                }
+            }
+            //UpdateSkybox();
+        }
     }
     else
     {
-        GLfloat color[4] = {0, 0, 0, 0.2};
-        glFogfv(GL_FOG_COLOR, color);
+        glColor4f(1, 1, 1, 1); // white
+        if(hasSky)
+        {
+            GLfloat color[4] = {1, 1, 1, 0.2};
+            glFogfv(GL_FOG_COLOR, color);
+        }
+        else
+        {
+            GLfloat color[4] = {0, 0, 0, 0.2};
+            glFogfv(GL_FOG_COLOR, color);
+        }
     }
+
+    // initial position/rotation
     // RE3D using java MSG 3D, like OpenGL, y is up
     if(game == NL_RACING_EVOLUTION_3D)
     {
@@ -339,6 +369,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
         m_renderer->Actor()->SetScale(scale);
         m_shadowRenderer->Actor()->SetScale(scale);
 #endif
+
         NLVector3 pos = VECTOR3(VECTOR3_X(lp), VECTOR3_Y(lp), BOUND_MAX_Z(bound) + (VECTOR3_Z(lp) - BOUND_MIN_Z(bound)) * 2);
         //lpos = pos;
         GetActor(7)->SetPosition(pos);
@@ -354,28 +385,6 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
         m_mainCameraActor->SetPosition(startPos);
         m_mainCameraActor->SetRotation(startRotate);
         m_mainCameraActor->UpdateCamera();
-        // Egypt 3D level 0(main menu) 8 9 10 12 has a cube sky model
-        if(game == NL_SHADOW_OF_EGYPT_3D)
-        {
-            glColor4f(0, 0, 0, 1);
-            GLfloat color[4] = {0, 0, 0, 0.2};
-            glFogfv(GL_FOG_COLOR, color);
-            if(level == 0 || level == 8 || level == 9 || level == 10 || level == 12)
-            {
-                for(uint i = 0; i < m_model->item_count; i++)
-                {
-                    GL_NETLizard_3D_Item_Mesh *mesh = m_model->item_meshes + i;
-                    if(mesh->item_type & NL_3D_ITEM_TYPE_SKYBOX)
-                    {
-                        NLVector3 skyPos = VECTOR3(mesh->position[0], mesh->position[2], -mesh->position[1]);
-                        NLActor *camera_3d = GetActor(4);
-                        camera_3d->SetPosition(skyPos);
-                        m_sky3DRenderer->SetModel(mesh, m_model->texes);
-                        break; // only set 1, some level has many sky box
-                    }
-                }
-            }
-        }
     }
 
     GrabMouseCursor(true);
@@ -438,6 +447,7 @@ bool MapScene::KeyEventHandler(int key, bool pressed, int modifier)
 
 void MapScene::Reset()
 {
+    m_skyboxs.clear();
     SetCurrentScene(-1);
     SetCurrentViewItem(-1);
     SetCurrentCollisionItem(-1);
@@ -626,6 +636,7 @@ void MapScene::SetCurrentScene(int scene)
     if(m_currentScene != scene)
     {
         m_currentScene = scene;
+        UpdateSkybox();
         emit currentSceneChanged(m_currentScene);
     }
 }
@@ -655,6 +666,23 @@ void MapScene::SetCurrentViewScene(int scene)
         m_currentViewScene = scene;
         emit currentViewSceneChanged(m_currentViewScene);
     }
+}
+
+void MapScene::UpdateSkybox()
+{
+    // Egypt 3D level 0(main menu) 8 9 10 12 has a cube sky model
+    if(!m_model || m_model->game != NL_SHADOW_OF_EGYPT_3D || m_skyboxs.isEmpty())
+        return;
+    //if(level == 0 || level == 8 || level == 9 || level == 10 || level == 12)
+    const int index = m_currentScene < 0 || !m_skyboxs.contains(m_currentScene) ? m_skyboxs.constBegin().value() : m_skyboxs.value(m_currentScene);
+    GL_NETLizard_3D_Item_Mesh *mesh = m_model->item_meshes + index;
+    if(m_sky3DRenderer->Model() == mesh)
+        return;
+    NLVector3 skyPos = VECTOR3(mesh->position[0], mesh->position[1], mesh->position[2]);
+    conv_gl_vector3(&skyPos);
+    m_sky3DCameraActor->SetPosition(skyPos);
+    m_sky3DCameraActor->UpdateCamera();
+    m_sky3DRenderer->SetModel(mesh, m_model->texes);
 }
 
 void MapScene::UpdateCullRenderScene()

@@ -551,11 +551,7 @@ void MapEventHandlerComponent::SetModel(GL_NETLizard_3D_Model *model, int level)
                 for(int i = 0; i < count; i++)
                 {
                     const NETLizard_Level_Teleport *t = teleport + i;
-                    for(unsigned j = 0; j < countof(t->item); j++)
-                    {
-                        if(t->item[j] >= 0)
-                            m_teleport.insert(t->item[j], t);
-                    }
+                    m_teleport.insert(t->item, t);
                 }
             }
             const NETLizard_Level_Elevator *elevator = nlGet3DGameElevator(m_model->game, level, -1, &count);
