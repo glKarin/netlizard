@@ -45,7 +45,8 @@ private Q_SLOTS:
     void PrevFrame();
     void OnPlaying();
     void OnStopped();
-    void SetAutoscan(bool b);
+    void SetAutoscanIndex(bool b);
+    void SetAutoscanResourcePath(bool b);
 
 private:
     AnimationScene *m_animationScene;
@@ -64,8 +65,10 @@ private:
     QToolBar *m_toolbar;
     QString m_objPath;
     QString m_resourceDirPath;
-    bool m_autoscan;
-    QCheckBox *m_autoscanCheckBox;
+    bool m_autoscanIndex;
+    QCheckBox *m_autoscanIndexCheckBox;
+    bool m_autoscanResource;
+    QCheckBox *m_autoscanResourceCheckBox;
 
     Q_DISABLE_COPY(AnimationViewer)
 };

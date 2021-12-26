@@ -36,7 +36,8 @@ private Q_SLOTS:
     void SetObjFile(const QString &file);
     void SetResourceDirPath(const QString &file);
     void SetBackgroundColor(const QColor &color);
-    void SetAutoscan(bool b);
+    void SetAutoscanIndex(bool b);
+    void SetAutoscanResourcePath(bool b);
 
 private:
     ItemScene *m_itemScene;
@@ -49,8 +50,10 @@ private:
     QPushButton *m_openResourcePathButton;
     QString m_objPath;
     QString m_resourceDirPath;
-    bool m_autoscan;
-    QCheckBox *m_autoscanCheckBox;
+    bool m_autoscanIndex;
+    QCheckBox *m_autoscanIndexCheckBox;
+    bool m_autoscanResource;
+    QCheckBox *m_autoscanResourceCheckBox;
 
     Q_DISABLE_COPY(ItemViewer)
 };

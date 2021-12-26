@@ -64,6 +64,7 @@
         <translation source="No single scene"><![CDATA[不限制]]></translation>
         <translation source="Only render current single scene"><![CDATA[仅渲染所在场景]]></translation>
         <translation source="Render current scene and neighboring scene"><![CDATA[仅渲染所在场景和相邻场景]]></translation>
+        <translation source="Autoscan resource path from file name"><![CDATA[从文件名自动获取资源路径]]></translation>
     </context>
 
     <context name="MENU">

@@ -41,12 +41,16 @@ AnimationViewer::AnimationViewer(QWidget *parent) :
     m_animFPSSpinBox(0),
     m_playSeqCheckBox(0),
     m_toolbar(0),
-    m_autoscan(false),
-    m_autoscanCheckBox(0)
+    m_autoscanIndex(false),
+    m_autoscanIndexCheckBox(0),
+    m_autoscanResource(false),
+    m_autoscanResourceCheckBox(0)
 {
     setObjectName("AnimationViewer");
     Init();
-    SetAutoscan(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<bool>("APP/autoscan_level_and_index", false));
+    Settings *setting = SINGLE_INSTANCE_OBJ(Settings);
+    SetAutoscanIndex(setting->GetSetting<bool>("APP/autoscan_level_and_index", false));
+    SetAutoscanResourcePath(setting->GetSetting<bool>("APP/autoscan_resource_path", false));
 }
 
 AnimationViewer::~AnimationViewer()
@@ -71,7 +75,8 @@ void AnimationViewer::Init()
     m_toolbar = new QToolBar;
     QToolButton *nextFrame = new QToolButton;
     QToolButton *prevFrame = new QToolButton;
-    m_autoscanCheckBox = new QCheckBox(tr("Autoscan"));
+    m_autoscanIndexCheckBox = new QCheckBox(tr("Autoscan"));
+    m_autoscanResourceCheckBox = new QCheckBox(tr("Autoscan"));
     SetTitleLabelVisible(false);
 
     for(int i = NL_FRAME_ANIMATION_IDLE; i < NL_FRAME_ANIMATION_TOTAL; i++)
@@ -139,6 +144,8 @@ void AnimationViewer::Init()
     m_openResourcePathButton->setText(tr("Resource path"));
     m_openResourcePathButton->setShortcut(QKeySequence::fromString("ctrl+r"));
     AddTool(m_openResourcePathButton);
+    AddTool(m_autoscanResourceCheckBox);
+    connect(m_autoscanResourceCheckBox, SIGNAL(clicked(bool)), this, SLOT(SetAutoscanResourcePath(bool)));
     AddTool();
 
     AddTool(new QLabel(tr("Game: ")));
@@ -146,8 +153,8 @@ void AnimationViewer::Init()
     AddTool();
     AddTool(new QLabel(tr("Index: ")));
     AddTool(m_indexSpinBox);
-    AddTool(m_autoscanCheckBox);
-    connect(m_autoscanCheckBox, SIGNAL(clicked(bool)), this, SLOT(SetAutoscan(bool)));
+    AddTool(m_autoscanIndexCheckBox);
+    connect(m_autoscanIndexCheckBox, SIGNAL(clicked(bool)), this, SLOT(SetAutoscanIndex(bool)));
 
     button = new QPushButton;
     connect(button, SIGNAL(clicked()), this, SLOT(OpenBackgroundColorChooser()));
@@ -210,6 +217,8 @@ void AnimationViewer::OpenResourceDirChooser()
         connect(m_resourceDirChooser, SIGNAL(fileSelected(const QString &)), this, SLOT(SetResourceDirPath(const QString &)));
     }
 
+    if(!m_resourceDirPath.isEmpty())
+        m_resourceDirChooser->setDirectory(m_resourceDirPath);
     m_resourceDirChooser->exec();
 }
 
@@ -298,8 +307,10 @@ void AnimationViewer::Reset()
     m_frameSlider->setMaximum(0);
     m_frameSlider->setValue(0);
     m_toolbar->setEnabled(false);
-    if(m_autoscan)
+    if(m_autoscanIndex)
         m_indexSpinBox->setValue(-1);
+    if(m_autoscanResource)
+        m_resourceDirPath.clear();
 }
 
 bool AnimationViewer::OpenFile()
@@ -365,15 +376,28 @@ NLScene * AnimationViewer::Scene()
     return m_animationScene;
 }
 
-void AnimationViewer::SetAutoscan(bool b)
+void AnimationViewer::SetAutoscanIndex(bool b)
 {
-    if(m_autoscan != b)
+    if(m_autoscanIndex != b)
     {
-        m_autoscan = b;
-        if(m_autoscan)
+        m_autoscanIndex = b;
+        if(m_autoscanIndex)
             m_indexSpinBox->setValue(-1);
-        m_indexSpinBox->setEnabled(!m_autoscan);
-        if(m_autoscanCheckBox->isChecked() != m_autoscan)
-            m_autoscanCheckBox->setChecked(m_autoscan);
+        m_indexSpinBox->setEnabled(!m_autoscanIndex);
+        if(m_autoscanIndexCheckBox->isChecked() != m_autoscanIndex)
+            m_autoscanIndexCheckBox->setChecked(m_autoscanIndex);
+    }
+}
+
+void AnimationViewer::SetAutoscanResourcePath(bool b)
+{
+    if(m_autoscanResource != b)
+    {
+        m_autoscanResource = b;
+        if(m_autoscanResource)
+            m_resourceDirPath.clear();
+        m_openResourcePathButton->setEnabled(!m_autoscanResource);
+        if(m_autoscanResourceCheckBox->isChecked() != m_autoscanResource)
+            m_autoscanResourceCheckBox->setChecked(m_autoscanResource);
     }
 }

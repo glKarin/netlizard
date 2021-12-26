@@ -30,12 +30,16 @@ MapViewer::MapViewer(QWidget *parent) :
     m_levelSpinBox(0),
     m_openLvlButton(0),
     m_openResourcePathButton(0),
-    m_autoscan(false),
-    m_autoscanCheckBox(0)
+    m_autoscanLevel(false),
+    m_autoscanLevelCheckBox(0),
+    m_autoscanResource(false),
+    m_autoscanResourceCheckBox(0)
 {
     setObjectName("MapViewer");
     Init();
-    SetAutoscan(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<bool>("APP/autoscan_level_and_index", false));
+    Settings *setting = SINGLE_INSTANCE_OBJ(Settings);
+    SetAutoscanLevel(setting->GetSetting<bool>("APP/autoscan_level_and_index", false));
+    SetAutoscanResourcePath(setting->GetSetting<bool>("APP/autoscan_resource_path", false));
 }
 
 MapViewer::~MapViewer()
@@ -49,7 +53,8 @@ void MapViewer::Init()
     m_mapScene = new MapScene;
     //QHBoxLayout *toolLayout = ToolLayout();
     m_levelSpinBox = new QComboBox;
-    m_autoscanCheckBox = new QCheckBox(tr("Autoscan"));
+    m_autoscanLevelCheckBox = new QCheckBox(tr("Autoscan"));
+    m_autoscanResourceCheckBox = new QCheckBox(tr("Autoscan"));
     SetTitleLabelVisible(false);
 
     for(int i = 0; i <= NL_CONTR_TERRORISM_3D_EPISODE_3; i++)
@@ -69,6 +74,8 @@ void MapViewer::Init()
     m_openResourcePathButton->setText(tr("Resource path"));
     m_openResourcePathButton->setShortcut(QKeySequence::fromString("ctrl+r"));
     AddTool(m_openResourcePathButton);
+    AddTool(m_autoscanResourceCheckBox);
+    connect(m_autoscanResourceCheckBox, SIGNAL(clicked(bool)), this, SLOT(SetAutoscanResourcePath(bool)));
     AddTool();
 
     SetGameLevels(0);
@@ -77,8 +84,8 @@ void MapViewer::Init()
     AddTool();
     AddTool(new QLabel(tr("Level: ")));
     AddTool(m_levelSpinBox);
-    AddTool(m_autoscanCheckBox);
-    connect(m_autoscanCheckBox, SIGNAL(clicked(bool)), this, SLOT(SetAutoscan(bool)));
+    AddTool(m_autoscanLevelCheckBox);
+    connect(m_autoscanLevelCheckBox, SIGNAL(clicked(bool)), this, SLOT(SetAutoscanLevel(bool)));
 
     AddTool();
     button = new QPushButton;
@@ -119,6 +126,8 @@ void MapViewer::OpenResourceDirChooser()
         connect(m_resourceDirChooser, SIGNAL(fileSelected(const QString &)), this, SLOT(SetResourceDirPath(const QString &)));
     }
 
+    if(!m_resourceDirPath.isEmpty())
+        m_resourceDirChooser->setDirectory(m_resourceDirPath);
     m_resourceDirChooser->exec();
 }
 
@@ -165,8 +174,10 @@ void MapViewer::Reset()
 {
     BaseViewer::Reset();
     m_mapScene->Reset();
-    if(m_autoscan)
+    if(m_autoscanLevel)
         m_levelSpinBox->setCurrentIndex(0);
+    if(m_autoscanResource)
+        m_resourceDirPath.clear();
 }
 
 bool MapViewer::OpenFile()
@@ -245,15 +256,28 @@ void MapViewer::UpdateSceneInfo()
     SetStatusText(str);
 }
 
-void MapViewer::SetAutoscan(bool b)
+void MapViewer::SetAutoscanLevel(bool b)
 {
-    if(m_autoscan != b)
+    if(m_autoscanLevel != b)
     {
-        m_autoscan = b;
-        if(m_autoscan)
+        m_autoscanLevel = b;
+        if(m_autoscanLevel)
             m_levelSpinBox->setCurrentIndex(0);
-        m_levelSpinBox->setEnabled(!m_autoscan);
-        if(m_autoscanCheckBox->isChecked() != m_autoscan)
-            m_autoscanCheckBox->setChecked(m_autoscan);
+        m_levelSpinBox->setEnabled(!m_autoscanLevel);
+        if(m_autoscanLevelCheckBox->isChecked() != m_autoscanLevel)
+            m_autoscanLevelCheckBox->setChecked(m_autoscanLevel);
+    }
+}
+
+void MapViewer::SetAutoscanResourcePath(bool b)
+{
+    if(m_autoscanResource != b)
+    {
+        m_autoscanResource = b;
+        if(m_autoscanResource)
+            m_resourceDirPath.clear();
+        m_openResourcePathButton->setEnabled(!m_autoscanResource);
+        if(m_autoscanResourceCheckBox->isChecked() != m_autoscanResource)
+            m_autoscanResourceCheckBox->setChecked(m_autoscanResource);
     }
 }

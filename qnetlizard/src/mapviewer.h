@@ -34,7 +34,8 @@ private Q_SLOTS:
     void SetLvlFile(const QString &file);
     void SetResourceDirPath(const QString &file);
     void UpdateSceneInfo();
-    void SetAutoscan(bool b);
+    void SetAutoscanLevel(bool b);
+    void SetAutoscanResourcePath(bool b);
 
 private:
     MapScene *m_mapScene;
@@ -46,8 +47,10 @@ private:
     QPushButton *m_openResourcePathButton;
     QString m_lvlPath;
     QString m_resourceDirPath;
-    bool m_autoscan;
-    QCheckBox *m_autoscanCheckBox;
+    bool m_autoscanLevel;
+    QCheckBox *m_autoscanLevelCheckBox;
+    bool m_autoscanResource;
+    QCheckBox *m_autoscanResourceCheckBox;
 
     Q_DISABLE_COPY(MapViewer)
     
