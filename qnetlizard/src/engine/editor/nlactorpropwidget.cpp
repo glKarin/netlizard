@@ -181,13 +181,13 @@ void NLActorPropWidget::Init()
     mainLayout->addSpacing(1);
 
     m_actorGroupBox->setLayout(m_actorLayout);
-    m_actorGroupBox->setTitle("Properties");
+    m_actorGroupBox->setTitle(tr("Properties"));
     m_actorGroupBox->setCheckable(true);
     connect(m_actorGroupBox, SIGNAL(toggled(bool)), this, SLOT(ToggleGroupBox(bool)));
     mainLayout->addWidget(m_actorGroupBox);
     mainLayout->addSpacing(2);
 
-    label = new QLabel("Component: ");
+    label = new QLabel(tr("Component: "));
     mainLayout->addWidget(label);
     mainLayout->addSpacing(1);
 
@@ -243,7 +243,7 @@ void NLActorPropWidget::Reset()
     }
     m_propWidgetMap.clear();
     m_actor = 0;
-    m_actorGroupBox->setTitle("Properties");
+    m_actorGroupBox->setTitle(tr("Properties"));
     m_actorGroupBox->setProperty("_Layout_visible", QVariant());
     m_actorGroupBox->setProperty("_Layout_items", QVariant());
     m_actorGroupBox->setProperty("_Layout_item_maps", QVariant());

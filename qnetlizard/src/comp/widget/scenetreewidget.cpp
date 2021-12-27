@@ -45,6 +45,6 @@ void SceneTreeWidget::Init()
     connect(m_treeWidget, SIGNAL(actorSelected(NLActor*)), this, SIGNAL(actorSelected(NLActor*)));
 
     setWidget(m_treeWidget);
-    setWindowTitle("Scene tree");
+    setWindowTitle(tr("Scene tree"));
     //setMaximumWidth(360);
 }

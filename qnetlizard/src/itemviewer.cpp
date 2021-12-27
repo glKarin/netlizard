@@ -199,7 +199,9 @@ bool ItemViewer::OpenFile()
     if(m_resourceDirPath.isEmpty())
     {
         QFileInfo info(m_objPath);
-        SetResourceDirPath(info.absolutePath());
+        QDir dir(info.absoluteDir());
+        dir.cdUp();
+        SetResourceDirPath(dir.absolutePath());
     }
     if(index == -1)
     {

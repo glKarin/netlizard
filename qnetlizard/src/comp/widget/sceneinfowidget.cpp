@@ -47,6 +47,6 @@ void SceneInfoWidget::Init()
 {
     m_infoWidget = new NLSceneInfoWidget;
     setWidget(m_infoWidget);
-    setWindowTitle("Scene infomation");
+    setWindowTitle(tr("Scene infomation"));
     //setMaximumWidth(360);
 }

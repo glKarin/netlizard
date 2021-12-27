@@ -25,6 +25,13 @@
     </message>
 </context>
 <context>
+    <name>ActorPropertyWidget</name>
+    <message>
+        <source>Actor property</source>
+        <translation type="unfinished">对象属性</translation>
+    </message>
+</context>
+<context>
     <name>AnimationViewer</name>
     <message>
         <source>Invert</source>
@@ -432,6 +439,97 @@
     <message>
         <source>Collision(Scene: %1, Item: %2) View(Scene: %3, Item: %4)</source>
         <translation type="unfinished">碰撞(场景: %1, 物品: %2) 视野(场景: %3, 物品: %4)</translation>
+    </message>
+</context>
+<context>
+    <name>NLActorPropWidget</name>
+    <message>
+        <source>Properties</source>
+        <translation type="unfinished">属性</translation>
+    </message>
+    <message>
+        <source>Component: </source>
+        <translation type="unfinished">组件: </translation>
+    </message>
+</context>
+<context>
+    <name>NLSceneInfoWidget</name>
+    <message>
+        <source>Base</source>
+        <translation type="unfinished">基础</translation>
+    </message>
+    <message>
+        <source>Camera</source>
+        <translation type="unfinished">相机</translation>
+    </message>
+    <message>
+        <source>No active scene!</source>
+        <translation type="unfinished">无有效场景!</translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished">位置</translation>
+    </message>
+    <message>
+        <source>Rotation</source>
+        <translation type="unfinished">旋转</translation>
+    </message>
+    <message>
+        <source>Direction</source>
+        <translation type="unfinished">方向</translation>
+    </message>
+    <message>
+        <source>Up</source>
+        <translation type="unfinished">上</translation>
+    </message>
+    <message>
+        <source>Right</source>
+        <translation type="unfinished">右</translation>
+    </message>
+    <message>
+        <source>View matrix</source>
+        <translation type="unfinished">视图矩阵</translation>
+    </message>
+    <message>
+        <source>Projection matrix</source>
+        <translation type="unfinished">投影矩阵</translation>
+    </message>
+    <message>
+        <source>View-projection matrix</source>
+        <translation type="unfinished">视图投影矩阵</translation>
+    </message>
+    <message>
+        <source>Normal matrix</source>
+        <translation type="unfinished">法线矩阵</translation>
+    </message>
+    <message>
+        <source>Render matrix</source>
+        <translation type="unfinished">渲染矩阵</translation>
+    </message>
+    <message>
+        <source>No active camera!</source>
+        <translation type="unfinished">无有效相机!</translation>
+    </message>
+</context>
+<context>
+    <name>NLSceneTreeWidget</name>
+    <message>
+        <source>No scene</source>
+        <translation type="unfinished">无场景</translation>
+    </message>
+</context>
+<context>
+    <name>SceneInfoWidget</name>
+    <message>
+        <source>Scene infomation</source>
+        <translation type="unfinished">场景信息</translation>
+    </message>
+</context>
+<context>
+    <name>SceneTreeWidget</name>
+    <message>
+        <source>Scene tree</source>
+        <translation type="unfinished">场景对象树</translation>
     </message>
 </context>
 <context>

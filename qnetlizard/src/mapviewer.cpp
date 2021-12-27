@@ -153,7 +153,7 @@ void MapViewer::SetResourceDirPath(const QString &file)
 void MapViewer::SetGameLevels(int index)
 {
     m_levelSpinBox->clear();
-    m_levelSpinBox->addItem("-- " + tr("AutoScan") + " --", -1);
+    m_levelSpinBox->addItem("<-- " + tr("Autoscan") + " -->", -1);
     int selectedIndex = m_gameComboBox->itemData(index).toInt();
     NETLizard_Game game = static_cast<NETLizard_Game>(selectedIndex + NL_RACING_EVOLUTION_3D);
     NLint start = 0;
@@ -166,7 +166,7 @@ void MapViewer::SetGameLevels(int index)
         const int index = i + start;
         const char *name = nlGet3DGameLevelName(game, index);
         if(name)
-            m_levelSpinBox->addItem(QString("%1. %2").arg(index).arg(name), index);
+            m_levelSpinBox->addItem(QString("%1.%2").arg(index).arg(name), index);
     }
 }
 

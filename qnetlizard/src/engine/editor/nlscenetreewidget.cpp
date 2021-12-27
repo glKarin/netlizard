@@ -23,7 +23,7 @@ NLSceneTreeWidget::~NLSceneTreeWidget()
 
 void NLSceneTreeWidget::Init()
 {
-    setHeaderLabel("No scene");
+    setHeaderLabel(tr("No scene"));
     connect(this, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(OnItemClicked(QTreeWidgetItem *, int)));
     //setMinimumWidth(128);
 }
@@ -32,7 +32,7 @@ void NLSceneTreeWidget::Reset()
 {
     m_scene = 0;
     clear();
-    setHeaderLabel("No scene");
+    setHeaderLabel(tr("No scene"));
 }
 
 void NLSceneTreeWidget::SetScene(NLScene *scene)

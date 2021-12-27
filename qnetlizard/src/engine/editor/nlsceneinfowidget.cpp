@@ -56,19 +56,19 @@ void NLSceneInfoWidget::Init()
     m_baseInfo->setAcceptRichText(RICH_TEXT);
     m_cameraInfo->setAcceptRichText(RICH_TEXT);
 
-    addTab(m_baseInfo, "Base");
-    addTab(m_cameraInfo, "Camera");
+    addTab(m_baseInfo, tr("Base"));
+    addTab(m_cameraInfo, tr("Camera"));
 
     setCurrentWidget(m_baseInfo);
 }
 
-#define _DBG_VEC3(label, v) QString(_B(" "label": ")"[%1, %2, %3]").arg(VECTOR3_X(v), 0, 'g', 6).arg(VECTOR3_Y(v), 0, 'g', 6).arg(VECTOR3_Z(v), 0, 'g', 6)
-#define _DBG_MAT4(label, v) QString(_B(" "label": ")"["_ENDL"| %1, %2, %3, %4 |"_ENDL"| %5, %6, %7, %8 |"_ENDL"| %9, %10, %11, %12 |"_ENDL"| %13, %14, %15, %16 |   ]")\
+#define _DBG_VEC3(label, v) QString(_B(" " + label + ": ")"[%1, %2, %3]").arg(VECTOR3_X(v), 0, 'g', 6).arg(VECTOR3_Y(v), 0, 'g', 6).arg(VECTOR3_Z(v), 0, 'g', 6)
+#define _DBG_MAT4(label, v) QString(_B(" " + label + ": ")"["_ENDL"| %1, %2, %3, %4 |"_ENDL"| %5, %6, %7, %8 |"_ENDL"| %9, %10, %11, %12 |"_ENDL"| %13, %14, %15, %16 |   ]")\
         .arg(GL_MATRIXV_M_CR4(v, 1, 1), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 2, 1), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 3, 1), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 4, 1), 12, 'g', 6)\
         .arg(GL_MATRIXV_M_CR4(v, 1, 2), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 2, 2), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 3, 2), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 4, 2), 12, 'g', 6)\
         .arg(GL_MATRIXV_M_CR4(v, 1, 3), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 2, 3), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 3, 3), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 4, 3), 12, 'g', 6)\
         .arg(GL_MATRIXV_M_CR4(v, 1, 4), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 2, 4), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 3, 4), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 4, 4), 12, 'g', 6)
-#define _DBG_MAT3(label, v) QString(_B(" "label": ")"["_ENDL"| %1, %2, %3 |"_ENDL"| %4, %5, %6 |"_ENDL"| %7, %8, %9 |   ]")\
+#define _DBG_MAT3(label, v) QString(_B(" " + label + ": ")"["_ENDL"| %1, %2, %3 |"_ENDL"| %4, %5, %6 |"_ENDL"| %7, %8, %9 |   ]")\
         .arg(GL_MATRIXV_M_CR4(v, 1, 1), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 2, 1), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 3, 1), 12, 'g', 6)\
         .arg(GL_MATRIXV_M_CR4(v, 1, 2), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 2, 2), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 3, 2), 12, 'g', 6)\
         .arg(GL_MATRIXV_M_CR4(v, 1, 3), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 2, 3), 12, 'g', 6).arg(GL_MATRIXV_M_CR4(v, 3, 3), 12, 'g', 6)
@@ -76,57 +76,57 @@ void NLSceneInfoWidget::UpdateSceneInfo()
 {
     if(!m_scene)
     {
-        m_baseInfo->SETTEXT("No active scene!");
-        m_cameraInfo->SETTEXT("No active scene!");
+        m_baseInfo->SETTEXT(tr("No active scene!"));
+        m_cameraInfo->SETTEXT(tr("No active camera!"));
         return;
     }
 
     QStringList list;
     list
             //<< _B("Scene infomation: ")
-         << _B(" FPS: ") + QString::number(m_scene->CurrentFPS()) + " (" + QString(_B("Limit: ")) + QString::number(m_scene->FPS()) + ")"
-         << _B(" Actor count: ") + QString::number(m_scene->ActorCount())
-               << _B(" Update delta: ") + QString::number(m_scene->CurrendDelta())
-               << _B(" Update time: ") + QDateTime::fromMSecsSinceEpoch(m_scene->UpdateTime()).toString("yyyy-MM-dd HH:mm:ss zzz")
+         << _B("FPS: ") + QString::number(m_scene->CurrentFPS()) + " (" + QString(_B("Limit: ")) + QString::number(m_scene->FPS()) + ")"
+         << _B("Actor count: ") + QString::number(m_scene->ActorCount())
+               << _B("Update delta: ") + QString::number(m_scene->CurrendDelta())
+               << _B("Update time: ") + QDateTime::fromMSecsSinceEpoch(m_scene->UpdateTime()).toString("yyyy-MM-dd HH:mm:ss zzz")
                ;
     m_baseInfo->SETTEXT(list.join(_ENDL));
 
     NLSceneCamera *camera = m_scene->CurrentCamera();
     if(!camera)
     {
-        list << "No active camera";
+        list << tr("No active camera!");
     }
     else
     {
         list.clear();
         //list << _B("Camera infomation: ") ;
         NLVector3 v = camera->Position();
-        list << _B("vector3");
-        list << _DBG_VEC3("Position", v);
+        list << _B("Vector3");
+        list << _DBG_VEC3(tr("Position"), v);
         v = camera->Rotation();
-        list << _DBG_VEC3("Rotation", v);
+        list << _DBG_VEC3(tr("Rotation"), v);
 //        v = camera->Scale();
 //        list << _DBG_VEC3("Scale", v);
 
-        list << _B("normal");
+        list << _B("Normal");
         v = camera->Direction();
-        list << _DBG_VEC3("Direction", v);
+        list << _DBG_VEC3(tr("Direction"), v);
         v = camera->Up();
-        list << _DBG_VEC3("Up", v);
+        list << _DBG_VEC3(tr("Up"), v);
         v = camera->Right_XPositive();
-        list << _DBG_VEC3("Right", v);
+        list << _DBG_VEC3(tr("Right"), v);
 
         const NLMatrix4 *m = camera->ViewMatrix();
-        list << _B("matrix");
-        list << _DBG_MAT4("View matrix", m);
+        list << _B("Matrix");
+        list << _DBG_MAT4(tr("View matrix"), m);
         m = camera->ProjectionMatrix();
-        list << _DBG_MAT4("Projection matrix", m);
+        list << _DBG_MAT4(tr("Projection matrix"), m);
         m = camera->ViewProjectionMatrix();
-        list << _DBG_MAT4("View-projection matrix", m);
+        list << _DBG_MAT4(tr("View-projection matrix"), m);
         m = camera->NormalMatrix();
-        list << _DBG_MAT3("Normal matrix", m);
+        list << _DBG_MAT3(tr("Normal matrix"), m);
         m = camera->RenderMatrix();
-        list << _DBG_MAT3("Render matrix", m);
+        list << _DBG_MAT3(tr("Render matrix"), m);
     }
 
     m_cameraInfo->SETTEXT(list.join(_ENDL));

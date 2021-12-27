@@ -19,24 +19,6 @@
 #include "netlizard.h"
 #include "qdef.h"
 
-static const QPair<int, QString> Types[] = {
-    QPair<int, QString>(NL_TEXTURE_UNKNOWN, ImageViewer::tr("Raw data(exam jpg, jpeg)")),
-    QPair<int, QString>(NL_TEXTURE_NORMAL_PNG, ImageViewer::tr("PNG(stable png file)")),
-    QPair<int, QString>(NL_TEXTURE_ENCODE_PNG, ImageViewer::tr("Encode PNG(encode png file)")),
-    QPair<int, QString>(NL_TEXTURE_3D_ENGINE_V2, ImageViewer::tr("Texture v2(3D CT, 3D Spacnaz, 3D CT2, 3D CT3)")),
-    QPair<int, QString>(NL_TEXTURE_3D_ENGINE_V3, ImageViewer::tr("Texture v3(3D Egypt, 3D Clone)")),
-    QPair<int, QString>(NL_TEXTURE_3D_ENGINE_V3_COMPRESS, ImageViewer::tr("Texture v3 compress(3D Egypt, 3D Clone)")),
-};
-
-static const QPair<Qt::Alignment, QString> Aligns[] = {
-    QPair<Qt::Alignment, QString>(Qt::AlignLeft | Qt::AlignTop, ImageViewer::tr("Left-Top")),
-    QPair<Qt::Alignment, QString>(Qt::AlignCenter, ImageViewer::tr("Center")),
-    QPair<Qt::Alignment, QString>(Qt::AlignLeft | Qt::AlignBottom, ImageViewer::tr("Left-Bottom")),
-    QPair<Qt::Alignment, QString>(Qt::AlignTop | Qt::AlignHCenter, ImageViewer::tr("Center-Top")),
-    QPair<Qt::Alignment, QString>(Qt::AlignBottom | Qt::AlignHCenter, ImageViewer::tr("Center-Bottom")),
-    QPair<Qt::Alignment, QString>(Qt::AlignLeft | Qt::AlignVCenter, ImageViewer::tr("Left-Center")),
-};
-
 ImageViewer::ImageViewer(QWidget *parent) :
     BaseViewer(parent),
     m_imageScene(0),
@@ -63,6 +45,24 @@ void ImageViewer::Init()
     m_indexSpinBox = new QSpinBox;
     m_alignComboBox = new QComboBox;
     SetTitleLabelVisible(false);
+
+    const QPair<int, QString> Types[] = {
+        QPair<int, QString>(NL_TEXTURE_UNKNOWN, tr("Raw data(exam jpg, jpeg)")),
+        QPair<int, QString>(NL_TEXTURE_NORMAL_PNG, tr("PNG(stable png file)")),
+        QPair<int, QString>(NL_TEXTURE_ENCODE_PNG, tr("Encode PNG(encode png file)")),
+        QPair<int, QString>(NL_TEXTURE_3D_ENGINE_V2, tr("Texture v2(3D CT, 3D Spacnaz, 3D CT2, 3D CT3)")),
+        QPair<int, QString>(NL_TEXTURE_3D_ENGINE_V3, tr("Texture v3(3D Egypt, 3D Clone)")),
+        QPair<int, QString>(NL_TEXTURE_3D_ENGINE_V3_COMPRESS, tr("Texture v3 compress(3D Egypt, 3D Clone)")),
+    };
+
+    const QPair<Qt::Alignment, QString> Aligns[] = {
+        QPair<Qt::Alignment, QString>(Qt::AlignLeft | Qt::AlignTop, tr("Left-Top")),
+        QPair<Qt::Alignment, QString>(Qt::AlignCenter, tr("Center")),
+        QPair<Qt::Alignment, QString>(Qt::AlignLeft | Qt::AlignBottom, tr("Left-Bottom")),
+        QPair<Qt::Alignment, QString>(Qt::AlignTop | Qt::AlignHCenter, tr("Center-Top")),
+        QPair<Qt::Alignment, QString>(Qt::AlignBottom | Qt::AlignHCenter, tr("Center-Bottom")),
+        QPair<Qt::Alignment, QString>(Qt::AlignLeft | Qt::AlignVCenter, tr("Left-Center")),
+    };
 
     for(int i = 0; i < 6; i++)
     {
@@ -150,15 +150,15 @@ void ImageViewer::OnTypeCurrentIndexChanged(int index)
 
 void ImageViewer::OnAlignCurrentIndexChanged(int index)
 {
-    Qt::Alignment align = Aligns[index].first;
+    Qt::Alignment align = static_cast<Qt::Alignment>(m_alignComboBox->itemData(index).toInt());
     m_imageScene->SetAlignment(align);
 }
 
 bool ImageViewer::OpenFile(const QString &file)
 {
     Reset();
-    int selectedIndex = m_typeComboBox->currentIndex();
-    int type = Types[selectedIndex].first;
+    const int selectedIndex = m_typeComboBox->currentIndex();
+    int type = m_typeComboBox->itemData(selectedIndex).toInt();
     bool res = m_imageScene->LoadFile(file, type, m_indexSpinBox->value());
     if(!res)
     {
@@ -167,7 +167,7 @@ bool ImageViewer::OpenFile(const QString &file)
     }
     m_saveButton->setEnabled(true);
     const texture_s *tex = m_imageScene->Texture();
-    SetTitleLabel(QString(tr("%1: size %2 x %3, format %4")).arg(Types[selectedIndex].second).arg(tex->width).arg(tex->height).arg(tex->format == GL_RGB ? "RGB" : "RGBA"));
+    SetTitleLabel(QString(tr("%1: size %2 x %3, format %4")).arg(m_typeComboBox->itemText(selectedIndex)).arg(tex->width).arg(tex->height).arg(tex->format == GL_RGB ? "RGB" : "RGBA"));
 
     return true;
 }
