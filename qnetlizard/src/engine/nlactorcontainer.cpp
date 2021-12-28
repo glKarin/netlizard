@@ -168,3 +168,14 @@ void NLActorContainer::Clear()
     }
     NLObjectContainer::Clear();
 }
+
+int NLActorContainer::TotalCount() const
+{
+    const NLObjectList &list = ObjectList();
+    int res = list.size();
+    Q_FOREACH(const NLObject *obj, list)
+    {
+        res += (static_cast<const NLActor *>(obj))->ChildrenTotalCount();
+    }
+    return res;
+}

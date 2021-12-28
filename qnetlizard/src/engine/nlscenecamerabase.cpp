@@ -39,13 +39,13 @@ NLSceneCameraBase::NLSceneCameraBase(NLScene *widget)
     Mesa_AllocGLMatrix(&m_projectionMatrix);
     Mesa_AllocGLMatrix(&m_globalMatrix);
     Mesa_AllocGLMatrix(&m_mvpMatrix);
-    Mesa_AllocGLMatrix(&m_renderMatrix);
+    Mesa_AllocGLMatrix(&m_initialFixedViewMatrix);
     m_position = NL::Init_Position;
     m_rotation = NL::Init_Rotation;
     m_scale = NL::Init_Scale;
     m_up = m_zIsUp ? NL::Init_Up_z : NL::Init_Up_y;
     if(m_zIsUp)
-        Mesa_glRotate(&m_renderMatrix, -90, 1, 0, 0);
+        Mesa_glRotate(&m_initialFixedViewMatrix, -90, 1, 0, 0);
     UpdateMatrix();
     UpdateDirection();
 }
@@ -59,7 +59,7 @@ NLSceneCameraBase::~NLSceneCameraBase()
     Mesa_FreeGLMatrix(&m_projectionMatrix);
     Mesa_FreeGLMatrix(&m_globalMatrix);
     Mesa_FreeGLMatrix(&m_mvpMatrix);
-    Mesa_FreeGLMatrix(&m_renderMatrix);
+    Mesa_FreeGLMatrix(&m_initialFixedViewMatrix);
 }
 
 void NLSceneCameraBase::UpdateProjectionMatrix(NLMatrix4 *mat)
@@ -264,8 +264,8 @@ void NLSceneCameraBase::Reset()
     m_up = m_zIsUp ? NL::Init_Up_z : NL::Init_Up_y;
     if(m_zIsUp)
     {
-        Mesa_glLoadIdentity(&m_renderMatrix);
-        Mesa_glRotate(&m_renderMatrix, -90, 1, 0, 0);
+        Mesa_glLoadIdentity(&m_initialFixedViewMatrix);
+        Mesa_glRotate(&m_initialFixedViewMatrix, -90, 1, 0, 0);
     }
     UpdateMatrix();
     UpdateDirection();
@@ -305,7 +305,7 @@ void NLSceneCameraBase::UpdateViewMatrix()
     if(m_zIsUp)
         Mesa_glRotate(&m_viewMatrix, -90, 1, 0, 0); // z_is_up
 #else
-        Mesa_glMultMatrix(&m_viewMatrix, GL_MATRIX_M(m_renderMatrix));
+        Mesa_glMultMatrix(&m_viewMatrix, GL_MATRIX_M(m_initialFixedViewMatrix));
 #endif
 
     //Mesa_glScale(&m_viewMatrix, VECTOR3_X(m_scale), VECTOR3_Y(m_scale), VECTOR3_Z(m_scale));
@@ -349,9 +349,9 @@ void NLSceneCameraBase::SetZIsUp(bool b)
         m_zIsUp = b;
         m_up = m_zIsUp ? NL::Init_Up_z : NL::Init_Up_y;
 
-        Mesa_glLoadIdentity(&m_renderMatrix);
+        Mesa_glLoadIdentity(&m_initialFixedViewMatrix);
         if(m_zIsUp)
-            Mesa_glRotate(&m_renderMatrix, -90, 1, 0, 0); // z_is_up
+            Mesa_glRotate(&m_initialFixedViewMatrix, -90, 1, 0, 0); // z_is_up
 
         UpdateMatrix();
         UpdateDirection();

@@ -524,7 +524,7 @@ void MapScene::ConvToAlgoVector3(vector3_t &v)
     if(!camera)
         return;
 
-    const NLMatrix4 *mat = camera->RenderMatrix();
+    const NLMatrix4 *mat = camera->InitialFixedViewMatrix();
 //    NLMatrix4 normat;
 //    Mesa_InitGLMatrix(&normat, mat);
 //    Mesa_NormalMatrix(&normat);
@@ -538,7 +538,7 @@ void MapScene::ConvToRenderVector3(vector3_t &v)
     const NLSceneCamera *camera = CurrentCamera();
     if(!camera)
         return;
-    const NLMatrix4 *mat = camera->RenderMatrix(); // no translate and no scale
+    const NLMatrix4 *mat = camera->InitialFixedViewMatrix(); // no translate and no scale
 //    NLMatrix4 normat;
 //    Mesa_InitGLMatrix(&normat, mat);
 //    Mesa_NormalMatrix(&normat);
@@ -593,7 +593,7 @@ bool MapScene::RayIntersect()
 
     vector3_t direction = camera->Direction();
     vector3_t p = camera->Position();
-    const NLMatrix4 *mat = camera->RenderMatrix();
+    const NLMatrix4 *mat = camera->InitialFixedViewMatrix();
     matrix_transformv_self_row(mat, &p);
 
     nl_vector3_t cpoint = VECTOR3(0, 0, 0);

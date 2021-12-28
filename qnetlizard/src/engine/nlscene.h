@@ -36,6 +36,7 @@ public:
     void SetUpdateInterval(int ui);
     bool KeyState(int key);
     bool MouseState(int button);
+    int ActorTotalCount() const { return m_actors.TotalCount(); }
 
     NLSceneCamera * CurrentCamera() { return m_currentCamera; }
     NLActor * GetActor(int index) { return m_actors.Get(index); }

@@ -5,6 +5,7 @@
 
 class NLScene;
 class QTextBrowser;
+class QStackedWidget;
 
 class NLSceneInfoWidget : public QTabWidget
 {
@@ -28,6 +29,7 @@ private:
     NLScene *m_scene;
     QTextBrowser *m_baseInfo;
     QTextBrowser *m_cameraInfo;
+    QStackedWidget *m_cameraMatrix;
 
     Q_DISABLE_COPY(NLSceneInfoWidget)
     

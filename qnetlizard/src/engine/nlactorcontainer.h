@@ -31,6 +31,7 @@ public:
     NLActor * operator[](int index) { return Get(index); }
     NLActorContainer & operator<<(NLActor *item) { Add(item); return *this; }
     NLActor * Actor();
+    int TotalCount() const;
 
 signals:
 

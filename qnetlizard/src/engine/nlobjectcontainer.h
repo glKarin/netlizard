@@ -65,6 +65,7 @@ public slots:
 
 protected:
     NLObjectList & ObjectList() { return m_objectList; }
+    const NLObjectList & ObjectList() const { return m_objectList; }
 
 private:
     void Construct();

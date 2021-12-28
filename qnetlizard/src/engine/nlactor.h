@@ -82,6 +82,7 @@ public:
     NLINTERFACE virtual NLActor * MoveOriginal(const NLVector3 &v); // original
     NLINTERFACE virtual NLActor * MoveDirection(float len, const NLVector3 &dir); // local
     NLINTERFACE virtual NLActor * MoveDirectionOriginal(float len, const NLVector3 &dir); // original
+    int ChildrenTotalCount() const;
 
     template <class T>
     bool ChildIsType(int index) const;

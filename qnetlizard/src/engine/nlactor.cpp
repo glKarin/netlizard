@@ -608,3 +608,10 @@ int NLActor::ComponentCount() const
         return m_components->Count();
     return 0;
 }
+
+int NLActor::ChildrenTotalCount() const
+{
+    if(m_children)
+        return m_children->TotalCount();
+    return 0;
+}

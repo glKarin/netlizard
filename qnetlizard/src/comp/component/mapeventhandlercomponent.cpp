@@ -154,7 +154,7 @@ void MapEventHandler_elevator::Update(float delta)
             if(camera)
             {
                 nl_vector3_t pos = actor->Position();
-                matrix_transformv_self_row(camera->RenderMatrix(), &pos);
+                matrix_transformv_self_row(camera->InitialFixedViewMatrix(), &pos);
                 if(VECTOR3_Z(pos) >= BOUND_MIN_Z(m_box) && bound_point_in_box2d(&m_box, &pos))
                 {
                     return;
@@ -350,7 +350,7 @@ bool MapEventHandler_door::ActorInBox()
     if(camera)
     {
         nl_vector3_t pos = actor->Position();
-        matrix_transformv_self_row(camera->RenderMatrix(), &pos);
+        matrix_transformv_self_row(camera->InitialFixedViewMatrix(), &pos);
         inBox = bound_point_in_box(&m_box, &pos) ? true : false;
     }
     return inBox;
@@ -481,9 +481,9 @@ void MapEventHandler_ladder::Update(float delta)
     if(camera)
     {
         nl_vector3_t pos = actor->Position();
-        matrix_transformv_self_row(camera->RenderMatrix(), &pos);
+        matrix_transformv_self_row(camera->InitialFixedViewMatrix(), &pos);
         VECTOR3_Z(pos) += (m_unit * delta * (m_movment == MapEventHandler_ladder::Ladder_Move_Down ? -1 : 1));
-        matrix_transformv_self(camera->RenderMatrix(), &pos);
+        matrix_transformv_self(camera->InitialFixedViewMatrix(), &pos);
         actor->SetPosition(pos);
     }
     SetState(MapEventHandler::Handler_Finished);
@@ -764,7 +764,7 @@ void MapEventHandlerComponent::ConvToAlgoVector3(vector3_t &v)
     const NLSceneCamera *camera = SceneCamera();
     if(!camera)
         return;
-    const NLMatrix4 *mat = camera->RenderMatrix();
+    const NLMatrix4 *mat = camera->InitialFixedViewMatrix();
     matrix_transformv_self_row(mat, &v);
 }
 
@@ -773,6 +773,6 @@ void MapEventHandlerComponent::ConvToRenderVector3(vector3_t &v)
     const NLSceneCamera *camera = SceneCamera();
     if(!camera)
         return;
-    const NLMatrix4 *mat = camera->RenderMatrix();
+    const NLMatrix4 *mat = camera->InitialFixedViewMatrix();
     matrix_transformv_self(mat, &v);
 }

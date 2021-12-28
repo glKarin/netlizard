@@ -499,16 +499,60 @@
         <translation type="unfinished">视图投影矩阵</translation>
     </message>
     <message>
-        <source>Normal matrix</source>
-        <translation type="unfinished">法线矩阵</translation>
-    </message>
-    <message>
-        <source>Render matrix</source>
-        <translation type="unfinished">渲染矩阵</translation>
-    </message>
-    <message>
         <source>No active camera!</source>
         <translation type="unfinished">无有效相机!</translation>
+    </message>
+    <message>
+        <source>FPS: </source>
+        <translation type="unfinished">FPS: </translation>
+    </message>
+    <message>
+        <source>Actor count: </source>
+        <translation type="unfinished">对象数量: </translation>
+    </message>
+    <message>
+        <source>Update delta: </source>
+        <translation type="unfinished">更新间隔: </translation>
+    </message>
+    <message>
+        <source>Update time: </source>
+        <translation type="unfinished">更新时间: </translation>
+    </message>
+    <message>
+        <source>Matrix</source>
+        <translation type="unfinished">矩阵</translation>
+    </message>
+    <message>
+        <source>Initial fixed view matrix</source>
+        <translation type="unfinished">初始固定试图矩阵</translation>
+    </message>
+    <message>
+        <source>Invalid matrix!</source>
+        <translation type="unfinished">无效矩阵!</translation>
+    </message>
+    <message>
+        <source>Vector3: </source>
+        <translation type="unfinished">3维矢量: </translation>
+    </message>
+    <message>
+        <source>Normal: </source>
+        <translation type="unfinished">法线: </translation>
+    </message>
+    <message>
+        <source>Normal matrix(transposed)</source>
+        <translation type="unfinished">发现矩阵(已转置)</translation>
+    </message>
+    <message>
+        <source>Limit: </source>
+        <translation type="unfinished">限制: </translation>
+    </message>
+    <message>
+        <source>root</source>
+        <translation type="unfinished">根</translation>
+    </message>
+    <message>
+        <source>total</source>
+        <translation type="unfinished">总</translation>
     </message>
 </context>
 <context>

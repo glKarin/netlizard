@@ -215,7 +215,7 @@ void NETLizardMapModelDebugRenderer::RenderHighlight()
 
     vector3_t direction = m_camera->Direction();
     vector3_t p = m_camera->Position();
-    const NLMatrix4 *mat = m_camera->RenderMatrix();
+    const NLMatrix4 *mat = m_camera->InitialFixedViewMatrix();
     matrix_transformv_self_row(mat, &p);
 
     nl_vector3_t cpoint = VECTOR3(0, 0, 0);
