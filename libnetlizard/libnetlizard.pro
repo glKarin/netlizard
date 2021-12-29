@@ -5,9 +5,19 @@
 TEMPLATE = lib
 TARGET = netlizard
 
-CONFIG += plugin
-CONFIG += static
-#CONFIG += shared
+#VERSION = 2.0.0.9
+
+#CONFIG += static
+CONFIG += shared dll
+CONFIG          += debug_and_release
+
+CONFIG -= qt
+
+QT -= gui core
+
+BUILD_DIR = $$PWD/../.build
+OBJECTS_DIR = $$BUILD_DIR/$$TARGET/obj
+DESTDIR = $$BUILD_DIR/
 
 # Input
 HEADERS += \
@@ -59,7 +69,7 @@ SOURCES += \
     error.c \
     constants.c
 
-#libnetlizard.files = $$DESTDIR/libnetlizard*
-#libnetlizard.path = /usr/lib
+libnetlizard.files = $$DESTDIR/libnetlizard.a $$DESTDIR/netlizard.dll
+libnetlizard.path = $$DESTDIR/../../qnetlizard
 
-#INSTALLS += libnetlizard
+INSTALLS += libnetlizard

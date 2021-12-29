@@ -123,10 +123,13 @@ public:
     }
 
 protected:
-    void paintEvent(QPaintEvent *event);
+    virtual void paintEvent(QPaintEvent *event);
+    virtual void resizeEvent(QResizeEvent *event);
 
 private:
     void Init();
+    void CalePainterPath();
+    int GetRadius() const { return qMax(qMin(width(), height()) / 2 - 18, 18); }
 
 private:
     QTimer *m_timer;
@@ -135,15 +138,43 @@ private:
     float m_speed;
     float m_alphaFactory;
     float m_alphaAnim;
+    QPainterPath m_diskPath;
+    QPainterPath m_diskCenterPath;
 };
 
 void GroupBox::Init()
 {
+    CalePainterPath();
     m_lastTime = QDateTime::currentMSecsSinceEpoch();
     m_timer = new QTimer(this);
     m_timer->setSingleShot(false);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(update()));
     m_timer->start(100);
+}
+
+void GroupBox::CalePainterPath()
+{
+    const int R = GetRadius();
+    const QRectF Rect(-R, -R, R * 2, R * 2);
+    const QRectF CenterRect(-R * 0.309, -R * 0.309, R * 0.618, R * 0.618);
+    const QRectF EmptyRect(-R / 8, -R / 8, R / 4, R / 4);
+
+    m_diskPath &= QPainterPath();
+    m_diskPath.arcTo(Rect, 90, 360);
+
+    m_diskCenterPath &= QPainterPath();
+    m_diskCenterPath.arcTo(CenterRect, 90, 360);
+    m_diskPath -= m_diskCenterPath;
+
+    QPainterPath emptyPath;
+    emptyPath.arcTo(EmptyRect, 90, 360);
+    m_diskCenterPath -= emptyPath;
+}
+
+void GroupBox::resizeEvent(QResizeEvent *event)
+{
+    QGroupBox::resizeEvent(event);
+    CalePainterPath();
 }
 
 void GroupBox::paintEvent(QPaintEvent *event)
@@ -167,24 +198,24 @@ void GroupBox::paintEvent(QPaintEvent *event)
     m_angle = NL::clamp_angle(m_angle - delta * m_speed);
     const int W = width();
     const int H = height();
-    const int R = qMax(qMin(W, H) / 2 - 18, 18);
-    const int X = W / 2 - R;
-    const int Y = H / 2 - R;
-    const QRectF Rect(-R, -R, R * 2, R * 2);
+    const int R = GetRadius();
+//    const int X = W / 2 - R;
+//    const int Y = H / 2 - R;
     const QPoint Center(W / 2, H / 2);
     p.translate(Center);
     p.rotate(m_angle);
     p.save();
     {
         QLinearGradient gradient(QPoint(-R, 0), QPoint(R, 0));
-        gradient.setColorAt(0.0, QColor::fromRgbF(0.0f, 0.0f, 1.0f, 0.8f * m_alphaFactory));
+        gradient.setColorAt(0.0, QColor::fromRgbF(1.0f, 0.0f, 0.0f, 0.8f * m_alphaFactory));
         gradient.setColorAt(0.5, QColor::fromRgbF(0.5f, 0.0f, 0.5f, 0.618f * m_alphaFactory));
-        gradient.setColorAt(1.0, QColor::fromRgbF(1.0f, 0.0f, 0.0f, 0.8f * m_alphaFactory));
+        gradient.setColorAt(1.0, QColor::fromRgbF(0.0f, 0.0f, 1.0f, 0.8f * m_alphaFactory));
         QBrush brush(gradient);
         brush.setStyle(Qt::LinearGradientPattern);
-        QPainterPath path;
-        path.arcTo(Rect, 90, 360);
-        p.fillPath(path, brush);
+        p.fillPath(m_diskPath, brush);
+
+        QBrush transBrush(QColor::fromRgbF(0.5, 0.5, 0.5, 0.1));
+        p.fillPath(m_diskCenterPath, transBrush);
 
         QFont font = p.font();
         font.setBold(true);
@@ -192,19 +223,15 @@ void GroupBox::paintEvent(QPaintEvent *event)
         p.setFont(font);
         QPen pen = p.pen();
 
-        pen.setColor(QColor::fromRgbF(1.0f, 0.0f, 0.0f, 0.618f * m_alphaFactory));
-        p.setPen(pen);
-        p.drawText(-R, -R, R, R * 2, Qt::AlignCenter, "V");
-
         pen.setColor(QColor::fromRgbF(0.0f, 0.0f, 1.0f, 0.618f * m_alphaFactory));
         p.setPen(pen);
-        p.drawText(0, -R, R, R * 2, Qt::AlignCenter, "C");
+        p.drawText(-R, -R, R, R * 2, Qt::AlignCenter, "C");
 
-        font.setPixelSize(R / 2);
-        p.setFont(font);
-        pen.setColor(QColor::fromRgbF(0.5f, 0.0f, 0.5f, 0.618f * m_alphaFactory));
+        p.rotate(-180);
+        pen.setColor(QColor::fromRgbF(1.0f, 0.0f, 0.0f, 0.618f * m_alphaFactory));
         p.setPen(pen);
-        p.drawText(-R, -R, R * 2, R * 2, Qt::AlignCenter, "x");
+        p.drawText(/*0, -R, R, R * 2*/-R, -R, R, R * 2, Qt::AlignCenter, "V");
+        p.rotate(180);
     }
     p.restore();
 }

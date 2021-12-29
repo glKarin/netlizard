@@ -3,17 +3,27 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = ../qnetlizard
+TARGET = qnetlizard
 
 QT += opengl xml
 
 DEPENDPATH += . .. ../libnetlizard ./src ./src/utils ./src/widget ./src/misc
 INCLUDEPATH += . .. ../libnetlizard ./src ./src/utils ./src/widget ./src/misc
 
-PRE_TARGETDEPS += ../libnetlizard/debug/libnetlizard.a
-LIBS += ../libnetlizard/debug/libnetlizard.a
+#LIBS += ../libnetlizard/debug/libnetlizard.a
 
-CONFIG          += debug #_and_release
+BUILD_DIR = $$PWD/../.build
+OBJECTS_DIR = $$BUILD_DIR/$$TARGET/obj
+MOC_DIR = $$BUILD_DIR/$$TARGET/moc
+RCC_DIR = $$BUILD_DIR/$$TARGET/
+UI_DIR = $$BUILD_DIR/$$TARGET/ui
+DESTDIR = $$BUILD_DIR/
+
+PRE_TARGETDEPS += $$BUILD_DIR/netlizard.dll
+LIBS += -L$$DESTDIR -lnetlizard
+
+CONFIG          += debug_and_release
+CONFIG += qt
 
 # Input
 HEADERS += \
@@ -329,11 +339,6 @@ SOURCES += \
 
 RESOURCES += \
     qnetlizard.qrc
-
-MOC_DIR = ./moc
-OBJECTS_DIR = ./obj
-RCC_DIR = ./
-UI_DIR = ./ui
 
 i18n.files = \
     i18n/qnetlizard.zh_CN.ts \
