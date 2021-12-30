@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 
     qDebug() << "Load i18n -> " << qmFile << ".qm";
 
-    if(translator.load(qmFile, "E:\\qobject\\netlizard\\qnetlizard\\i18n"))
+    if(translator.load(qmFile, "i18n"))
     {
         qDebug() << "Done";
         app.installTranslator(&translator);

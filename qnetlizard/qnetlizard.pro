@@ -5,6 +5,8 @@
 TEMPLATE = app
 TARGET = qnetlizard
 
+include(../netlizard.pri)
+
 QT += opengl xml
 
 DEPENDPATH += . .. ../libnetlizard ./src ./src/utils ./src/widget ./src/misc
@@ -12,8 +14,7 @@ INCLUDEPATH += . .. ../libnetlizard ./src ./src/utils ./src/widget ./src/misc
 
 #LIBS += ../libnetlizard/debug/libnetlizard.a
 
-BUILD_DIR = $$PWD/../.build
-OBJECTS_DIR = $$BUILD_DIR/$$TARGET/obj
+OBJECTS_DIR = $$BUILD_DIR/$$TARGET/$$OBJ_DIR_NAME
 MOC_DIR = $$BUILD_DIR/$$TARGET/moc
 RCC_DIR = $$BUILD_DIR/$$TARGET/
 UI_DIR = $$BUILD_DIR/$$TARGET/ui
@@ -22,7 +23,6 @@ DESTDIR = $$BUILD_DIR/
 PRE_TARGETDEPS += $$BUILD_DIR/netlizard.dll
 LIBS += -L$$DESTDIR -lnetlizard
 
-CONFIG          += debug_and_release
 CONFIG += qt
 
 # Input
@@ -323,7 +323,6 @@ SOURCES += \
 
 # Test
 CONFIG(debug, debug|release) {
-DEFINES += _DEV_TEST
 INCLUDEPATH += ./src/test
 DEPENDPATH += ./src/test
 
@@ -334,8 +333,12 @@ HEADERS += \
 SOURCES += \
     src/test/testviewer.cpp \
     src/test/testscene.cpp
+
 } else {
+
 }
+
+TRANSLATIONS += i18n/qnetlizard.zh_CN.ts
 
 RESOURCES += \
     qnetlizard.qrc
@@ -344,11 +347,9 @@ i18n.files = \
     i18n/qnetlizard.zh_CN.ts \
     i18n/qnetlizard.zh_CN.qm \
     resource/cfg/lang.zh_CN.xml
-i18n.path = ./i18n
+i18n.path = $$DESTDIR/i18n
 
-TRANSLATIONS += i18n/qnetlizard.zh_CN.ts
-
-INSTALLS        += i18n
+INSTALLS += i18n
 
 OTHER_FILES += README.md \
                 debian/changelog \
@@ -357,6 +358,6 @@ OTHER_FILES += README.md \
                 resource/cfg/help.xml \
                 resource/cfg/menu.xml \
                 resource/cfg/setting.xml \
-    resource/cfg/lang.zh_CN.xml
+                resource/cfg/lang.zh_CN.xml
 
-INSTALLS += qnetlizard
+#INSTALLS += qnetlizard

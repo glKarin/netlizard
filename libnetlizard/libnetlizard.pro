@@ -7,22 +7,22 @@ TARGET = netlizard
 
 #VERSION = 2.0.0.9
 
+include(../netlizard.pri)
+
 #CONFIG += static
 CONFIG += shared dll
-CONFIG          += debug_and_release
 
 CONFIG -= qt
 
 QT -= gui core
 
-BUILD_DIR = $$PWD/../.build
-OBJECTS_DIR = $$BUILD_DIR/$$TARGET/obj
+OBJECTS_DIR = $$BUILD_DIR/$$TARGET/$$OBJ_DIR_NAME
 DESTDIR = $$BUILD_DIR/
 
 # Input
 HEADERS += \
-                                         netlizard.h \
-					 netlizard_3d.h \
+    netlizard.h \
+    netlizard_3d.h \
     def.h \
     jport.h \
     log.h \
@@ -69,7 +69,7 @@ SOURCES += \
     error.c \
     constants.c
 
-libnetlizard.files = $$DESTDIR/libnetlizard.a $$DESTDIR/netlizard.dll
-libnetlizard.path = $$DESTDIR/../../qnetlizard
+#libnetlizard.files = $$DESTDIR/libnetlizard.a $$DESTDIR/netlizard.dll
+#libnetlizard.path = /opt/netlizard/lib
 
-INSTALLS += libnetlizard
+#INSTALLS += libnetlizard
