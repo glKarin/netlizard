@@ -1,4 +1,4 @@
-#include "netlizard.h"
+ï»¿#include "netlizard.h"
 
 #include "priv_local.h"
 #include "netlizard_3d.h"
@@ -111,20 +111,20 @@ static const char *CT3DEp3_Level[] = {
 	"14-Dogma",
     "Level 15"
     /*
-         "1-§¬§Ñ§ä§Ñ§Ü§à§Þ§Ò§í",
-         "2-§¬§à§Ý§Ý§Ö§Ü§ä§à§â",
-         "3-§±§à§Õ§Ó§Ñ§Ý",
-         "4-§±§à§Ô§â§Ö§Ò",
-         "5-§¿§Ó§Ñ§Ü§å§Ñ§è§Ú§ñ",
-         "6-§³§à§Õ§Ö§Û§ã§ä§Ó§Ú§Ö",
-         "7-§¨§Ö§ã§ä§à§Ü§à§ã§ä§î",
-         "8-§©§Ñ§Ý§à§Ô",
-         "9-§¥§Ú§â§Ö§Ü§ä§à§â",
-         "10-§±§à§Ò§Ö§Ô",
-         "11-§¸§í§Ü§Ý",
-         "12-§µ§Ò§Ö§Ø§Ú§ë§Ö",
+         "1-ÐšÐ°Ñ‚Ð°ÐºÐ¾Ð¼Ð±Ñ‹",
+         "2-ÐšÐ¾Ð»Ð»ÐµÐºÑ‚Ð¾Ñ€",
+         "3-ÐŸÐ¾Ð´Ð²Ð°Ð»",
+         "4-ÐŸÐ¾Ð³Ñ€ÐµÐ±",
+         "5-Ð­Ð²Ð°ÐºÑƒÐ°Ñ†Ð¸Ñ",
+         "6-Ð¡Ð¾Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ",
+         "7-Ð–ÐµÑÑ‚Ð¾ÐºÐ¾ÑÑ‚ÑŒ",
+         "8-Ð—Ð°Ð»Ð¾Ð³",
+         "9-Ð”Ð¸Ñ€ÐµÐºÑ‚Ð¾Ñ€",
+         "10-ÐŸÐ¾Ð±ÐµÐ³",
+         "11-Ð¦Ñ‹ÐºÐ»",
+         "12-Ð£Ð±ÐµÐ¶Ð¸Ñ‰Ðµ",
          "13-",
-         "14-§¥§à§Ô§Þ§Ñ",
+         "14-Ð”Ð¾Ð³Ð¼Ð°",
          "15-"
          */
 };
@@ -604,7 +604,7 @@ int nlGetItemType(NETLizard_Game game, int index)
                 res |= NL_3D_ITEM_TYPE_DOOR_VERTICAL;
 			else if(index == 29)
                 res |= NL_3D_ITEM_TYPE_FAN_X_AXIS;
-			else if(index == 31) // æœºæžª
+			else if(index == 31) // éˆçƒ˜ç™
                 res |= NL_3D_ITEM_TYPE_FAN_Z_AXIS;
 			else if(index == 32 || index == 33)
                 res |= NL_3D_ITEM_TYPE_DOOR_HORIZONTAL;
@@ -903,13 +903,52 @@ static const NLint Egypt3D_Level_Teleport_Count[] = {
     0,
 };
 
+static const NETLizard_Level_Teleport **Game3D_Level_Teleport[] = {
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    Egypt3D_Level_Teleport,
+    NULL,
+    NULL,
+};
+
+static const NLint *Game3D_Level_Teleport_Count[] = {
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    Egypt3D_Level_Teleport_Count,
+    NULL,
+    NULL,
+};
+
 const NETLizard_Level_Teleport * nlGet3DGameTeleport(NLenum game, NLint level, NLint item_id, NLint *length)
 {
-    if(game != NL_SHADOW_OF_EGYPT_3D)
-        return NULL;
-    const NETLizard_Level_Teleport *ret = Egypt3D_Level_Teleport[level];
+    const NETLizard_Level_Teleport **objs = Game3D_Level_Teleport[game];
+    const NETLizard_Level_Teleport *ret = NULL;
+    NLint len = 0;
+    if(objs)
+    {
+        ret = objs[level];
+        len = Game3D_Level_Teleport_Count[game][level];
+        if(ret && item_id >= 0)
+        {
+            int i;
+            for(i = 0; i < len; i++)
+            {
+                const NETLizard_Level_Teleport *o = ret + i;
+                if(o->item == item_id)
+                {
+                    ret = o;
+                    len = 1;
+                    break;
+                }
+            }
+        }
+    }
     if(length)
-        *length = Egypt3D_Level_Teleport_Count[level];
+        *length = len;
     return ret;
 }
 
@@ -945,6 +984,21 @@ static const NETLizard_Level_Elevator Egypt3D_Level_Elevator_10[] = {
     {NL_SHADOW_OF_EGYPT_3D, 10, 51, 13, 1, 0, 1200, NL_TRUE},
     {NL_SHADOW_OF_EGYPT_3D, 10, 52, 13, 1, 0, 1200, NL_TRUE},
     {NL_SHADOW_OF_EGYPT_3D, 10, 64, 13, 1, 0, 1200, NL_TRUE},
+};
+
+static const NETLizard_Level_Elevator *Egypt3D_Level_Elevator[] = {
+    NULL,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, Egypt3D_Level_Elevator_10, NULL, NULL,
+    NULL, NULL, NULL, NULL, NULL,
+    NULL,
+};
+static const NLint Egypt3D_Level_Elevator_Count[] = {
+    0,
+    0, 0, 0, 0, 0, 0, 0,
+    0, 0, COUNTOF(Egypt3D_Level_Elevator_10), 0, 0,
+    0, 0, 0, 0, 0,
+    0,
 };
 
 static const NETLizard_Level_Elevator Clone3D_Level_Elevator_3[] = {
@@ -1012,34 +1066,53 @@ static const NLint Clone3D_Level_Elevator_Count[] = {
     0,
 };
 
+static const NETLizard_Level_Elevator **Game3D_Level_Elevator[] = {
+    NULL,
+    NULL,
+    Specnaz3D_Level_Elevator,
+    NULL,
+    Egypt3D_Level_Elevator,
+    Clone3D_Level_Elevator,
+    NULL,
+};
+
+static const NLint *Game3D_Level_Elevator_Count[] = {
+    NULL,
+    NULL,
+    Specnaz3D_Level_Elevator_Count,
+    NULL,
+    Egypt3D_Level_Elevator_Count,
+    Clone3D_Level_Elevator_Count,
+    NULL,
+};
+
 const NETLizard_Level_Elevator * nlGet3DGameElevator(NLenum game, NLint level, NLint item_id, NLint *length)
 {
-    if(game == NL_CLONE_3D)
+    const NETLizard_Level_Elevator **objs = Game3D_Level_Elevator[game];
+    const NETLizard_Level_Elevator *ret = NULL;
+    NLint len = 0;
+    if(objs)
     {
-        const NETLizard_Level_Elevator *ret = Clone3D_Level_Elevator[level];
-        if(length)
-            *length = Clone3D_Level_Elevator_Count[level];
-        return ret;
-    }
-    if(game == NL_SHADOW_OF_EGYPT_3D)
-    {
-        if(level == 10)
+        ret = objs[level];
+        len = Game3D_Level_Elevator_Count[game][level];
+        if(ret && item_id >= 0)
         {
-            const NETLizard_Level_Elevator *ret = Egypt3D_Level_Elevator_10;
-            if(length)
-                *length = COUNTOF(Egypt3D_Level_Elevator_10);
-            return ret;
+            int i;
+            for(i = 0; i < len; i++)
+            {
+                const NETLizard_Level_Elevator *o = ret + i;
+                if(o->switch_item == item_id)
+                {
+                    ret = o;
+                    len = 1;
+                    break;
+                }
+            }
         }
-        return NULL;
     }
-    if(game == NL_ARMY_RANGER_3D)
-    {
-        const NETLizard_Level_Elevator *ret = Specnaz3D_Level_Elevator[level];
-        if(length)
-            *length = Specnaz3D_Level_Elevator_Count[level];
-        return ret;
-    }
-    return NULL;
+    if(length)
+        *length = len;
+    return ret;
 }
 
 static const NETLizard_Level_Door Egypt3D_Level_Door_3[] = {
@@ -1478,17 +1551,38 @@ static const NLint *Game3D_Level_Door_Count[] = {
 
 const NETLizard_Level_Door * nlGet3DGameDoor(NLenum game, NLint level, NLint item_id, NLint *length)
 {
-    const NETLizard_Level_Door **doors = Game3D_Level_Door[game];
-    if(!doors)
+    const NETLizard_Level_Door **objs = Game3D_Level_Door[game];
+    const NETLizard_Level_Door *ret = NULL;
+    NLint len = 0;
+    if(objs)
     {
-        if(length)
-            *length = 0;
-        return NULL;
+        ret = objs[level];
+        len = Game3D_Level_Door_Count[game][level];
+        if(ret && item_id >= 0)
+        {
+            int i;
+            for(i = 0; i < len; i++)
+            {
+                const NETLizard_Level_Door *o = ret + i;
+                int j;
+                NLboolean has = NL_FALSE;
+                for(j = 0; j < COUNTOF(o->item); j++)
+                {
+                    if(o->item[j].item == item_id)
+                    {
+                        ret = o;
+                        len = 1;
+                        has = NL_TRUE;
+                        break;
+                    }
+                }
+                if(has)
+                    break;
+            }
+        }
     }
-    const NLint *counts = Game3D_Level_Door_Count[game];
-    const NETLizard_Level_Door *ret = doors[level];
     if(length)
-        *length = counts[level];
+        *length = len;
     return ret;
 }
 

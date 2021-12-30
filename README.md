@@ -1,10 +1,22 @@
-### NETLizard 3D J2ME game utility
+## NETLizard 3D J2ME game utility
 
- * 3D model viewer: map, item, animation
- * Image/texture viewer
- * Font viewer
- * Text file viewer
- * Sprite viewer
- * Source string viewer
+#### Features:
+ - 3D model: map, item, animation
+ - Image/texture
+ - Font
+ - Text file
+ - Sprite
+ - Source string
 
-karin@2009
+#### Modules:
+###### 1. libnetlizard
+ A simple `C` library utility functions of NETLizard J2ME game resource.
+ All parser functions are from decompiled Java source.
+
+###### 2. qnetlizard
+ A simple GUI tool of NETLizard J2ME game resource with `libnetlizard` using `Qt4`.
+ 
+#### TODO:
+ - Unsupport level 13 and 15 of CT3D-Ep3.
+
+karin@2009 GPLv3

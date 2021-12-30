@@ -1,4 +1,4 @@
-#include "netlizard.h"
+﻿#include "netlizard.h"
 
 #include "priv_local.h"
 #include <locale.h>

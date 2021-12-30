@@ -1,4 +1,4 @@
-#include "netlizard.h"
+ï»¿#include "netlizard.h"
 
 #include "priv_local.h"
 #include "netlizard_3d.h"
@@ -13,7 +13,7 @@
 // test
 static void ct3dep3_a(array *data, jint paramInt1, jint paramInt2);
 
-typedef struct _class__f__scene // µØÍ¼Ä£ĞÍ³¡¾°
+typedef struct _class__f__scene // åœ°å›¾æ¨¡å‹åœºæ™¯
 {
   short_array short_array_3__a__vertex;
   int_array int_array_7__b__primitive;
@@ -44,7 +44,7 @@ typedef struct _class__a__bsp
   jboolean e; // = false;
 } class__a__bsp;
 
-typedef struct _class__i__item // ÎïÆ·
+typedef struct _class__i__item // ç‰©å“
 {
   int_array int_array_6__a__vertex;
   int_array int_array_16__b__primitive;
