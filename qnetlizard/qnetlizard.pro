@@ -12,6 +12,10 @@ QT += opengl xml
 DEPENDPATH += . .. ../libnetlizard ./src ./src/utils ./src/widget ./src/misc
 INCLUDEPATH += . .. ../libnetlizard ./src ./src/utils ./src/widget ./src/misc
 
+DEPENDPATH += ./extern/lua
+INCLUDEPATH += ./extern/lua/include
+LIBS += -L$$PWD/extern/lua -llua53
+
 #LIBS += ../libnetlizard/debug/libnetlizard.a
 
 OBJECTS_DIR = $$BUILD_DIR/$$TARGET/$$OBJ_DIR_NAME
@@ -31,7 +35,10 @@ HEADERS += \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
     src/misc/settings.h \
-    src/misc/lang.h
+    src/misc/lang.h \
+    src/engine/nlscript.h \
+    src/engine/nlscriptcontainer.h \
+    src/engine/lua/lua_actor.h
 
 SOURCES += \
     main.cpp \
@@ -39,7 +46,10 @@ SOURCES += \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
-    src/misc/lang.cpp
+    src/misc/lang.cpp \
+    src/engine/nlscript.cpp \
+    src/engine/nlscriptcontainer.cpp \
+    src/engine/lua/lua_actor.cpp
 
 # Widget
 HEADERS += \
@@ -154,8 +164,8 @@ SOURCES += \
     src/comp/widget/actorpropertywidget.cpp
 
 # Engine
-DEPENDPATH += ./src/engine ./src/engine/editor
-INCLUDEPATH += ./src/engine ./src/engine/editor
+DEPENDPATH += ./src/engine ./src/engine/editor ./src/engine/lua
+INCLUDEPATH += ./src/engine ./src/engine/editor ./src/engine/lua
 
 HEADERS += \
     src/engine/nldef.h \
@@ -350,6 +360,12 @@ i18n.files = \
 i18n.path = $$DESTDIR/i18n
 
 INSTALLS += i18n
+
+dll.files = \
+    extern/lua/lua53.dll
+dll.path = $$DESTDIR
+
+INSTALLS += dll
 
 OTHER_FILES += README.md \
                 debian/changelog \

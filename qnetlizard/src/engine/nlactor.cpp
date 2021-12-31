@@ -10,12 +10,14 @@
 #include "nlcomponentcontainer.h"
 #include "nlcomponent.h"
 #include "nlmath.h"
+#include "nlscript.h"
 
 NLActor::NLActor(NLActor *parent) :
     NLObject(NLPROPERTIY_NAME(NLActor), parent),
     m_renderable(0),
     m_components(0),
-    m_children(0)
+    m_children(0),
+    m_scripts(0)
 {
     Construct();
 }
@@ -24,7 +26,8 @@ NLActor::NLActor(const NLProperties &prop, NLActor *parent) :
     NLObject(NLPROPERTIES_NAME(prop, NLActor), parent),
     m_renderable(0),
     m_components(0),
-    m_children(0)
+    m_children(0),
+    m_scripts(0)
 {
     Construct();
 }
@@ -33,7 +36,8 @@ NLActor::NLActor(NLScene *scene, NLActor *parent) :
     NLObject(scene, NLPROPERTIY_NAME(NLActor), parent),
     m_renderable(0),
     m_components(0),
-    m_children(0)
+    m_children(0),
+    m_scripts(0)
 {
     Construct();
 }
@@ -42,7 +46,8 @@ NLActor::NLActor(NLScene *scene, const NLProperties &prop, NLActor *parent) :
     NLObject(scene, NLPROPERTIES_NAME(prop, NLActor), parent),
     m_renderable(0),
     m_components(0),
-    m_children(0)
+    m_children(0),
+    m_scripts(0)
 {
     Construct();
 }
@@ -87,6 +92,8 @@ void NLActor::Init()
         m_components->Init();
     if(m_children)
         m_children->Init();
+    if(m_scripts)
+        m_scripts->Init();
     NLObject::Init();
 }
 
@@ -96,6 +103,8 @@ void NLActor::Update(float delta)
         return;
     if(m_components)
         m_components->Update(delta);
+    if(m_scripts)
+        m_scripts->Update(delta);
     if(m_children)
         m_children->Update(delta);
     NLObject::Update(delta);
@@ -134,6 +143,12 @@ void NLActor::Destroy()
         m_components->Destroy();
         delete m_components;
         m_components = 0;
+    }
+    if(m_scripts)
+    {
+        m_scripts->Destroy();
+        delete m_scripts;
+        m_scripts = 0;
     }
     if(m_children)
     {
@@ -615,3 +630,71 @@ int NLActor::ChildrenTotalCount() const
         return m_children->TotalCount();
     return 0;
 }
+
+bool NLActor::AddScript(NLScript *item)
+{
+    if(!item)
+        return false;
+    if(!m_scripts)
+    {
+        m_scripts = new NLScriptContainer(this);
+        m_scripts->SetScene(Scene());
+    }
+    bool res = m_scripts->Add(item);
+    emit scriptChanged(item);
+    return res;
+}
+
+bool NLActor::RemoveScript(NLScript *item)
+{
+    if(!item)
+        return false;
+    if(!m_scripts)
+        return false;
+    bool res = m_scripts->Remove(item);
+    if(res)
+    {
+        item->Destroy();
+        delete item;
+        emit scriptChanged();
+    }
+    return res;
+}
+
+bool NLActor::RemoveScript(int index)
+{
+    if(!m_scripts)
+        return false;
+    NLScript *script = GetScript(index);
+    return RemoveScript(script);
+}
+
+bool NLActor::RemoveScript(const NLName &name)
+{
+    if(!m_scripts)
+        return false;
+    NLScript *script = GetScript(name);
+    return RemoveScript(script);
+}
+
+NLScript * NLActor::GetScript(const NLName &name)
+{
+    if(!m_scripts)
+        return 0;
+    return m_scripts->Get(name);
+}
+
+NLScript * NLActor::GetScript(int index)
+{
+    if(!m_scripts)
+        return 0;
+    return m_scripts->Get(index);
+}
+
+int NLActor::ScriptCount() const
+{
+    if(m_scripts)
+        return m_scripts->Count();
+    return 0;
+}
+

@@ -13,6 +13,7 @@ class QVBoxLayout;
 class QDoubleSpinBox;
 class QGroupBox;
 class NLComponent;
+class NLScript;
 
 class NLVector3Widget : public QWidget
 {
@@ -75,6 +76,8 @@ private:
     void SetupComponentProperty(NLComponent *comp);
     void SortProperties(NLPropertyInfoList &list);
     void ClearSection(QGroupBox *groupBox);
+    void SetupScriptProperties();
+    void SetupScriptProperty(NLScript *script);
 
 private Q_SLOTS:
     void OnPropertyChanged(const QString &name, const NLProperty &value);
@@ -92,6 +95,7 @@ private:
     QVBoxLayout *m_componentLayout;
     QGroupBox *m_actorGroupBox;
     ComponentPropWidgetHash m_propWidgetMap;
+    QVBoxLayout *m_scriptLayout;
 
     Q_DISABLE_COPY(NLActorPropWidget)
 };

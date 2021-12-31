@@ -5,11 +5,11 @@
 
 #include "nlactorcontainer.h"
 #include "nlcomponentcontainer.h"
+#include "nlscriptcontainer.h"
 
-//class NLActorContainer;
 class NLRenderable;
-//class NLComponentContainer;
 class NLComponent;
+class NLScript;
 
 class NLActor : public NLObject
 {
@@ -71,6 +71,10 @@ public:
     T * GetComponent_T(const NLName &name);
     template <class T>
     T * GetComponent_T(int index);
+    template <class T>
+    T * GetScript_T(const NLName &name);
+    template <class T>
+    T * GetScript_T(int index);
     friend NLActor & operator+(NLActor &actor, NLComponent *item) { actor.AddComponent(item); return actor; }
     friend NLActor & operator-(NLActor &actor, NLComponent *item) { actor.RemoveComponent(item); return actor; }
     virtual void Render();
@@ -118,6 +122,34 @@ public:
     template <class T>
     int RemoveTypeComponents();
 
+    bool AddScript(NLScript *item);
+    bool RemoveScript(NLScript *item);
+    bool RemoveScript(int index);
+    bool RemoveScript(const NLName &name);
+    NLScript * GetScript(const NLName &name);
+    NLScript * GetScript(int index);
+    friend NLActor & operator+(NLActor &actor, NLScript *item) { actor.AddScript(item); return actor; }
+    friend NLActor & operator-(NLActor &actor, NLScript *item) { actor.RemoveScript(item); return actor; }
+    int ScriptCount() const;
+    bool HasScripts() const { return ScriptCount() > 0; }
+
+    template <class T>
+    bool ScriptIsType(int index) const;
+    template <class T>
+    bool ScriptIsType(const NLName &name) const;
+    template <class T>
+    int TypeScriptCount() const;
+    template <class T>
+    bool HasTypeScript() const;
+    template <class T>
+    T * GetTypeScript(int index = 0);
+    template <class T>
+    QList<T *> GetTypeScripts();
+    template <class T>
+    bool RemoveTypeScript();
+    template <class T>
+    int RemoveTypeScripts();
+
 protected:
     virtual bool keyev(int key, bool pressed, int modifier);
     virtual bool mouseev(int mouse, bool pressed, int x, int y, int modifier);
@@ -140,6 +172,7 @@ signals:
     void scaleChanged(const NLVector3 &scale);
     void childChanged(const NLActor *actor = 0);
     void componentChanged(const NLComponent *comp = 0);
+    void scriptChanged(const NLScript *script = 0);
     
 public slots:
 
@@ -164,6 +197,7 @@ private:
     NLMatrix4 m_matrix; // local
     NLMatrix4 m_globalMatrix;
     NLMatrix4 m_normalMatrix; // normal
+    NLScriptContainer *m_scripts;
 
     friend class NLActorContainer;
     
@@ -351,6 +385,98 @@ int NLActor::RemoveTypeComponents()
     Q_FOREACH(T *obj, list)
     {
         if(RemoveComponent(obj))
+            c++;
+    }
+    return c;
+}
+
+template <class T>
+T * NLActor::GetScript_T(const NLName &name)
+{
+    NLScript *obj = GetScript(name);
+    if(!obj)
+        return 0;
+    return dynamic_cast<T *>(obj);
+}
+
+template <class T>
+T * NLActor::GetScript_T(int index)
+{
+    NLScript *obj = GetScript(index);
+    if(!obj)
+        return 0;
+    return dynamic_cast<T *>(obj);
+}
+
+template <class T>
+bool NLActor::ScriptIsType(int index) const
+{
+    if(!m_scripts)
+        return false;
+    return m_scripts->IsType<T>(index);
+}
+
+template <class T>
+bool NLActor::ScriptIsType(const NLName &name) const
+{
+    if(!m_scripts)
+        return false;
+    return m_scripts->IsType<T>(name);
+}
+
+template <class T>
+int NLActor::TypeScriptCount() const
+{
+    if(!m_scripts)
+        return 0;
+    return m_scripts->TypeCount<T>();
+}
+
+template <class T>
+bool NLActor::HasTypeScript() const
+{
+    if(!m_scripts)
+        return false;
+    return m_scripts->HasType<T>();
+}
+
+template <class T>
+T * NLActor::GetTypeScript(int index)
+{
+    if(!m_scripts)
+        return 0;
+    return m_scripts->GetType<T>(index);
+}
+
+template <class T>
+QList<T *> NLActor::GetTypeScripts()
+{
+    if(!m_scripts)
+        return 0;
+    return m_scripts->GetTypes<T>();
+}
+
+template <class T>
+bool NLActor::RemoveTypeScript()
+{
+    if(!m_scripts)
+        return false;
+    T *r = m_scripts->GetType<T>();
+    if(!r)
+        return false;
+    return RemoveScript(r);
+}
+
+template <class T>
+int NLActor::RemoveTypeScripts()
+{
+    if(!m_scripts)
+        return 0;
+    QList<T *> list = m_scripts->GetTypes<T>();
+    int c = 0;
+    Q_FOREACH(T *obj, list)
+    {
+        if(RemoveScript(obj))
             c++;
     }
     return c;

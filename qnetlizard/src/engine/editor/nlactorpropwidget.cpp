@@ -20,6 +20,7 @@
 #include "nlrenderable.h"
 #include "nlactor.h"
 #include "nlactorcontainer.h"
+#include "nlscript.h"
 
 #define NLOBJECT_PTR_PROPERTY_NAME "NLObject"
 #define DOUBLE_SPINBOX_SINGLE_STEP 1 //0.1
@@ -153,7 +154,8 @@ NLActorPropWidget::NLActorPropWidget(QWidget *widget)
       m_actor(0),
       m_actorLayout(0),
       m_componentLayout(0),
-      m_actorGroupBox(0)
+      m_actorGroupBox(0),
+      m_scriptLayout(0)
 {
     setObjectName("NLActorPropWidget");
     Init();
@@ -175,6 +177,7 @@ void NLActorPropWidget::Init()
     QWidget *root = new QWidget;
     QVBoxLayout *mainLayout = new QVBoxLayout;
     m_actorGroupBox = new QGroupBox;
+    m_scriptLayout = new QVBoxLayout;
 
     label = new QLabel("Actor: ");
     mainLayout->addWidget(label);
@@ -190,8 +193,13 @@ void NLActorPropWidget::Init()
     label = new QLabel(tr("Component: "));
     mainLayout->addWidget(label);
     mainLayout->addSpacing(1);
-
     mainLayout->addLayout(m_componentLayout);
+
+    mainLayout->addSpacing(2);
+    label = new QLabel(tr("Script: "));
+    mainLayout->addWidget(label);
+    mainLayout->addSpacing(1);
+    mainLayout->addLayout(m_scriptLayout);
 
     mainLayout->addStretch(1);
 
@@ -241,6 +249,14 @@ void NLActorPropWidget::Reset()
         delete groupBox;
         delete item;
     }
+    while(!m_scriptLayout->isEmpty())
+    {
+        item = m_scriptLayout->takeAt(0);
+        QGroupBox *groupBox = static_cast<QGroupBox *>(item->widget());
+        ClearSection(groupBox);
+        delete groupBox;
+        delete item;
+    }
     m_propWidgetMap.clear();
     m_actor = 0;
     m_actorGroupBox->setTitle(tr("Properties"));
@@ -260,6 +276,7 @@ void NLActorPropWidget::UpdateActorData()
     m_actorGroupBox->setTitle(m_actor->ClassName() + "(" + m_actor->Name() + ")");
     SetupActorProperty();
     SetupComponentProperties();
+    SetupScriptProperties();
 }
 
 void NLActorPropWidget::OnActorChanged()
@@ -666,4 +683,44 @@ void NLActorPropWidget::OnItemDestroy(QObject *obj)
     QObject *o = obj ? obj : sender();
     if(o)
         DEBUG_DESTROY_QQV(obj)
+}
+
+void NLActorPropWidget::SetupScriptProperty(NLScript *script)
+{
+    QFormLayout *layout = new QFormLayout;
+    QGroupBox *groupBox = new QGroupBox;
+    QStringList items;
+    QVariantHash itemMaps;
+    groupBox->setTitle(script->ClassName() + "(" + script->Name() + ")");
+    NLPropertyInfoList list = NL::object_propertics(script);
+    SortProperties(list);
+    Q_FOREACH(const NLPropertyInfo &item, list)
+    {
+        QWidget *widget = GenWidget(script, item);
+        m_propWidgetMap[script].insert(item.name, widget);
+        layout->addRow(item.name, widget);
+        items.push_back(item.name);
+        itemMaps.insert(item.name, QVariant::fromValue(widget));
+    }
+    groupBox->setCheckable(true);
+    groupBox->setChecked(true);
+    groupBox->setProperty("_Layout_visible", true);
+    groupBox->setProperty("_Layout_items", items);
+    groupBox->setProperty("_Layout_item_maps", itemMaps);
+    connect(groupBox, SIGNAL(toggled(bool)), this, SLOT(ToggleGroupBox(bool)));
+    connect(script, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
+    groupBox->setLayout(layout);
+    m_scriptLayout->addWidget(groupBox);
+}
+
+void NLActorPropWidget::SetupScriptProperties()
+{
+    const int Count = m_actor->ScriptCount();
+    if(Count == 0)
+        return;
+    for(int i = 0; i < Count; i++)
+    {
+        NLScript *script = m_actor->GetScript(i);
+        SetupScriptProperty(script);
+    }
 }
