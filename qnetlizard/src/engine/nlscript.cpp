@@ -15,6 +15,7 @@ extern "C" {
 #include "nlactor.h"
 #include "nlscriptcontainer.h"
 #include "lua_actor.h"
+#include "lua_component.h"
 
 NLScript::NLScript(NLActor *parent) :
     NLObject(NLPROPERTIY_NAME(NLScript), parent),
@@ -62,6 +63,18 @@ void NLScript::Construct()
     CLASS_NAME(NLScript);
     setObjectName("NLScript");
     SetType(NLObject::Type_Script);
+
+    NLProperties props;
+    NLProperties m;
+
+    m.insert("file", true);
+    props.Insert("scriptFile", m);
+
+    m.clear();
+    m.insert("multiline", true);
+    props.Insert("scriptSource", m);
+
+    SetPropertyConfig(props);
 }
 
 void NLScript::Update(float delta)
@@ -70,7 +83,11 @@ void NLScript::Update(float delta)
         return;
     NLObject::Update(delta);
     if(!m_data.isEmpty())
+    {
+        lua_pushnumber(m_L, delta);
+        lua_setglobal(m_L, "nl_Delta");
         qDebug() << "lua" << luaL_dostring(m_L, m_data.constData());
+    }
 }
 
 void NLScript::Destroy()
@@ -142,6 +159,7 @@ bool NLScript::InitLua()
     m_L = luaL_newstate();
     luaL_openlibs(m_L);
 
+    //NL::component_registe_metatable(m_L);
     NL::actor_registe_metatable(m_L);
 
     NL::actor_registe_global_object(m_L, Actor(), "nl_Actor");

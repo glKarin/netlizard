@@ -8,7 +8,7 @@
 
 namespace NL
 {
-static NLPropertyInfo make_property_info(const QString &name, int t, const QString &typeName, const QVariant &value, const QList<QString> &propKeys = QList<QString>())
+static NLPropertyInfo make_property_info(const QString &name, int t, const QString &typeName, const QVariant &value, const QVariantHash &props = QVariantHash())
 {
     QString type(typeName);
     QString widget;
@@ -20,7 +20,7 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
     }
     else if(type == "int")
     {
-        if(propKeys.contains("enum"))
+        if(props.contains("enum"))
             widget = "combobox";
         else
             widget = "spinbox";
@@ -40,7 +40,14 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
             widget = "label";
         }
         else
-            widget = "lineedit";
+        {
+            if(props.value("multiline").toBool())
+                widget = "textedit";
+            else if(props.value("file").toBool())
+                widget = "filedialog";
+            else
+                widget = "lineedit";
+        }
     }
 
     bool readonly = (name == "objectName" || name == "renderable")
@@ -48,7 +55,7 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
             ;
 
     //qDebug() << name << t << value << QMetaType::QObjectStar << t << QMetaType::VoidStar;
-    return(NLPropertyInfo(name, value, type, widget, readonly));
+    return(NLPropertyInfo(name, value, type, widget, readonly, props));
 }
 
 NLPropertyInfoList object_propertics(const NLObject *obj)
@@ -62,10 +69,9 @@ NLPropertyInfoList object_propertics(const NLObject *obj)
         QMetaProperty p = metaObj->property(i);
         QString name(p.name());
 
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p.read(obj), config.value(name).toHash().keys());
+        QVariantHash prop = config.value(name).toHash();
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p.read(obj), prop);
         info.default_value = obj->GetInitProperty(name);
-        if(config.contains(name))
-            info.prop = config.value(name).toHash();
 
         ret.push_back(info);
     }
@@ -77,10 +83,9 @@ NLPropertyInfoList object_propertics(const NLObject *obj)
         QVariant p = obj->property(ba.constData());
         QString name(ba);
 
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p, config.value(name).toHash().keys());
+        QVariantHash prop = config.value(name).toHash();
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p, prop);
         info.default_value = obj->GetInitProperty(name);
-        if(config.contains(name))
-            info.prop = config.value(name).toHash();
 
         ret.push_back(info);
     }

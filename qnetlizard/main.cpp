@@ -76,6 +76,7 @@ int nl_log_func(int type, const char *str)
 #include "nlactor.h"
 int Test(int argc, char **argv)
 {
+    return 0;
     NLActor *actor = new NLActor;
     NLDEBUG_VECTOR3(actor->Position());
     NLScript *script = new NLScript();

@@ -12,6 +12,10 @@
 #include <QLineEdit>
 #include <limits>
 #include <QComboBox>
+#include <QPushButton>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QTextEdit>
 
 #include "qdef.h"
 #include "nlfuncs.h"
@@ -494,7 +498,34 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
         connect(w, SIGNAL(vector3Changed(const NLVector3 &)), this, SLOT(OnVector3Changed(const NLVector3 &)));
         widget = w;
     }
-    else if(item.widget == "label")
+    else if(item.widget == "lineedit")
+    {
+        QLineEdit *w = new QLineEdit;
+        w->setText(item.value.toString());
+        w->setReadOnly(item.readonly);
+        connect(w, SIGNAL(textEdited(const QString &)), this, SLOT(OnStringChanged(const QString &)));
+        connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
+        widget = w;
+    }
+    else if(item.widget == "textedit")
+    {
+        QTextEdit *w = new QTextEdit;
+        w->setText(item.value.toString());
+        w->setReadOnly(item.readonly);
+        connect(w, SIGNAL(textEdited(const QString &)), this, SLOT(OnStringChanged(const QString &)));
+        connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
+        widget = w;
+    }
+    else if(item.widget == "filedialog")
+    {
+        QPushButton *w = new QPushButton;
+        w->setText(item.value.toString());
+        w->setEnabled(!item.readonly);
+        connect(w, SIGNAL(clicked()), this, SLOT(OpenFileDialog()));
+        connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
+        widget = w;
+    }
+    else/* if(item.widget == "label")*/
     {
         int type = item.value.type();
         QLineEdit *w = new QLineEdit;
@@ -521,15 +552,11 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
                 }
             }
         }
-        connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
-        widget = w;
-    }
-    else// if(item.widget == "lineedit")
-    {
-        QLineEdit *w = new QLineEdit;
-        w->setText(item.value.toString());
-        w->setReadOnly(item.readonly);
-        //connect(w, SIGNAL(clicked(bool)), this, SLOT(OnBoolChanged(bool)));
+        else
+        {
+            w->setText(item.value.toString());
+            w->setReadOnly(item.readonly);
+        }
         connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
         widget = w;
     }
@@ -650,6 +677,44 @@ void NLActorPropWidget::OnVector3Changed(const NLVector3 &v)
     if(!obj)
         return;
     obj->SetProperty(s->objectName(), NLProperty::fromValue<NLVector3>(v));
+}
+
+void NLActorPropWidget::OnStringChanged(const QString &str)
+{
+    QObject *s = sender();
+    if(!s)
+        return;
+    QObject *o = s->property(NLOBJECT_PTR_PROPERTY_NAME).value<QObject *>();
+    if(!o)
+        return;
+    NLObject *obj = static_cast<NLObject *>(o);
+    if(!obj)
+        return;
+    obj->SetProperty(s->objectName(), str);
+}
+
+void NLActorPropWidget::OpenFileDialog()
+{
+    QObject *s = sender();
+    if(!s)
+        return;
+    QObject *o = s->property(NLOBJECT_PTR_PROPERTY_NAME).value<QObject *>();
+    if(!o)
+        return;
+    NLObject *obj = static_cast<NLObject *>(o);
+    if(!obj)
+        return;
+    QString key(s->objectName());
+    QString fileName = obj->GetProperty_T<QString>(key);
+    QString dir;
+    if(!fileName.isEmpty())
+    {
+        QFileInfo info(fileName);
+        if(info.exists())
+            dir = info.absolutePath();
+    }
+    QString chooseFileName = QFileDialog::getOpenFileName(this, dir);
+    obj->SetProperty(key, chooseFileName);
 }
 
 void NLActorPropWidget::ClearSection(QGroupBox *groupBox)

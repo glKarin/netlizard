@@ -86,6 +86,8 @@ private Q_SLOTS:
     void OnDoubleChanged(double f);
     void OnVector3Changed(const NLVector3 &v);
     void OnIndexChanged(int i);
+    void OnStringChanged(const QString &str);
+    void OpenFileDialog();
 
 private:
     typedef QHash<QString, QWidget *> PropWidgetHash;

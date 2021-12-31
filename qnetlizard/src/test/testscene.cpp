@@ -6,6 +6,8 @@
 #include "qdef.h"
 #include "simplecameraactor.h"
 #include "nlmodelrenderer.h"
+#include "nlscript.h"
+#include "nlcomponent.h"
 #include "settings.h"
 
 TestScene::TestScene(QWidget *parent)
@@ -66,6 +68,12 @@ void TestScene::Init()
     line->SetPosition(v2);
     NLVector3 vr2 = VECTOR3(45,45,45);
     line->SetRotation(vr2);
+
+    NLScript *script = new NLScript;
+    objectActor->AddScript(script);
+
+    NLComponent *comp = new NLComponent(NLProperties("name", "rrrrrr"));
+    objectActor->AddComponent(comp);
 
     SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("ENGINE/fps", 0));
 
