@@ -17,6 +17,6 @@
  A simple GUI tool of NETLizard J2ME game resource with `libnetlizard` using `Qt4`.
  
 #### TODO:
- - Unsupport level 13 and 15 of CT3D-Ep3.
+ - Unsupport level 13 and 15 map model of CT3D-Ep3 game.
 
 karin@2009 GPLv3
