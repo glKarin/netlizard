@@ -74,6 +74,7 @@ void TestScene::Init()
 
     NLComponent *comp = new NLComponent(NLProperties("name", "rrrrrr"));
     objectActor->AddComponent(comp);
+    qDebug() << "222222" << objectActor->Scene();
 
     SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("ENGINE/fps", 0));
 

@@ -13,7 +13,7 @@ extern "C" {
 
 #define CALLER_SCENE(L, name) GET_LUA_CALLER(L, NLScene, name)
 
-static int scene_SetClearColor(lua_State *L)
+static int Scene_SetClearColor(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     float r = lua_tonumber(L, 2);
@@ -25,7 +25,7 @@ static int scene_SetClearColor(lua_State *L)
     return 1;
 }
 
-static int scene_GetActor(lua_State *L)
+static int Scene_GetActor(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     NLActor *a = NULL;
@@ -41,9 +41,7 @@ static int scene_GetActor(lua_State *L)
     }
     if(a)
     {
-        lua_pushlightuserdata(L, a);
-        luaL_getmetatable(L, "NLActor");
-        lua_setmetatable(L, -2);
+        PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
     }
     else
     {
@@ -52,7 +50,7 @@ static int scene_GetActor(lua_State *L)
     return 1;
 }
 
-static int scene_ActorCount(lua_State *L)
+static int Scene_ActorCount(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     int i = scene->ActorCount();
@@ -60,7 +58,7 @@ static int scene_ActorCount(lua_State *L)
     return 1;
 }
 
-static int scene_CurrentFPS(lua_State *L)
+static int Scene_CurrentFPS(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     float f = scene->CurrentFPS();
@@ -68,7 +66,7 @@ static int scene_CurrentFPS(lua_State *L)
     return 1;
 }
 
-static int scene_MousePointerPosition(lua_State *L)
+static int Scene_MousePointerPosition(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     scene->MousePointerPosition();
@@ -76,7 +74,7 @@ static int scene_MousePointerPosition(lua_State *L)
     return 1;
 }
 
-static int scene_MoveCursorToCenter(lua_State *L)
+static int Scene_MoveCursorToCenter(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     scene->MoveCursorToCenter();
@@ -84,7 +82,7 @@ static int scene_MoveCursorToCenter(lua_State *L)
     return 1;
 }
 
-static int scene_SetCursorVisible(lua_State *L)
+static int Scene_SetCursorVisible(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     int b = lua_toboolean(L, 2);
@@ -93,7 +91,7 @@ static int scene_SetCursorVisible(lua_State *L)
     return 1;
 }
 
-static int scene_GrabMouseCursor(lua_State *L)
+static int Scene_GrabMouseCursor(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     int b = lua_toboolean(L, 2);
@@ -102,7 +100,7 @@ static int scene_GrabMouseCursor(lua_State *L)
     return 1;
 }
 
-static int scene_IsCursorVisible(lua_State *L)
+static int Scene_IsCursorVisible(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     bool b = scene->IsCursorVisible();
@@ -110,7 +108,7 @@ static int scene_IsCursorVisible(lua_State *L)
     return 1;
 }
 
-static int scene_IsGrabMouseCursor(lua_State *L)
+static int Scene_IsGrabMouseCursor(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     bool b = scene->IsGrabMouseCursor();
@@ -118,7 +116,7 @@ static int scene_IsGrabMouseCursor(lua_State *L)
     return 1;
 }
 
-static int scene_CurrendDelta(lua_State *L)
+static int Scene_CurrendDelta(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     float f = scene->CurrendDelta();
@@ -126,7 +124,7 @@ static int scene_CurrendDelta(lua_State *L)
     return 1;
 }
 
-static int scene_KeyState(lua_State *L)
+static int Scene_KeyState(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     int i = lua_tointeger(L, 2);
@@ -135,7 +133,7 @@ static int scene_KeyState(lua_State *L)
     return 1;
 }
 
-static int scene_MouseState(lua_State *L)
+static int Scene_MouseState(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     int i = lua_tointeger(L, 2);
@@ -144,33 +142,56 @@ static int scene_MouseState(lua_State *L)
     return 1;
 }
 
+static int Scene_CurrentCamera(lua_State *L)
+{
+    CALLER_SCENE(L, scene);
+    NLSceneCamera *c = scene->CurrentCamera();
+    if(c)
+    {
+        PUSH_NLOBJECT_TO_STACK(L, NLSceneCamera, c)
+    }
+    else
+    {
+        lua_pushnil(L);
+    }
+    return 1;
+}
+
 namespace NL
 {
 
 #define REG_FUNC(x) \
-    lua_pushcfunction(L, scene_##x); \
+    lua_pushcfunction(L, Scene_##x); \
     lua_setfield(L, -2, #x);
-bool scene_registe_metatable(struct lua_State *L)
+#define SCENE_FUNC(x) {#x, Scene_##x}
+bool scene_register_metatable(struct lua_State *L)
 {
+    if(metatable_is_register(L, "NLScene"))
+        return true;
+    const struct luaL_Reg Funcs[] = {
+        SCENE_FUNC(SetClearColor),
+        SCENE_FUNC(GetActor),
+        SCENE_FUNC(ActorCount),
+        SCENE_FUNC(CurrentFPS),
+        SCENE_FUNC(MousePointerPosition),
+        SCENE_FUNC(MoveCursorToCenter),
+        SCENE_FUNC(SetCursorVisible),
+        SCENE_FUNC(GrabMouseCursor),
+        SCENE_FUNC(IsCursorVisible),
+        SCENE_FUNC(IsGrabMouseCursor),
+        SCENE_FUNC(CurrendDelta),
+        SCENE_FUNC(KeyState),
+        SCENE_FUNC(MouseState),
+        SCENE_FUNC(CurrentCamera),
+        NULL_luaL_Reg
+    };
     if(luaL_newmetatable(L, "NLScene"))
     {
-        REG_FUNC(SetClearColor);
-        REG_FUNC(GetActor);
-        REG_FUNC(ActorCount);
-        REG_FUNC(CurrentFPS);
-        REG_FUNC(MousePointerPosition);
-        REG_FUNC(MoveCursorToCenter);
-        REG_FUNC(SetCursorVisible);
-        REG_FUNC(GrabMouseCursor);
-        REG_FUNC(IsCursorVisible);
-        REG_FUNC(IsGrabMouseCursor);
-        REG_FUNC(CurrendDelta);
-        REG_FUNC(KeyState);
-        REG_FUNC(MouseState);
+        luaL_setfuncs(L, Funcs, 0);
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
         lua_pop(L, 1);
-        qDebug() << "scene_register";
+        qDebug() << "Scene_register";
         return true;
     }
     return false;

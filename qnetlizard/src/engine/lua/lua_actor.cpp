@@ -9,11 +9,13 @@ extern "C" {
 }
 
 #include "nlactor.h"
+#include "nlrigidbody.h"
 #include "lua_def.h"
 
 #define CALLER_ACTOR(L, name) GET_LUA_CALLER(L, NLActor, name)
+#define CALLER_RIGIDBODY(L, name) GET_LUA_CALLER(L, NLRigidbody, name)
 
-static int actor_SetPosition(lua_State *L)
+static int Actor_SetPosition(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     float x = lua_tonumber(L, 2);
@@ -25,7 +27,7 @@ static int actor_SetPosition(lua_State *L)
     return 1;
 }
 
-static int actor_SetRotation(lua_State *L)
+static int Actor_SetRotation(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     float x = lua_tonumber(L, 2);
@@ -37,7 +39,7 @@ static int actor_SetRotation(lua_State *L)
     return 1;
 }
 
-static int actor_SetScale(lua_State *L)
+static int Actor_SetScale(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     float x = lua_tonumber(L, 2);
@@ -49,7 +51,7 @@ static int actor_SetScale(lua_State *L)
     return 1;
 }
 
-static int actor_Position(lua_State *L)
+static int Actor_Position(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     const NLVector3 pos = actor->Position();
@@ -59,7 +61,7 @@ static int actor_Position(lua_State *L)
     return 3;
 }
 
-static int actor_Rotation(lua_State *L)
+static int Actor_Rotation(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     const NLVector3 pos = actor->Rotation();
@@ -69,7 +71,7 @@ static int actor_Rotation(lua_State *L)
     return 3;
 }
 
-static int actor_Scale(lua_State *L)
+static int Actor_Scale(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     const NLVector3 pos = actor->Scale();
@@ -79,7 +81,7 @@ static int actor_Scale(lua_State *L)
     return 3;
 }
 
-static int actor_Direction(lua_State *L)
+static int Actor_Direction(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     const NLVector3 pos = actor->Direction();
@@ -89,7 +91,7 @@ static int actor_Direction(lua_State *L)
     return 3;
 }
 
-static int actor_Up(lua_State *L)
+static int Actor_Up(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     const NLVector3 pos = actor->Up();
@@ -99,7 +101,7 @@ static int actor_Up(lua_State *L)
     return 3;
 }
 
-static int actor_Right(lua_State *L)
+static int Actor_Right(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     const NLVector3 pos = actor->Right();
@@ -109,7 +111,7 @@ static int actor_Right(lua_State *L)
     return 3;
 }
 
-static int actor_Move(lua_State *L)
+static int Actor_Move(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     float x = lua_tonumber(L, 2);
@@ -121,7 +123,7 @@ static int actor_Move(lua_State *L)
     return 1;
 }
 
-static int actor_Turn(lua_State *L)
+static int Actor_Turn(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     float x = lua_tonumber(L, 2);
@@ -133,7 +135,7 @@ static int actor_Turn(lua_State *L)
     return 1;
 }
 
-static int actor_Zoom(lua_State *L)
+static int Actor_Zoom(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     float x = lua_tonumber(L, 2);
@@ -145,7 +147,7 @@ static int actor_Zoom(lua_State *L)
     return 1;
 }
 
-static int actor_Name(lua_State *L)
+static int Actor_Name(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     QByteArray ba = actor->Name().toLocal8Bit();
@@ -153,7 +155,7 @@ static int actor_Name(lua_State *L)
     return 1;
 }
 
-static int actor_ClassName(lua_State *L)
+static int Actor_ClassName(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     QByteArray ba = actor->ClassName().toLocal8Bit();
@@ -161,7 +163,7 @@ static int actor_ClassName(lua_State *L)
     return 1;
 }
 
-static int actor_SetEnabled(lua_State *L)
+static int Actor_SetEnabled(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     int b = lua_toboolean(L, 2);
@@ -170,7 +172,7 @@ static int actor_SetEnabled(lua_State *L)
     return 1;
 }
 
-static int actor_ChildrenCount(lua_State *L)
+static int Actor_ChildrenCount(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     int i = actor->ChildrenCount();
@@ -178,7 +180,7 @@ static int actor_ChildrenCount(lua_State *L)
     return 1;
 }
 
-static int actor_GetChild(lua_State *L)
+static int Actor_GetChild(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     NLActor *a = NULL;
@@ -194,9 +196,7 @@ static int actor_GetChild(lua_State *L)
     }
     if(a)
     {
-        lua_pushlightuserdata(L, a);
-        luaL_getmetatable(L, "NLActor");
-        lua_setmetatable(L, -2);
+        PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
     }
     else
     {
@@ -205,15 +205,13 @@ static int actor_GetChild(lua_State *L)
     return 1;
 }
 
-static int actor_ParentActor(lua_State *L)
+static int Actor_ParentActor(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     NLActor *a = actor->ParentActor();
     if(a)
     {
-        lua_pushlightuserdata(L, a);
-        luaL_getmetatable(L, "NLActor");
-        lua_setmetatable(L, -2);
+        PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
     }
     else
     {
@@ -222,7 +220,7 @@ static int actor_ParentActor(lua_State *L)
     return 1;
 }
 
-static int actor_ComponentCount(lua_State *L)
+static int Actor_ComponentCount(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     int i = actor->ComponentCount();
@@ -230,7 +228,7 @@ static int actor_ComponentCount(lua_State *L)
     return 1;
 }
 
-static int actor_GetComponent(lua_State *L)
+static int Actor_GetComponent(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     NLComponent *c = NULL;
@@ -246,9 +244,7 @@ static int actor_GetComponent(lua_State *L)
     }
     if(c)
     {
-        lua_pushlightuserdata(L, c);
-        luaL_getmetatable(L, "NLComponent");
-        lua_setmetatable(L, -2);
+        PUSH_NLOBJECT_TO_STACK(L, NLComponent, c)
     }
     else
     {
@@ -257,43 +253,146 @@ static int actor_GetComponent(lua_State *L)
     return 1;
 }
 
+static int Actor_Scene(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    NLScene *s = actor->Scene();
+    if(s)
+    {
+        PUSH_NLOBJECT_TO_STACK(L, NLScene, s)
+    }
+    else
+    {
+        lua_pushnil(L);
+    }
+    return 1;
+}
+
+static int Actor_IsRigidbody(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    int b = dynamic_cast<NLRigidbody *>(actor) ? 1 : 0;
+    lua_pushboolean(L, b);
+    return 1;
+}
+
+static int Actor_ToRigidbody(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    NLRigidbody *r = dynamic_cast<NLRigidbody *>(actor);
+    if(r)
+    {
+        PUSH_NLOBJECT_TO_STACK(L, NLRigidbody, r)
+    }
+    else
+    {
+        lua_pushnil(L);
+    }
+    return 1;
+}
+
+
+
+static int Rigidbody_MoveDirection(lua_State *L)
+{
+    CALLER_RIGIDBODY(L, rb);
+    const NLVector3 pos = rb->MoveDirection();
+    lua_pushnumber(L, VECTOR3_X(pos));
+    lua_pushnumber(L, VECTOR3_Y(pos));
+    lua_pushnumber(L, VECTOR3_Z(pos));
+    return 3;
+}
+
 namespace NL
 {
 
 #define REG_FUNC(x) \
-    lua_pushcfunction(L, actor_##x); \
+    lua_pushcfunction(L, Actor_##x); \
     lua_setfield(L, -2, #x);
-bool actor_registe_metatable(struct lua_State *L)
+#define ACTOR_FUNC(x) {#x, Actor_##x}
+bool actor_register_metatable(struct lua_State *L)
 {
+    if(metatable_is_register(L, "NLActor"))
+        return true;
+    const struct luaL_Reg Funcs[] = {
+        ACTOR_FUNC(SetPosition),
+        ACTOR_FUNC(SetRotation),
+        ACTOR_FUNC(SetScale),
+        ACTOR_FUNC(Position),
+        ACTOR_FUNC(Rotation),
+        ACTOR_FUNC(Scale),
+        ACTOR_FUNC(Direction),
+        ACTOR_FUNC(Up),
+        ACTOR_FUNC(Right),
+        ACTOR_FUNC(Move),
+        ACTOR_FUNC(Turn),
+        ACTOR_FUNC(Zoom),
+        ACTOR_FUNC(Name),
+        ACTOR_FUNC(ClassName),
+        ACTOR_FUNC(SetEnabled),
+        ACTOR_FUNC(GetChild),
+        ACTOR_FUNC(ChildrenCount),
+        ACTOR_FUNC(ParentActor),
+        ACTOR_FUNC(GetComponent),
+        ACTOR_FUNC(ComponentCount),
+        ACTOR_FUNC(Scene),
+        ACTOR_FUNC(IsRigidbody),
+        ACTOR_FUNC(ToRigidbody),
+        NULL_luaL_Reg
+    };
     if(luaL_newmetatable(L, "NLActor"))
     {
-        REG_FUNC(SetPosition);
-        REG_FUNC(SetRotation);
-        REG_FUNC(SetScale);
-        REG_FUNC(Position);
-        REG_FUNC(Rotation);
-        REG_FUNC(Scale);
-        REG_FUNC(Direction);
-        REG_FUNC(Up);
-        REG_FUNC(Right);
-        REG_FUNC(Move);
-        REG_FUNC(Turn);
-        REG_FUNC(Zoom);
-        REG_FUNC(Name);
-        REG_FUNC(ClassName);
-        REG_FUNC(SetEnabled);
-        REG_FUNC(GetChild);
-        REG_FUNC(ChildrenCount);
-        REG_FUNC(ParentActor);
-        REG_FUNC(GetComponent);
-        REG_FUNC(ComponentCount);
+        luaL_setfuncs(L, Funcs, 0);
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
         lua_pop(L, 1);
-        qDebug() << "actor_register";
+        qDebug() << "Actor_register";
         return true;
     }
     return false;
 }
 
+#define RIGIDBODY_FUNC(x) {#x, Rigidbody_##x}
+bool rigidbody_register_metatable(struct lua_State *L)
+{
+    if(metatable_is_register(L, "NLRigidbody"))
+        return true;
+    const struct luaL_Reg Funcs[] = {
+        ACTOR_FUNC(SetPosition),
+        ACTOR_FUNC(SetRotation),
+        ACTOR_FUNC(SetScale),
+        ACTOR_FUNC(Position),
+        ACTOR_FUNC(Rotation),
+        ACTOR_FUNC(Scale),
+        ACTOR_FUNC(Direction),
+        ACTOR_FUNC(Up),
+        ACTOR_FUNC(Right),
+        ACTOR_FUNC(Move),
+        ACTOR_FUNC(Turn),
+        ACTOR_FUNC(Zoom),
+        ACTOR_FUNC(Name),
+        ACTOR_FUNC(ClassName),
+        ACTOR_FUNC(SetEnabled),
+        ACTOR_FUNC(GetChild),
+        ACTOR_FUNC(ChildrenCount),
+        ACTOR_FUNC(ParentActor),
+        ACTOR_FUNC(GetComponent),
+        ACTOR_FUNC(ComponentCount),
+        ACTOR_FUNC(Scene),
+        ACTOR_FUNC(IsRigidbody),
+        ACTOR_FUNC(ToRigidbody),
+        RIGIDBODY_FUNC(MoveDirection),
+        NULL_luaL_Reg
+    };
+    if(luaL_newmetatable(L, "NLRigidbody"))
+    {
+        luaL_setfuncs(L, Funcs, 0);
+        lua_pushvalue(L, -1);
+        lua_setfield(L, -2, "__index");
+        lua_pop(L, 1);
+        qDebug() << "Actor_register";
+        return true;
+    }
+    return false;
+}
 }

@@ -13,7 +13,7 @@ extern "C" {
 
 #define CALLER_COMPONENT(L, name) GET_LUA_CALLER(L, NLComponent, name)
 
-static int component_Name(lua_State *L)
+static int Component_Name(lua_State *L)
 {
     CALLER_COMPONENT(L, comp);
     QByteArray ba = comp->Name().toLocal8Bit();
@@ -21,7 +21,7 @@ static int component_Name(lua_State *L)
     return 1;
 }
 
-static int component_ClassName(lua_State *L)
+static int Component_ClassName(lua_State *L)
 {
     CALLER_COMPONENT(L, comp);
     QByteArray ba = comp->ClassName().toLocal8Bit();
@@ -29,7 +29,7 @@ static int component_ClassName(lua_State *L)
     return 1;
 }
 
-static int component_SetEnabled(lua_State *L)
+static int Component_SetEnabled(lua_State *L)
 {
     CALLER_COMPONENT(L, comp);
     int b = lua_toboolean(L, 2);
@@ -38,15 +38,13 @@ static int component_SetEnabled(lua_State *L)
     return 1;
 }
 
-static int component_Actor(lua_State *L)
+static int Component_Actor(lua_State *L)
 {
     CALLER_COMPONENT(L, comp);
     NLActor *a = comp->Actor();
     if(a)
     {
-        lua_pushlightuserdata(L, a);
-        luaL_getmetatable(L, "NLActor");
-        lua_setmetatable(L, -2);
+        PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
     }
     else
     {
@@ -59,20 +57,27 @@ namespace NL
 {
 
 #define REG_FUNC(x) \
-    lua_pushcfunction(L, component_##x); \
+    lua_pushcfunction(L, Component_##x); \
     lua_setfield(L, -2, #x);
-bool component_registe_metatable(struct lua_State *L)
+#define COMPONENT_FUNC(x) {#x, Component_##x}
+bool component_register_metatable(struct lua_State *L)
 {
+    if(metatable_is_register(L, "NLComponent"))
+        return true;
     if(luaL_newmetatable(L, "NLComponent"))
     {
-        REG_FUNC(Name);
-        REG_FUNC(ClassName);
-        REG_FUNC(SetEnabled);
-        REG_FUNC(Actor);
+        const struct luaL_Reg Funcs[] = {
+            COMPONENT_FUNC(Name),
+            COMPONENT_FUNC(ClassName),
+            COMPONENT_FUNC(SetEnabled),
+            COMPONENT_FUNC(Actor),
+            NULL_luaL_Reg
+        };
+        luaL_setfuncs(L, Funcs, 0);
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
         lua_pop(L, 1);
-        qDebug() << "component_register";
+        qDebug() << "Component_register";
         return true;
     }
     return false;
