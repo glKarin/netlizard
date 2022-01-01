@@ -40,9 +40,13 @@ public:
 
     NLSceneCamera * CurrentCamera() { return m_currentCamera; }
     NLActor * GetActor(int index) { return m_actors.Get(index); }
+    NLActor * GetActor(const NLName &name) { return m_actors.Get(name); }
     template <class T>
     T * GetActor_T(int index);
+    template <class T>
+    T * GetActor_T(const NLName &name);
     NLActor * operator[](int index) { return GetActor(index); }
+    NLActor * operator[](const NLName &name) { return GetActor(name); }
     NLScene & operator<<(NLActor *actor) { AddActor(actor); return *this; }
     
 signals:
@@ -120,6 +124,15 @@ template <class T>
 T * NLScene::GetActor_T(int index)
 {
     NLActor *obj = GetActor(index);
+    if(!obj)
+        return 0;
+    return dynamic_cast<T *>(obj);
+}
+
+template <class T>
+T * NLScene::GetActor_T(const NLName &name)
+{
+    NLActor *obj = GetActor(name);
     if(!obj)
         return 0;
     return dynamic_cast<T *>(obj);

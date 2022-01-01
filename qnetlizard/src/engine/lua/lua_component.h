@@ -1,8 +1,6 @@
 #ifndef _KARIN_LUA_COMPONENT_H
 #define _KARIN_LUA_COMPONENT_H
 
-#include <QString>
-
 struct lua_State;
 class NLComponent;
 

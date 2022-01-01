@@ -512,7 +512,7 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
         QTextEdit *w = new QTextEdit;
         w->setText(item.value.toString());
         w->setReadOnly(item.readonly);
-        connect(w, SIGNAL(textEdited(const QString &)), this, SLOT(OnStringChanged(const QString &)));
+        connect(w, SIGNAL(textChanged(const QString &)), this, SLOT(OnStringChanged(const QString &)));
         connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
         widget = w;
     }
@@ -715,6 +715,11 @@ void NLActorPropWidget::OpenFileDialog()
     }
     QString chooseFileName = QFileDialog::getOpenFileName(this, dir);
     obj->SetProperty(key, chooseFileName);
+    if(instanceofv(s, QPushButton))
+    {
+        QPushButton *b = static_cast<QPushButton *>(s);
+        b->setText(chooseFileName);
+    }
 }
 
 void NLActorPropWidget::ClearSection(QGroupBox *groupBox)

@@ -9,10 +9,13 @@ extern "C" {
 }
 
 #include "nlcomponent.h"
+#include "lua_def.h"
+
+#define CALLER_COMPONENT(L, name) GET_LUA_CALLER(L, NLComponent, name)
 
 static int component_Name(lua_State *L)
 {
-    NLComponent *comp = (NLComponent *)(lua_touserdata(L, 1));
+    CALLER_COMPONENT(L, comp);
     QByteArray ba = comp->Name().toLocal8Bit();
     lua_pushstring(L, ba.constData());
     return 1;
@@ -20,7 +23,7 @@ static int component_Name(lua_State *L)
 
 static int component_ClassName(lua_State *L)
 {
-    NLComponent *comp = (NLComponent *)(lua_touserdata(L, 1));
+    CALLER_COMPONENT(L, comp);
     QByteArray ba = comp->ClassName().toLocal8Bit();
     lua_pushstring(L, ba.constData());
     return 1;
@@ -28,7 +31,7 @@ static int component_ClassName(lua_State *L)
 
 static int component_SetEnabled(lua_State *L)
 {
-    NLComponent *comp = (NLComponent *)(lua_touserdata(L, 1));
+    CALLER_COMPONENT(L, comp);
     int b = lua_toboolean(L, 2);
     comp->SetEnabled(b ? true : false);
     lua_pushboolean(L, 1);
@@ -37,7 +40,7 @@ static int component_SetEnabled(lua_State *L)
 
 static int component_Actor(lua_State *L)
 {
-    NLComponent *comp = (NLComponent *)(lua_touserdata(L, 1));
+    CALLER_COMPONENT(L, comp);
     NLActor *a = comp->Actor();
     if(a)
     {
@@ -68,6 +71,7 @@ bool component_registe_metatable(struct lua_State *L)
         REG_FUNC(Actor);
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
+        lua_pop(L, 1);
         qDebug() << "component_register";
         return true;
     }

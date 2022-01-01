@@ -23,7 +23,7 @@ public:
     NLActor * Actor();
     void SetActor(NLActor *actor);
     NLScriptContainer * Container();
-    virtual bool IsActived() const { return NLObject::IsActived() && m_mounted; }
+    virtual bool IsActived() const { return NLObject::IsActived() && m_mounted && !m_data.isEmpty(); }
     QString ScriptSource() const { return m_data; }
     QString ScriptFile() const { return m_sourceFile; }
     void M(NLActor *a) {Mount(a);}

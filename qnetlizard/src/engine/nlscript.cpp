@@ -16,6 +16,7 @@ extern "C" {
 #include "nlscriptcontainer.h"
 #include "lua_actor.h"
 #include "lua_component.h"
+#include "lua_scene.h"
 
 NLScript::NLScript(NLActor *parent) :
     NLObject(NLPROPERTIY_NAME(NLScript), parent),
@@ -82,12 +83,21 @@ void NLScript::Update(float delta)
     if(!IsActived())
         return;
     NLObject::Update(delta);
-    if(!m_data.isEmpty())
-    {
-        lua_pushnumber(m_L, delta);
-        lua_setglobal(m_L, "nl_Delta");
-        qDebug() << "lua" << luaL_dostring(m_L, m_data.constData());
-    }
+
+    lua_pushlightuserdata(m_L, Actor());
+    luaL_getmetatable(m_L, "NLActor");
+    lua_setmetatable(m_L, -2);
+    lua_setglobal(m_L, "nl_Actor");
+
+    lua_pushlightuserdata(m_L, Scene());
+    luaL_getmetatable(m_L, "NLScene");
+    lua_setmetatable(m_L, -2);
+    lua_setglobal(m_L, "nl_Scene");
+
+    lua_pushnumber(m_L, delta);
+    lua_setglobal(m_L, "nl_Delta");
+
+    /*qDebug() << "lua" << */luaL_dostring(m_L, m_data.constData());
 }
 
 void NLScript::Destroy()
@@ -159,10 +169,9 @@ bool NLScript::InitLua()
     m_L = luaL_newstate();
     luaL_openlibs(m_L);
 
-    //NL::component_registe_metatable(m_L);
     NL::actor_registe_metatable(m_L);
-
-    NL::actor_registe_global_object(m_L, Actor(), "nl_Actor");
+    NL::component_registe_metatable(m_L);
+    NL::scene_registe_metatable(m_L);
 
     return true;
 }

@@ -9,10 +9,13 @@ extern "C" {
 }
 
 #include "nlactor.h"
+#include "lua_def.h"
+
+#define CALLER_ACTOR(L, name) GET_LUA_CALLER(L, NLActor, name)
 
 static int actor_SetPosition(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     float x = lua_tonumber(L, 2);
     float y = lua_tonumber(L, 3);
     float z = lua_tonumber(L, 4);
@@ -24,7 +27,7 @@ static int actor_SetPosition(lua_State *L)
 
 static int actor_SetRotation(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     float x = lua_tonumber(L, 2);
     float y = lua_tonumber(L, 3);
     float z = lua_tonumber(L, 4);
@@ -36,7 +39,7 @@ static int actor_SetRotation(lua_State *L)
 
 static int actor_SetScale(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     float x = lua_tonumber(L, 2);
     float y = lua_tonumber(L, 3);
     float z = lua_tonumber(L, 4);
@@ -48,7 +51,7 @@ static int actor_SetScale(lua_State *L)
 
 static int actor_Position(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     const NLVector3 pos = actor->Position();
     lua_pushnumber(L, VECTOR3_X(pos));
     lua_pushnumber(L, VECTOR3_Y(pos));
@@ -58,7 +61,7 @@ static int actor_Position(lua_State *L)
 
 static int actor_Rotation(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     const NLVector3 pos = actor->Rotation();
     lua_pushnumber(L, VECTOR3_X(pos));
     lua_pushnumber(L, VECTOR3_Y(pos));
@@ -68,7 +71,7 @@ static int actor_Rotation(lua_State *L)
 
 static int actor_Scale(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     const NLVector3 pos = actor->Scale();
     lua_pushnumber(L, VECTOR3_X(pos));
     lua_pushnumber(L, VECTOR3_Y(pos));
@@ -78,7 +81,7 @@ static int actor_Scale(lua_State *L)
 
 static int actor_Direction(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     const NLVector3 pos = actor->Direction();
     lua_pushnumber(L, VECTOR3_X(pos));
     lua_pushnumber(L, VECTOR3_Y(pos));
@@ -88,7 +91,7 @@ static int actor_Direction(lua_State *L)
 
 static int actor_Up(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     const NLVector3 pos = actor->Up();
     lua_pushnumber(L, VECTOR3_X(pos));
     lua_pushnumber(L, VECTOR3_Y(pos));
@@ -98,7 +101,7 @@ static int actor_Up(lua_State *L)
 
 static int actor_Right(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     const NLVector3 pos = actor->Right();
     lua_pushnumber(L, VECTOR3_X(pos));
     lua_pushnumber(L, VECTOR3_Y(pos));
@@ -108,7 +111,7 @@ static int actor_Right(lua_State *L)
 
 static int actor_Move(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     float x = lua_tonumber(L, 2);
     float y = lua_tonumber(L, 3);
     float z = lua_tonumber(L, 4);
@@ -120,7 +123,7 @@ static int actor_Move(lua_State *L)
 
 static int actor_Turn(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     float x = lua_tonumber(L, 2);
     float y = lua_tonumber(L, 3);
     float z = lua_tonumber(L, 4);
@@ -132,7 +135,7 @@ static int actor_Turn(lua_State *L)
 
 static int actor_Zoom(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     float x = lua_tonumber(L, 2);
     float y = lua_tonumber(L, 3);
     float z = lua_tonumber(L, 4);
@@ -144,7 +147,7 @@ static int actor_Zoom(lua_State *L)
 
 static int actor_Name(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     QByteArray ba = actor->Name().toLocal8Bit();
     lua_pushstring(L, ba.constData());
     return 1;
@@ -152,7 +155,7 @@ static int actor_Name(lua_State *L)
 
 static int actor_ClassName(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     QByteArray ba = actor->ClassName().toLocal8Bit();
     lua_pushstring(L, ba.constData());
     return 1;
@@ -160,7 +163,7 @@ static int actor_ClassName(lua_State *L)
 
 static int actor_SetEnabled(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     int b = lua_toboolean(L, 2);
     actor->SetEnabled(b ? true : false);
     lua_pushboolean(L, 1);
@@ -169,7 +172,7 @@ static int actor_SetEnabled(lua_State *L)
 
 static int actor_ChildrenCount(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     int i = actor->ChildrenCount();
     lua_pushinteger(L, i);
     return 1;
@@ -177,7 +180,7 @@ static int actor_ChildrenCount(lua_State *L)
 
 static int actor_GetChild(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     NLActor *a = NULL;
     if(lua_isinteger(L, 2))
     {
@@ -204,7 +207,7 @@ static int actor_GetChild(lua_State *L)
 
 static int actor_ParentActor(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     NLActor *a = actor->ParentActor();
     if(a)
     {
@@ -221,7 +224,7 @@ static int actor_ParentActor(lua_State *L)
 
 static int actor_ComponentCount(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     int i = actor->ComponentCount();
     lua_pushinteger(L, i);
     return 1;
@@ -229,7 +232,7 @@ static int actor_ComponentCount(lua_State *L)
 
 static int actor_GetComponent(lua_State *L)
 {
-    NLActor *actor = (NLActor *)(lua_touserdata(L, 1));
+    CALLER_ACTOR(L, actor);
     NLComponent *c = NULL;
     if(lua_isinteger(L, 2))
     {
@@ -256,16 +259,6 @@ static int actor_GetComponent(lua_State *L)
 
 namespace NL
 {
-
-bool actor_registe_global_object(struct lua_State *L, NLActor *actor, const QString &name)
-{
-    lua_pushlightuserdata(L, actor);
-    qDebug() << "luaL_getmetatable" <<luaL_getmetatable(L, "NLActor");
-    qDebug() << "lua_setmetatable"<<lua_setmetatable(L, -2);
-    QByteArray ba = name.toLocal8Bit();
-    lua_setglobal(L, ba.constData());
-    return true;
-}
 
 #define REG_FUNC(x) \
     lua_pushcfunction(L, actor_##x); \
@@ -296,6 +289,7 @@ bool actor_registe_metatable(struct lua_State *L)
         REG_FUNC(ComponentCount);
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
+        lua_pop(L, 1);
         qDebug() << "actor_register";
         return true;
     }

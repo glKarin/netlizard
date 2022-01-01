@@ -39,7 +39,9 @@ HEADERS += \
     src/engine/nlscript.h \
     src/engine/nlscriptcontainer.h \
     src/engine/lua/lua_actor.h \
-    src/engine/lua/lua_component.h
+    src/engine/lua/lua_component.h \
+    src/engine/lua/lua_scene.h \
+    src/engine/lua/lua_def.h
 
 SOURCES += \
     main.cpp \
@@ -51,7 +53,8 @@ SOURCES += \
     src/engine/nlscript.cpp \
     src/engine/nlscriptcontainer.cpp \
     src/engine/lua/lua_actor.cpp \
-    src/engine/lua/lua_component.cpp
+    src/engine/lua/lua_component.cpp \
+    src/engine/lua/lua_scene.cpp
 
 # Widget
 HEADERS += \
