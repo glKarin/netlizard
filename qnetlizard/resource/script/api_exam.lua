@@ -93,17 +93,26 @@ metatable NLSceneCamera {
 
 ]]
 
+-- If Init() function is declared, it will execute automatic when first running this script.
+-- return boolean: true - Init success. false - Init fail, the script will not continue running.
+function Init()
+    print "Init()";
+    return true;
+end
 
---print(nl_Scene:ActorCount(), nl_Scene:IsCursorVisible(), nl_Scene:IsGrabMouseCursor());
---print(nl_Scene:CurrentFPS(), nl_Scene:CurrendDelta());
---print(nl_Scene:KeyState(65), nl_Scene:MouseState(1));
+-- If Update(number) function is declared, it will execute when NLScript updating. If not, NLScript will run this whole lua script.
+-- delta: number - equals nl_Delta
+-- noreturn.
+function Update(delta)
+    print("Update()", delta);
+end
 
-print(nl_Actor:ParentActor());
-print(nl_Actor:GetChild(1):Name());
-print(nl_Actor:Scene():CurrentFPS());
-print(nl_Actor:GetComponent(0):Actor());
-print(nl_Scene:ActorCount(), nl_Scene:GetActor(0):Name(), nl_Scene:CurrentCamera(), nl_Scene:GetActor(2):GetComponent(0):Name());
+-- If Destroy() function is declared, it will execute automatic before lua_State destroying.
+-- noreturn.
+function Destroy()
+    print "Destroy()";
+end
 
-print "--------------------END-------------------";
+print "-------------------- END --------------------";
 
 collectgarbage("collect");

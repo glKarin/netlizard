@@ -417,6 +417,7 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
         QTextEdit *w = new QTextEdit;
         w->setText(item.value.toString());
         w->setReadOnly(item.readonly);
+        w->setAcceptRichText(false);
         connect(w, SIGNAL(textChanged()), this, SLOT(OnStringChanged()));
         connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
         widget = w;

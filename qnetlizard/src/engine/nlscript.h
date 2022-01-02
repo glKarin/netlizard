@@ -43,21 +43,48 @@ signals:
 public slots:
     bool SetScriptFile(const QString &file);
     void SetScriptSource(const QString &src);
+    bool InitLua() { return m_lua.Init(); }
+    bool DeinitLua() { return m_lua.Deinit(); }
 
 private:
     void Construct();
-    bool InitLua();
-    bool DeinitLua();
-    bool ExecScript(float delta);
+    bool ExecScript(float delta) { return m_lua.Exec(delta); }
 
 private:
-    struct lua_State *m_L;
+    struct Script_Lua
+    {
+        enum {
+            Script_Lua_Func_Init = 1,
+            Script_Lua_Func_Destroy = 2,
+            Script_Lua_Func_Update = 4
+        };
+        struct lua_State *L;
+        NLScript *script;
+        int func;
+
+        Script_Lua()
+            : L(0),
+              script(0),
+              func(-1)
+        { }
+        ~Script_Lua() {
+            Deinit();
+        }
+
+        bool Init();
+        bool Deinit();
+        bool Exec(float delta);
+        operator bool() const { return L != 0; }
+    };
+
     bool m_mounted;
     QByteArray m_data;
     QString m_sourceFile;
+    Script_Lua m_lua;
 
     friend class NLScriptContainer;
     friend class NLActor;
+    friend struct Script_Lua;
     
     Q_DISABLE_COPY(NLScript)
 };

@@ -15,6 +15,12 @@ extern "C" {
 #define CALLER_ACTOR(L, name) GET_LUA_CALLER(L, NLActor, name)
 #define CALLER_RIGIDBODY(L, name) GET_LUA_CALLER(L, NLRigidbody, name)
 
+static int Actor_new(lua_State *L)
+{
+    PUSH_NLOBJECT_TO_STACK(L, NLActor, new NLActor)
+    return 1;
+}
+
 static int Actor_SetPosition(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
@@ -309,6 +315,12 @@ static int Actor_ToRigidbody(lua_State *L)
 
 
 
+static int Rigidbody_new(lua_State *L)
+{
+    PUSH_NLOBJECT_TO_STACK(L, NLActor, new NLRigidbody)
+    return 1;
+}
+
 static int Rigidbody_MoveDirection(lua_State *L)
 {
     CALLER_RIGIDBODY(L, rb);
@@ -357,12 +369,15 @@ bool actor_register_metatable(struct lua_State *L)
 {
     if(metatable_is_register(L, "NLActor"))
         return true;
-    const struct luaL_Reg Funcs[] = {
-        ACTOR_FUNCS,
-        NULL_luaL_Reg
-    };
+
+    SET_GLOBAL_CFUNC(L, "new_NLActor", Actor_new)
+
     if(luaL_newmetatable(L, "NLActor"))
     {
+        const struct luaL_Reg Funcs[] = {
+            ACTOR_FUNCS,
+            NULL_luaL_Reg
+        };
         luaL_setfuncs(L, Funcs, 0);
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
@@ -370,6 +385,7 @@ bool actor_register_metatable(struct lua_State *L)
         qDebug() << "Actor_register";
         return true;
     }
+
     return false;
 }
 
@@ -378,13 +394,14 @@ bool rigidbody_register_metatable(struct lua_State *L)
 {
     if(metatable_is_register(L, "NLRigidbody"))
         return true;
-    const struct luaL_Reg Funcs[] = {
-        ACTOR_FUNCS,
-        RIGIDBODY_FUNC(MoveDirection),
-        NULL_luaL_Reg
-    };
+    SET_GLOBAL_CFUNC(L, "new_NLRigidbody", Rigidbody_new)
     if(luaL_newmetatable(L, "NLRigidbody"))
     {
+        const struct luaL_Reg Funcs[] = {
+            ACTOR_FUNCS,
+            RIGIDBODY_FUNC(MoveDirection),
+            NULL_luaL_Reg
+        };
         luaL_setfuncs(L, Funcs, 0);
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");

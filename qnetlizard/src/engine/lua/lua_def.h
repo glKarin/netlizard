@@ -11,6 +11,11 @@
     lua_setmetatable(L, -2); \
 }
 
+#define SET_GLOBAL_CFUNC(L, name, func) {\
+    lua_pushcfunction(L, func); \
+    lua_setglobal(L, name); \
+}
+
 #define NULL_luaL_Reg {NULL, NULL}
 
 struct lua_State;

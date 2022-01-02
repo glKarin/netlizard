@@ -13,6 +13,12 @@ extern "C" {
 
 #define CALLER_COMPONENT(L, name) GET_LUA_CALLER(L, NLComponent, name)
 
+static int Component_new(lua_State *L)
+{
+    PUSH_NLOBJECT_TO_STACK(L, NLComponent, new NLComponent)
+    return 1;
+}
+
 static int Component_Name(lua_State *L)
 {
     CALLER_COMPONENT(L, comp);
@@ -72,6 +78,9 @@ bool component_register_metatable(struct lua_State *L)
 {
     if(metatable_is_register(L, "NLComponent"))
         return true;
+
+    SET_GLOBAL_CFUNC(L, "new_NLComponent", Component_new)
+
     if(luaL_newmetatable(L, "NLComponent"))
     {
         const struct luaL_Reg Funcs[] = {

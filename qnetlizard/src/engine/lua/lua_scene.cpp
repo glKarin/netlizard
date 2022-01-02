@@ -169,25 +169,25 @@ bool scene_register_metatable(struct lua_State *L)
 {
     if(metatable_is_register(L, "NLScene"))
         return true;
-    const struct luaL_Reg Funcs[] = {
-        SCENE_FUNC(SetClearColor),
-        SCENE_FUNC(GetActor),
-        SCENE_FUNC(ActorCount),
-        SCENE_FUNC(CurrentFPS),
-        SCENE_FUNC(MousePointerPosition),
-        SCENE_FUNC(MoveCursorToCenter),
-        SCENE_FUNC(SetCursorVisible),
-        SCENE_FUNC(GrabMouseCursor),
-        SCENE_FUNC(IsCursorVisible),
-        SCENE_FUNC(IsGrabMouseCursor),
-        SCENE_FUNC(CurrendDelta),
-        SCENE_FUNC(KeyState),
-        SCENE_FUNC(MouseState),
-        SCENE_FUNC(CurrentCamera),
-        NULL_luaL_Reg
-    };
     if(luaL_newmetatable(L, "NLScene"))
     {
+        const struct luaL_Reg Funcs[] = {
+            SCENE_FUNC(SetClearColor),
+            SCENE_FUNC(GetActor),
+            SCENE_FUNC(ActorCount),
+            SCENE_FUNC(CurrentFPS),
+            SCENE_FUNC(MousePointerPosition),
+            SCENE_FUNC(MoveCursorToCenter),
+            SCENE_FUNC(SetCursorVisible),
+            SCENE_FUNC(GrabMouseCursor),
+            SCENE_FUNC(IsCursorVisible),
+            SCENE_FUNC(IsGrabMouseCursor),
+            SCENE_FUNC(CurrendDelta),
+            SCENE_FUNC(KeyState),
+            SCENE_FUNC(MouseState),
+            SCENE_FUNC(CurrentCamera),
+            NULL_luaL_Reg
+        };
         luaL_setfuncs(L, Funcs, 0);
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");

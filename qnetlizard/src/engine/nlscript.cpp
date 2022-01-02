@@ -20,9 +20,133 @@ extern "C" {
 #include "lua_scenecamera.h"
 #include "lua_def.h"
 
+#define m_L (m_lua.L)
+
+bool NLScript::Script_Lua::Init()
+{
+    if(L)
+        return false;
+    L = luaL_newstate();
+    luaL_openlibs(L);
+
+    NL::actor_register_metatable(L);
+    NL::component_register_metatable(L);
+    NL::scene_register_metatable(L);
+    NL::rigidbody_register_metatable(L);
+    NL::scenecamera_register_metatable(L);
+
+    return true;
+}
+
+bool NLScript::Script_Lua::Deinit()
+{
+    if(!L)
+        return false;
+
+    if(func & Script_Lua_Func_Destroy)
+    {
+        lua_getglobal(L, "Destroy");
+        lua_pcall(L, 0, 0, 0);
+        qDebug() << "lua script Destroy()......done";
+    }
+    else
+        qDebug() << "lua script Destroy()......missing";
+
+    lua_close(L);
+    L = 0;
+    func = -1;
+    return true;
+}
+
+bool NLScript::Script_Lua::Exec(float delta)
+{
+    if(!L)
+        return false;
+
+    if(func < 0)
+    {
+        PUSH_NLOBJECT_TO_STACK(L, NLScene, script->Scene())
+        lua_setglobal(L, "nl_Scene");
+
+        PUSH_NLOBJECT_TO_STACK(L, NLActor, script->Actor())
+        lua_setglobal(L, "nl_Actor");
+
+        lua_pushnumber(L, delta);
+        lua_setglobal(L, "nl_Delta");
+
+        int err = luaL_dostring(L, script->m_data.constData());
+        if(err)
+        {
+            qWarning() << "lua script error!" << err;
+            Deinit();
+            return false;
+        }
+
+        func = 0;
+        if(lua_getglobal(L, "Init") == LUA_TFUNCTION)
+        {
+            qDebug() << "lua script Init()......find";
+            lua_pcall(L, 0, 1, 0);
+            int ret = lua_toboolean(L, -1);
+            if(ret)
+            {
+                qDebug() << "lua script Init() -> true";
+            }
+            else
+            {
+                qWarning() << "lua script Init() -> false";
+                Deinit();
+            }
+            lua_pop(L, 1); // pop return result
+            if(!ret)
+                return false;
+            func |= Script_Lua_Func_Init;
+        }
+        else
+            qWarning() << "lua script Init()......missing";
+
+        if(lua_getglobal(L, "Update") == LUA_TFUNCTION)
+        {
+            func |= Script_Lua_Func_Update;
+            lua_pushnumber(L, delta);
+            lua_pcall(L, 1, 0, 0);
+            qDebug() << "lua script Update(number)......find";
+        }
+        else
+            qWarning() << "lua script Update(number)......missing";
+
+        if(lua_getglobal(L, "Destroy") == LUA_TFUNCTION)
+        {
+            func |= Script_Lua_Func_Destroy;
+            qDebug() << "lua script Destroy()......find";
+        }
+        else
+            qWarning() << "lua script Destroy()......missing";
+        lua_pop(L, 1); // pop function
+    }
+    else
+    {
+        lua_pushnumber(L, delta);
+        lua_setglobal(L, "nl_Delta");
+        if(func & Script_Lua_Func_Update)
+        {
+            lua_getglobal(L, "Update");
+            lua_pushnumber(L, delta);
+            lua_pcall(L, 1, 0, 0);
+            //qDebug() << "lua script Update(number)" << delta;
+        }
+        else
+        {
+            luaL_dostring(L, script->m_data.constData());
+            //lua_settop(L, 0);
+        }
+    }
+
+    return true;
+}
+
 NLScript::NLScript(NLActor *parent) :
     NLObject(NLPROPERTIY_NAME(NLScript), parent),
-    m_L(0),
     m_mounted(false)
 {
     Construct();
@@ -32,7 +156,6 @@ NLScript::NLScript(NLActor *parent) :
 
 NLScript::NLScript(const NLProperties &prop, NLActor *parent) :
     NLObject(NLPROPERTIES_NAME(prop, NLScript), parent),
-    m_L(0),
     m_mounted(false)
 {
     Construct();
@@ -40,7 +163,6 @@ NLScript::NLScript(const NLProperties &prop, NLActor *parent) :
 
 NLScript::NLScript(NLScene *scene, NLActor *parent) :
     NLObject(scene, NLPROPERTIY_NAME(NLScript), parent),
-    m_L(0),
     m_mounted(false)
 {
     Construct();
@@ -48,7 +170,6 @@ NLScript::NLScript(NLScene *scene, NLActor *parent) :
 
 NLScript::NLScript(NLScene *scene, const NLProperties &prop, NLActor *parent) :
     NLObject(scene, NLPROPERTIES_NAME(prop, NLScript), parent),
-    m_L(0),
     m_mounted(false)
 {
     Construct();
@@ -78,6 +199,7 @@ void NLScript::Construct()
     props.Insert("scriptSource", m);
 
     SetPropertyConfig(props);
+    m_lua.script = this;
 }
 
 void NLScript::Update(float delta)
@@ -86,25 +208,6 @@ void NLScript::Update(float delta)
         return;
     NLObject::Update(delta);
     /*qDebug() << */ExecScript(delta);
-}
-
-bool NLScript::ExecScript(float delta)
-{
-    if(!m_L)
-        return false;
-    PUSH_NLOBJECT_TO_STACK(m_L, NLScene, Scene())
-    lua_setglobal(m_L, "nl_Scene");
-
-    PUSH_NLOBJECT_TO_STACK(m_L, NLActor, Actor())
-    lua_setglobal(m_L, "nl_Actor");
-
-    lua_pushnumber(m_L, delta);
-    lua_setglobal(m_L, "nl_Delta");
-
-    bool res = luaL_dostring(m_L, m_data.constData());
-
-    lua_settop(m_L, 0);
-    return res;
 }
 
 void NLScript::Destroy()
@@ -166,31 +269,6 @@ NLScriptContainer * NLScript::Container()
 void NLScript::SetContainer(NLScriptContainer *container)
 {
     NLObject::SetContainer(container);
-}
-
-bool NLScript::InitLua()
-{
-    if(m_L)
-        return false;
-    m_L = luaL_newstate();
-    luaL_openlibs(m_L);
-
-    NL::actor_register_metatable(m_L);
-    NL::component_register_metatable(m_L);
-    NL::scene_register_metatable(m_L);
-    NL::rigidbody_register_metatable(m_L);
-    NL::scenecamera_register_metatable(m_L);
-
-    return true;
-}
-
-bool NLScript::DeinitLua()
-{
-    if(!m_L)
-        return false;
-    lua_close(m_L);
-    m_L = 0;
-    return true;
 }
 
 bool NLScript::SetScriptFile(const QString &file)
