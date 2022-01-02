@@ -48,6 +48,7 @@ private:
     void Construct();
     bool InitLua();
     bool DeinitLua();
+    bool ExecScript(float delta);
 
 private:
     struct lua_State *m_L;

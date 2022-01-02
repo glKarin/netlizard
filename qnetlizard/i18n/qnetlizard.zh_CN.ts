@@ -451,6 +451,21 @@
         <source>Component: </source>
         <translation type="unfinished">组件: </translation>
     </message>
+    <message>
+        <source>Script: </source>
+        <translation type="unfinished">脚本: </translation>
+    </message>
+</context>
+<context>
+    <name>NLFileChooserWidget</name>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished">打开</translation>
+    </message>
+    <message>
+        <source>Click button to choose file or input path directly</source>
+        <translation type="unfinished">点击按钮选择文件或直接输入文件路径</translation>
+    </message>
 </context>
 <context>
     <name>NLSceneInfoWidget</name>

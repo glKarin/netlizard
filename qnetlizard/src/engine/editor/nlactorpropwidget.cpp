@@ -25,6 +25,8 @@
 #include "nlactor.h"
 #include "nlactorcontainer.h"
 #include "nlscript.h"
+#include "nlvector3widget.h"
+#include "nlfilechooserwidget.h"
 
 #define NLOBJECT_PTR_PROPERTY_NAME "NLObject"
 #define DOUBLE_SPINBOX_SINGLE_STEP 1 //0.1
@@ -55,103 +57,6 @@ static bool NLPropertyInfoCmp(const NLPropertyInfo &a, const NLPropertyInfo &b)
         return true;
     return ai < bi;
 }
-
-NLVector3Widget::NLVector3Widget(QWidget *widget)
-    : QWidget(widget),
-      m_xSpinBox(0),
-      m_ySpinBox(0),
-      m_zSpinBox(0)
-{
-    setObjectName("NLVector3Widget");
-    vector3_identityv(&m_vector3);
-    Init();
-}
-
-NLVector3Widget::~NLVector3Widget()
-{
-    DEBUG_DESTROY_Q
-}
-
-void NLVector3Widget::Init()
-{
-    QGridLayout *mainLayout = new QGridLayout;
-    QFormLayout *layout;
-    m_xSpinBox = new QDoubleSpinBox;
-    m_ySpinBox = new QDoubleSpinBox;
-    m_zSpinBox = new QDoubleSpinBox;
-    m_xSpinBox->setMaximum(std::numeric_limits<float>::max());
-    m_ySpinBox->setMaximum(std::numeric_limits<float>::max());
-    m_zSpinBox->setMaximum(std::numeric_limits<float>::max());
-    m_xSpinBox->setMinimum(-std::numeric_limits<float>::max());
-    m_ySpinBox->setMinimum(-std::numeric_limits<float>::max());
-    m_zSpinBox->setMinimum(-std::numeric_limits<float>::max());
-    m_xSpinBox->setDecimals(DOUBLE_SPINBOX_DECIMAL);
-    m_ySpinBox->setDecimals(DOUBLE_SPINBOX_DECIMAL);
-    m_zSpinBox->setDecimals(DOUBLE_SPINBOX_DECIMAL);
-    m_xSpinBox->setSingleStep(DOUBLE_SPINBOX_SINGLE_STEP);
-    m_ySpinBox->setSingleStep(DOUBLE_SPINBOX_SINGLE_STEP);
-    m_zSpinBox->setSingleStep(DOUBLE_SPINBOX_SINGLE_STEP);
-
-    layout = new QFormLayout;
-    m_xSpinBox->setObjectName("X");
-    connect(m_xSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged(double)));
-    layout->addRow("X", m_xSpinBox);
-    mainLayout->addLayout(layout, 1, 0, 1, 1);
-
-    layout = new QFormLayout;
-    m_ySpinBox->setObjectName("Y");
-    connect(m_ySpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged(double)));
-    layout->addRow("Y", m_ySpinBox);
-    mainLayout->addLayout(layout, 1, 1, 1, 1);
-
-    layout = new QFormLayout;
-    m_zSpinBox->setObjectName("Z");
-    connect(m_zSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged(double)));
-    layout->addRow("Z", m_zSpinBox);
-    mainLayout->addLayout(layout, 1, 2, 1, 1);
-
-    UpdateWidget();
-
-    setLayout(mainLayout);
-}
-
-void NLVector3Widget::UpdateWidget()
-{
-    m_xSpinBox->setValue(VECTOR3_X(m_vector3));
-    m_ySpinBox->setValue(VECTOR3_Y(m_vector3));
-    m_zSpinBox->setValue(VECTOR3_Z(m_vector3));
-}
-
-void NLVector3Widget::OnValueChanged(double d)
-{
-    QString name(sender()->objectName());
-    if(name == "X")
-        VECTOR3_X(m_vector3) = (float)d;
-    else if(name == "Y")
-        VECTOR3_Y(m_vector3) = (float)d;
-    else if(name == "Z")
-        VECTOR3_Z(m_vector3) = (float)d;
-    emit vector3Changed(m_vector3);
-}
-
-void NLVector3Widget::SetVector3(const NLVector3 &v)
-{
-    if(!vector3_equals(&v, &m_vector3))
-    {
-        m_vector3 = v;
-        UpdateWidget();
-        emit vector3Changed(m_vector3);
-    }
-}
-
-void NLVector3Widget::SetReadOnly(bool b)
-{
-    m_xSpinBox->setReadOnly(b);
-    m_ySpinBox->setReadOnly(b);
-    m_zSpinBox->setReadOnly(b);
-}
-
-
 
 NLActorPropWidget::NLActorPropWidget(QWidget *widget)
     : QScrollArea(widget),
@@ -221,8 +126,8 @@ void NLActorPropWidget::SetActor(NLActor *actor)
         if(m_actor)
         {
             connect(m_actor, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
-            connect(m_actor, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
             connect(m_actor, SIGNAL(componentChanged(const NLComponent *)), this, SLOT(OnActorChanged()));
+            connect(m_actor, SIGNAL(scriptChanged(const NLScript *)), this, SLOT(OnActorChanged()));
             connect(m_actor, SIGNAL(destroyed()), this, SLOT(Reset()));
         }
         UpdateActorData();
@@ -512,17 +417,17 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
         QTextEdit *w = new QTextEdit;
         w->setText(item.value.toString());
         w->setReadOnly(item.readonly);
-        connect(w, SIGNAL(textChanged(const QString &)), this, SLOT(OnStringChanged(const QString &)));
+        connect(w, SIGNAL(textChanged()), this, SLOT(OnStringChanged()));
         connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
         widget = w;
     }
     else if(item.widget == "filedialog")
     {
-        QPushButton *w = new QPushButton;
-        w->setText(item.value.toString());
-        w->setEnabled(!item.readonly);
-        connect(w, SIGNAL(clicked()), this, SLOT(OpenFileDialog()));
-        connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
+        NLFileChooserWidget *w = new NLFileChooserWidget;
+        w->SetFile(item.value.toString());
+        w->SetReadOnly(item.readonly);
+        connect(w, SIGNAL(fileChanged(const QString &)), this, SLOT(OnStringChanged(const QString &)));
+        connect(w, SIGNAL(fileReload(const QString &)), this, SLOT(OnStringReload(const QString &)));
         widget = w;
     }
     else/* if(item.widget == "label")*/
@@ -602,6 +507,18 @@ void NLActorPropWidget::OnPropertyChanged(const QString &name, const NLProperty 
         int index = cb->findData(value);
         if(index >= 0)
             cb->setCurrentIndex(index);
+    }
+    else if(instanceofv(widget, QTextEdit))
+    {
+        static_cast<QTextEdit *>(widget)->setPlainText(value.toString());
+    }
+    else if(instanceofv(widget, QPushButton))
+    {
+        static_cast<QPushButton *>(widget)->setText(value.toString());
+    }
+    else if(instanceofv(widget, NLFileChooserWidget))
+    {
+        static_cast<NLFileChooserWidget *>(widget)->SetFile(value.toString());
     }
 }
 
@@ -690,10 +607,20 @@ void NLActorPropWidget::OnStringChanged(const QString &str)
     NLObject *obj = static_cast<NLObject *>(o);
     if(!obj)
         return;
-    obj->SetProperty(s->objectName(), str);
+    if(instanceofv(s, QTextEdit))
+    {
+        QTextEdit *t = static_cast<QTextEdit *>(s);
+        bool editing = t->hasFocus();
+        if(editing)
+        {
+            obj->SetProperty(s->objectName(), t->toPlainText());
+        }
+    }
+    else
+        obj->SetProperty(s->objectName(), str);
 }
 
-void NLActorPropWidget::OpenFileDialog()
+void NLActorPropWidget::OnStringReload(const QString &str)
 {
     QObject *s = sender();
     if(!s)
@@ -704,22 +631,7 @@ void NLActorPropWidget::OpenFileDialog()
     NLObject *obj = static_cast<NLObject *>(o);
     if(!obj)
         return;
-    QString key(s->objectName());
-    QString fileName = obj->GetProperty_T<QString>(key);
-    QString dir;
-    if(!fileName.isEmpty())
-    {
-        QFileInfo info(fileName);
-        if(info.exists())
-            dir = info.absolutePath();
-    }
-    QString chooseFileName = QFileDialog::getOpenFileName(this, dir);
-    obj->SetProperty(key, chooseFileName);
-    if(instanceofv(s, QPushButton))
-    {
-        QPushButton *b = static_cast<QPushButton *>(s);
-        b->setText(chooseFileName);
-    }
+    obj->CoverProperty(s->objectName(), str);
 }
 
 void NLActorPropWidget::ClearSection(QGroupBox *groupBox)

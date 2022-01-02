@@ -53,6 +53,14 @@ static int Component_Actor(lua_State *L)
     return 1;
 }
 
+static int Component_IsEnabled(lua_State *L)
+{
+    CALLER_COMPONENT(L, comp);
+    int i = comp->IsEnabled() ? 1 : 0;
+    lua_pushboolean(L, i);
+    return 1;
+}
+
 namespace NL
 {
 
@@ -71,6 +79,7 @@ bool component_register_metatable(struct lua_State *L)
             COMPONENT_FUNC(ClassName),
             COMPONENT_FUNC(SetEnabled),
             COMPONENT_FUNC(Actor),
+            COMPONENT_FUNC(IsEnabled),
             NULL_luaL_Reg
         };
         luaL_setfuncs(L, Funcs, 0);

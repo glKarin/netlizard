@@ -85,7 +85,13 @@ void NLScript::Update(float delta)
     if(!IsActived())
         return;
     NLObject::Update(delta);
+    /*qDebug() << */ExecScript(delta);
+}
 
+bool NLScript::ExecScript(float delta)
+{
+    if(!m_L)
+        return false;
     PUSH_NLOBJECT_TO_STACK(m_L, NLScene, Scene())
     lua_setglobal(m_L, "nl_Scene");
 
@@ -95,9 +101,10 @@ void NLScript::Update(float delta)
     lua_pushnumber(m_L, delta);
     lua_setglobal(m_L, "nl_Delta");
 
-    /*qDebug() << "lua" << */luaL_dostring(m_L, m_data.constData());
+    bool res = luaL_dostring(m_L, m_data.constData());
 
     lua_settop(m_L, 0);
+    return res;
 }
 
 void NLScript::Destroy()
@@ -131,7 +138,6 @@ void NLScript::Mount(NLActor *actor)
     if(!IsInited())
         Init();
     SetActor(actor);
-    InitLua();
     m_mounted = true;
 #ifdef _DEV_TEST
     qDebug() << objectName() + "(" + Name() + ") -> MOUNTED";
@@ -164,7 +170,7 @@ void NLScript::SetContainer(NLScriptContainer *container)
 
 bool NLScript::InitLua()
 {
-    if(IsMounted())
+    if(m_L)
         return false;
     m_L = luaL_newstate();
     luaL_openlibs(m_L);
@@ -180,9 +186,10 @@ bool NLScript::InitLua()
 
 bool NLScript::DeinitLua()
 {
-    if(!IsMounted())
+    if(!m_L)
         return false;
     lua_close(m_L);
+    m_L = 0;
     return true;
 }
 
@@ -190,17 +197,25 @@ bool NLScript::SetScriptFile(const QString &file)
 {
     if(file != m_sourceFile)
     {
-        QFile f(file);
-        if(!f.exists())
-            return false;
-        if(!f.open(QIODevice::ReadOnly))
-            return false;
-        QTextStream is(&f);
-        is.setCodec("utf-8");
-        SetScriptSource(is.readAll());
-        f.close();
         m_sourceFile = file;
         emit propertyChanged("scriptFile", m_sourceFile);
+    }
+    if(!m_sourceFile.isEmpty())
+    {
+        QFile f(file);
+        if(!f.exists())
+        {
+            SetScriptSource(QString());
+            return false;
+        }
+        if(!f.open(QIODevice::ReadOnly))
+        {
+            SetScriptSource(QString());
+            return false;
+        }
+        QTextStream is(&f);
+        SetScriptSource(is.readAll());
+        f.close();
         return true;
     }
     return false;
@@ -208,10 +223,17 @@ bool NLScript::SetScriptFile(const QString &file)
 
 void NLScript::SetScriptSource(const QString &src)
 {
-    if(src != QString(m_data))
+    QByteArray ba;
+    ba.append(src);
+    if(m_data != ba)
     {
         m_data.clear();
-        m_data.append(src);
+        DeinitLua();
+        if(!src.isEmpty())
+        {
+            m_data = ba;
+            InitLua();
+        }
         emit propertyChanged("scriptSource", QString(m_data));
     }
 }

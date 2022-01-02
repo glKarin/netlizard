@@ -178,6 +178,13 @@ void NLObject::SetProperty(const QString &name, const NLProperty &value)
     emit propertyChanged(name, value);
 }
 
+void NLObject::CoverProperty(const QString &name, const NLProperty &value)
+{
+    const QByteArray ba = name.toLocal8Bit();
+    /*qDebug() << */setProperty(ba.constData(), value);
+    emit propertyChanged(name, value);
+}
+
 void NLObject::RemoveProperty(const QString &name)
 {
     bool has = HasProperty(name);

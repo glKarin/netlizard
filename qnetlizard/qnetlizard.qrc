@@ -7,5 +7,6 @@
         <file alias="LOGO">resource/img/logo.png</file>
         <file alias="MENU">resource/cfg/menu.xml</file>
         <file alias="LANG">resource/cfg/lang.zh_CN.xml</file>
+        <file alias="SCRIPT_API_EXAM">resource/script/api_exam.lua</file>
     </qresource>
 </RCC>

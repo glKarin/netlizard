@@ -69,9 +69,10 @@ static int Scene_CurrentFPS(lua_State *L)
 static int Scene_MousePointerPosition(lua_State *L)
 {
     CALLER_SCENE(L, scene);
-    scene->MousePointerPosition();
-    lua_pushboolean(L, 1);
-    return 1;
+    QPoint p = scene->MousePointerPosition();
+    lua_pushinteger(L, p.x());
+    lua_pushinteger(L, p.y());
+    return 2;
 }
 
 static int Scene_MoveCursorToCenter(lua_State *L)

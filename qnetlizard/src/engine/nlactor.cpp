@@ -88,12 +88,12 @@ void NLActor::Init()
         return;
     if(m_renderable)
         m_renderable->InitRender();
+    if(m_scripts)
+        m_scripts->Init();
     if(m_components)
         m_components->Init();
     if(m_children)
         m_children->Init();
-    if(m_scripts)
-        m_scripts->Init();
     NLObject::Init();
 }
 
@@ -101,10 +101,10 @@ void NLActor::Update(float delta)
 {
     if(!IsActived())
         return;
-    if(m_components)
-        m_components->Update(delta);
     if(m_scripts)
         m_scripts->Update(delta);
+    if(m_components)
+        m_components->Update(delta);
     if(m_children)
         m_children->Update(delta);
     NLObject::Update(delta);
@@ -138,17 +138,17 @@ void NLActor::Destroy()
         delete m_renderable;
         m_renderable = 0;
     }
-    if(m_components)
-    {
-        m_components->Destroy();
-        delete m_components;
-        m_components = 0;
-    }
     if(m_scripts)
     {
         m_scripts->Destroy();
         delete m_scripts;
         m_scripts = 0;
+    }
+    if(m_components)
+    {
+        m_components->Destroy();
+        delete m_components;
+        m_components = 0;
     }
     if(m_children)
     {

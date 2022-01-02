@@ -42,7 +42,9 @@ HEADERS += \
     src/engine/lua/lua_component.h \
     src/engine/lua/lua_scene.h \
     src/engine/lua/lua_def.h \
-    src/engine/lua/lua_scenecamera.h
+    src/engine/lua/lua_scenecamera.h \
+    src/engine/editor/widget/nlvector3widget.h \
+    src/engine/editor/widget/nlfilechooserwidget.h
 
 SOURCES += \
     main.cpp \
@@ -57,7 +59,9 @@ SOURCES += \
     src/engine/lua/lua_component.cpp \
     src/engine/lua/lua_scene.cpp \
     src/engine/lua/lua_def.cpp \
-    src/engine/lua/lua_scenecamera.cpp
+    src/engine/lua/lua_scenecamera.cpp \
+    src/engine/editor/widget/nlvector3widget.cpp \
+    src/engine/editor/widget/nlfilechooserwidget.cpp
 
 # Widget
 HEADERS += \
@@ -172,8 +176,8 @@ SOURCES += \
     src/comp/widget/actorpropertywidget.cpp
 
 # Engine
-DEPENDPATH += ./src/engine ./src/engine/editor ./src/engine/lua
-INCLUDEPATH += ./src/engine ./src/engine/editor ./src/engine/lua
+DEPENDPATH += ./src/engine ./src/engine/editor ./src/engine/lua ./src/engine/editor/widget
+INCLUDEPATH += ./src/engine ./src/engine/editor ./src/engine/lua ./src/engine/editor/widget
 
 HEADERS += \
     src/engine/nldef.h \
@@ -352,6 +356,12 @@ SOURCES += \
     src/test/testviewer.cpp \
     src/test/testscene.cpp
 
+script_api_exam.files = \
+    resource/script/api_exam.lua
+script_api_exam.path = $$DESTDIR
+
+INSTALLS += script_api_exam
+
 } else {
 
 }
@@ -382,6 +392,7 @@ OTHER_FILES += README.md \
                 resource/cfg/help.xml \
                 resource/cfg/menu.xml \
                 resource/cfg/setting.xml \
-                resource/cfg/lang.zh_CN.xml
+                resource/cfg/lang.zh_CN.xml \
+                resource/script/api_exam.lua
 
 #INSTALLS += qnetlizard

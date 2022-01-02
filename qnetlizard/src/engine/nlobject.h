@@ -44,7 +44,9 @@ public:
     NLProperty GetProperty(const QString &name, const NLProperty &def = QVariant()) const;
     template<class T> T GetProperty_T(const QString &name, const T &def = T());
     void SetProperty(const QString &name, const NLProperty &value);
+    void CoverProperty(const QString &name, const NLProperty &value);
     template<class T> void SetProperty_T(const QString &name, const T &value);
+    template<class T> void CoverProperty_T(const QString &name, const T &value);
     NLProperty & operator[](const QString &name) { return m_property[name]; } // init property
     NLProperty operator[](const QString &name) const { return GetProperty(name); }
     void SetScene(NLScene *scene);
@@ -115,6 +117,13 @@ template<class T> void NLObject::SetProperty_T(const QString &name, const T &val
     {
         return;
     }
+    const QByteArray ba = name.toLocal8Bit();
+    setProperty(ba.constData(), value);
+    emit propertyChanged(name, NLProperty::fromValue(value));
+}
+
+template<class T> void NLObject::CoverProperty_T(const QString &name, const T &value)
+{
     const QByteArray ba = name.toLocal8Bit();
     setProperty(ba.constData(), value);
     emit propertyChanged(name, NLProperty::fromValue(value));

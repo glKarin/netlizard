@@ -10,42 +10,9 @@ class NLActor;
 class NLObject;
 class QFormLayout;
 class QVBoxLayout;
-class QDoubleSpinBox;
 class QGroupBox;
 class NLComponent;
 class NLScript;
-
-class NLVector3Widget : public QWidget
-{
-    Q_OBJECT
-
-public:
-    explicit NLVector3Widget(QWidget *widget = 0);
-    virtual ~NLVector3Widget();
-    NLVector3 Vector3() const { return m_vector3; }
-
-public Q_SLOTS:
-    void SetVector3(const NLVector3 &v);
-    void SetReadOnly(bool b);
-
-Q_SIGNALS:
-    void vector3Changed(const NLVector3 &vector);
-
-private Q_SLOTS:
-    void OnValueChanged(double d);
-
-private:
-    void Init();
-    void UpdateWidget();
-
-private:
-    NLVector3 m_vector3;
-    QDoubleSpinBox *m_xSpinBox;
-    QDoubleSpinBox *m_ySpinBox;
-    QDoubleSpinBox *m_zSpinBox;
-
-    Q_DISABLE_COPY(NLVector3Widget)
-};
 
 class NLActorPropWidget : public QScrollArea
 {
@@ -86,8 +53,8 @@ private Q_SLOTS:
     void OnDoubleChanged(double f);
     void OnVector3Changed(const NLVector3 &v);
     void OnIndexChanged(int i);
-    void OnStringChanged(const QString &str);
-    void OpenFileDialog();
+    void OnStringChanged(const QString &str = QString());
+    void OnStringReload(const QString &str = QString());
 
 private:
     typedef QHash<QString, QWidget *> PropWidgetHash;

@@ -268,6 +268,22 @@ static int Actor_Scene(lua_State *L)
     return 1;
 }
 
+static int Actor_IsEnabled(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    int i = actor->IsEnabled() ? 1 : 0;
+    lua_pushboolean(L, i);
+    return 1;
+}
+
+static int Actor_CanRender(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    int i = actor->CanRender() ? 1 : 0;
+    lua_pushboolean(L, i);
+    return 1;
+}
+
 static int Actor_IsRigidbody(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
@@ -310,34 +326,39 @@ namespace NL
     lua_pushcfunction(L, Actor_##x); \
     lua_setfield(L, -2, #x);
 #define ACTOR_FUNC(x) {#x, Actor_##x}
+#define ACTOR_FUNCS \
+    ACTOR_FUNC(SetPosition), \
+    ACTOR_FUNC(SetRotation), \
+    ACTOR_FUNC(SetScale), \
+    ACTOR_FUNC(Position), \
+    ACTOR_FUNC(Rotation), \
+    ACTOR_FUNC(Scale), \
+    ACTOR_FUNC(Direction), \
+    ACTOR_FUNC(Up), \
+    ACTOR_FUNC(Right), \
+    ACTOR_FUNC(Move), \
+    ACTOR_FUNC(Turn), \
+    ACTOR_FUNC(Zoom), \
+    ACTOR_FUNC(Name), \
+    ACTOR_FUNC(ClassName), \
+    ACTOR_FUNC(SetEnabled), \
+    ACTOR_FUNC(GetChild), \
+    ACTOR_FUNC(ChildrenCount), \
+    ACTOR_FUNC(ParentActor), \
+    ACTOR_FUNC(GetComponent), \
+    ACTOR_FUNC(ComponentCount), \
+    ACTOR_FUNC(Scene), \
+    ACTOR_FUNC(IsRigidbody), \
+    ACTOR_FUNC(ToRigidbody), \
+    ACTOR_FUNC(IsEnabled), \
+    ACTOR_FUNC(CanRender)
+
 bool actor_register_metatable(struct lua_State *L)
 {
     if(metatable_is_register(L, "NLActor"))
         return true;
     const struct luaL_Reg Funcs[] = {
-        ACTOR_FUNC(SetPosition),
-        ACTOR_FUNC(SetRotation),
-        ACTOR_FUNC(SetScale),
-        ACTOR_FUNC(Position),
-        ACTOR_FUNC(Rotation),
-        ACTOR_FUNC(Scale),
-        ACTOR_FUNC(Direction),
-        ACTOR_FUNC(Up),
-        ACTOR_FUNC(Right),
-        ACTOR_FUNC(Move),
-        ACTOR_FUNC(Turn),
-        ACTOR_FUNC(Zoom),
-        ACTOR_FUNC(Name),
-        ACTOR_FUNC(ClassName),
-        ACTOR_FUNC(SetEnabled),
-        ACTOR_FUNC(GetChild),
-        ACTOR_FUNC(ChildrenCount),
-        ACTOR_FUNC(ParentActor),
-        ACTOR_FUNC(GetComponent),
-        ACTOR_FUNC(ComponentCount),
-        ACTOR_FUNC(Scene),
-        ACTOR_FUNC(IsRigidbody),
-        ACTOR_FUNC(ToRigidbody),
+        ACTOR_FUNCS,
         NULL_luaL_Reg
     };
     if(luaL_newmetatable(L, "NLActor"))
@@ -358,29 +379,7 @@ bool rigidbody_register_metatable(struct lua_State *L)
     if(metatable_is_register(L, "NLRigidbody"))
         return true;
     const struct luaL_Reg Funcs[] = {
-        ACTOR_FUNC(SetPosition),
-        ACTOR_FUNC(SetRotation),
-        ACTOR_FUNC(SetScale),
-        ACTOR_FUNC(Position),
-        ACTOR_FUNC(Rotation),
-        ACTOR_FUNC(Scale),
-        ACTOR_FUNC(Direction),
-        ACTOR_FUNC(Up),
-        ACTOR_FUNC(Right),
-        ACTOR_FUNC(Move),
-        ACTOR_FUNC(Turn),
-        ACTOR_FUNC(Zoom),
-        ACTOR_FUNC(Name),
-        ACTOR_FUNC(ClassName),
-        ACTOR_FUNC(SetEnabled),
-        ACTOR_FUNC(GetChild),
-        ACTOR_FUNC(ChildrenCount),
-        ACTOR_FUNC(ParentActor),
-        ACTOR_FUNC(GetComponent),
-        ACTOR_FUNC(ComponentCount),
-        ACTOR_FUNC(Scene),
-        ACTOR_FUNC(IsRigidbody),
-        ACTOR_FUNC(ToRigidbody),
+        ACTOR_FUNCS,
         RIGIDBODY_FUNC(MoveDirection),
         NULL_luaL_Reg
     };
