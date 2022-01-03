@@ -362,6 +362,115 @@ static int Actor_RemoveChild(lua_State *L)
     return 1;
 }
 
+static int Actor_AddComponent(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    GET_LUA_OBJECT(L, NLComponent, c, 2);
+    int b = 0;
+    if(c)
+        b = actor->AddComponent(c) ? 1 : 0;
+    lua_pushboolean(L, b);
+    return 1;
+}
+
+static int Actor_RemoveComponent(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    int b = 0;
+    if(lua_isinteger(L, 2))
+    {
+        int i = lua_tointeger(L, 2);
+        b = actor->RemoveComponent(i) ? 1 : 0;
+    }
+    else
+    {
+        int type = lua_type(L, 2);
+        if(type == LUA_TUSERDATA)
+        {
+            GET_LUA_OBJECT(L, NLComponent, c, 2);
+            b = c && actor->RemoveComponent(c) ? 1 : 0;
+        }
+        else
+        {
+            const char *s = lua_tostring(L, 2);
+            b = actor->RemoveComponent(s) ? 1 : 0;
+        }
+    }
+    lua_pushboolean(L, b);
+    return 1;
+}
+
+static int Actor_ScriptCount(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    int i = actor->ScriptCount();
+    lua_pushinteger(L, i);
+    return 1;
+}
+
+static int Actor_GetScript(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    NLScript *c = NULL;
+    if(lua_isinteger(L, 2))
+    {
+        int i = lua_tointeger(L, 2);
+        c = actor->GetScript(i);
+    }
+    else
+    {
+        const char *str = lua_tostring(L, 2);
+        c = actor->GetScript(str);
+    }
+    if(c)
+    {
+        PUSH_NLOBJECT_TO_STACK(L, NLScript, c)
+    }
+    else
+    {
+        lua_pushnil(L);
+    }
+    return 1;
+}
+
+static int Actor_AddScript(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    GET_LUA_OBJECT(L, NLScript, c, 2);
+    int b = 0;
+    if(c)
+        b = actor->AddScript(c) ? 1 : 0;
+    lua_pushboolean(L, b);
+    return 1;
+}
+
+static int Actor_RemoveScript(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    int b = 0;
+    if(lua_isinteger(L, 2))
+    {
+        int i = lua_tointeger(L, 2);
+        b = actor->RemoveScript(i) ? 1 : 0;
+    }
+    else
+    {
+        int type = lua_type(L, 2);
+        if(type == LUA_TUSERDATA)
+        {
+            GET_LUA_OBJECT(L, NLScript, c, 2);
+            b = c && actor->RemoveScript(c) ? 1 : 0;
+        }
+        else
+        {
+            const char *s = lua_tostring(L, 2);
+            b = actor->RemoveScript(s) ? 1 : 0;
+        }
+    }
+    lua_pushboolean(L, b);
+    return 1;
+}
+
 
 
 static int Rigidbody_new(lua_State *L)
@@ -423,7 +532,13 @@ namespace NL
     ACTOR_FUNC(IsEnabled), \
     ACTOR_FUNC(CanRender), \
     ACTOR_FUNC(AddChild), \
-    ACTOR_FUNC(RemoveChild)
+    ACTOR_FUNC(RemoveChild), \
+    ACTOR_FUNC(AddComponent), \
+    ACTOR_FUNC(RemoveComponent), \
+    ACTOR_FUNC(AddScript), \
+    ACTOR_FUNC(RemoveScript), \
+    ACTOR_FUNC(GetScript), \
+    ACTOR_FUNC(ScriptCount)
 
 bool actor_register_metatable(struct lua_State *L)
 {

@@ -1,6 +1,9 @@
 #include "nlscenetreewidget.h"
 
 #include <QDebug>
+#include <QMenu>
+#include <QAction>
+#include <QContextMenuEvent>
 
 #include "qdef.h"
 #include "nlscene.h"
@@ -9,7 +12,8 @@
 
 NLSceneTreeWidget::NLSceneTreeWidget(QWidget *widget)
     : QTreeWidget(widget),
-      m_scene(0)
+      m_scene(0),
+      m_menu(0)
 {
     setObjectName("NLSceneTreeWidget");
     Init();
@@ -30,6 +34,8 @@ void NLSceneTreeWidget::Init()
 
 void NLSceneTreeWidget::Reset()
 {
+    if(m_scene)
+        m_scene->disconnect(this);
     m_scene = 0;
     clear();
     setHeaderLabel(tr("No scene"));
@@ -41,8 +47,17 @@ void NLSceneTreeWidget::SetScene(NLScene *scene)
     {
         Reset();
         m_scene = scene;
+        if(m_scene)
+            connect(m_scene, SIGNAL(actorChanged(NLActor *)), this, SLOT(OnSceneActorChanged()));
         UpdateTreeData();
     }
+}
+
+void NLSceneTreeWidget::OnSceneActorChanged(NLActor *actor)
+{
+    Q_UNUSED(actor);
+    clear();
+    UpdateTreeData();
 }
 
 void NLSceneTreeWidget::UpdateTreeData()
@@ -97,4 +112,48 @@ void NLSceneTreeWidget::OnItemClicked(QTreeWidgetItem *item, int col)
     QObject *obj = item->data(0, Qt::UserRole).value<QObject *>();
     if(obj)
         emit actorSelected(static_cast<NLActor *>(obj));
+}
+
+#define ACTION_INVALID -1
+#define ACTION_ADD 1
+#define ACTION_REMOVE 2
+int NLSceneTreeWidget::ShowMenu(const QPoint &pos)
+{
+    if(!m_menu)
+    {
+        m_menu = new QMenu(this);
+        m_menu->addAction(tr("Add child"))->setData(ACTION_ADD);
+        m_menu->addAction(tr("Remove actor"))->setData(ACTION_REMOVE);
+    }
+    QAction *action = m_menu->exec(pos);
+    if(action)
+        return action->data().toInt();
+    return ACTION_INVALID;
+}
+
+void NLSceneTreeWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+    QTreeWidgetItem *item = itemAt(event->pos());
+    if(!item)
+    {
+        QTreeWidget::contextMenuEvent(event);
+        return;
+    }
+    int action = ShowMenu(event->globalPos());
+    if(action < 0)
+    {
+        QTreeWidget::contextMenuEvent(event);
+        return;
+    }
+    QObject *data = item->data(0, Qt::UserRole).value<QObject *>();
+    NLActor *actor = static_cast<NLActor *>(data);
+    if(action == ACTION_ADD)
+    {
+        NLActor *a = new NLActor;
+        actor->AddChild(a);
+    }
+    else if(action == ACTION_REMOVE)
+    {
+        delete actor;
+    }
 }

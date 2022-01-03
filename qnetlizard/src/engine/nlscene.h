@@ -55,6 +55,7 @@ signals:
     void sizeChanged(const QSize &s);
     void updated(float delta);
     void rendered(float fps);
+    void actorChanged(NLActor *actor = 0);
     
 public slots:
     void RunLoop(bool b);

@@ -55,7 +55,7 @@ NLObject::NLObject(NLScene *scene, const NLProperties &prop, QObject *parent) :
 NLObject::~NLObject()
 {
     NLObjectPool::Instance()->Detach(this);
-    Destroy();
+    Destroy(); // !! vitrual
     DEBUG_DESTROY_Q;
 }
 

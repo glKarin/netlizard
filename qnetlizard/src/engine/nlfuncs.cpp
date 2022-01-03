@@ -50,7 +50,7 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
         }
     }
 
-    bool readonly = (name == "objectName" || name == "renderable")
+    bool readonly = (/*name == "objectName" || */name == "renderable")
             || (t == QMetaType::QObjectStar || t == QMetaType::QWidgetStar || t == QMetaType::VoidStar)
             ;
 

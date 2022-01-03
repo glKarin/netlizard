@@ -38,6 +38,7 @@ NLComponent::NLComponent(NLScene *scene, const NLProperties &prop, NLActor *pare
 
 NLComponent::~NLComponent()
 {
+    Destroy(); // !! vitrual
 }
 
 void NLComponent::Construct()

@@ -9,6 +9,7 @@
 #include <QMouseEvent>
 
 #include "nlscenecamera.h"
+#include "nlactor.h"
 #include "qdef.h"
 
 #define LOOP_INTERVAL 10 // 0
@@ -339,14 +340,22 @@ void NLScene::AddActor(NLActor *actor)
 {
     if(!actor)
         return;
-    m_actors.Add(actor);
+    if(m_actors.Add(actor))
+    {
+        connect(actor, SIGNAL(destroying()), this, SIGNAL(actorChanged()));
+        emit actorChanged(actor);
+    }
 }
 
 void NLScene::RemoveActor(NLActor *actor)
 {
     if(!actor)
         return;
-    m_actors.Remove(actor);
+    if(m_actors.Remove(actor))
+    {
+        delete actor;
+        emit actorChanged();
+    }
 }
 
 void NLScene::SetFPS(float fps)

@@ -17,6 +17,7 @@ extern "C" {
 #include "lua_actor.h"
 #include "lua_component.h"
 #include "lua_scene.h"
+#include "lua_script.h"
 #include "lua_scenecamera.h"
 #include "lua_def.h"
 
@@ -34,6 +35,7 @@ bool NLScript::Script_Lua::Init()
     NL::scene_register_metatable(L);
     NL::rigidbody_register_metatable(L);
     NL::scenecamera_register_metatable(L);
+    NL::script_register_metatable(L);
 
     return true;
 }
@@ -190,6 +192,7 @@ NLScript::NLScript(NLScene *scene, const NLProperties &prop, NLActor *parent) :
 
 NLScript::~NLScript()
 {
+    Destroy(); // !! vitrual
 }
 
 void NLScript::Construct()

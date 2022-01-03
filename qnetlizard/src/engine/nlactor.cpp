@@ -54,6 +54,7 @@ NLActor::NLActor(NLScene *scene, const NLProperties &prop, NLActor *parent) :
 
 NLActor::~NLActor()
 {
+    Destroy(); // !! vitrual
     Mesa_FreeGLMatrix(&m_matrix);
     Mesa_FreeGLMatrix(&m_globalMatrix);
     Mesa_FreeGLMatrix(&m_normalMatrix);
@@ -158,11 +159,10 @@ void NLActor::Destroy()
     }
     NLActor *actor = ParentActor();
     if(actor)
-    {
-        actor->TellChildRemoved();
-        SetParentActor(0);
-    }
+        setParent(0);
     NLObject::Destroy();
+    if(actor)
+        actor->TellChildRemoved();
 }
 
 bool NLActor::keyev(int key, bool pressed, int modifier)
