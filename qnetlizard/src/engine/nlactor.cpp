@@ -107,7 +107,7 @@ void NLActor::Update(float delta)
         m_components->Update(delta);
     if(m_children)
         m_children->Update(delta);
-    NLObject::Update(delta);
+    //NLObject::Update(delta);
 }
 
 void NLActor::Render()
@@ -155,6 +155,12 @@ void NLActor::Destroy()
         m_children->Destroy();
         delete m_children;
         m_children = 0;
+    }
+    NLActor *actor = ParentActor();
+    if(actor)
+    {
+        actor->TellChildRemoved();
+        SetParentActor(0);
     }
     NLObject::Destroy();
 }
@@ -218,8 +224,7 @@ NLActor * NLActor::ParentActor()
 void NLActor::SetParentActor(NLActor *actor)
 {
     setParent(actor);
-    if(actor)
-        UpdateGlobalMatrix();
+    UpdateGlobalMatrix();
 }
 
 NLActorContainer * NLActor::Container()
@@ -255,9 +260,8 @@ bool NLActor::RemoveComponent(NLComponent *item)
     bool res = m_components->Remove(item);
     if(res)
     {
-        item->Destroy();
         delete item;
-        emit componentChanged();
+        //emit componentChanged();
     }
     return res;
 }
@@ -303,9 +307,8 @@ bool NLActor::RemoveChild(NLActor *actor)
     bool res = m_children->Remove(actor);
     if(res)
     {
-        actor->Destroy();
         delete actor;
-        emit childChanged();
+        //emit childChanged();
     }
     return res;
 }
@@ -654,9 +657,8 @@ bool NLActor::RemoveScript(NLScript *item)
     bool res = m_scripts->Remove(item);
     if(res)
     {
-        item->Destroy();
         delete item;
-        emit scriptChanged();
+        //emit scriptChanged();
     }
     return res;
 }

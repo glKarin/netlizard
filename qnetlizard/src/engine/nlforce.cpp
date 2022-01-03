@@ -94,7 +94,7 @@ void NLForce::Update(float delta)
     if(m_state != NLForce::State_Forcing)
         return;
     m_time += delta;
-    NLObject::Update(delta);
+    //NLObject::Update(delta);
 }
 
 void NLForce::Start()

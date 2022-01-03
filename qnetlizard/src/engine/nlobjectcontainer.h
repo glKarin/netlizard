@@ -69,13 +69,19 @@ protected:
 
 private:
     void Construct();
+    bool Take(NLObject *item) {
+        if(!Exists(item))
+            return false;
+        m_objectList.removeOne(item);
+        return true;
+    }
 
 private:
     NLObjectList m_objectList;
     NLScene *m_scene;
 
+    friend class NLObject;
     Q_DISABLE_COPY(NLObjectContainer)
-    
 };
 
 template <class T>

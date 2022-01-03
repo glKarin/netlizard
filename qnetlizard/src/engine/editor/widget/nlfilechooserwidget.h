@@ -2,9 +2,27 @@
 #define _KARIN_NLFILECHOOSERWIDGET_H
 
 #include <QWidget>
+#include <QLineEdit>
 
-class QLineEdit;
 class QPushButton;
+
+class NLFileChooserWidgetLabel : public QLineEdit
+{
+    Q_OBJECT
+
+public:
+    NLFileChooserWidgetLabel(QWidget *parent = 0)
+        : QLineEdit(parent) { setObjectName("NLFileChooserWidgetLabel"); }
+    NLFileChooserWidgetLabel(const QString &contents, QWidget *parent = 0)
+        : QLineEdit(contents, parent) { setObjectName("NLFileChooserWidgetLabel"); }
+    ~NLFileChooserWidgetLabel();
+
+Q_SIGNALS:
+    void dblClicked();
+
+protected:
+    virtual void mouseDoubleClickEvent(QMouseEvent *event);
+};
 
 class NLFileChooserWidget : public QWidget
 {
@@ -26,6 +44,7 @@ Q_SIGNALS:
 private Q_SLOTS:
     void OpenFileDialog();
     void OpenFile();
+    void EditOrChooseFile();
 
 private:
     void Init();
@@ -33,7 +52,7 @@ private:
 
 private:
     QString m_file;
-    QLineEdit *m_fileLabel;
+    NLFileChooserWidgetLabel *m_fileLabel;
     QPushButton *m_openButton;
     //QPushButton *m_reloadButton;
 

@@ -84,7 +84,7 @@ bool NLObjectContainer::Exists(const NLObject *item) const
 NLName NLObjectContainer::Find(const NLObject *item)
 {
     if(!item)
-        return false;
+        return QString();
     if(!m_objectList.contains((NLObject *)item))
         return QString();
     return item->Name();
@@ -110,31 +110,20 @@ bool NLObjectContainer::Remove(NLObject *item)
     if(!Exists(item))
         return false;
     m_objectList.removeOne(item);
-    item->SetContainer(0);
-    item->SetScene(0);
+    item->Destroy();
     return true;
 }
 
 bool NLObjectContainer::Remove(int index)
 {
     NLObject *item = Get(index);
-    if(!item)
-        return false;
-    m_objectList.removeOne(item);
-    item->SetContainer(0);
-    item->SetScene(0);
-    return true;
+    return Remove(item);
 }
 
 bool NLObjectContainer::Remove(const NLName &name)
 {
     NLObject *item = Get(name);
-    if(!item)
-        return false;
-    m_objectList.removeOne(item);
-    item->SetContainer(0);
-    item->SetScene(0);
-    return true;
+    return Remove(item);
 }
 
 NLObject * NLObjectContainer::Get(const NLName &name)
@@ -149,27 +138,26 @@ NLObject * NLObjectContainer::Get(const NLName &name)
 
 NLObject * NLObjectContainer::Get(int index)
 {
-    if(index < 0 || index >= m_objectList.count())
+    int i = index < 0 ? m_objectList.count() + index : index;
+    if(i < 0 || i >= m_objectList.count())
         return 0;
-    return m_objectList[index];
+    return m_objectList[i];
 }
 
 void NLObjectContainer::Clear()
 {
-    Q_FOREACH(NLObject *obj, m_objectList)
+    while(!m_objectList.isEmpty())
     {
-        obj->SetContainer(0);
-        obj->SetScene(0);
+        NLObject *obj = m_objectList.takeLast();
+        obj->Destroy();
     }
-    m_objectList.clear();
 }
 
 void NLObjectContainer::Clean()
 {
-    NLObjectList objectList = m_objectList;
-    Clear();
-    Q_FOREACH(NLObject *obj, objectList)
+    while(!m_objectList.isEmpty())
     {
+        NLObject *obj = m_objectList.takeLast();
         obj->Destroy();
         delete obj;
     }

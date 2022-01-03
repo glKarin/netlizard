@@ -37,6 +37,8 @@ public:
     bool KeyState(int key);
     bool MouseState(int button);
     int ActorTotalCount() const { return m_actors.TotalCount(); }
+    bool KeyPressed(int key);
+    bool MousePressed(int button);
 
     NLSceneCamera * CurrentCamera() { return m_currentCamera; }
     NLActor * GetActor(int index) { return m_actors.Get(index); }
@@ -97,6 +99,8 @@ private:
     void SetupOpenGL();
     void SetKeyState(int key, bool pressed);
     void SetButtonState(int button, bool pressed);
+    int QKeyToIndex(int key);
+    int QMouseToIndex(int button);
 
 private:
     QColor m_clearColor;
@@ -116,6 +120,8 @@ private:
     int m_updateInterval;
     bool m_keyState[NL_MAX_KEY];
     bool m_mouseState[NL_MAX_BUTTON];
+    bool m_keyPressed[NL_MAX_KEY];
+    bool m_mousePressed[NL_MAX_BUTTON];
 
     Q_DISABLE_COPY(NLScene)
 };

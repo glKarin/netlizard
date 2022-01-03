@@ -43,30 +43,20 @@ bool NLScriptContainer::Add(NLScript *item)
 bool NLScriptContainer::Remove(NLScript *item)
 {
     bool res = NLObjectContainer::Remove(item);
-    if(res)
-        item->Unmount();
     return res;
 }
 
 bool NLScriptContainer::Remove(int index)
 {
     NLScript *item = Get(index);
-    if(!item)
-        return false;
-    bool res = NLObjectContainer::Remove(item);
-    if(res)
-        item->Unmount();
+    bool res = Remove(item);
     return res;
 }
 
 bool NLScriptContainer::Remove(const NLName &name)
 {
     NLScript *item = Get(name);
-    if(!item)
-        return false;
-    bool res = NLObjectContainer::Remove(item);
-    if(res)
-        item->Unmount();
+    bool res = Remove(item);
     return res;
 }
 
@@ -95,10 +85,5 @@ void NLScriptContainer::SetActor(NLActor *actor)
 
 void NLScriptContainer::Clear()
 {
-    NLObjectList &list = ObjectList();
-    Q_FOREACH(NLObject *obj, list)
-    {
-        (static_cast<NLScript *>(obj))->Unmount();
-    }
     NLObjectContainer::Clear();
 }

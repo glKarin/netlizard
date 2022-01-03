@@ -9,6 +9,17 @@
 
 #include "qdef.h"
 
+NLFileChooserWidgetLabel::~NLFileChooserWidgetLabel()
+{
+    DEBUG_DESTROY_Q;
+}
+
+void NLFileChooserWidgetLabel::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    QLineEdit::mouseDoubleClickEvent(event);
+    emit dblClicked();
+}
+
 NLFileChooserWidget::NLFileChooserWidget(QWidget *widget)
     : QWidget(widget),
       m_fileLabel(0),
@@ -27,7 +38,7 @@ NLFileChooserWidget::~NLFileChooserWidget()
 void NLFileChooserWidget::Init()
 {
     QHBoxLayout *mainLayout = new QHBoxLayout;
-    m_fileLabel = new QLineEdit;
+    m_fileLabel = new NLFileChooserWidgetLabel;
     m_openButton = new QPushButton(tr("Open"));
     //m_reloadButton = new QPushButton(tr("Reload"));
 
@@ -46,6 +57,7 @@ void NLFileChooserWidget::Init()
     connect(m_openButton, SIGNAL(clicked()), this, SLOT(OpenFileDialog()));
     connect(m_fileLabel, SIGNAL(editingFinished()), this, SLOT(OpenFile()));
     //connect(m_reloadButton, SIGNAL(clicked()), this, SLOT(ReloadFile()));
+    connect(m_fileLabel, SIGNAL(dblClicked()), this, SLOT(EditOrChooseFile()));
 
     UpdateWidget();
 
@@ -103,4 +115,10 @@ void NLFileChooserWidget::OpenFile()
         if(!m_file.isEmpty())
             emit fileReload(m_file);
     }
+}
+
+void NLFileChooserWidget::EditOrChooseFile()
+{
+    if(m_fileLabel->text().isEmpty())
+        OpenFileDialog();
 }

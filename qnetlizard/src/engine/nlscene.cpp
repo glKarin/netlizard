@@ -41,6 +41,8 @@ NLScene::NLScene(QWidget *parent) :
     setObjectName("NLScene");
     memset(m_keyState, 0, sizeof(m_keyState));
     memset(m_mouseState, 0, sizeof(m_mouseState));
+    memset(m_keyPressed, 0, sizeof(m_keyPressed));
+    memset(m_mousePressed, 0, sizeof(m_mousePressed));
     SetupOpenGL();
     m_actors.SetScene(this);
     m_actors.setObjectName("SceneRootActorContainer");
@@ -177,7 +179,8 @@ void NLScene::mouseMoveEvent(QMouseEvent* event)
 void NLScene::keyPressEvent(QKeyEvent *event)
 {
     const int key = event->key();
-    SetKeyState(key, true);
+    if(!event->isAutoRepeat())
+        SetKeyState(key, true);
     const int modifiers = event->modifiers();
     bool res = m_actors.KeyEventHandler(key, true, modifiers);
     res = KeyEventHandler(key, true, modifiers) || res;
@@ -189,7 +192,8 @@ void NLScene::keyPressEvent(QKeyEvent *event)
 void NLScene::keyReleaseEvent(QKeyEvent *event)
 {
     const int key = event->key();
-    SetKeyState(key, false);
+    if(!event->isAutoRepeat())
+        SetKeyState(key, false);
     const int modifiers = event->modifiers();
     bool res = m_actors.KeyEventHandler(key, false, modifiers);
     res = KeyEventHandler(key, false, modifiers) || res;
@@ -308,11 +312,15 @@ void NLScene::Reset()
     m_actors.Reset();
     memset(m_keyState, 0, sizeof(m_keyState));
     memset(m_mouseState, 0, sizeof(m_mouseState));
+    memset(m_keyPressed, 0, sizeof(m_keyPressed));
+    memset(m_mousePressed, 0, sizeof(m_mousePressed));
 }
 
 void NLScene::Update(float f)
 {
     m_actors.Update(f);
+    memset(m_keyPressed, 0, sizeof(m_keyPressed));
+    memset(m_mousePressed, 0, sizeof(m_mousePressed));
 }
 
 void NLScene::Render()
@@ -413,52 +421,74 @@ bool NLScene::WheelEventHandler(int mouse, int orientation, int delta, int x, in
     return false;
 }
 
-void NLScene::SetKeyState(int key, bool pressed)
+int NLScene::QKeyToIndex(int key)
 {
     if(key >= Qt::Key_Space && key <= Qt::Key_AsciiTilde)
     {
-        m_keyState[key] = pressed;
-        return;
+        return key;
     }
     if(key < Qt::Key_Shift)
     {
-        m_keyState[key - 0x01000000] = pressed;
-        return;
+        return key - 0x01000000;
     }
     if(key >= Qt::Key_Shift && key <= Qt::Key_Direction_R)
     {
-        m_keyState[Qt::Key_AsciiTilde + (key - Qt::Key_Shift) + 1] = pressed;
+        return Qt::Key_AsciiTilde + (key - Qt::Key_Shift) + 1;
+    }
+    return -1;
+}
+
+int NLScene::QMouseToIndex(int button)
+{
+    if(button == Qt::LeftButton)
+        return 0;
+    else if(button == Qt::RightButton)
+        return 1;
+    else if(button == Qt::MiddleButton)
+        return 2;
+    return -1;
+}
+
+void NLScene::SetKeyState(int key, bool pressed)
+{
+    int index = QKeyToIndex(key);
+    if(index >= 0)
+    {
+        m_keyState[index] = pressed;
+        m_keyPressed[index] = pressed;
     }
 }
 
 void NLScene::SetButtonState(int button, bool pressed)
 {
-    if(button & Qt::LeftButton)
-        m_keyState[0] = pressed;
-    if(button & Qt::RightButton)
-        m_keyState[1] = pressed;
-    if(button & Qt::MiddleButton)
-        m_keyState[2] = pressed;
+    int index = QMouseToIndex(button);
+    if(index >= 0)
+    {
+        m_mouseState[index] = pressed;
+        m_mousePressed[index] = pressed;
+    }
 }
 
 bool NLScene::KeyState(int key)
 {
-    if(key >= Qt::Key_Space && key <= Qt::Key_AsciiTilde)
-        return m_keyState[key];
-    if(key < Qt::Key_Shift)
-        return m_keyState[key - 0x01000000];
-    if(key >= Qt::Key_Shift && key <= Qt::Key_Direction_R)
-        return m_keyState[Qt::Key_AsciiTilde + (key - Qt::Key_Shift) + 1];
-    return false;
+    int index = QKeyToIndex(key);
+    return index >= 0 ? m_keyState[index] : false;
 }
 
 bool NLScene::MouseState(int button)
 {
-    if(button == Qt::LeftButton)
-        return m_keyState[0];
-    else if(button == Qt::RightButton)
-        return m_keyState[1];
-    else if(button == Qt::MiddleButton)
-        return m_keyState[2];
-    return false;
+    int index = QMouseToIndex(button);
+    return index >= 0 ? m_mouseState[index] : false;
+}
+
+bool NLScene::KeyPressed(int key)
+{
+    int index = QKeyToIndex(key);
+    return index >= 0 ? m_keyPressed[index] : false;
+}
+
+bool NLScene::MousePressed(int button)
+{
+    int index = QMouseToIndex(button);
+    return index >= 0 ? m_mousePressed[index] : false;
 }

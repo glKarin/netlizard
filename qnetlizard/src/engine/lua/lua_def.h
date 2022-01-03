@@ -1,8 +1,17 @@
 #ifndef _KARIN_LUA_DEF_H
 #define _KARIN_LUA_DEF_H
 
+#define GET_LUA_OBJECT(L, T, name, index) \
+    T *name = *((T **)(lua_touserdata(L, index)))
+
+#define GET_LUA_OBJECT_USERDATA(L, T, name, index) \
+    T **name = (T **)(lua_touserdata(L, index))
+
 #define GET_LUA_CALLER(L, T, name) \
     T *name = *((T **)(lua_touserdata(L, 1)))
+
+#define GET_LUA_CALLER_USERDATA(L, T, name) \
+    T **name = (T **)(lua_touserdata(L, 1))
 
 #define PUSH_NLOBJECT_TO_STACK(L, T, data) {\
     T **ptr = (T **)lua_newuserdata(L, sizeof(T **)); \

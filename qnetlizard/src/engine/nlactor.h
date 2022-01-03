@@ -183,6 +183,9 @@ private:
     void UpdateGlobalMatrix();
     void UpdateNormalMatrix();
     void UpdateChildrenMatrix();
+    void TellChildRemoved() { emit childChanged(); }
+    void TellComponentRemoved() { emit componentChanged(); }
+    void TellScriptRemoved() { emit scriptChanged(); }
 
 private:
     NLRenderable *m_renderable;
@@ -200,6 +203,10 @@ private:
     NLScriptContainer *m_scripts;
 
     friend class NLActorContainer;
+    friend class NLComponentContainer;
+    friend class NLScriptContainer;
+    friend class NLScript;
+    friend class NLComponent;
     
     Q_DISABLE_COPY(NLActor)
 };

@@ -25,10 +25,10 @@ Q_SIGNALS:
 
 protected:
     void UpdateTreeData();
-    void OnActorChanged();
 
 private Q_SLOTS:
     void OnItemClicked(QTreeWidgetItem *item, int i);
+    void OnActorChanged();
 
 private:
     void Init();

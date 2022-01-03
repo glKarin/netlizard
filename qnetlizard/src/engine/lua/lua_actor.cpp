@@ -13,11 +13,22 @@ extern "C" {
 #include "lua_def.h"
 
 #define CALLER_ACTOR(L, name) GET_LUA_CALLER(L, NLActor, name)
+#define CALLER_ACTOR_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLActor, name)
 #define CALLER_RIGIDBODY(L, name) GET_LUA_CALLER(L, NLRigidbody, name)
+#define CALLER_RIGIDBODY_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLRigidbody, name)
 
 static int Actor_new(lua_State *L)
 {
     PUSH_NLOBJECT_TO_STACK(L, NLActor, new NLActor)
+    return 1;
+}
+
+static int Actor_delete(lua_State *L)
+{
+    CALLER_ACTOR_USERDATA(L, actor);
+    delete *actor;
+    *actor = 0;
+    lua_pushboolean(L, 1);
     return 1;
 }
 
@@ -313,11 +324,58 @@ static int Actor_ToRigidbody(lua_State *L)
     return 1;
 }
 
+static int Actor_AddChild(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    GET_LUA_OBJECT(L, NLActor, c, 2);
+    int b = 0;
+    if(c)
+        b = actor->AddChild(c) ? 1 : 0;
+    lua_pushboolean(L, b);
+    return 1;
+}
+
+static int Actor_RemoveChild(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    int b = 0;
+    if(lua_isinteger(L, 2))
+    {
+        int i = lua_tointeger(L, 2);
+        b = actor->RemoveChild(i) ? 1 : 0;
+    }
+    else
+    {
+        int type = lua_type(L, 2);
+        if(type == LUA_TUSERDATA)
+        {
+            GET_LUA_OBJECT(L, NLActor, c, 2);
+            b = c && actor->RemoveChild(c) ? 1 : 0;
+        }
+        else
+        {
+            const char *s = lua_tostring(L, 2);
+            b = actor->RemoveChild(s) ? 1 : 0;
+        }
+    }
+    lua_pushboolean(L, b);
+    return 1;
+}
+
 
 
 static int Rigidbody_new(lua_State *L)
 {
     PUSH_NLOBJECT_TO_STACK(L, NLActor, new NLRigidbody)
+    return 1;
+}
+
+static int Rigidbody_delete(lua_State *L)
+{
+    CALLER_RIGIDBODY_USERDATA(L, rb);
+    delete *rb;
+    *rb = 0;
+    lua_pushboolean(L, 1);
     return 1;
 }
 
@@ -363,7 +421,9 @@ namespace NL
     ACTOR_FUNC(IsRigidbody), \
     ACTOR_FUNC(ToRigidbody), \
     ACTOR_FUNC(IsEnabled), \
-    ACTOR_FUNC(CanRender)
+    ACTOR_FUNC(CanRender), \
+    ACTOR_FUNC(AddChild), \
+    ACTOR_FUNC(RemoveChild)
 
 bool actor_register_metatable(struct lua_State *L)
 {
@@ -371,6 +431,7 @@ bool actor_register_metatable(struct lua_State *L)
         return true;
 
     SET_GLOBAL_CFUNC(L, "new_NLActor", Actor_new)
+    SET_GLOBAL_CFUNC(L, "delete_NLActor", Actor_delete)
 
     if(luaL_newmetatable(L, "NLActor"))
     {
@@ -395,6 +456,8 @@ bool rigidbody_register_metatable(struct lua_State *L)
     if(metatable_is_register(L, "NLRigidbody"))
         return true;
     SET_GLOBAL_CFUNC(L, "new_NLRigidbody", Rigidbody_new)
+    SET_GLOBAL_CFUNC(L, "delete_NLRigidbody", Rigidbody_delete)
+
     if(luaL_newmetatable(L, "NLRigidbody"))
     {
         const struct luaL_Reg Funcs[] = {

@@ -107,6 +107,8 @@ void NLObject::SetType(NLObject_Type type)
 
 void NLObject::Init()
 {
+    if(IsInited())
+        return;
 #ifdef _DEV_TEST
     qDebug() << objectName() + "(" + m_name + ") -> INITED";
 #endif
@@ -115,6 +117,7 @@ void NLObject::Init()
     emit initilized();
 }
 
+#if 0
 void NLObject::Update(float delta)
 {
     if(!IsActived())
@@ -125,6 +128,7 @@ void NLObject::Update(float delta)
     Q_UNUSED(delta);
 #endif
 }
+#endif
 
 void NLObject::Reset()
 {
@@ -136,9 +140,16 @@ void NLObject::Reset()
 
 void NLObject::Destroy()
 {
+    if(!IsInited())
+        return;
 #ifdef _DEV_TEST
     qDebug() << objectName() + "(" + m_name + ") -> DESTROYED";
 #endif
+    if(m_container)
+        m_container->Take(this);
+    SetContainer(0);
+    SetScene(0);
+    setParent(0);
     emit destroying();
     m_inited = false;
 }
@@ -154,7 +165,10 @@ NLObject * NLObject::ParentObject()
 void NLObject::SetContainer(NLObjectContainer *container)
 {
     if(m_container != container)
-        m_container = container;
+    {
+        if(!container || (container && !m_container))
+           m_container = container;
+    }
 }
 
 NLProperty NLObject::GetProperty(const QString &name, const NLProperty &def) const

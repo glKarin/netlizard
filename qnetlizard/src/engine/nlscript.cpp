@@ -86,8 +86,17 @@ bool NLScript::Script_Lua::Exec(float delta)
         if(lua_getglobal(L, "Init") == LUA_TFUNCTION)
         {
             qDebug() << "lua script Init()......find";
-            lua_pcall(L, 0, 1, 0);
+            err = lua_pcall(L, 0, 1, 0);
+            if(err)
+            {
+                const char *errstr = lua_tostring(L, -1);
+                qWarning() << "lua script Init() -> error!" << err <<script->Actor() << errstr;
+                lua_pop(L, 1);
+                Deinit();
+                return false;
+            }
             int ret = lua_toboolean(L, -1);
+            lua_pop(L, 1); // pop return result
             if(ret)
             {
                 qDebug() << "lua script Init() -> true";
@@ -96,14 +105,15 @@ bool NLScript::Script_Lua::Exec(float delta)
             {
                 qWarning() << "lua script Init() -> false";
                 Deinit();
-            }
-            lua_pop(L, 1); // pop return result
-            if(!ret)
                 return false;
+            }
             func |= Script_Lua_Func_Init;
         }
         else
+        {
             qWarning() << "lua script Init()......missing";
+            lua_pop(L, 1); // pop function
+        }
 
         if(lua_getglobal(L, "Update") == LUA_TFUNCTION)
         {
@@ -113,7 +123,10 @@ bool NLScript::Script_Lua::Exec(float delta)
             qDebug() << "lua script Update(number)......find";
         }
         else
+        {
             qWarning() << "lua script Update(number)......missing";
+            lua_pop(L, 1); // pop function
+        }
 
         if(lua_getglobal(L, "Destroy") == LUA_TFUNCTION)
         {
@@ -206,7 +219,7 @@ void NLScript::Update(float delta)
 {
     if(!IsActived())
         return;
-    NLObject::Update(delta);
+    //NLObject::Update(delta);
     /*qDebug() << */ExecScript(delta);
 }
 
@@ -252,7 +265,12 @@ void NLScript::Unmount()
 {
     if(!IsMounted())
         return;
-    SetActor(0);
+    NLActor *actor = Actor();
+    if(actor)
+    {
+        actor->TellChildRemoved();
+        SetActor(0);
+    }
     DeinitLua();
     m_mounted = false;
 #ifdef _DEV_TEST

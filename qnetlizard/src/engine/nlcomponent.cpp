@@ -50,12 +50,12 @@ void NLComponent::Construct()
     SetType(NLObject::Type_Component);
 }
 
-//void NLComponent::Update(float delta)
-//{
-//    if(!IsActived())
-//        return;
-//    NLObject::Update(delta);
-//}
+void NLComponent::Update(float delta)
+{
+    if(!IsActived())
+        return;
+    //NLObject::Update(delta);
+}
 
 void NLComponent::Destroy()
 {
@@ -148,7 +148,12 @@ void NLComponent::Unmount()
 {
     if(!IsMounted())
         return;
-    SetActor(0);
+    NLActor *actor = Actor();
+    if(actor)
+    {
+        actor->TellChildRemoved();
+        SetActor(0);
+    }
     m_mounted = false;
 #ifdef _DEV_TEST
     qDebug() << objectName() + "(" + Name() + ") -> UNMOUNTED";

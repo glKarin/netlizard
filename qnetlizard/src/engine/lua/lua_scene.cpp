@@ -128,8 +128,18 @@ static int Scene_CurrendDelta(lua_State *L)
 static int Scene_KeyState(lua_State *L)
 {
     CALLER_SCENE(L, scene);
-    int i = lua_tointeger(L, 2);
-    bool b = scene->KeyState(i);
+    bool b = false;
+    if(lua_isinteger(L, 2))
+    {
+        int i = lua_tointeger(L, 2);
+        b = scene->KeyState(i);
+    }
+    else
+    {
+        const char *str = lua_tostring(L, 2);
+        if(str && strlen(str) > 0)
+            b = scene->KeyState(str[0]);
+    }
     lua_pushboolean(L, b ? 1 : 0);
     return 1;
 }
@@ -137,8 +147,56 @@ static int Scene_KeyState(lua_State *L)
 static int Scene_MouseState(lua_State *L)
 {
     CALLER_SCENE(L, scene);
-    int i = lua_tointeger(L, 2);
-    bool b = scene->MouseState(i);
+    bool b = false;
+    if(lua_isinteger(L, 2))
+    {
+        int i = lua_tointeger(L, 2);
+        b = scene->MouseState(i);
+    }
+    else
+    {
+        const char *str = lua_tostring(L, 2);
+        if(str && strlen(str) > 0)
+            b = scene->MouseState(str[0]);
+    }
+    lua_pushboolean(L, b ? 1 : 0);
+    return 1;
+}
+
+static int Scene_KeyPressed(lua_State *L)
+{
+    CALLER_SCENE(L, scene);
+    bool b = false;
+    if(lua_isinteger(L, 2))
+    {
+        int i = lua_tointeger(L, 2);
+        b = scene->KeyPressed(i);
+    }
+    else
+    {
+        const char *str = lua_tostring(L, 2);
+        if(str && strlen(str) > 0)
+            b = scene->KeyPressed(str[0]);
+    }
+    lua_pushboolean(L, b ? 1 : 0);
+    return 1;
+}
+
+static int Scene_MousePressed(lua_State *L)
+{
+    CALLER_SCENE(L, scene);
+    bool b = false;
+    if(lua_isinteger(L, 2))
+    {
+        int i = lua_tointeger(L, 2);
+        b = scene->MousePressed(i);
+    }
+    else
+    {
+        const char *str = lua_tostring(L, 2);
+        if(str && strlen(str) > 0)
+            b = scene->MousePressed(str[0]);
+    }
     lua_pushboolean(L, b ? 1 : 0);
     return 1;
 }
@@ -186,6 +244,8 @@ bool scene_register_metatable(struct lua_State *L)
             SCENE_FUNC(KeyState),
             SCENE_FUNC(MouseState),
             SCENE_FUNC(CurrentCamera),
+            SCENE_FUNC(KeyPressed),
+            SCENE_FUNC(MousePressed),
             NULL_luaL_Reg
         };
         luaL_setfuncs(L, Funcs, 0);

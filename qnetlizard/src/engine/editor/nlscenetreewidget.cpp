@@ -55,13 +55,8 @@ void NLSceneTreeWidget::UpdateTreeData()
     const int Count = m_scene->ActorCount();
     for(int i = 0; i < Count; i++)
     {
-        QTreeWidgetItem *subItem = new QTreeWidgetItem;
         NLActor *a = m_scene->GetActor(i);
-        subItem->setText(0, a->objectName() + "(" + a->ClassName() + ")");
-        subItem->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<QObject *>(a)));
-        addTopLevelItem(subItem);
-
-        AddActorNode(a, subItem);
+        AddActorNode(a);
     }
     setHeaderLabel(m_scene->objectName());
     expandAll();
@@ -69,27 +64,29 @@ void NLSceneTreeWidget::UpdateTreeData()
 
 void NLSceneTreeWidget::OnActorChanged()
 {
-    Reset();
+    clear();
     UpdateTreeData();
 }
 
 void NLSceneTreeWidget::AddActorNode(NLActor *actor, QTreeWidgetItem *parent)
 {
+    QTreeWidgetItem *subItem = new QTreeWidgetItem;
+    subItem->setText(0, actor->objectName() + "(" + actor->ClassName() + ")");
+    subItem->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<QObject *>(actor)));
+    if(parent)
+        parent->addChild(subItem);
+    else
+        addTopLevelItem(subItem);
+
+    actor->disconnect(this);
+    connect(actor, SIGNAL(childChanged()), this, SLOT(OnActorChanged()));
+
     const int Count = actor->ChildrenCount();
     if(Count == 0)
         return;
     for(int i = 0; i < Count; i++)
     {
         NLActor *a = actor->GetChild(i);
-
-        QTreeWidgetItem *subItem = new QTreeWidgetItem;
-        subItem->setText(0, a->objectName()/* + "(" + a->Name() + ")"*/);
-        subItem->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<QObject *>(a)));
-        if(parent)
-            parent->addChild(subItem);
-        else
-            addTopLevelItem(subItem);
-
         AddActorNode(a, subItem);
     }
 }

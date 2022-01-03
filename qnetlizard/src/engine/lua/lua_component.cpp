@@ -12,10 +12,20 @@ extern "C" {
 #include "lua_def.h"
 
 #define CALLER_COMPONENT(L, name) GET_LUA_CALLER(L, NLComponent, name)
+#define CALLER_COMPONENT_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLComponent, name)
 
 static int Component_new(lua_State *L)
 {
     PUSH_NLOBJECT_TO_STACK(L, NLComponent, new NLComponent)
+    return 1;
+}
+
+static int Component_delete(lua_State *L)
+{
+    CALLER_COMPONENT_USERDATA(L, comp);
+    delete *comp;
+    *comp = 0;
+    lua_pushboolean(L, 1);
     return 1;
 }
 
@@ -80,6 +90,7 @@ bool component_register_metatable(struct lua_State *L)
         return true;
 
     SET_GLOBAL_CFUNC(L, "new_NLComponent", Component_new)
+    SET_GLOBAL_CFUNC(L, "delete_NLComponent", Component_delete)
 
     if(luaL_newmetatable(L, "NLComponent"))
     {

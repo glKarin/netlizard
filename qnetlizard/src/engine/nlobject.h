@@ -66,7 +66,7 @@ protected:
     void SetContainer(NLObjectContainer *container);
     virtual void Init();
     virtual void Destroy();
-    virtual void Update(float delta);
+    virtual void Update(float delta) = 0;
     virtual void InitProperty();
     void SetPropertyConfig(const NLProperties &props);
 
