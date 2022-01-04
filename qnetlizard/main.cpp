@@ -72,19 +72,8 @@ int nl_log_func(int type, const char *str)
 }
 
 #ifdef _DEV_TEST
-#include "nlscript.h"
-#include "nlactor.h"
 int Test(int argc, char **argv)
 {
     return 0;
-    NLActor *actor = new NLActor;
-    NLDEBUG_VECTOR3(actor->Position());
-    NLScript *script = new NLScript();
-    script->M(actor);
-    qDebug() << script->SetScriptFile("test.lua");
-    qDebug() << "mounted";
-    script->U(0.1);
-    NLDEBUG_VECTOR3(actor->Position());
-    return 1;
 }
 #endif

@@ -69,7 +69,7 @@ void TestScene::Init()
     NLVector3 vr2 = VECTOR3(45,45,45);
     line->SetRotation(vr2);
 
-    NLScript *script = new NLScript;
+    NLScript *script = new NLScript(NLProperties("objectName", "scrrr")("scriptSource", "--print \"helloworld\";"));
     objectActor->AddScript(script);
 
     NLComponent *comp = new NLComponent(NLProperties("name", "rrrrrr"));

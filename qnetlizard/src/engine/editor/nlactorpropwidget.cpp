@@ -27,6 +27,7 @@
 #include "nlscript.h"
 #include "nlvector3widget.h"
 #include "nlfilechooserwidget.h"
+#include "nltexteditwidget.h"
 
 #define NLOBJECT_PTR_PROPERTY_NAME "NLObject"
 #define DOUBLE_SPINBOX_SINGLE_STEP 1 //0.1
@@ -414,13 +415,24 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
     }
     else if(item.widget == "textedit")
     {
-        QTextEdit *w = new QTextEdit;
-        w->setText(item.value.toString());
-        w->setReadOnly(item.readonly);
-        w->setAcceptRichText(false);
-        connect(w, SIGNAL(textChanged()), this, SLOT(OnStringChanged()));
-        connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
-        widget = w;
+        if(item.prop.value("direct", true).toBool())
+        {
+            QTextEdit *w = new QTextEdit;
+            w->setText(item.value.toString());
+            w->setReadOnly(item.readonly);
+            w->setAcceptRichText(false);
+            connect(w, SIGNAL(textChanged()), this, SLOT(OnStringChanged()));
+            connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
+            widget = w;
+        }
+        else
+        {
+            NLTextEditWidget *w = new NLTextEditWidget;
+            w->SetText(item.value.toString());
+            w->SetReadOnly(item.readonly);
+            connect(w, SIGNAL(textEdited(const QString &)), this, SLOT(OnStringChanged(const QString &)));
+            widget = w;
+        }
     }
     else if(item.widget == "filedialog")
     {
@@ -520,6 +532,10 @@ void NLActorPropWidget::OnPropertyChanged(const QString &name, const NLProperty 
     else if(instanceofv(widget, NLFileChooserWidget))
     {
         static_cast<NLFileChooserWidget *>(widget)->SetFile(value.toString());
+    }
+    else if(instanceofv(widget, NLTextEditWidget))
+    {
+        static_cast<NLTextEditWidget *>(widget)->SetText(value.toString());
     }
 }
 

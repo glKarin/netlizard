@@ -28,6 +28,8 @@ bool NLScript::Script_Lua::Init()
     if(L)
         return false;
     L = luaL_newstate();
+    if(!L)
+        return false;
     luaL_openlibs(L);
 
     NL::actor_register_metatable(L);
@@ -36,6 +38,8 @@ bool NLScript::Script_Lua::Init()
     NL::rigidbody_register_metatable(L);
     NL::scenecamera_register_metatable(L);
     NL::script_register_metatable(L);
+
+    qDebug() << "lua script engine initilized!";
 
     return true;
 }
@@ -48,16 +52,53 @@ bool NLScript::Script_Lua::Deinit()
     if(func & Script_Lua_Func_Destroy)
     {
         lua_getglobal(L, "Destroy");
-        lua_pcall(L, 0, 0, 0);
-        qDebug() << "lua script Destroy()......done";
+        int err = lua_pcall(L, 0, 0, 0);
+        if(err)
+        {
+            const char *errstr = lua_tostring(L, -1);
+            qWarning() << "lua script Destroy() -> error: " << err << errstr;
+            lua_pop(L, 1);
+        }
+        else
+            qDebug() << "lua script Destroy()......done";
     }
     else
-        qDebug() << "lua script Destroy()......missing";
+        qWarning() << "lua script Destroy()......missing";
 
     lua_close(L);
+    qDebug() << "lua script engine destroyed!";
     L = 0;
     func = -1;
     return true;
+}
+
+bool NLScript::Script_Lua::Reset()
+{
+    if(!L)
+        return false;
+
+    if(func & Script_Lua_Func_Reset)
+    {
+        lua_getglobal(L, "Reset");
+        int err = lua_pcall(L, 0, 0, 0);
+        if(err)
+        {
+            const char *errstr = lua_tostring(L, -1);
+            qWarning() << "lua script Reset() -> error: " << err << errstr;
+            lua_pop(L, 1);
+            return false;
+        }
+        else
+        {
+            qDebug() << "lua script Reset()......done";
+            return true;
+        }
+    }
+    else
+    {
+        qDebug() << "lua script Reset()......missing";
+        return false;
+    }
 }
 
 bool NLScript::Script_Lua::Exec(float delta)
@@ -67,6 +108,7 @@ bool NLScript::Script_Lua::Exec(float delta)
 
     if(func < 0)
     {
+        func = 0;
         PUSH_NLOBJECT_TO_STACK(L, NLScene, script->Scene())
         lua_setglobal(L, "nl_Scene");
 
@@ -84,7 +126,6 @@ bool NLScript::Script_Lua::Exec(float delta)
             return false;
         }
 
-        func = 0;
         if(lua_getglobal(L, "Init") == LUA_TFUNCTION)
         {
             qDebug() << "lua script Init()......find";
@@ -92,7 +133,7 @@ bool NLScript::Script_Lua::Exec(float delta)
             if(err)
             {
                 const char *errstr = lua_tostring(L, -1);
-                qWarning() << "lua script Init() -> error!" << err <<script->Actor() << errstr;
+                qWarning() << "lua script Init() -> error: " << err << errstr;
                 lua_pop(L, 1);
                 Deinit();
                 return false;
@@ -121,7 +162,15 @@ bool NLScript::Script_Lua::Exec(float delta)
         {
             func |= Script_Lua_Func_Update;
             lua_pushnumber(L, delta);
-            lua_pcall(L, 1, 0, 0);
+            err = lua_pcall(L, 1, 0, 0);
+            if(err)
+            {
+                const char *errstr = lua_tostring(L, -1);
+                qWarning() << "lua script initial Update(number) -> error: " << err << errstr;
+                lua_pop(L, 1);
+                Deinit();
+                return false;
+            }
             qDebug() << "lua script Update(number)......find";
         }
         else
@@ -138,6 +187,15 @@ bool NLScript::Script_Lua::Exec(float delta)
         else
             qWarning() << "lua script Destroy()......missing";
         lua_pop(L, 1); // pop function
+
+        if(lua_getglobal(L, "Reset") == LUA_TFUNCTION)
+        {
+            func |= Script_Lua_Func_Reset;
+            qDebug() << "lua script Reset()......find";
+        }
+        else
+            qWarning() << "lua script Reset()......missing";
+        lua_pop(L, 1); // pop function
     }
     else
     {
@@ -147,12 +205,26 @@ bool NLScript::Script_Lua::Exec(float delta)
         {
             lua_getglobal(L, "Update");
             lua_pushnumber(L, delta);
-            lua_pcall(L, 1, 0, 0);
+            int err = lua_pcall(L, 1, 0, 0);
+            if(err)
+            {
+                const char *errstr = lua_tostring(L, -1);
+                qWarning() << "lua script Update(number) -> error: " << err << errstr;
+                lua_pop(L, 1);
+                Deinit();
+                return false;
+            }
             //qDebug() << "lua script Update(number)" << delta;
         }
         else
         {
-            luaL_dostring(L, script->m_data.constData());
+            int err = luaL_dostring(L, script->m_data.constData());
+            if(err)
+            {
+                qWarning() << "lua script error when Update!" << err;
+                Deinit();
+                return false;
+            }
             //lua_settop(L, 0);
         }
     }
@@ -212,6 +284,7 @@ void NLScript::Construct()
 
     m.clear();
     m.insert("multiline", true);
+    m.insert("direct", false);
     props.Insert("scriptSource", m);
 
     SetPropertyConfig(props);
@@ -258,6 +331,7 @@ void NLScript::Mount(NLActor *actor)
         Init();
     SetActor(actor);
     m_mounted = true;
+    InitLua(); // If has script source, try to load.
 #ifdef _DEV_TEST
     qDebug() << objectName() + "(" + Name() + ") -> MOUNTED";
 #endif
@@ -335,4 +409,38 @@ void NLScript::SetScriptSource(const QString &src)
         }
         emit propertyChanged("scriptSource", QString(m_data));
     }
+}
+
+bool NLScript::InitLua()
+{
+    if(!IsMounted() || !HasScriptSource())
+        return false;
+    return m_lua.Init();
+}
+
+bool NLScript::DeinitLua()
+{
+    if(!IsMounted())
+        return false;
+    return m_lua.Deinit();
+}
+
+void NLScript::InitProperty()
+{
+    NLObject::InitProperty();
+    QString str(GetInitProperty_T<QString>("scriptSource"));
+    if(!str.isEmpty())
+        SetScriptSource(str);
+    else
+    {
+        str = GetInitProperty_T<QString>("scriptFile");
+        if(!str.isEmpty())
+            SetScriptFile(str);
+    }
+}
+
+void NLScript::Reset()
+{
+    NLObject::Reset();
+    m_lua.Reset();
 }

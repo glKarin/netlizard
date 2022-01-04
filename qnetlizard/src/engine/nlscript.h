@@ -26,8 +26,8 @@ public:
     virtual bool IsActived() const { return NLObject::IsActived() && m_mounted && !m_data.isEmpty(); }
     QString ScriptSource() const { return m_data; }
     QString ScriptFile() const { return m_sourceFile; }
-    void M(NLActor *a) {Mount(a);}
-    void U(float d) {Update(d);}
+    virtual void Reset();
+    bool HasScriptSource() const { return !m_data.trimmed().isEmpty(); }
 
 protected:
     virtual void Destroy();
@@ -35,6 +35,7 @@ protected:
     virtual void Mount(NLActor *actor);
     virtual void Unmount();
     void SetContainer(NLScriptContainer *container);
+    virtual void InitProperty();
     
 signals:
     void mounted();
@@ -43,8 +44,8 @@ signals:
 public slots:
     bool SetScriptFile(const QString &file);
     void SetScriptSource(const QString &src);
-    bool InitLua() { return m_lua.Init(); }
-    bool DeinitLua() { return m_lua.Deinit(); }
+    bool InitLua();
+    bool DeinitLua();
 
 private:
     void Construct();
@@ -55,8 +56,9 @@ private:
     {
         enum {
             Script_Lua_Func_Init = 1,
-            Script_Lua_Func_Destroy = 2,
-            Script_Lua_Func_Update = 4
+            Script_Lua_Func_Destroy = 1 << 1,
+            Script_Lua_Func_Update = 1 << 2,
+            Script_Lua_Func_Reset = 1 << 3
         };
         struct lua_State *L;
         NLScript *script;
@@ -74,6 +76,7 @@ private:
         bool Init();
         bool Deinit();
         bool Exec(float delta);
+        bool Reset();
         operator bool() const { return L != 0; }
     };
 

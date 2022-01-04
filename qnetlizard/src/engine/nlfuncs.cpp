@@ -8,7 +8,7 @@
 
 namespace NL
 {
-static NLPropertyInfo make_property_info(const QString &name, int t, const QString &typeName, const QVariant &value, const QVariantHash &props = QVariantHash())
+static NLPropertyInfo make_property_info(const QString &name, int t, const QString &typeName, const QVariant &value, const NLProperty &defValue = NLProperty(), const QVariantHash &props = QVariantHash())
 {
     QString type(typeName);
     QString widget;
@@ -55,7 +55,7 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
             ;
 
     //qDebug() << name << t << value << QMetaType::QObjectStar << t << QMetaType::VoidStar;
-    return(NLPropertyInfo(name, value, type, widget, readonly, props));
+    return(NLPropertyInfo(name, value, type, widget, readonly, defValue, props));
 }
 
 NLPropertyInfoList object_propertics(const NLObject *obj)
@@ -70,8 +70,7 @@ NLPropertyInfoList object_propertics(const NLObject *obj)
         QString name(p.name());
 
         QVariantHash prop = config.value(name).toHash();
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p.read(obj), prop);
-        info.default_value = obj->GetInitProperty(name);
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p.read(obj), obj->GetInitProperty(name), prop);
 
         ret.push_back(info);
     }
@@ -84,8 +83,7 @@ NLPropertyInfoList object_propertics(const NLObject *obj)
         QString name(ba);
 
         QVariantHash prop = config.value(name).toHash();
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p, prop);
-        info.default_value = obj->GetInitProperty(name);
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p, obj->GetInitProperty(name), prop);
 
         ret.push_back(info);
     }

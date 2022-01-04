@@ -45,7 +45,9 @@ HEADERS += \
     src/engine/lua/lua_scenecamera.h \
     src/engine/editor/widget/nlvector3widget.h \
     src/engine/editor/widget/nlfilechooserwidget.h \
-    src/engine/lua/lua_script.h
+    src/engine/lua/lua_script.h \
+    src/engine/editor/widget/nltexteditwidget.h \
+    src/engine/editor/widget/nltexteditdialog.h
 
 SOURCES += \
     main.cpp \
@@ -63,7 +65,9 @@ SOURCES += \
     src/engine/lua/lua_scenecamera.cpp \
     src/engine/editor/widget/nlvector3widget.cpp \
     src/engine/editor/widget/nlfilechooserwidget.cpp \
-    src/engine/lua/lua_script.cpp
+    src/engine/lua/lua_script.cpp \
+    src/engine/editor/widget/nltexteditwidget.cpp \
+    src/engine/editor/widget/nltexteditdialog.cpp
 
 # Widget
 HEADERS += \

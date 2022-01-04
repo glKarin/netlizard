@@ -576,6 +576,40 @@
         <source>No scene</source>
         <translation type="unfinished">无场景</translation>
     </message>
+    <message>
+        <source>Add child</source>
+        <translation type="unfinished">添加子对象</translation>
+    </message>
+    <message>
+        <source>Remove actor</source>
+        <translation type="unfinished">移除对象</translation>
+    </message>
+</context>
+<context>
+    <name>NLTextEditDialog</name>
+    <message>
+        <source>Save</source>
+        <translation type="unfinished">保存</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">取消</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished">编辑</translation>
+    </message>
+</context>
+<context>
+    <name>NLTextEditWidget</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished">编辑</translation>
+    </message>
+    <message>
+        <source>Click button or double click input to edit</source>
+        <translation type="unfinished">点击按钮或双击输入框编辑</translation>
+    </message>
 </context>
 <context>
     <name>SceneInfoWidget</name>
