@@ -43,6 +43,7 @@ void NLTextEditDialog::Init()
     m_saveButton = new QPushButton(tr("Save"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
 
+    m_textEdit->setAcceptRichText(false);
     m_saveButton->setEnabled(false);
     toolsLayout->addStretch(1);
     toolsLayout->addWidget(m_saveButton);

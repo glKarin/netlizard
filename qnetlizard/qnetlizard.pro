@@ -35,19 +35,7 @@ HEADERS += \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
     src/misc/settings.h \
-    src/misc/lang.h \
-    src/engine/nlscript.h \
-    src/engine/nlscriptcontainer.h \
-    src/engine/lua/lua_actor.h \
-    src/engine/lua/lua_component.h \
-    src/engine/lua/lua_scene.h \
-    src/engine/lua/lua_def.h \
-    src/engine/lua/lua_scenecamera.h \
-    src/engine/editor/widget/nlvector3widget.h \
-    src/engine/editor/widget/nlfilechooserwidget.h \
-    src/engine/lua/lua_script.h \
-    src/engine/editor/widget/nltexteditwidget.h \
-    src/engine/editor/widget/nltexteditdialog.h
+    src/misc/lang.h
 
 SOURCES += \
     main.cpp \
@@ -55,19 +43,7 @@ SOURCES += \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
-    src/misc/lang.cpp \
-    src/engine/nlscript.cpp \
-    src/engine/nlscriptcontainer.cpp \
-    src/engine/lua/lua_actor.cpp \
-    src/engine/lua/lua_component.cpp \
-    src/engine/lua/lua_scene.cpp \
-    src/engine/lua/lua_def.cpp \
-    src/engine/lua/lua_scenecamera.cpp \
-    src/engine/editor/widget/nlvector3widget.cpp \
-    src/engine/editor/widget/nlfilechooserwidget.cpp \
-    src/engine/lua/lua_script.cpp \
-    src/engine/editor/widget/nltexteditwidget.cpp \
-    src/engine/editor/widget/nltexteditdialog.cpp
+    src/misc/lang.cpp
 
 # Widget
 HEADERS += \
@@ -209,6 +185,8 @@ HEADERS += \
     src/engine/nlglobals.h \
     src/engine/nlscenecamerabase.h \
     src/engine/nlrendermodel.h \
+    src/engine/nlscript.h \
+    src/engine/nlscriptcontainer.h \
     src/engine/nlmodelrenderer.h
 
 SOURCES += \
@@ -235,17 +213,43 @@ SOURCES += \
     src/engine/nlglobals.cpp \
     src/engine/nlscenecamerabase.cpp \
     src/engine/nlrendermodel.cpp \
+    src/engine/nlscript.cpp \
+    src/engine/nlscriptcontainer.cpp \
     src/engine/nlmodelrenderer.cpp
 
 HEADERS += \
+    src/engine/editor/widget/nlvector3widget.h \
+    src/engine/editor/widget/nlfilechooserwidget.h \
+    src/engine/editor/widget/nltexteditwidget.h \
+    src/engine/editor/widget/nltexteditdialog.h \
     src/engine/editor/nlscenetreewidget.h \
     src/engine/editor/nlsceneinfowidget.h \
     src/engine/editor/nlactorpropwidget.h
 
 SOURCES += \
+    src/engine/editor/widget/nlvector3widget.cpp \
+    src/engine/editor/widget/nlfilechooserwidget.cpp \
+    src/engine/editor/widget/nltexteditwidget.cpp \
+    src/engine/editor/widget/nltexteditdialog.cpp \
     src/engine/editor/nlscenetreewidget.cpp \
     src/engine/editor/nlsceneinfowidget.cpp \
     src/engine/editor/nlactorpropwidget.cpp
+
+HEADERS += \
+    src/engine/lua/lua_actor.h \
+    src/engine/lua/lua_component.h \
+    src/engine/lua/lua_scene.h \
+    src/engine/lua/lua_def.h \
+    src/engine/lua/lua_scenecamera.h \
+    src/engine/lua/lua_script.h
+
+SOURCES += \
+    src/engine/lua/lua_actor.cpp \
+    src/engine/lua/lua_component.cpp \
+    src/engine/lua/lua_scene.cpp \
+    src/engine/lua/lua_def.cpp \
+    src/engine/lua/lua_scenecamera.cpp \
+    src/engine/lua/lua_script.cpp
 
 # Lib
 DEPENDPATH += ./lib

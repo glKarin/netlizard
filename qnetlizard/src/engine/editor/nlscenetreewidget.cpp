@@ -8,6 +8,8 @@
 #include "qdef.h"
 #include "nlscene.h"
 #include "nlactor.h"
+#include "nlcomponent.h"
+#include "nlscript.h"
 #include "nlactorcontainer.h"
 
 NLSceneTreeWidget::NLSceneTreeWidget(QWidget *widget)
@@ -117,6 +119,8 @@ void NLSceneTreeWidget::OnItemClicked(QTreeWidgetItem *item, int col)
 #define ACTION_INVALID -1
 #define ACTION_ADD 1
 #define ACTION_REMOVE 2
+#define ACTION_ADD_COMPONENT 3
+#define ACTION_ADD_SCRIPT 4
 int NLSceneTreeWidget::ShowMenu(const QPoint &pos)
 {
     if(!m_menu)
@@ -124,6 +128,9 @@ int NLSceneTreeWidget::ShowMenu(const QPoint &pos)
         m_menu = new QMenu(this);
         m_menu->addAction(tr("Add child"))->setData(ACTION_ADD);
         m_menu->addAction(tr("Remove actor"))->setData(ACTION_REMOVE);
+        m_menu->addSeparator();
+        m_menu->addAction(tr("Add component"))->setData(ACTION_ADD_COMPONENT);
+        m_menu->addAction(tr("Add script"))->setData(ACTION_ADD_SCRIPT);
     }
     QAction *action = m_menu->exec(pos);
     if(action)
@@ -149,11 +156,22 @@ void NLSceneTreeWidget::contextMenuEvent(QContextMenuEvent *event)
     NLActor *actor = static_cast<NLActor *>(data);
     if(action == ACTION_ADD)
     {
-        NLActor *a = new NLActor;
-        actor->AddChild(a);
+        actor->CreateChild()->setObjectName("new_NLActor");
     }
     else if(action == ACTION_REMOVE)
     {
         delete actor;
+    }
+    else if(action == ACTION_ADD_COMPONENT)
+    {
+        actor->CreateComponent()->setObjectName("new_NLComponent");
+    }
+    else if(action == ACTION_ADD_SCRIPT)
+    {
+        actor->CreateScript()->setObjectName("new_NLScript");
+    }
+    else
+    {
+        QTreeWidget::contextMenuEvent(event);
     }
 }

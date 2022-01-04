@@ -25,8 +25,7 @@ static int Script_delete(lua_State *L)
     CALLER_SCRIPT_USERDATA(L, script);
     delete *script;
     *script = 0;
-    lua_pushboolean(L, 1);
-    return 1;
+    return 0;
 }
 
 static int Script_Name(lua_State *L)

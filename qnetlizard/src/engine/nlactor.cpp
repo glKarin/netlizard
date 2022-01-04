@@ -133,6 +133,7 @@ void NLActor::Destroy()
 {
     if(!IsInited())
         return;
+    NLObject::Destroy();
     if(m_renderable)
     {
         m_renderable->DeinitRender();
@@ -159,10 +160,10 @@ void NLActor::Destroy()
     }
     NLActor *actor = ParentActor();
     if(actor)
+    {
         setParent(0);
-    NLObject::Destroy();
-    if(actor)
         actor->TellChildRemoved();
+    }
 }
 
 bool NLActor::keyev(int key, bool pressed, int modifier)
@@ -700,3 +701,23 @@ int NLActor::ScriptCount() const
     return 0;
 }
 
+NLActor * NLActor::CreateChild(const NLProperties &props)
+{
+    NLActor *actor = new NLActor(props);
+    AddChild(actor);
+    return actor;
+}
+
+NLComponent * NLActor::CreateComponent(const NLProperties &props)
+{
+    NLComponent *comp = new NLComponent(props);
+    AddComponent(comp);
+    return comp;
+}
+
+NLScript * NLActor::CreateScript(const NLProperties &props)
+{
+    NLScript *script = new NLScript(props);
+    AddScript(script);
+    return script;
+}

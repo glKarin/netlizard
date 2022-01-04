@@ -25,8 +25,7 @@ static int Component_delete(lua_State *L)
     CALLER_COMPONENT_USERDATA(L, comp);
     delete *comp;
     *comp = 0;
-    lua_pushboolean(L, 1);
-    return 1;
+    return 0;
 }
 
 static int Component_Name(lua_State *L)

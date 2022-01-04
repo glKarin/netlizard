@@ -345,13 +345,13 @@ void NLRigidbody::Destroy()
 {
     if(!IsInited())
         return;
+    NLActor::Destroy();
     if(m_forces)
     {
         m_forces->Destroy();
         delete m_forces;
         m_forces = 0;
     }
-    NLActor::Destroy();
 }
 
 int NLRigidbody::ForceCount() const

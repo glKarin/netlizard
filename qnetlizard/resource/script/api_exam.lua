@@ -9,6 +9,18 @@ print(nl_Actor);
 print(nl_Scene);
 
 --[[
+userdata<NLActor> new_NLActor();
+void delete_NLActor(userdata<NLActor>);
+
+userdata<NLRigidbody> new_NLRigidbody();
+void delete_NLRigidbody(userdata<NLRigidbody>);
+
+userdata<NLComponent> new_NLComponent();
+void delete_NLComponent(userdata<NLComponent>);
+
+userdata<NLScript> new_NLScript();
+void delete_NLScript(userdata<NLScript>);
+
 metatable NLActor {
     number x, number y, number z Position();
     number x, number y, number z Rotation();
@@ -33,8 +45,22 @@ metatable NLActor {
     integer ChildrenCount();
     userdata<NLActor> GetChild(integer | string);
     userdata<NLActor> ParentActor();
+    boolean AddChild(userdata<NLActor>);
+    boolean RemoveChild(integer | string | userdata<NLActor>);
+    userdata<NLActor> CreateChild();
+
     integer ComponentCount();
     userdata<NLComponent> GetComponent(integer | string);
+    boolean AddComponent(userdata<NLComponent>);
+    boolean RemoveComponent(integer | string | userdata<NLComponent>);
+    userdata<NLComponent> CreateComponent();
+
+    boolean AddScript(userdata<NLScript>);
+    boolean RemoveScript(integer | string | userdata<NLScript>);
+    integer ScriptCount();
+    userdata<NLScript> GetScript(integer | string);
+    userdata<NLScript> CreateScript();
+
     boolean IsRigidbody();
     userdata<NLRigidbody> ToRigidbody();
 };
@@ -55,10 +81,12 @@ metatable NLScene {
     boolean IsCursorVisible();
     boolean IsGrabMouseCursor();
     number CurrendDelta();
-    boolean KeyState(integer);
-    boolean MouseState(integer);
+    boolean KeyState(integer | string);
+    boolean MouseState(integer | string);
     userdata<NLSceneCamera> CurrentCamera();
     integer x, integer y MousePointerPosition();
+    boolean KeyPressed(integer | string);
+    boolean MousePressed(integer | string);
 };
 
 metatable NLComponent {
@@ -67,6 +95,16 @@ metatable NLComponent {
     boolean SetEnabled(boolean);
     userdata<NLActor> Actor();
     boolean IsEnabled();
+};
+
+metatable NLScript {
+    string Name();
+    string ClassName();
+    boolean SetEnabled(boolean);
+    userdata<NLActor> Actor();
+    boolean IsEnabled();
+    boolean SetScriptFile(string);
+    boolean SetScriptSource(string);
 };
 
 metatable NLSceneCamera {
@@ -111,6 +149,12 @@ end
 -- noreturn.
 function Destroy()
     print "Destroy()";
+end
+
+-- If Reset() function is declared, it will automatic before NLScript reset.
+-- noreturn.
+function Reset()
+    print "Reset()";
 end
 
 print "-------------------- END --------------------";

@@ -28,8 +28,7 @@ static int Actor_delete(lua_State *L)
     CALLER_ACTOR_USERDATA(L, actor);
     delete *actor;
     *actor = 0;
-    lua_pushboolean(L, 1);
-    return 1;
+    return 0;
 }
 
 static int Actor_SetPosition(lua_State *L)
@@ -471,6 +470,30 @@ static int Actor_RemoveScript(lua_State *L)
     return 1;
 }
 
+static int Actor_CreateChild(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    NLActor *a = actor->CreateChild();
+    PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
+    return 1;
+}
+
+static int Actor_CreateComponent(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    NLComponent *c = actor->CreateComponent();
+    PUSH_NLOBJECT_TO_STACK(L, NLComponent, c)
+    return 1;
+}
+
+static int Actor_CreateScript(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    NLScript *s = actor->CreateScript();
+    PUSH_NLOBJECT_TO_STACK(L, NLScript, s)
+    return 1;
+}
+
 
 
 static int Rigidbody_new(lua_State *L)
@@ -484,8 +507,7 @@ static int Rigidbody_delete(lua_State *L)
     CALLER_RIGIDBODY_USERDATA(L, rb);
     delete *rb;
     *rb = 0;
-    lua_pushboolean(L, 1);
-    return 1;
+    return 0;
 }
 
 static int Rigidbody_MoveDirection(lua_State *L)
@@ -538,7 +560,10 @@ namespace NL
     ACTOR_FUNC(AddScript), \
     ACTOR_FUNC(RemoveScript), \
     ACTOR_FUNC(GetScript), \
-    ACTOR_FUNC(ScriptCount)
+    ACTOR_FUNC(ScriptCount), \
+    ACTOR_FUNC(CreateChild), \
+    ACTOR_FUNC(CreateComponent), \
+    ACTOR_FUNC(CreateScript)
 
 bool actor_register_metatable(struct lua_State *L)
 {

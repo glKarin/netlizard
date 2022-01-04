@@ -455,6 +455,14 @@
         <source>Script: </source>
         <translation type="unfinished">脚本: </translation>
     </message>
+    <message>
+        <source>Actor: </source>
+        <translation type="unfinished">对象: </translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished">创建</translation>
+    </message>
 </context>
 <context>
     <name>NLFileChooserWidget</name>
@@ -583,6 +591,14 @@
     <message>
         <source>Remove actor</source>
         <translation type="unfinished">移除对象</translation>
+    </message>
+    <message>
+        <source>Add component</source>
+        <translation type="unfinished">添加组件</translation>
+    </message>
+    <message>
+        <source>Add script</source>
+        <translation type="unfinished">添加脚本</translation>
     </message>
 </context>
 <context>

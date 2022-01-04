@@ -85,6 +85,9 @@ void NLObject::CopyProperty(const NLProperties &prop)
 void NLObject::InitProperty()
 {
     SetEnabled(GetInitProperty_T<bool>("enabled", true));
+//    QString name(GetInitProperty_T<QString>("objectName"));
+//    if(!name.isEmpty())
+//        setObjectName(name);
 }
 
 void NLObject::SetName(const QString &name)
@@ -142,6 +145,7 @@ void NLObject::Destroy()
 {
     if(!IsInited())
         return;
+    emit destroying();
 #ifdef _DEV_TEST
     qDebug() << objectName() + "(" + m_name + ") -> DESTROYED";
 #endif
@@ -150,7 +154,6 @@ void NLObject::Destroy()
     SetContainer(0);
     SetScene(0);
     setParent(0);
-    emit destroying();
     m_inited = false;
 }
 

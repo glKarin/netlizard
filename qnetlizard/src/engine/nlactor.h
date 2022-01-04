@@ -150,6 +150,10 @@ public:
     template <class T>
     int RemoveTypeScripts();
 
+    NLActor * CreateChild(const NLProperties &props = NLProperties());
+    NLComponent * CreateComponent(const NLProperties &props = NLProperties());
+    NLScript * CreateScript(const NLProperties &props = NLProperties());
+
 protected:
     virtual bool keyev(int key, bool pressed, int modifier);
     virtual bool mouseev(int mouse, bool pressed, int x, int y, int modifier);
