@@ -19,7 +19,7 @@ extern "C" {
 
 static int Actor_new(lua_State *L)
 {
-    PUSH_NLOBJECT_TO_STACK(L, NLActor, new NLActor)
+    PUSH_NLOBJECT_TO_STACK(L, NLActor, new NLActor(NL::lua_table_to_properties(L, 1)))
     return 1;
 }
 
@@ -34,9 +34,9 @@ static int Actor_delete(lua_State *L)
 static int Actor_SetPosition(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
-    float x = lua_tonumber(L, 2);
-    float y = lua_tonumber(L, 3);
-    float z = lua_tonumber(L, 4);
+    float x = lua_tonumber(L, -1);
+    float y = lua_tonumber(L, -2);
+    float z = lua_tonumber(L, -3);
     NLVector3 pos = VECTOR3(x, y, z);
     actor->SetPosition(pos);
     lua_pushboolean(L, 1);
@@ -473,7 +473,7 @@ static int Actor_RemoveScript(lua_State *L)
 static int Actor_CreateChild(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
-    NLActor *a = actor->CreateChild();
+    NLActor *a = actor->CreateChild(NL::lua_table_to_properties(L, 2));
     PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
     return 1;
 }
@@ -481,7 +481,7 @@ static int Actor_CreateChild(lua_State *L)
 static int Actor_CreateComponent(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
-    NLComponent *c = actor->CreateComponent();
+    NLComponent *c = actor->CreateComponent(NL::lua_table_to_properties(L, 2));
     PUSH_NLOBJECT_TO_STACK(L, NLComponent, c)
     return 1;
 }
@@ -489,7 +489,7 @@ static int Actor_CreateComponent(lua_State *L)
 static int Actor_CreateScript(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
-    NLScript *s = actor->CreateScript();
+    NLScript *s = actor->CreateScript(NL::lua_table_to_properties(L, 2));
     PUSH_NLOBJECT_TO_STACK(L, NLScript, s)
     return 1;
 }
@@ -498,7 +498,7 @@ static int Actor_CreateScript(lua_State *L)
 
 static int Rigidbody_new(lua_State *L)
 {
-    PUSH_NLOBJECT_TO_STACK(L, NLActor, new NLRigidbody)
+    PUSH_NLOBJECT_TO_STACK(L, NLActor, new NLRigidbody(NL::lua_table_to_properties(L, 1)))
     return 1;
 }
 
@@ -583,7 +583,6 @@ bool actor_register_metatable(struct lua_State *L)
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
         lua_pop(L, 1);
-        qDebug() << "Actor_register";
         return true;
     }
 
@@ -609,7 +608,6 @@ bool rigidbody_register_metatable(struct lua_State *L)
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
         lua_pop(L, 1);
-        qDebug() << "Actor_register";
         return true;
     }
     return false;

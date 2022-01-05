@@ -60,6 +60,9 @@ public:
     int RemoveTypes();
     
 signals:
+    void objectAdded(NLObject *object);
+    void objectRemoved(NLObject *object);
+    void objectChanged(NLObject *object);
     
 public slots:
 
@@ -69,12 +72,7 @@ protected:
 
 private:
     void Construct();
-    bool Take(NLObject *item) {
-        if(!Exists(item))
-            return false;
-        m_objectList.removeOne(item);
-        return true;
-    }
+    bool Take(NLObject *item);
 
 private:
     NLObjectList m_objectList;

@@ -16,7 +16,7 @@ extern "C" {
 
 static int Script_new(lua_State *L)
 {
-    PUSH_NLOBJECT_TO_STACK(L, NLScript, new NLScript)
+    PUSH_NLOBJECT_TO_STACK(L, NLScript, new NLScript(NL::lua_table_to_properties(L, 1)))
     return 1;
 }
 
@@ -125,7 +125,6 @@ bool script_register_metatable(struct lua_State *L)
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
         lua_pop(L, 1);
-        qDebug() << "Script_register";
         return true;
     }
     return false;

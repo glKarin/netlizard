@@ -69,12 +69,19 @@ void TestScene::Init()
     NLVector3 vr2 = VECTOR3(45,45,45);
     line->SetRotation(vr2);
 
-    NLScript *script = new NLScript(NLProperties("objectName", "scrrr")("scriptSource", "--print \"helloworld\";"));
+    const char source[] =
+            "if(nl_Scene:KeyPressed(\"V\")) then;"
+            "nl_Actor:CreateScript({[\"name\"] = \"CCC\", [\"scriptSource\"] = \"print(\\\"CCCCCCCCCCCCC\\\");\"});"
+            "end;"
+            "if(nl_Scene:KeyPressed(\"B\")) then;"
+            "nl_Actor:RemoveScript(-1);"
+            "end;"
+            ;
+    NLScript *script = new NLScript(NLProperties("objectName", "scrrr")("scriptSource", source));
     objectActor->AddScript(script);
 
     NLComponent *comp = new NLComponent(NLProperties("name", "rrrrrr"));
     objectActor->AddComponent(comp);
-    qDebug() << "222222" << objectActor->Scene();
 
     SetFPS(SINGLE_INSTANCE_OBJ(Settings)->GetSetting<int>("ENGINE/fps", 0));
 

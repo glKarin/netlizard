@@ -6,6 +6,13 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QAction>
+#include <QToolBar>
+#include <QFile>
+#include <QFileDialog>
+#include <QDataStream>
+#include <QTextStream>
+#include <QTextCodec>
+#include <QMessageBox>
 
 #include "qdef.h"
 
@@ -42,12 +49,17 @@ void NLTextEditDialog::Init()
     QHBoxLayout *toolsLayout = new QHBoxLayout;
     m_saveButton = new QPushButton(tr("Save"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
+    QToolBar *toolbar = new QToolBar;
 
+    toolbar->addAction(tr("Save"), this, SLOT(Save()));
+    toolbar->addAction(tr("Save to file"), this, SLOT(SaveToFile()))->setShortcut(QKeySequence("ctrl+w"));
+    toolbar->addAction(tr("Load from file"), this, SLOT(LoadFromFile()))->setShortcut(QKeySequence("ctrl+f"));
     m_textEdit->setAcceptRichText(false);
     m_saveButton->setEnabled(false);
     toolsLayout->addStretch(1);
     toolsLayout->addWidget(m_saveButton);
     toolsLayout->addWidget(cancelButton);
+    mainLayout->addWidget(toolbar);
     mainLayout->addWidget(m_textEdit, 1);
     mainLayout->addLayout(toolsLayout);
 
@@ -79,6 +91,69 @@ void NLTextEditDialog::Save()
         emit textEdited(m_text);
     }
     FinishEdit();
+}
+
+bool NLTextEditDialog::SaveToFile()
+{
+    Save();
+    QString file = QFileDialog::getSaveFileName(this);
+    if(file.isEmpty())
+        return false;
+
+    QFile f(file);
+    QIODevice::OpenMode mode = QIODevice::WriteOnly | QIODevice::Text;
+
+    if(!f.open(mode))
+    {
+        QMessageBox::warning(this, tr("Error"), tr("Can not open file: ") + file);
+        return false;
+    }
+    QTextStream os(&f);
+#if 0
+    QTextCodec *codec = QTextCodec::codecForName("utf-8");
+    if(codec)
+        os.setCodec(codec);
+#endif
+    os << m_text;
+    f.flush();
+    f.close();
+    QMessageBox::information(this, tr("Success"), tr("Save text file: ") + file);
+    return true;
+}
+
+bool NLTextEditDialog::LoadFromFile()
+{
+    QString file = QFileDialog::getOpenFileName(this);
+    if(file.isEmpty())
+        return false;
+
+    QFile f(file);
+    if(!f.exists())
+    {
+        QMessageBox::warning(this, tr("Error"), tr("Can not open file: ") + file);
+        return false;
+    }
+    if(!f.open(QIODevice::ReadOnly))
+    {
+        QMessageBox::warning(this, tr("Error"), tr("Can not read file: ") + file);
+        return false;
+    }
+    QTextStream is(&f);
+    QString text = is.readAll();
+    f.close();
+
+    FinishEdit();
+    m_textEdit->disconnect(this);
+    m_textEdit->setPlainText(text);
+    if(m_text != text)
+    {
+        m_text = text;
+        emit textChanged(m_text);
+    }
+    StartEdit();
+
+    QMessageBox::information(this, tr("Success"), tr("Load file finished: ") + file);
+    return true;
 }
 
 QString NLTextEditDialog::EditText() const

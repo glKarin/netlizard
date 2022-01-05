@@ -1,6 +1,8 @@
 #ifndef _KARIN_LUA_DEF_H
 #define _KARIN_LUA_DEF_H
 
+#include "nlproperties.h"
+
 #define GET_LUA_OBJECT(L, T, name, index) \
     T *name = *((T **)(lua_touserdata(L, index)))
 
@@ -32,6 +34,7 @@ struct lua_State;
 namespace NL
 {
 bool metatable_is_register(struct lua_State *L, const char *name);
+NLProperties lua_table_to_properties(lua_State *L, int index);
 }
 
 #endif // _KARIN_LUA_DEF_H

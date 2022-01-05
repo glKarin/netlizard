@@ -29,16 +29,15 @@ public:
     float CurrendDelta() const { return m_delta; }
     qint64 UpdateTime() const { return m_lastTime; }
     float FPS() const { return m_fps; }
-    void SetFPS(float fps);
     float CurrentFPS() const { return m_currentFps; }
     int ActorCount() const { return m_actors.Count(); }
     int UpdateInterval() const { return m_updateInterval; }
-    void SetUpdateInterval(int ui);
     bool KeyState(int key);
     bool MouseState(int button);
     int ActorTotalCount() const { return m_actors.TotalCount(); }
     bool KeyPressed(int key);
     bool MousePressed(int button);
+    void SetCurrentCamera(NLSceneCamera *camera);
 
     NLSceneCamera * CurrentCamera() { return m_currentCamera; }
     NLActor * GetActor(int index) { return m_actors.Get(index); }
@@ -50,6 +49,7 @@ public:
     NLActor * operator[](int index) { return GetActor(index); }
     NLActor * operator[](const NLName &name) { return GetActor(name); }
     NLScene & operator<<(NLActor *actor) { AddActor(actor); return *this; }
+    friend NLScene & operator+(NLScene &scene, NLActor *actor) { scene.AddActor(actor); return scene; }
     
 signals:
     void sizeChanged(const QSize &s);
@@ -61,6 +61,8 @@ public slots:
     void RunLoop(bool b);
     void SetClearColor(const QColor &color);
     void Reset();
+    void SetFPS(float fps);
+    void SetUpdateInterval(int ui);
 
 protected:
     virtual void initializeGL();
@@ -68,11 +70,10 @@ protected:
     virtual void resizeGL(int w, int h);
     virtual void Init();
     virtual void Deinit();
-    void SetCurrentCamera(NLSceneCamera *camera);
     bool MousePressed() const { return m_pressed; }
     void AddActor(NLActor *actor);
     void RemoveActor(NLActor *actor);
-    void RemoveActor(int index) { m_actors.Remove(index); }
+    void RemoveActor(int index) { m_actors.Remove(m_actors.Get(index)); }
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
@@ -89,10 +90,9 @@ protected:
     virtual bool MouseMotionHandler(int mouse, bool pressed, int x, int y, int oldx, int oldy, int modifier);
     virtual bool WheelEventHandler(int mouse, int orientation, int delta, int x, int y, int modifier);
 
-protected Q_SLOTS:
-
 private Q_SLOTS:
     virtual void IdleTimer_slot();
+    void OnObjectChanged(NLObject *object);
 
 private:
     void ExecLoop();

@@ -323,12 +323,13 @@ void SettingGroup::ChooseColor()
     QString name = s->objectName();
     QVariant va = s->property("color");
     QColor color = QColorDialog::getColor(QColor(va.toString()), w);
-    QString c(color.name());
+    QString c(color.name().toUpper());
     if(instanceofv(w, QPushButton))
     {
         QPushButton *button = static_cast<QPushButton *>(w);
-        button->setText(c.toUpper());
+        button->setText(c);
         button->setStyleSheet(QString("QPushButton { color: %1; }").arg(c));
+        button->setProperty("color", c);
     }
     settings->SetSetting<QString>(name, c);
 }

@@ -133,7 +133,10 @@ void NLActor::Destroy()
 {
     if(!IsInited())
         return;
+    NLActor *actor = ParentActor();
     NLObject::Destroy();
+    if(actor)
+        actor->TellChildRemoved();
     if(m_renderable)
     {
         m_renderable->DeinitRender();
@@ -157,12 +160,6 @@ void NLActor::Destroy()
         m_children->Destroy();
         delete m_children;
         m_children = 0;
-    }
-    NLActor *actor = ParentActor();
-    if(actor)
-    {
-        setParent(0);
-        actor->TellChildRemoved();
     }
 }
 

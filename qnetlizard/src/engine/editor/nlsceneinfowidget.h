@@ -6,6 +6,10 @@
 class NLScene;
 class QTextBrowser;
 class QStackedWidget;
+class QSpinBox;
+class QGroupBox;
+class QComboBox;
+class QPushButton;
 
 class NLSceneInfoWidget : public QTabWidget
 {
@@ -25,11 +29,19 @@ public slots:
 private:
     void Init();
 
+private Q_SLOTS:
+    void ChooseClearColor();
+
 private:
     NLScene *m_scene;
     QTextBrowser *m_baseInfo;
     QTextBrowser *m_cameraInfo;
     QStackedWidget *m_cameraMatrix;
+    QComboBox *m_matrixList;
+    QGroupBox *m_settingGroupBox;
+    QSpinBox *m_fpsSpinBox;
+    QSpinBox *m_updateSpinBox;
+    QPushButton *m_colorButton;
 
     Q_DISABLE_COPY(NLSceneInfoWidget)
     

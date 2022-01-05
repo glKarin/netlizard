@@ -152,7 +152,7 @@ void NLComponent::Unmount()
     NLActor *actor = Actor();
     if(actor)
     {
-        actor->TellChildRemoved();
+        actor->TellComponentRemoved();
         SetActor(0);
     }
     m_mounted = false;

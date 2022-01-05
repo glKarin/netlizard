@@ -93,12 +93,14 @@ void SimpleCameraComponent::InitProperty()
 
 void SimpleCameraComponent::Init()
 {
+#if 0
     NLActor *actor = Actor();
     if(actor)
     {
         connect(actor, SIGNAL(positionChanged(const NLVector3 &)), this, SLOT(OnPositionChanged(const NLVector3 &)));
         connect(actor, SIGNAL(rotationChanged(const NLVector3 &)), this, SLOT(OnRotationChanged(const NLVector3 &)));
     }
+#endif
     NLComponent::Init();
 }
 
@@ -117,6 +119,11 @@ void SimpleCameraComponent::Reset()
 
 void SimpleCameraComponent::Destroy()
 {
+    NLScene *scene = Scene();
+    if(scene && scene->CurrentCamera() == m_camera)
+    {
+        scene->SetCurrentCamera(0);
+    }
     m_type = 0;
     delete m_camera;
     m_camera = 0;

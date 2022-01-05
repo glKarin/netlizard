@@ -46,6 +46,7 @@ NLScene::NLScene(QWidget *parent) :
     memset(m_mousePressed, 0, sizeof(m_mousePressed));
     SetupOpenGL();
     m_actors.SetScene(this);
+    connect(&m_actors, SIGNAL(objectChanged(NLObject *)), this, SLOT(OnObjectChanged(NLObject *)));
     m_actors.setObjectName("SceneRootActorContainer");
     m_clearColor = QColor::fromRgbF(
                 //1.0, 1.0, 1.0
@@ -68,6 +69,11 @@ void NLScene::SetupOpenGL()
 //    qglFormat.setStencil(true);
 //    qglFormat.setProfile(QGLFormat::CompatibilityProfile);
     setFormat(qglFormat);
+}
+
+void NLScene::OnObjectChanged(NLObject *object)
+{
+    emit actorChanged(static_cast<NLActor *>(object));
 }
 
 void NLScene::Deinit()
@@ -340,11 +346,7 @@ void NLScene::AddActor(NLActor *actor)
 {
     if(!actor)
         return;
-    if(m_actors.Add(actor))
-    {
-        connect(actor, SIGNAL(destroying()), this, SIGNAL(actorChanged()));
-        emit actorChanged(actor);
-    }
+    m_actors.Add(actor);
 }
 
 void NLScene::RemoveActor(NLActor *actor)
@@ -354,7 +356,6 @@ void NLScene::RemoveActor(NLActor *actor)
     if(m_actors.Remove(actor))
     {
         delete actor;
-        emit actorChanged();
     }
 }
 

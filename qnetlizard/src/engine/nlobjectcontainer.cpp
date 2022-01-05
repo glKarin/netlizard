@@ -102,6 +102,18 @@ bool NLObjectContainer::Add(NLObject *item)
     item->SetScene(m_scene);
     item->Init();
     m_objectList.push_back(item);
+    emit objectAdded(item);
+    emit objectChanged(item);
+    return true;
+}
+
+bool NLObjectContainer::Take(NLObject *item)
+{
+    if(!Exists(item))
+        return false;
+    m_objectList.removeOne(item);
+    emit objectRemoved(item);
+    emit objectChanged(item);
     return true;
 }
 
@@ -110,6 +122,8 @@ bool NLObjectContainer::Remove(NLObject *item)
     if(!Exists(item))
         return false;
     m_objectList.removeOne(item);
+    emit objectRemoved(item);
+    emit objectChanged(item);
     item->Destroy();
     return true;
 }

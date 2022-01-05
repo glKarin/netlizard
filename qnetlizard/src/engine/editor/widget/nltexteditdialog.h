@@ -38,6 +38,8 @@ private:
 
 private Q_SLOTS:
     void Save();
+    bool SaveToFile();
+    bool LoadFromFile();
     void OnTextChanged();
 
 private:

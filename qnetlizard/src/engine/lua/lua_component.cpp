@@ -16,7 +16,7 @@ extern "C" {
 
 static int Component_new(lua_State *L)
 {
-    PUSH_NLOBJECT_TO_STACK(L, NLComponent, new NLComponent)
+    PUSH_NLOBJECT_TO_STACK(L, NLComponent, new NLComponent(NL::lua_table_to_properties(L, 1)))
     return 1;
 }
 
@@ -105,7 +105,6 @@ bool component_register_metatable(struct lua_State *L)
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
         lua_pop(L, 1);
-        qDebug() << "Component_register";
         return true;
     }
     return false;

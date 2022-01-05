@@ -121,7 +121,9 @@ bool NLScript::Script_Lua::Exec(float delta)
         int err = luaL_dostring(L, script->m_data.constData());
         if(err)
         {
-            qWarning() << "lua script error!" << err;
+            const char *errstr = lua_tostring(L, -1);
+            qWarning() << "lua script initial exec -> error: " << err << errstr;
+            lua_pop(L, 1);
             Deinit();
             return false;
         }
@@ -221,7 +223,9 @@ bool NLScript::Script_Lua::Exec(float delta)
             int err = luaL_dostring(L, script->m_data.constData());
             if(err)
             {
-                qWarning() << "lua script error when Update!" << err;
+                const char *errstr = lua_tostring(L, -1);
+                qWarning() << "lua script when Update! -> error: " << err << errstr;
+                lua_pop(L, 1);
                 Deinit();
                 return false;
             }
@@ -345,7 +349,7 @@ void NLScript::Unmount()
     NLActor *actor = Actor();
     if(actor)
     {
-        actor->TellChildRemoved();
+        actor->TellScriptRemoved();
         SetActor(0);
     }
     DeinitLua();
