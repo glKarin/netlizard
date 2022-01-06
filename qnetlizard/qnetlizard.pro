@@ -35,7 +35,9 @@ HEADERS += \
     src/utils/ioutility.h \
     src/misc/logoutput.h \
     src/misc/settings.h \
-    src/misc/lang.h
+    src/misc/lang.h \
+    src/engine/editor/widget/nlluasyntaxhighlighter.h \
+    src/engine/editor/widget/nlgeneralsyntaxhighlighter.h
 
 SOURCES += \
     main.cpp \
@@ -43,7 +45,9 @@ SOURCES += \
     src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
-    src/misc/lang.cpp
+    src/misc/lang.cpp \
+    src/engine/editor/widget/nlluasyntaxhighlighter.cpp \
+    src/engine/editor/widget/nlgeneralsyntaxhighlighter.cpp
 
 # Widget
 HEADERS += \

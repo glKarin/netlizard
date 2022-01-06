@@ -15,6 +15,7 @@
 #include <QMessageBox>
 
 #include "qdef.h"
+#include "nlluasyntaxhighlighter.h"
 
 NLTextEditDialog::NLTextEditDialog(QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent, f),
@@ -50,6 +51,8 @@ void NLTextEditDialog::Init()
     m_saveButton = new QPushButton(tr("Save"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
     QToolBar *toolbar = new QToolBar;
+    NLLuaSyntaxHighlighter *hl = new NLLuaSyntaxHighlighter(m_textEdit->document());
+
 
     toolbar->addAction(tr("Save"), this, SLOT(Save()));
     toolbar->addAction(tr("Save to file"), this, SLOT(SaveToFile()))->setShortcut(QKeySequence("ctrl+w"));
