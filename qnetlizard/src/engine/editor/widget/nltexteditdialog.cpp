@@ -2,7 +2,7 @@
 
 #include <QDebug>
 #include <QPushButton>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QAction>
@@ -44,7 +44,7 @@ NLTextEditDialog::~NLTextEditDialog()
 
 void NLTextEditDialog::Init()
 {
-    m_textEdit = new QTextEdit(m_text);
+    m_textEdit = new QPlainTextEdit(m_text);
     QVBoxLayout *mainLayout = new QVBoxLayout;
     QHBoxLayout *toolsLayout = new QHBoxLayout;
     m_saveButton = new QPushButton(tr("Save"));
@@ -54,7 +54,6 @@ void NLTextEditDialog::Init()
     toolbar->addAction(tr("Save"), this, SLOT(Save()));
     toolbar->addAction(tr("Save to file"), this, SLOT(SaveToFile()))->setShortcut(QKeySequence("ctrl+w"));
     toolbar->addAction(tr("Load from file"), this, SLOT(LoadFromFile()))->setShortcut(QKeySequence("ctrl+f"));
-    m_textEdit->setAcceptRichText(false);
     m_saveButton->setEnabled(false);
     toolsLayout->addStretch(1);
     toolsLayout->addWidget(m_saveButton);

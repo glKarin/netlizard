@@ -27,8 +27,9 @@ public:
     bool RemoveForce(const NLName &name);
     NLForce * GetForce(const NLName &name);
     NLForce * GetForce(int index);
-    friend NLRigidbody & operator+(NLRigidbody &actor, NLForce *item) { actor.AddForce(item); return actor; }
-    friend NLRigidbody & operator-(NLRigidbody &actor, NLForce *item) { actor.RemoveForce(item); return actor; }
+    NLRigidbody & operator<<(NLForce *item) { AddForce(item); return *this; }
+    NLRigidbody & operator+(NLForce *item) { AddForce(item); return *this; }
+    NLRigidbody & operator-(NLForce *item) { RemoveForce(item); return *this; }
     template <class T>
     T * GetForce_T(const NLName &name);
     template <class T>

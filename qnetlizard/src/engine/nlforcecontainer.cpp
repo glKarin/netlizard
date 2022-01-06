@@ -55,22 +55,14 @@ bool NLForceContainer::Remove(NLForce *item)
 bool NLForceContainer::Remove(int index)
 {
     NLForce *item = Get(index);
-    if(!item)
-        return false;
-    bool res = NLObjectContainer::Remove(item);
-    if(res)
-        item->Finish();
+    bool res = Remove(item);
     return res;
 }
 
 bool NLForceContainer::Remove(const NLName &name)
 {
     NLForce *item = Get(name);
-    if(!item)
-        return false;
-    bool res = NLObjectContainer::Remove(item);
-    if(res)
-        item->Finish();
+    bool res = Remove(item);
     return res;
 }
 
@@ -92,6 +84,14 @@ NLRigidbody * NLForceContainer::Rigidbody()
     return 0;
 }
 
+const NLRigidbody * NLForceContainer::Rigidbody() const
+{
+    const QObject *p = parent();
+    if(p)
+        return dynamic_cast<const NLRigidbody *>(p);
+    return 0;
+}
+
 void NLForceContainer::SetRigidbody(NLRigidbody *actor)
 {
     setParent(actor);
@@ -102,7 +102,9 @@ void NLForceContainer::Clear()
     NLObjectList &list = ObjectList();
     Q_FOREACH(NLObject *obj, list)
     {
-        (static_cast<NLForce *>(obj))->Finish();
+        NLForce *force = static_cast<NLForce *>(obj);
+        if(ForceIsAvailable(force))
+            force->Finish();
     }
     NLObjectContainer::Clear();
 }
@@ -129,4 +131,14 @@ void NLForceContainer::Update(float delta)
 {
     NLObjectContainer::Update(delta);
     ClearInvalid();
+}
+
+bool NLForceContainer::ForceIsAvailable(NLForce *item) const
+{
+    return ObjectIsAvailable(item) && item->Rigidbody() == Rigidbody();
+}
+
+bool NLForceContainer::ItemIsAvailable(NLObject *item) const
+{
+    return ForceIsAvailable(static_cast<NLForce *>(item));
 }

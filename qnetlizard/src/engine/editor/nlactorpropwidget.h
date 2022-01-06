@@ -2,6 +2,7 @@
 #define _KARIN_NLACTORPROPWIDGET_H
 
 #include <QScrollArea>
+#include <QGroupBox>
 
 #include "nldef.h"
 #include "nlproperties.h"
@@ -11,38 +12,119 @@ class NLObject;
 class QFormLayout;
 class QVBoxLayout;
 class QMenu;
+class QToolButton;
 class QGroupBox;
 class QLabel;
 class NLComponent;
 class NLScript;
 
-class NLActorPropSectionHeader : public QWidget
+class NLPropSectionHeader : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit NLActorPropSectionHeader(QWidget *widget = 0);
-    explicit NLActorPropSectionHeader(const QString &text, QWidget *widget = 0);
-    virtual ~NLActorPropSectionHeader();
+    explicit NLPropSectionHeader(QWidget *widget = 0);
+    explicit NLPropSectionHeader(const QString &text, QWidget *widget = 0);
+    virtual ~NLPropSectionHeader();
     void AddAction(QAction *action);
+    void Reset();
+    void SetCanExpand(bool b);
 
 Q_SIGNALS:
     void actionTriggered(QAction *action);
+    void toggleExpand(bool on);
 
 public Q_SLOTS:
     void SetText(const QString &text);
 
 private:
     void Init(const QString &text = QString());
+    void SetExpand(bool b);
 
 public Q_SLOTS:
     void OnActionTriggered();
+    void OnToggleExpand(bool on);
 
 private:
     QLabel *m_label;
     QMenu *m_menu;
+    QToolButton *m_expandButton;
 
-    Q_DISABLE_COPY(NLActorPropSectionHeader)
+    Q_DISABLE_COPY(NLPropSectionHeader)
+};
+
+class NLFormGroupBox : public QGroupBox
+{
+    Q_OBJECT
+public:
+    explicit NLFormGroupBox(QWidget *widget = 0);
+    virtual ~NLFormGroupBox();
+    void AddRow(const QString &name, QWidget *widget);
+    void Reset();
+    QFormLayout * Layout() { return m_layout; }
+
+private:
+    void Init();
+
+private Q_SLOTS:
+    void ToggleGroupBox(bool on);
+
+private:
+    typedef QHash<QString, QWidget *> WidgetHash;
+    QFormLayout *m_layout;
+    WidgetHash m_widgetItemMaps;
+    QStringList m_names;
+    bool m_expand;
+
+    Q_DISABLE_COPY(NLFormGroupBox)
+};
+
+class NLPropSectionContent : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit NLPropSectionContent(QWidget *widget = 0);
+    virtual ~NLPropSectionContent();
+    void AddWidget(QWidget *widget);
+    void Reset();
+
+private:
+    void Init();
+
+private Q_SLOTS:
+    void Toggle(bool on);
+
+private:
+    typedef QList<QWidget *> WidgetList;
+    QVBoxLayout *m_layout;
+    WidgetList m_widgets;
+    bool m_expand;
+
+    Q_DISABLE_COPY(NLPropSectionContent)
+};
+
+class NLPropSection : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit NLPropSection(QWidget *widget = 0);
+    virtual ~NLPropSection();
+    void AddWidget(QWidget *widget);
+    void SetTitle(const QString &str);
+    void AddAction(QAction *action);
+    void Reset();
+
+Q_SIGNALS:
+    void actionTriggered(QAction *action);
+
+private:
+    void Init();
+
+private:
+    NLPropSectionHeader *m_header;
+    NLPropSectionContent *m_content;
+
+    Q_DISABLE_COPY(NLPropSection)
 };
 
 class NLActorPropWidget : public QScrollArea
@@ -63,7 +145,6 @@ protected:
 
 private Q_SLOTS:
     void OnActorChanged();
-    void ToggleGroupBox(bool on);
     void OnItemDestroy(QObject *item = 0);
     void SetupComponent();
     void SetupScript();
@@ -75,7 +156,6 @@ private:
     void SetupComponentProperties();
     void SetupComponentProperty(NLComponent *comp);
     void SortProperties(NLPropertyInfoList &list);
-    void ClearSection(QGroupBox *groupBox);
     void SetupScriptProperties();
     void SetupScriptProperty(NLScript *script);
     void ClearComponentProperties();
@@ -97,12 +177,9 @@ private:
     typedef QHash<NLObject *, PropWidgetHash> ObjectPropWidgetHash;
     typedef QHash<QString, QList<NLObject *> > ObjectHash;
     NLActor *m_actor;
-    QFormLayout *m_actorLayout;
-    QVBoxLayout *m_componentLayout;
-    QGroupBox *m_actorGroupBox;
-    QVBoxLayout *m_scriptLayout;
-    NLActorPropSectionHeader *m_componentSectionHeader;
-    NLActorPropSectionHeader *m_scriptSectionHeader;
+    NLFormGroupBox *m_actorGroupBox;
+    NLPropSection *m_componentSection;
+    NLPropSection *m_scriptSection;
     ObjectPropWidgetHash m_propWidgetMap;
     ObjectHash m_objectMap;
 

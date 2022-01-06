@@ -33,7 +33,7 @@ bool NLActorContainer::KeyEventHandler(int key, bool pressed, int modifier)
     Q_FOREACH(NLObject *obj, list)
     {
         NLActor *actor = static_cast<NLActor *>(obj);
-        if(actor->IsActived())
+        if(ActorIsAvailable(actor) && actor->IsActived())
             if(actor->keyev(key, pressed, modifier))
                 i++;
     }
@@ -47,7 +47,7 @@ bool NLActorContainer::MouseEventHandler(int button, bool pressed, int x, int y,
     Q_FOREACH(NLObject *obj, list)
     {
         NLActor *actor = static_cast<NLActor *>(obj);
-        if(actor->IsActived())
+        if(ActorIsAvailable(actor) && actor->IsActived())
             if(actor->mouseev(button, pressed, x, y, modifier))
                 i++;
     }
@@ -61,7 +61,7 @@ bool NLActorContainer::MouseMotionHandler(int button, bool pressed, int x, int y
     Q_FOREACH(NLObject *obj, list)
     {
         NLActor *actor = static_cast<NLActor *>(obj);
-        if(actor->IsActived())
+        if(ActorIsAvailable(actor) && actor->IsActived())
             if(actor->motionev(button, pressed, x, y, oldx, oldy, modifier))
                 i++;
     }
@@ -75,7 +75,7 @@ bool NLActorContainer::WheelEventHandler(int mouse, int orientation, int delta, 
     Q_FOREACH(NLObject *obj, list)
     {
         NLActor *actor = static_cast<NLActor *>(obj);
-        if(actor->IsActived())
+        if(ActorIsAvailable(actor) && actor->IsActived())
             if(actor->wheelev(mouse, orientation, delta, x, y, modifier))
                 i++;
     }
@@ -150,6 +150,14 @@ NLActor * NLActorContainer::Actor()
     return 0;
 }
 
+const NLActor * NLActorContainer::Actor() const
+{
+    const QObject *p = parent();
+    if(p)
+        return dynamic_cast<const NLActor *>(p);
+    return 0;
+}
+
 void NLActorContainer::SetActor(NLActor *actor)
 {
     setParent(actor);
@@ -169,4 +177,14 @@ int NLActorContainer::TotalCount() const
         res += (static_cast<const NLActor *>(obj))->ChildrenTotalCount();
     }
     return res;
+}
+
+bool NLActorContainer::ActorIsAvailable(NLActor *item) const
+{
+    return ObjectIsAvailable(item) && item->ParentActor() == Actor();
+}
+
+bool NLActorContainer::ItemIsAvailable(NLObject *item) const
+{
+    return ActorIsAvailable(static_cast<NLActor *>(item));
 }

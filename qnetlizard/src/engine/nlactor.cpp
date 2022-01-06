@@ -219,6 +219,14 @@ NLActor * NLActor::ParentActor()
     return 0;
 }
 
+const NLActor * NLActor::ParentActor() const
+{
+    const QObject *p = parent();
+    if(p)
+        return dynamic_cast<const NLActor *>(p);
+    return 0;
+}
+
 void NLActor::SetParentActor(NLActor *actor)
 {
     setParent(actor);

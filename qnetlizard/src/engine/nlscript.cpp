@@ -320,6 +320,14 @@ NLActor * NLScript::Actor()
     return 0;
 }
 
+const NLActor * NLScript::Actor() const
+{
+    const QObject *p = parent();
+    if(p)
+        return dynamic_cast<const NLActor *>(p);
+    return 0;
+}
+
 void NLScript::SetActor(NLActor *actor)
 {
     setParent(actor);

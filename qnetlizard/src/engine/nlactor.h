@@ -30,6 +30,7 @@ public:
     NLRenderable * Renderable() { return m_renderable; }
     void * RenderablePtr() { return (void *)m_renderable; }
     NLActor * ParentActor();
+    const NLActor * ParentActor() const;
     void SetParentActor(NLActor *actor);
     NLActorContainer * Container();
     NLSETTER(position) virtual void SetPosition(const NLVector3 &v);
@@ -60,7 +61,7 @@ public:
     NLActor * GetChild(int index);
     NLComponent * GetComponent(const NLName &name);
     NLComponent * GetComponent(int index);
-    NLActor & operator<<(NLActor *actor);
+    NLActor & operator<<(NLActor *actor) { AddChild(actor); return *this; }
     NLActor * operator[](int index) { return GetChild(index); }
     NLActor * operator[](const NLName &name) { return GetChild(name); }
     template <class T>
@@ -75,8 +76,8 @@ public:
     T * GetScript_T(const NLName &name);
     template <class T>
     T * GetScript_T(int index);
-    friend NLActor & operator+(NLActor &actor, NLComponent *item) { actor.AddComponent(item); return actor; }
-    friend NLActor & operator-(NLActor &actor, NLComponent *item) { actor.RemoveComponent(item); return actor; }
+    NLActor & operator+(NLComponent *item) { AddComponent(item); return *this; }
+    NLActor & operator-(NLComponent *item) { RemoveComponent(item); return *this; }
     virtual void Render();
     int ChildrenCount() const;
     int ComponentCount() const;
@@ -128,8 +129,8 @@ public:
     bool RemoveScript(const NLName &name);
     NLScript * GetScript(const NLName &name);
     NLScript * GetScript(int index);
-    friend NLActor & operator+(NLActor &actor, NLScript *item) { actor.AddScript(item); return actor; }
-    friend NLActor & operator-(NLActor &actor, NLScript *item) { actor.RemoveScript(item); return actor; }
+    NLActor & operator+(NLScript *item) { AddScript(item); return *this; }
+    NLActor & operator-(NLScript *item) { RemoveScript(item); return *this; }
     int ScriptCount() const;
     bool HasScripts() const { return ScriptCount() > 0; }
 

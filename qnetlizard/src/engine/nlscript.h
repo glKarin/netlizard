@@ -21,6 +21,7 @@ public:
     virtual ~NLScript();
     bool IsMounted() const { return m_mounted; }
     NLActor * Actor();
+    const NLActor * Actor() const;
     void SetActor(NLActor *actor);
     NLScriptContainer * Container();
     virtual bool IsActived() const { return NLObject::IsActived() && m_mounted && !m_data.isEmpty(); }

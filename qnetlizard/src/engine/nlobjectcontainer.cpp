@@ -34,7 +34,8 @@ void NLObjectContainer::Init()
 {
     Q_FOREACH(NLObject *obj, m_objectList)
     {
-        obj->Init();
+        if(ItemIsAvailable(obj))
+            obj->Init();
     }
 }
 
@@ -42,8 +43,11 @@ void NLObjectContainer::Destroy()
 {
     Q_FOREACH(NLObject *obj, m_objectList)
     {
-        obj->Destroy();
-        delete obj;
+        if(ItemIsAvailable(obj))
+        {
+            obj->Destroy();
+            delete obj;
+        }
     }
     m_objectList.clear();
 }
@@ -52,7 +56,8 @@ void NLObjectContainer::Update(float delta)
 {
     Q_FOREACH(NLObject *obj, m_objectList)
     {
-        obj->Update(delta);
+        if(ItemIsAvailable(obj))
+            obj->Update(delta);
     }
 }
 
@@ -60,7 +65,8 @@ void NLObjectContainer::Reset()
 {
     Q_FOREACH(NLObject *obj, m_objectList)
     {
-        obj->Reset();
+        if(ItemIsAvailable(obj))
+            obj->Reset();
     }
 }
 
@@ -184,4 +190,9 @@ void NLObjectContainer::SetScene(NLScene *scene)
     {
         obj->SetScene(scene);
     }
+}
+
+bool NLObjectContainer::ObjectIsAvailable(NLObject *item) const
+{
+    return item && NLObjectPool::Instance()->Exists(item);
 }

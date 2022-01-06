@@ -4,7 +4,7 @@
 #include <QDialog>
 
 class QPushButton;
-class QTextEdit;
+class QPlainTextEdit;
 
 class NLTextEditDialog : public QDialog
 {
@@ -20,7 +20,7 @@ public:
     static QString Edit(const QString &text = QString(), QWidget *parent = 0, Qt::WindowFlags f = 0);
     QString Exec(const QString &text);
     QString Exec();
-    QTextEdit * TextEdit() { return m_textEdit; }
+    QPlainTextEdit * TextEdit() { return m_textEdit; }
 
 public Q_SLOTS:
     void SetText(const QString &text);
@@ -43,7 +43,7 @@ private Q_SLOTS:
     void OnTextChanged();
 
 private:
-    QTextEdit *m_textEdit;
+    QPlainTextEdit *m_textEdit;
     QPushButton *m_saveButton;
     QString m_text;
     bool m_edited;

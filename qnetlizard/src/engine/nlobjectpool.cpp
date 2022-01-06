@@ -63,16 +63,6 @@ typedef quint64 index_t;
     return name;
 }
 
-bool NLObjectPool::Exists(const NLObject *item) const
-{
-    Q_FOREACH(const NLName &name, m_pool.keys())
-    {
-        if(m_pool.value(name) == item)
-            return true;
-    }
-    return false;
-}
-
 NLObject * NLObjectPool::Get(const NLName &name)
 {
     if(!m_pool.contains(name))
@@ -101,6 +91,7 @@ NLName NLObjectPool::Attach(NLObject *item)
         return NLName();
     NLName name = GenName(item);
     m_pool.insert(name, item);
+    m_itemPool.push_back(item);
     return name;
 }
 
@@ -108,9 +99,15 @@ NLObjectPool * NLObjectPool::Detach(NLObject *item)
 {
     if(!item)
         return this;
-    QString name = Find(item);
-    if(!name.isEmpty())
-        m_pool.remove(name);
+    Q_FOREACH(const NLName &name, m_pool.keys())
+    {
+        if(m_pool.value(name) == item)
+        {
+            m_pool.remove(name);
+            m_itemPool.removeOne(item);
+            break;
+        }
+    }
     qDebug() << "[NLObjectPool]: Current NLObject count: " << m_pool.size();
     return this;
 }
@@ -122,6 +119,7 @@ NLObject * NLObjectPool::Detach(const NLName &name)
     {
         res = m_pool[name];
         m_pool.remove(name);
+        m_itemPool.removeOne(res);
     }
     return res;
 }

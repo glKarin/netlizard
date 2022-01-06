@@ -78,6 +78,14 @@ NLActor * NLScriptContainer::Actor()
     return 0;
 }
 
+const NLActor * NLScriptContainer::Actor() const
+{
+    const QObject *p = parent();
+    if(p)
+        return dynamic_cast<const NLActor *>(p);
+    return 0;
+}
+
 void NLScriptContainer::SetActor(NLActor *actor)
 {
     setParent(actor);
@@ -86,4 +94,14 @@ void NLScriptContainer::SetActor(NLActor *actor)
 void NLScriptContainer::Clear()
 {
     NLObjectContainer::Clear();
+}
+
+bool NLScriptContainer::ScriptIsAvailable(NLScript *item) const
+{
+    return ObjectIsAvailable(item) && item->Actor() == Actor();
+}
+
+bool NLScriptContainer::ItemIsAvailable(NLObject *item) const
+{
+    return ScriptIsAvailable(static_cast<NLScript *>(item));
 }

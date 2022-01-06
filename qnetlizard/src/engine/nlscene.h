@@ -49,7 +49,10 @@ public:
     NLActor * operator[](int index) { return GetActor(index); }
     NLActor * operator[](const NLName &name) { return GetActor(name); }
     NLScene & operator<<(NLActor *actor) { AddActor(actor); return *this; }
-    friend NLScene & operator+(NLScene &scene, NLActor *actor) { scene.AddActor(actor); return scene; }
+    NLScene & operator+(NLActor *actor) { AddActor(actor); return *this; }
+    NLScene & operator-(NLActor *actor) { RemoveActor(actor); return *this; }
+    NLScene & operator-(int index) { RemoveActor(index); return *this; }
+    NLScene & operator-(const NLName &name) { RemoveActor(name); return *this; }
     
 signals:
     void sizeChanged(const QSize &s);
@@ -73,7 +76,9 @@ protected:
     bool MousePressed() const { return m_pressed; }
     void AddActor(NLActor *actor);
     void RemoveActor(NLActor *actor);
-    void RemoveActor(int index) { m_actors.Remove(m_actors.Get(index)); }
+    void RemoveActor(int index) { m_actors.Remove(index); }
+    void RemoveActor(const NLName &name) { m_actors.Remove(name); }
+    NLActor * CreateActor(const NLProperties &props = NLProperties());
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);

@@ -502,3 +502,10 @@ bool NLScene::MousePressed(int button)
     int index = QMouseToIndex(button);
     return index >= 0 ? m_mousePressed[index] : false;
 }
+
+NLActor * NLScene::CreateActor(const NLProperties &props)
+{
+    NLActor *actor = new NLActor(props);
+    AddActor(actor);
+    return actor;
+}

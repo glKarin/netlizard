@@ -26,7 +26,13 @@ public:
     NLScript * operator[](const NLName &name) { return Get(name); }
     NLScript * operator[](int index) { return Get(index); }
     NLScriptContainer & operator<<(NLScript *item) { Add(item); return *this; }
+    NLScriptContainer & operator+(NLScript *item) { Add(item); return *this; }
+    NLScriptContainer & operator-(NLScript *item) { Remove(item); return *this; }
+    NLScriptContainer & operator-(int index) { Remove(index); return *this; }
+    NLScriptContainer & operator-(const NLName &name) { Remove(name); return *this; }
     NLActor * Actor();
+    const NLActor * Actor() const;
+    bool ScriptIsAvailable(NLScript *item) const;
 
 signals:
 
@@ -34,6 +40,7 @@ public slots:
 
 protected:
     void SetActor(NLActor *actor);
+    virtual bool ItemIsAvailable(NLObject *item) const;
 
 private:
     void Construct();

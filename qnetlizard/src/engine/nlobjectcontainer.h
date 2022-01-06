@@ -37,10 +37,15 @@ public:
     virtual void Reset();
     void SetScene(NLScene *scene);
     NLScene * Scene() { return m_scene; }
+    bool ObjectIsAvailable(NLObject *item) const;
 
     NLObject * operator[](const NLName &name) { return Get(name); }
     NLObject * operator[](int index) { return Get(index); }
     NLObjectContainer & operator<<(NLObject *item) { Add(item); return *this; }
+    NLObjectContainer & operator+(NLObject *item) { Add(item); return *this; }
+    NLObjectContainer & operator-(NLObject *item) { Remove(item); return *this; }
+    NLObjectContainer & operator-(int index) { Remove(index); return *this; }
+    NLObjectContainer & operator-(const NLName &name) { Remove(name); return *this; }
 
     template <class T>
     bool IsType(int index) const;
@@ -69,6 +74,7 @@ public slots:
 protected:
     NLObjectList & ObjectList() { return m_objectList; }
     const NLObjectList & ObjectList() const { return m_objectList; }
+    virtual bool ItemIsAvailable(NLObject *item) const { return ObjectIsAvailable(item); }
 
 private:
     void Construct();

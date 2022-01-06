@@ -27,7 +27,13 @@ public:
     NLForce * operator[](const NLName &name) { return Get(name); }
     NLForce * operator[](int index) { return Get(index); }
     NLForceContainer & operator<<(NLForce *item) { Add(item); return *this; }
+    NLForceContainer & operator+(NLForce *item) { Add(item); return *this; }
+    NLForceContainer & operator-(NLForce *item) { Remove(item); return *this; }
+    NLForceContainer & operator-(int index) { Remove(index); return *this; }
+    NLForceContainer & operator-(const NLName &name) { Remove(name); return *this; }
     NLRigidbody * Rigidbody();
+    const NLRigidbody * Rigidbody() const;
+    bool ForceIsAvailable(NLForce *item) const;
 
 protected:
     virtual void Update(float delta);
@@ -38,6 +44,7 @@ public slots:
 
 protected:
     void SetRigidbody(NLRigidbody *actor);
+    virtual bool ItemIsAvailable(NLObject *item) const;
 
 private:
     void Construct();

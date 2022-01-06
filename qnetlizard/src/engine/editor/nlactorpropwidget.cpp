@@ -4,7 +4,6 @@
 #include <QFormLayout>
 #include <QGridLayout>
 #include <QVBoxLayout>
-#include <QGroupBox>
 #include <QLabel>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
@@ -63,30 +62,32 @@ static bool NLPropertyInfoCmp(const NLPropertyInfo &a, const NLPropertyInfo &b)
     return ai < bi;
 }
 
-NLActorPropSectionHeader::NLActorPropSectionHeader(QWidget *widget)
+NLPropSectionHeader::NLPropSectionHeader(QWidget *widget)
     : QWidget(widget),
       m_label(0),
-      m_menu(0)
+      m_menu(0),
+      m_expandButton(0)
 {
-    setObjectName("NLActorPropSectionHeader");
+    setObjectName("NLPropSectionHeader");
     Init();
 }
 
-NLActorPropSectionHeader::NLActorPropSectionHeader(const QString &text, QWidget *widget)
+NLPropSectionHeader::NLPropSectionHeader(const QString &text, QWidget *widget)
     : QWidget(widget),
       m_label(0),
-      m_menu(0)
+      m_menu(0),
+      m_expandButton(0)
 {
-    setObjectName("NLActorPropSectionHeader");
+    setObjectName("NLPropSectionHeader");
     Init(text);
 }
 
-NLActorPropSectionHeader::~NLActorPropSectionHeader()
+NLPropSectionHeader::~NLPropSectionHeader()
 {
     DEBUG_DESTROY_Q
 }
 
-void NLActorPropSectionHeader::AddAction(QAction *action)
+void NLPropSectionHeader::AddAction(QAction *action)
 {
     if(!m_menu)
     {
@@ -102,22 +103,30 @@ void NLActorPropSectionHeader::AddAction(QAction *action)
     connect(action, SIGNAL(triggered()), this, SLOT(OnActionTriggered()));
 }
 
-void NLActorPropSectionHeader::OnActionTriggered()
+void NLPropSectionHeader::OnActionTriggered()
 {
     QObject *obj = sender();
     if(obj)
         emit actionTriggered(static_cast<QAction *>(obj));
 }
 
-void NLActorPropSectionHeader::SetText(const QString &text)
+void NLPropSectionHeader::SetText(const QString &text)
 {
     m_label->setText(text);
 }
 
-void NLActorPropSectionHeader::Init(const QString &text)
+void NLPropSectionHeader::Init(const QString &text)
 {
     QHBoxLayout *mainLayout = new QHBoxLayout;
     m_label = new QLabel(text);
+    m_expandButton = new QToolButton;
+
+    m_expandButton->setArrowType(Qt::DownArrow);
+    m_expandButton->setCheckable(true);
+    m_expandButton->setChecked(true);
+    m_expandButton->setStyleSheet("QToolButton{ border: none; }");
+    connect(m_expandButton, SIGNAL(clicked(bool)), this, SLOT(OnToggleExpand(bool)));
+    mainLayout->addWidget(m_expandButton);
 
     mainLayout->addWidget(m_label, 1);
     QMargins margins = mainLayout->contentsMargins();
@@ -128,17 +137,257 @@ void NLActorPropSectionHeader::Init(const QString &text)
     setLayout(mainLayout);
 }
 
+void NLPropSectionHeader::OnToggleExpand(bool on)
+{
+    SetExpand(on);
+    emit toggleExpand(on);
+}
+
+void NLPropSectionHeader::Reset()
+{
+    SetExpand(true);
+    SetCanExpand(false);
+}
+
+void NLPropSectionHeader::SetCanExpand(bool b)
+{
+    m_expandButton->setEnabled(b);
+    m_expandButton->setChecked(b);
+}
+
+void NLPropSectionHeader::SetExpand(bool b)
+{
+    m_expandButton->setArrowType(b ? Qt::DownArrow : Qt::RightArrow);
+}
+
+
+
+
+NLFormGroupBox::NLFormGroupBox(QWidget *widget)
+    : QGroupBox(widget),
+      m_layout(0),
+      m_expand(true)
+{
+    setObjectName("NLFormGroupBox");
+    Init();
+}
+
+NLFormGroupBox::~NLFormGroupBox()
+{
+    DEBUG_DESTROY_Q
+    Reset();
+}
+
+void NLFormGroupBox::Init()
+{
+    m_layout = new QFormLayout;
+    m_layout->setRowWrapPolicy(QFormLayout::WrapLongRows);
+    setCheckable(false);
+    setChecked(true);
+    connect(this, SIGNAL(toggled(bool)), this, SLOT(ToggleGroupBox(bool)));
+    setLayout(m_layout);
+}
+
+void NLFormGroupBox::ToggleGroupBox(bool on)
+{
+    if(m_expand == on)
+        return;
+    if(on)
+    {
+        Q_FOREACH(const QString &name, m_names)
+        {
+            QWidget *widget = m_widgetItemMaps[name];
+            widget->show();
+            m_layout->addRow(name, widget);
+        }
+    }
+    else
+    {
+        while(!m_layout->isEmpty())
+        {
+            QLayoutItem *item = m_layout->takeAt(0);
+            item->widget()->hide();
+            delete item;
+        }
+    }
+    m_expand = on;
+}
+
+void NLFormGroupBox::Reset()
+{
+    QLayoutItem *item;
+    if(m_expand)
+    {
+        while(!m_layout->isEmpty())
+        {
+            item = m_layout->takeAt(0);
+            delete item->widget();
+            delete item;
+        }
+    }
+    else
+    {
+        Q_FOREACH(const QString &name, m_widgetItemMaps.keys())
+        {
+            QWidget *widget = m_widgetItemMaps[name];
+            delete widget;
+        }
+    }
+    m_widgetItemMaps.clear();
+    m_names.clear();
+    m_expand = true;
+    setChecked(true);
+    setCheckable(false);
+}
+
+void NLFormGroupBox::AddRow(const QString &name, QWidget *widget)
+{
+    m_layout->addRow(name, widget);
+    m_widgetItemMaps.insert(name, widget);
+    m_names.push_back(name);
+    setCheckable(true);
+}
+
+
+
+NLPropSectionContent::NLPropSectionContent(QWidget *widget)
+    : QWidget(widget),
+      m_layout(0),
+      m_expand(true)
+{
+    setObjectName("NLPropSectionContent");
+    Init();
+}
+
+NLPropSectionContent::~NLPropSectionContent()
+{
+    DEBUG_DESTROY_Q
+    Reset();
+}
+
+void NLPropSectionContent::Init()
+{
+    m_layout = new QVBoxLayout;
+    QMargins margins = m_layout->contentsMargins();
+    margins.setBottom(0);
+    margins.setTop(0);
+    m_layout->setContentsMargins(margins);
+    setLayout(m_layout);
+}
+
+void NLPropSectionContent::AddWidget(QWidget *widget)
+{
+    m_layout->addWidget(widget);
+    m_layout->addSpacing(1);
+    m_widgets.push_back(widget);
+}
+
+void NLPropSectionContent::Toggle(bool on)
+{
+    if(m_expand == on)
+        return;
+    if(on)
+    {
+        Q_FOREACH(QWidget *widget, m_widgets)
+        {
+            widget->show();
+            m_layout->addWidget(widget);
+            m_layout->addSpacing(1);
+        }
+    }
+    else
+    {
+        while(!m_layout->isEmpty())
+        {
+            QLayoutItem *item = m_layout->takeAt(0);
+            QWidget *widget = item->widget();
+            if(widget)
+                widget->hide();
+            delete item;
+        }
+    }
+    m_expand = on;
+}
+
+void NLPropSectionContent::Reset()
+{
+    QLayoutItem *item;
+    while(!m_layout->isEmpty())
+    {
+        item = m_layout->takeAt(0);
+        QWidget *widget = item->widget();
+        if(widget)
+            delete widget;
+        delete item;
+    }
+    m_widgets.clear();
+    m_expand = true;
+}
+
+
+
+NLPropSection::NLPropSection(QWidget *widget)
+    : QWidget(widget),
+      m_header(0),
+      m_content(0)
+{
+    setObjectName("NLPropSection");
+    Init();
+}
+
+NLPropSection::~NLPropSection()
+{
+    DEBUG_DESTROY_Q
+    Reset();
+}
+
+void NLPropSection::Init()
+{
+    QVBoxLayout *layout = new QVBoxLayout;
+    m_header = new NLPropSectionHeader;
+    m_content = new NLPropSectionContent;
+    layout->addWidget(m_header);
+    layout->addSpacing(1);
+    layout->addWidget(m_content, 1);
+    QMargins margins = layout->contentsMargins();
+    margins.setBottom(0);
+    margins.setTop(0);
+    layout->setContentsMargins(margins);
+    setLayout(layout);
+    connect(m_header, SIGNAL(actionTriggered(QAction *)), this, SIGNAL(actionTriggered(QAction *)));
+    connect(m_header, SIGNAL(toggleExpand(bool)), m_content, SLOT(Toggle(bool)));
+}
+
+void NLPropSection::AddWidget(QWidget *widget)
+{
+    m_content->AddWidget(widget);
+    m_header->SetCanExpand(true);
+}
+
+void NLPropSection::Reset()
+{
+    m_header->Reset();
+    m_content->Reset();
+}
+
+void NLPropSection::SetTitle(const QString &str)
+{
+    m_header->SetText(str);
+}
+
+void NLPropSection::AddAction(QAction *action)
+{
+    m_header->AddAction(action);
+}
+
 
 
 NLActorPropWidget::NLActorPropWidget(QWidget *widget)
     : QScrollArea(widget),
       m_actor(0),
-      m_actorLayout(0),
-      m_componentLayout(0),
       m_actorGroupBox(0),
-      m_scriptLayout(0),
-      m_componentSectionHeader(0),
-      m_scriptSectionHeader(0)
+      m_componentSection(0),
+      m_scriptSection(0)
 {
     setObjectName("NLActorPropWidget");
     Init();
@@ -153,47 +402,37 @@ NLActorPropWidget::~NLActorPropWidget()
 void NLActorPropWidget::Init()
 {
     QLabel *label;
-    //QGroupBox *groupBox;
-    m_actorLayout = new QFormLayout;
-    m_componentLayout = new QVBoxLayout;
-    m_actorLayout->setRowWrapPolicy(QFormLayout::WrapLongRows);
+    m_componentSection = new NLPropSection;
     QWidget *root = new QWidget;
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    m_actorGroupBox = new QGroupBox;
-    m_scriptLayout = new QVBoxLayout;
+    m_actorGroupBox = new NLFormGroupBox;
+    m_scriptSection = new NLPropSection;
     QAction *action;
 
     label = new QLabel(tr("Actor: "));
     mainLayout->addWidget(label);
     mainLayout->addSpacing(1);
 
-    m_actorGroupBox->setLayout(m_actorLayout);
     m_actorGroupBox->setTitle(tr("Properties"));
-    m_actorGroupBox->setCheckable(true);
-    connect(m_actorGroupBox, SIGNAL(toggled(bool)), this, SLOT(ToggleGroupBox(bool)));
     mainLayout->addWidget(m_actorGroupBox);
     mainLayout->addSpacing(2);
 
-    m_componentSectionHeader = new NLActorPropSectionHeader(tr("Component: "));
-    action = new QAction(tr("Add"), m_componentSectionHeader);
+    m_componentSection->SetTitle(tr("Component: "));
+    action = new QAction(tr("Add"), m_componentSection);
     action->setData(ACTION_ADD_COMPONENT);
-    connect(m_componentSectionHeader, SIGNAL(actionTriggered(QAction *)), this, SLOT(OnActionTriggered(QAction *)));
-    m_componentSectionHeader->AddAction(action);
-    m_componentSectionHeader->hide();
-    mainLayout->addWidget(m_componentSectionHeader);
-    mainLayout->addSpacing(1);
-    mainLayout->addLayout(m_componentLayout);
+    connect(m_componentSection, SIGNAL(actionTriggered(QAction *)), this, SLOT(OnActionTriggered(QAction *)));
+    m_componentSection->AddAction(action);
+    m_componentSection->hide();
+    mainLayout->addWidget(m_componentSection);
 
     mainLayout->addSpacing(2);
-    m_scriptSectionHeader = new NLActorPropSectionHeader(tr("Script: "));
-    action = new QAction(tr("Add"), m_scriptSectionHeader);
+    m_scriptSection->SetTitle(tr("Script: "));
+    action = new QAction(tr("Add"), m_scriptSection);
     action->setData(ACTION_ADD_SCRIPT);
-    connect(m_scriptSectionHeader, SIGNAL(actionTriggered(QAction *)), this, SLOT(OnActionTriggered(QAction *)));
-    m_scriptSectionHeader->AddAction(action);
-    m_scriptSectionHeader->hide();
-    mainLayout->addWidget(m_scriptSectionHeader);
-    mainLayout->addSpacing(1);
-    mainLayout->addLayout(m_scriptLayout);
+    connect(m_scriptSection, SIGNAL(actionTriggered(QAction *)), this, SLOT(OnActionTriggered(QAction *)));
+    m_scriptSection->AddAction(action);
+    m_scriptSection->hide();
+    mainLayout->addWidget(m_scriptSection);
 
     mainLayout->addStretch(1);
 
@@ -215,12 +454,11 @@ void NLActorPropWidget::SetActor(NLActor *actor)
             connect(m_actor, SIGNAL(scriptChanged(const NLScript *)), this, SLOT(SetupScript()));
             connect(m_actor, SIGNAL(destroying()), this, SLOT(Reset()));
         }
-        m_componentSectionHeader->show();
-        m_scriptSectionHeader->show();
+        m_componentSection->show();
+        m_scriptSection->show();
         UpdateActorData();
     }
 }
-
 
 void NLActorPropWidget::Reset()
 {
@@ -230,18 +468,14 @@ void NLActorPropWidget::Reset()
         m_actor = 0;
     }
 
-    ClearSection(m_actorGroupBox);
+    m_actorGroupBox->Reset();
+    m_actorGroupBox->setTitle(tr("Properties"));
     ClearComponentProperties();
     ClearScriptProperties();
     m_propWidgetMap.clear();
     m_objectMap.clear();
-    m_actorGroupBox->setTitle(tr("Properties"));
-    m_actorGroupBox->setProperty("_Layout_visible", QVariant());
-    m_actorGroupBox->setProperty("_Layout_items", QVariant());
-    m_actorGroupBox->setProperty("_Layout_item_maps", QVariant());
-    m_actorGroupBox->setCheckable(false);
-    m_componentSectionHeader->hide();
-    m_scriptSectionHeader->hide();
+    m_componentSection->hide();
+    m_scriptSection->hide();
 }
 
 void NLActorPropWidget::UpdateActorData()
@@ -265,21 +499,12 @@ void NLActorPropWidget::SetupActorProperty()
 {
     NLPropertyInfoList list = NL::object_propertics(m_actor);
     SortProperties(list);
-    QStringList items;
-    QVariantHash itemMaps;
     Q_FOREACH(const NLPropertyInfo &item, list)
     {
         QWidget *widget = GenWidget(m_actor, item);
         m_propWidgetMap[m_actor].insert(item.name, widget);
-        m_actorLayout->addRow(item.name, widget);
-        items.push_back(item.name);
-        itemMaps.insert(item.name, QVariant::fromValue(widget));
+        m_actorGroupBox->AddRow(item.name, widget);
     }
-    m_actorGroupBox->setCheckable(true);
-    m_actorGroupBox->setChecked(true);
-    m_actorGroupBox->setProperty("_Layout_visible", true);
-    m_actorGroupBox->setProperty("_Layout_items", items);
-    m_actorGroupBox->setProperty("_Layout_item_maps", itemMaps);
     m_objectMap["NLActor"].push_back(m_actor);
 }
 
@@ -290,10 +515,7 @@ void NLActorPropWidget::SortProperties(NLPropertyInfoList &list)
 
 void NLActorPropWidget::SetupComponentProperty(NLComponent *comp)
 {
-    QFormLayout *layout = new QFormLayout;
-    QGroupBox *groupBox = new QGroupBox;
-    QStringList items;
-    QVariantHash itemMaps;
+    NLFormGroupBox *groupBox = new NLFormGroupBox;
     groupBox->setTitle(comp->ClassName() + "(" + comp->Name() + ")");
     NLPropertyInfoList list = NL::object_propertics(comp);
     SortProperties(list);
@@ -301,19 +523,10 @@ void NLActorPropWidget::SetupComponentProperty(NLComponent *comp)
     {
         QWidget *widget = GenWidget(comp, item);
         m_propWidgetMap[comp].insert(item.name, widget);
-        layout->addRow(item.name, widget);
-        items.push_back(item.name);
-        itemMaps.insert(item.name, QVariant::fromValue(widget));
+        groupBox->AddRow(item.name, widget);
     }
-    groupBox->setCheckable(true);
-    groupBox->setChecked(true);
-    groupBox->setProperty("_Layout_visible", true);
-    groupBox->setProperty("_Layout_items", items);
-    groupBox->setProperty("_Layout_item_maps", itemMaps);
-    connect(groupBox, SIGNAL(toggled(bool)), this, SLOT(ToggleGroupBox(bool)));
     connect(comp, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
-    groupBox->setLayout(layout);
-    m_componentLayout->addWidget(groupBox);
+    m_componentSection->AddWidget(groupBox);
     m_objectMap["NLComponent"].push_back(comp);
 }
 
@@ -327,44 +540,6 @@ void NLActorPropWidget::SetupComponentProperties()
         NLComponent *comp = m_actor->GetComponent(i);
         SetupComponentProperty(comp);
     }
-}
-
-void NLActorPropWidget::ToggleGroupBox(bool on)
-{
-    QObject *s = sender();
-    if(!s)
-        return;
-    QGroupBox *groupBox = dynamic_cast<QGroupBox *>(s);
-    if(!groupBox)
-        return;
-    QVariant va = s->property("_Layout_visible");
-    if(!va.isValid())
-        return;
-    bool visible = va.toBool();
-    if(visible == on)
-        return;
-    QStringList list = s->property("_Layout_items").toStringList();
-    QVariantHash map = s->property("_Layout_item_maps").toHash();
-    QFormLayout *layout = static_cast<QFormLayout *>(groupBox->layout());
-    if(on)
-    {
-        Q_FOREACH(const QString &name, list)
-        {
-            QWidget *widget = map[name].value<QWidget *>();
-            widget->setVisible(true);
-            layout->addRow(name, widget);
-        }
-    }
-    else
-    {
-        while(!layout->isEmpty())
-        {
-            QLayoutItem *item = layout->takeAt(0);
-            item->widget()->setVisible(false);
-            delete item;
-        }
-    }
-    s->setProperty("_Layout_visible", on);
 }
 
 QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item)
@@ -719,32 +894,6 @@ void NLActorPropWidget::OnStringReload(const QString &str)
     obj->CoverProperty(s->objectName(), str);
 }
 
-void NLActorPropWidget::ClearSection(QGroupBox *groupBox)
-{
-    QLayoutItem *item;
-    QLayout *layout = groupBox->layout();
-    QVariant va = groupBox->property("_Layout_visible");
-    bool visible = va.isValid() ? va.toBool() : true;
-    if(visible)
-    {
-        while(!layout->isEmpty())
-        {
-            item = layout->takeAt(0);
-            delete item->widget();
-            delete item;
-        }
-    }
-    else
-    {
-        QVariantHash map = groupBox->property("_Layout_item_maps").toHash();
-        Q_FOREACH(const QString &name, map.keys())
-        {
-            QWidget *widget = map[name].value<QWidget *>();
-            delete widget;
-        }
-    }
-}
-
 void NLActorPropWidget::OnItemDestroy(QObject *obj)
 {
     QObject *o = obj ? obj : sender();
@@ -754,10 +903,7 @@ void NLActorPropWidget::OnItemDestroy(QObject *obj)
 
 void NLActorPropWidget::SetupScriptProperty(NLScript *script)
 {
-    QFormLayout *layout = new QFormLayout;
-    QGroupBox *groupBox = new QGroupBox;
-    QStringList items;
-    QVariantHash itemMaps;
+    NLFormGroupBox *groupBox = new NLFormGroupBox;
     groupBox->setTitle(script->ClassName() + "(" + script->Name() + ")");
     NLPropertyInfoList list = NL::object_propertics(script);
     SortProperties(list);
@@ -765,19 +911,10 @@ void NLActorPropWidget::SetupScriptProperty(NLScript *script)
     {
         QWidget *widget = GenWidget(script, item);
         m_propWidgetMap[script].insert(item.name, widget);
-        layout->addRow(item.name, widget);
-        items.push_back(item.name);
-        itemMaps.insert(item.name, QVariant::fromValue(widget));
+        groupBox->AddRow(item.name, widget);
     }
-    groupBox->setCheckable(true);
-    groupBox->setChecked(true);
-    groupBox->setProperty("_Layout_visible", true);
-    groupBox->setProperty("_Layout_items", items);
-    groupBox->setProperty("_Layout_item_maps", itemMaps);
-    connect(groupBox, SIGNAL(toggled(bool)), this, SLOT(ToggleGroupBox(bool)));
     connect(script, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
-    groupBox->setLayout(layout);
-    m_scriptLayout->addWidget(groupBox);
+    m_scriptSection->AddWidget(groupBox);
     m_objectMap["NLScript"].push_back(script);
 }
 
@@ -804,15 +941,7 @@ void NLActorPropWidget::ClearComponentProperties()
         }
         m_objectMap.remove("NLComponent");
     }
-    QLayoutItem *item;
-    while(!m_componentLayout->isEmpty())
-    {
-        item = m_componentLayout->takeAt(0);
-        QGroupBox *groupBox = static_cast<QGroupBox *>(item->widget());
-        ClearSection(groupBox);
-        delete groupBox;
-        delete item;
-    }
+    m_componentSection->Reset();
 }
 
 void NLActorPropWidget::ClearScriptProperties()
@@ -826,15 +955,7 @@ void NLActorPropWidget::ClearScriptProperties()
         }
         m_objectMap.remove("NLScript");
     }
-    QLayoutItem *item;
-    while(!m_scriptLayout->isEmpty())
-    {
-        item = m_scriptLayout->takeAt(0);
-        QGroupBox *groupBox = static_cast<QGroupBox *>(item->widget());
-        ClearSection(groupBox);
-        delete groupBox;
-        delete item;
-    }
+    m_scriptSection->Reset();
 }
 
 void NLActorPropWidget::SetupComponent()
