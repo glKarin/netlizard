@@ -2,7 +2,7 @@
 #define _KARIN_NLGENERALSYNTAXHIGHLIGHTER_H
 
 #include <QSyntaxHighlighter>
-#include <QHash>
+#include "nlsequencemap.h"
 
 class NLGeneralSyntaxHighlighter : public QSyntaxHighlighter
 {
@@ -20,14 +20,17 @@ public:
         SyntaxConfig(const QString &pattern, const QTextCharFormat &format)
             : pattern(QRegExp(pattern)),
               format(format)
-        {}
+        {
+            this->pattern.setMinimal(true);
+            this->pattern.setPatternSyntax(QRegExp::RegExp2);
+        }
         bool IsValid() const { return pattern.isValid() && format.isValid(); }
         operator bool() const { return IsValid(); }
         int Highlighting(NLGeneralSyntaxHighlighter *hl, const QString &text);
         friend bool operator==(const SyntaxConfig &a, const SyntaxConfig &b) { return a.pattern == b.pattern && a.format == b.format; }
         friend bool operator!=(const SyntaxConfig &a, const SyntaxConfig &b) { return !operator==(a, b); }
     };
-    typedef QHash<QString, SyntaxConfig> SyntaxConfigMap;
+    typedef NLSequenceHash<QString, SyntaxConfig> SyntaxConfigMap;
 
 public:
     explicit NLGeneralSyntaxHighlighter(QObject *parent);

@@ -54,9 +54,31 @@ void NLLuaSyntaxHighlighter::Init()
     {
         QTextCharFormat format;
         //format.setFontWeight(QFont::Bold);
+        format.setForeground(Qt::green);
+        QString pattern = "(?!\\\\)\".*(?!\\\\)\"";
+        AddSyntaxConfig(NLGeneralSyntaxHighlighter::SyntaxConfig(pattern, format));
+    }
+    {
+        QTextCharFormat format;
+        //format.setFontWeight(QFont::Bold);
+        format.setForeground(Qt::green);
+        QString pattern = "(?!\\\\)'.*(?!\\\\)'";
+        AddSyntaxConfig(NLGeneralSyntaxHighlighter::SyntaxConfig(pattern, format));
+    }
+    {
+        QTextCharFormat format;
+        //format.setFontWeight(QFont::Bold);
         format.setFontItalic(true);
         format.setForeground(Qt::green);
-        QString pattern = "^\\s*--.*$";
+        QString pattern = "--.*$";
+        AddSyntaxConfig(NLGeneralSyntaxHighlighter::SyntaxConfig(pattern, format));
+    }
+    {
+        QTextCharFormat format;
+        //format.setFontWeight(QFont::Bold);
+        format.setFontItalic(true);
+        format.setForeground(Qt::green);
+        QString pattern = "--\\[=*\\[.*\\]=*\\]";
         AddSyntaxConfig(NLGeneralSyntaxHighlighter::SyntaxConfig(pattern, format));
     }
 }

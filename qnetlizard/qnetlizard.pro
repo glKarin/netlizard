@@ -36,8 +36,9 @@ HEADERS += \
     src/misc/logoutput.h \
     src/misc/settings.h \
     src/misc/lang.h \
-    src/engine/editor/widget/nlluasyntaxhighlighter.h \
-    src/engine/editor/widget/nlgeneralsyntaxhighlighter.h
+    src/engine/editor/widget/syntaxhighlighter/nlluasyntaxhighlighter.h \
+    src/engine/editor/widget/syntaxhighlighter/nlgeneralsyntaxhighlighter.h \
+    src/engine/template/nlsequencemap.h
 
 SOURCES += \
     main.cpp \
@@ -46,8 +47,8 @@ SOURCES += \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
     src/misc/lang.cpp \
-    src/engine/editor/widget/nlluasyntaxhighlighter.cpp \
-    src/engine/editor/widget/nlgeneralsyntaxhighlighter.cpp
+    src/engine/editor/widget/syntaxhighlighter/nlluasyntaxhighlighter.cpp \
+    src/engine/editor/widget/syntaxhighlighter/nlgeneralsyntaxhighlighter.cpp
 
 # Widget
 HEADERS += \
@@ -162,8 +163,8 @@ SOURCES += \
     src/comp/widget/actorpropertywidget.cpp
 
 # Engine
-DEPENDPATH += ./src/engine ./src/engine/editor ./src/engine/lua ./src/engine/editor/widget
-INCLUDEPATH += ./src/engine ./src/engine/editor ./src/engine/lua ./src/engine/editor/widget
+DEPENDPATH += ./src/engine ./src/engine/editor ./src/engine/lua ./src/engine/editor/widget ./src/engine/template ./src/engine/editor/widget/syntaxhighlighter
+INCLUDEPATH += ./src/engine ./src/engine/editor ./src/engine/lua ./src/engine/editor/widget ./src/engine/template ./src/engine/editor/widget/syntaxhighlighter
 
 HEADERS += \
     src/engine/nldef.h \

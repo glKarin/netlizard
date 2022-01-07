@@ -43,7 +43,7 @@ void NLGeneralSyntaxHighlighter::highlightBlock(const QString &text)
 
 void NLGeneralSyntaxHighlighter::GeneralHighlighting(const QString &text)
 {
-    Q_FOREACH(const QString &name, m_syntaxConfigs.keys())
+    Q_FOREACH(const QString &name, m_syntaxConfigs.SequenceKeys())
     {
         if(m_syntaxConfigs[name])
             m_syntaxConfigs[name].Highlighting(this, text);
@@ -56,7 +56,7 @@ void NLGeneralSyntaxHighlighter::SetSyntaxConfigs(const NLGeneralSyntaxHighlight
     {
         bool c = !m_syntaxConfigs.isEmpty();
         m_syntaxConfigs.clear();
-        Q_FOREACH(const QString &name, conf.keys())
+        Q_FOREACH(const QString &name, conf.SequenceKeys())
         {
             if(!conf[name])
                 continue;
