@@ -289,6 +289,7 @@ void NLScript::Construct()
     m.clear();
     m.insert("multiline", true);
     m.insert("direct", false);
+    m.insert("syntax", "lua");
     props.Insert("scriptSource", m);
 
     SetPropertyConfig(props);

@@ -577,6 +577,34 @@
         <source>total</source>
         <translation type="unfinished">总</translation>
     </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished">通用</translation>
+    </message>
+    <message>
+        <source>Choose color</source>
+        <translation type="unfinished">选择颜色</translation>
+    </message>
+    <message>
+        <source>ms</source>
+        <translation type="unfinished">毫秒</translation>
+    </message>
+    <message>
+        <source>FPS</source>
+        <translation type="unfinished">FPS</translation>
+    </message>
+    <message>
+        <source>Update interval</source>
+        <translation type="unfinished">更新间隔</translation>
+    </message>
+    <message>
+        <source>Clear color</source>
+        <translation type="unfinished">清除颜色</translation>
+    </message>
+    <message>
+        <source>Setting</source>
+        <translation type="unfinished">设置</translation>
+    </message>
 </context>
 <context>
     <name>NLSceneTreeWidget</name>
@@ -614,6 +642,46 @@
     <message>
         <source>Edit</source>
         <translation type="unfinished">编辑</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished">无</translation>
+    </message>
+    <message>
+        <source>Save to file</source>
+        <translation type="unfinished">保存文件</translation>
+    </message>
+    <message>
+        <source>Load from file</source>
+        <translation type="unfinished">加载文件</translation>
+    </message>
+    <message>
+        <source>Syntax: </source>
+        <translation type="unfinished">语法: </translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">错误</translation>
+    </message>
+    <message>
+        <source>Can not open file: </source>
+        <translation type="unfinished">无法打开文件: </translation>
+    </message>
+    <message>
+        <source>Success</source>
+        <translation type="unfinished">成功</translation>
+    </message>
+    <message>
+        <source>Save text file: </source>
+        <translation type="unfinished">保存文件到: </translation>
+    </message>
+    <message>
+        <source>Can not read file: </source>
+        <translation type="unfinished">无法加载文件: </translation>
+    </message>
+    <message>
+        <source>Load file finished: </source>
+        <translation type="unfinished">加载文件: </translation>
     </message>
 </context>
 <context>

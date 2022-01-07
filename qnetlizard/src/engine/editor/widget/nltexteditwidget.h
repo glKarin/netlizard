@@ -32,6 +32,8 @@ public:
     explicit NLTextEditWidget(QWidget *widget = 0);
     virtual ~NLTextEditWidget();
     QString Text() const { return m_text; }
+    QString Syntax() const { return m_syntax; }
+    void SetSyntax(const QString &type);
 
 public Q_SLOTS:
     void SetText(const QString &t);
@@ -53,6 +55,7 @@ private:
     QString m_text;
     NLTextEditWidgetLabel *m_textLabel;
     QPushButton *m_editButton;
+    QString m_syntax;
 
     Q_DISABLE_COPY(NLTextEditWidget)
 };

@@ -8,9 +8,10 @@ class NLLuaSyntaxHighlighter : public NLGeneralSyntaxHighlighter
 public:
     explicit NLLuaSyntaxHighlighter(QObject *parent);
     explicit NLLuaSyntaxHighlighter(QTextDocument *parent);
+    static const QString SyntaxName;
 
-private:
-    void Init();
+protected:
+    void InitSyntaxConfigs();
 };
 
 #endif // _KARIN_NLLUASYNTAXHIGHLIGHTER_H

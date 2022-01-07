@@ -1,84 +1,33 @@
 #include "nlluasyntaxhighlighter.h"
 
+const QString NLLuaSyntaxHighlighter::SyntaxName("lua");
+
 NLLuaSyntaxHighlighter::NLLuaSyntaxHighlighter(QObject *parent)
-    : NLGeneralSyntaxHighlighter(parent)
+    : NLGeneralSyntaxHighlighter(NLLuaSyntaxHighlighter::SyntaxName, parent)
 {
     setObjectName("NLGeneralSyntaxHighlighter");
-    Init();
+    InitSyntaxConfigs();
 }
 
 NLLuaSyntaxHighlighter::NLLuaSyntaxHighlighter(QTextDocument *parent)
-    : NLGeneralSyntaxHighlighter(parent)
+    : NLGeneralSyntaxHighlighter(NLLuaSyntaxHighlighter::SyntaxName, parent)
 {
     setObjectName("NLGeneralSyntaxHighlighter");
-    Init();
+    InitSyntaxConfigs();
 }
 
-void NLLuaSyntaxHighlighter::Init()
+void NLLuaSyntaxHighlighter::InitSyntaxConfigs()
 {
-    {
-        QTextCharFormat format;
-        format.setFontWeight(QFont::Bold);
-        format.setForeground(Qt::darkMagenta);
-        QString pattern = "\\b(if|else|for|break|do|elseif|end|or|repeat|then|until|while|goto|return)\\b";
-        AddSyntaxConfig(NLGeneralSyntaxHighlighter::SyntaxConfig(pattern, format));
-    }
-    {
-        QTextCharFormat format;
-        format.setFontWeight(QFont::Bold);
-        format.setForeground(Qt::red);
-        QString pattern = "\\b(false|true|nil)\\b";
-        AddSyntaxConfig(NLGeneralSyntaxHighlighter::SyntaxConfig(pattern, format));
-    }
-    {
-        QTextCharFormat format;
-        format.setFontWeight(QFont::Bold);
-        format.setForeground(Qt::blue);
-        QString pattern = "\\b(function)\\b";
-        AddSyntaxConfig(NLGeneralSyntaxHighlighter::SyntaxConfig(pattern, format));
-    }
-    {
-        QTextCharFormat format;
-        format.setFontWeight(QFont::Bold);
-        format.setForeground(Qt::cyan);
-        QString pattern = "\\b(local)\\b";
-        AddSyntaxConfig(NLGeneralSyntaxHighlighter::SyntaxConfig(pattern, format));
-    }
-    {
-        QTextCharFormat format;
-        format.setFontWeight(QFont::Bold);
-        format.setForeground(Qt::yellow);
-        QString pattern = "\\b(or|not|and|in)\\b";
-        AddSyntaxConfig(NLGeneralSyntaxHighlighter::SyntaxConfig(pattern, format));
-    }
-    {
-        QTextCharFormat format;
-        //format.setFontWeight(QFont::Bold);
-        format.setForeground(Qt::green);
-        QString pattern = "(?!\\\\)\".*(?!\\\\)\"";
-        AddSyntaxConfig(NLGeneralSyntaxHighlighter::SyntaxConfig(pattern, format));
-    }
-    {
-        QTextCharFormat format;
-        //format.setFontWeight(QFont::Bold);
-        format.setForeground(Qt::green);
-        QString pattern = "(?!\\\\)'.*(?!\\\\)'";
-        AddSyntaxConfig(NLGeneralSyntaxHighlighter::SyntaxConfig(pattern, format));
-    }
-    {
-        QTextCharFormat format;
-        //format.setFontWeight(QFont::Bold);
-        format.setFontItalic(true);
-        format.setForeground(Qt::green);
-        QString pattern = "--.*$";
-        AddSyntaxConfig(NLGeneralSyntaxHighlighter::SyntaxConfig(pattern, format));
-    }
-    {
-        QTextCharFormat format;
-        //format.setFontWeight(QFont::Bold);
-        format.setFontItalic(true);
-        format.setForeground(Qt::green);
-        QString pattern = "--\\[=*\\[.*\\]=*\\]";
-        AddSyntaxConfig(NLGeneralSyntaxHighlighter::SyntaxConfig(pattern, format));
-    }
+    SetSyntaxConfig("\\b(if|else|for|break|do|elseif|end|or|repeat|then|until|while|goto|return|or|not|and|in)\\b", SyntaxConfig::Syntax_Keyword);
+    SetSyntaxConfig("\\b(false|true|nil)\\b", SyntaxConfig::Syntax_Constant);
+    SetSyntaxConfig("\\b(function|local)\\b", SyntaxConfig::Syntax_Type);
+    SetSyntaxConfig("::\\b[a-zA-Z0-9_]+\\b::", SyntaxConfig::Syntax_Label);
+    SetSyntaxConfig("\\b-?\\d+f?\\b", SyntaxConfig::Syntax_Number); // -1f
+    SetSyntaxConfig("\\b-?\\d*\\.\\d*f?\\b", SyntaxConfig::Syntax_Number); // -1.1f
+    SetSyntaxConfig(QRegExp("-?\\d+e-?\\d+f?\\b", Qt::CaseInsensitive), SyntaxConfig::Syntax_Number); // -1e-1f
+
+    SetSyntaxConfig("\".*\"", SyntaxConfig::Syntax_String);
+    SetSyntaxConfig("'.*'", SyntaxConfig::Syntax_String);
+
+    SetSyntaxConfig("--.*$", SyntaxConfig::Syntax_Comment);
 }

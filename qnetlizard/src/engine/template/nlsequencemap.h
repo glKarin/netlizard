@@ -86,6 +86,8 @@
 
 SEQUENCEMAP(NLSequenceHash, QHash)
 SEQUENCEMAP(NLSequenceMap, QMap)
+typedef NLSequenceHash<QString, QVariant> NLVariantSequenceHash;
+typedef NLSequenceMap<QString, QVariant> NLVariantSequenceMap;
 
 
 #endif // _KARIN_NLSEQUENCEMAP_H

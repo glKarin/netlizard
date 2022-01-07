@@ -98,8 +98,14 @@ void NLTextEditWidget::SetReadOnly(bool b)
 
 void NLTextEditWidget::OpenTextEditor()
 {
-    QString text = NLTextEditDialog::Edit(m_text, this);
+    QString text = NLTextEditDialog::Edit(m_text, m_syntax, this);
     if(text.isNull())
         return;
     SetEditText(text);
+}
+
+void NLTextEditWidget::SetSyntax(const QString &type)
+{
+    if(m_syntax != type)
+        m_syntax = type;
 }

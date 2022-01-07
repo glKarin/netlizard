@@ -673,6 +673,7 @@ QWidget * NLActorPropWidget::GenWidget(NLObject *obj, const NLPropertyInfo &item
             NLTextEditWidget *w = new NLTextEditWidget;
             w->SetText(item.value.toString());
             w->SetReadOnly(item.readonly);
+            w->SetSyntax(item.prop.value("syntax").toString());
             connect(w, SIGNAL(textEdited(const QString &)), this, SLOT(OnStringChanged(const QString &)));
             widget = w;
         }

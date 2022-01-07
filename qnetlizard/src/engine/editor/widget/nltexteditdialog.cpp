@@ -13,6 +13,8 @@
 #include <QTextStream>
 #include <QTextCodec>
 #include <QMessageBox>
+#include <QComboBox>
+#include <QLabel>
 
 #include "qdef.h"
 #include "nlluasyntaxhighlighter.h"
@@ -21,6 +23,8 @@ NLTextEditDialog::NLTextEditDialog(QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent, f),
       m_textEdit(0),
       m_saveButton(0),
+      m_hlComboBox(0),
+      m_hl(0),
       m_edited(false)
 {
     setObjectName("NLTextEditDialog");
@@ -31,6 +35,8 @@ NLTextEditDialog::NLTextEditDialog(const QString &contents, QWidget *parent, Qt:
     : QDialog(parent, f),
       m_textEdit(0),
       m_saveButton(0),
+      m_hlComboBox(0),
+      m_hl(0),
       m_text(contents),
       m_edited(false)
 {
@@ -51,12 +57,25 @@ void NLTextEditDialog::Init()
     m_saveButton = new QPushButton(tr("Save"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
     QToolBar *toolbar = new QToolBar;
-    NLLuaSyntaxHighlighter *hl = new NLLuaSyntaxHighlighter(m_textEdit->document());
+    m_hlComboBox = new QComboBox;
 
+    const QPair<QString, QString> HLs[] = {
+        qMakePair<QString, QString>(tr("None"), QString()),
+        qMakePair<QString, QString>("Lua", NLLuaSyntaxHighlighter::SyntaxName),
+    };
+    for(uint i = 0; i < countof(HLs); i++)
+    {
+        const QPair<QString, QString> &p = HLs[i];
+        m_hlComboBox->addItem(p.first, p.second);
+    }
+    connect(m_hlComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetSyntaxHighlighter(int)));
 
     toolbar->addAction(tr("Save"), this, SLOT(Save()));
     toolbar->addAction(tr("Save to file"), this, SLOT(SaveToFile()))->setShortcut(QKeySequence("ctrl+w"));
     toolbar->addAction(tr("Load from file"), this, SLOT(LoadFromFile()))->setShortcut(QKeySequence("ctrl+f"));
+    toolbar->addSeparator();
+    toolbar->addWidget(new QLabel(tr("Syntax: ")));
+    toolbar->addWidget(m_hlComboBox);
     m_saveButton->setEnabled(false);
     toolsLayout->addStretch(1);
     toolsLayout->addWidget(m_saveButton);
@@ -201,9 +220,10 @@ void NLTextEditDialog::reject()
     QDialog::reject();
 }
 
-QString NLTextEditDialog::Edit(const QString &text, QWidget *parent, Qt::WindowFlags f)
+QString NLTextEditDialog::Edit(const QString &text, const QString &syntax, QWidget *parent, Qt::WindowFlags f)
 {
     NLTextEditDialog editor(text, parent, f);
+    editor.SetSyntaxHighlighter(syntax);
     return editor.Exec();
 }
 
@@ -232,4 +252,34 @@ void NLTextEditDialog::SetText(const QString &text)
         StartEdit();
         emit textChanged(m_text);
     }
+}
+
+void NLTextEditDialog::SetSyntaxHighlighter(int index)
+{
+    QVariant data = m_hlComboBox->itemData(index);
+    SetSyntaxHighlighter(data.toString());
+}
+
+void NLTextEditDialog::SetSyntaxHighlighter(const QString &type)
+{
+    const QString t(type.toLower());
+    if(m_hl)
+    {
+        if(m_hl->Name() == t)
+            return;
+        m_hl->setDocument(0);
+        m_hl->deleteLater();
+        m_hl = 0;
+    }
+    else
+    {
+        if(t.isEmpty())
+            return;
+    }
+
+    if(t == NLLuaSyntaxHighlighter::SyntaxName)
+        m_hl = new NLLuaSyntaxHighlighter(this);
+
+    if(m_hl)
+        m_hl->setDocument(m_textEdit->document());
 }
