@@ -4,17 +4,70 @@
 
 #include "qdef.h"
 
-NLGeneralSyntaxHighlighter::SyntaxColorScheme::SyntaxColorScheme()
+NLGeneralSyntaxHighlighter::SyntaxColorScheme::SyntaxColorScheme(NLGeneralSyntaxHighlighter::SyntaxColorScheme::ColorScheme_e e)
+    : m_schemeType(NLGeneralSyntaxHighlighter::SyntaxColorScheme::ColorScheme_User)
 {
-    SYNTAX_COLOR(Normal) = QColor::fromRgb(0, 0, 0);
-    SYNTAX_COLOR(Keyword) = QColor::fromRgb(128, 128, 0);
-    SYNTAX_COLOR(Number) = QColor::fromRgb(0, 0, 128);
-    SYNTAX_COLOR(String) = QColor::fromRgb(0, 128, 0);
-    SYNTAX_COLOR(Type) = QColor::fromRgb(128, 0, 128);
-    SYNTAX_COLOR(Keyword) = QColor::fromRgb(128, 128, 0);
-    SYNTAX_COLOR(Constant) = QColor::fromRgb(128, 128, 0);
-    SYNTAX_COLOR(Label) = QColor::fromRgb(128, 0, 0);
-    SYNTAX_COLOR(Comment) = QColor::fromRgb(0, 128, 0);
+    SetColorScheme(NLGeneralSyntaxHighlighter::SyntaxColorScheme::ColorScheme_QtCreator);
+}
+
+QString NLGeneralSyntaxHighlighter::SyntaxColorScheme::Name() const
+{
+    switch(m_schemeType)
+    {
+    case ColorScheme_QtCreator:
+    return "QtCreator";
+    case ColorScheme_Vim:
+    return "Vim(Dark)";
+    case ColorScheme_User:
+    default:
+    return "User";
+    }
+}
+
+void NLGeneralSyntaxHighlighter::SyntaxColorScheme::SetColorScheme(const ColorSchemeMap &cs)
+{
+    m_schemeType = ColorScheme_User;
+    m_colorScheme = cs;
+}
+
+void NLGeneralSyntaxHighlighter::SyntaxColorScheme::SetColorScheme(ColorScheme_e e)
+{
+    if(m_schemeType == e)
+        return;
+    m_schemeType = e;
+    switch(m_schemeType)
+    {
+    case ColorScheme_QtCreator:
+        SYNTAX_COLOR(Normal) = QColor::fromRgb(0, 0, 0);
+        SYNTAX_COLOR(Keyword) = QColor::fromRgb(128, 128, 0);
+        SYNTAX_COLOR(Number) = QColor::fromRgb(0, 0, 128);
+        SYNTAX_COLOR(String) = QColor::fromRgb(0, 128, 0);
+        SYNTAX_COLOR(Type) = QColor::fromRgb(128, 0, 128);
+        SYNTAX_COLOR(Constant) = QColor::fromRgb(128, 128, 0);
+        SYNTAX_COLOR(Label) = QColor::fromRgb(128, 0, 0);
+        SYNTAX_COLOR(Comment) = QColor::fromRgb(0, 128, 0);
+        break;
+    case ColorScheme_Vim:
+        SYNTAX_COLOR(Normal) = QColor::fromRgb(170, 170, 170);
+        SYNTAX_COLOR(Keyword) = QColor::fromRgb(255, 255, 85);
+        SYNTAX_COLOR(Number) = QColor::fromRgb(255, 85, 255);
+        SYNTAX_COLOR(String) = QColor::fromRgb(255, 85, 255);
+        SYNTAX_COLOR(Type) = QColor::fromRgb(85, 255, 85);
+        SYNTAX_COLOR(Constant) = QColor::fromRgb(255, 255, 85);
+        SYNTAX_COLOR(Label) = QColor::fromRgb(255, 255, 85);
+        SYNTAX_COLOR(Comment) = QColor::fromRgb(85, 255, 255);
+        break;
+    case ColorScheme_User:
+    default:
+        m_colorScheme.clear();
+        break;
+    }
+}
+
+void NLGeneralSyntaxHighlighter::SyntaxColorScheme::Clear()
+{
+    m_colorScheme.clear();
+    m_schemeType = ColorScheme_User;
 }
 
 QTextCharFormat NLGeneralSyntaxHighlighter::SyntaxConfig::GenFormat(Syntax_e e, const QColor &color)
@@ -192,6 +245,16 @@ void NLGeneralSyntaxHighlighter::SetColorScheme(const SyntaxColorScheme &scheme)
     if(m_syntaxColorScheme != scheme)
     {
         m_syntaxColorScheme = scheme;
+        InitSyntaxConfigs();
+        rehighlight();
+    }
+}
+
+void NLGeneralSyntaxHighlighter::SetColorScheme(SyntaxColorScheme::ColorScheme_e e)
+{
+    if(m_syntaxColorScheme.SchemeType() != e)
+    {
+        m_syntaxColorScheme.SetColorScheme(e);
         InitSyntaxConfigs();
         rehighlight();
     }

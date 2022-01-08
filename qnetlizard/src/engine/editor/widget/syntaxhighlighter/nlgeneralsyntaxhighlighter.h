@@ -48,15 +48,29 @@ public:
     class SyntaxColorScheme
     {
     public:
-        SyntaxColorScheme();
+        enum ColorScheme_e{
+            ColorScheme_User = 0,
+            ColorScheme_QtCreator = 1,
+            ColorScheme_Vim = 2
+        };
+        typedef QHash<SyntaxConfig::Syntax_e, QColor> ColorSchemeMap;
+    public:
+        SyntaxColorScheme(ColorScheme_e e = ColorScheme_QtCreator);
         QColor & Color(SyntaxConfig::Syntax_e e) { return m_colorScheme[e]; }
         void SetColor(SyntaxConfig::Syntax_e e, const QColor &c) { m_colorScheme[e] = c; }
         QColor & operator[](SyntaxConfig::Syntax_e e) { return m_colorScheme[e]; }
         QColor operator[](SyntaxConfig::Syntax_e e) const { return m_colorScheme.value(e); }
         friend bool operator==(const SyntaxColorScheme &a, const SyntaxColorScheme &b) { return a.m_colorScheme == b.m_colorScheme; }
         friend bool operator!=(const SyntaxColorScheme &a, const SyntaxColorScheme &b) { return a.m_colorScheme != b.m_colorScheme; }
+        QString Name() const;
+        void SetColorScheme(ColorScheme_e e);
+        void SetColorScheme(const ColorSchemeMap &cs);
+        void Clear();
+        ColorScheme_e SchemeType() const { return m_schemeType; }
+
     private:
-        QHash<SyntaxConfig::Syntax_e, QColor> m_colorScheme;
+        ColorSchemeMap m_colorScheme;
+        ColorScheme_e m_schemeType;
     };
 
 public:
@@ -73,6 +87,7 @@ public:
     void AddSyntaxConfig(const QRegExp &pattern, SyntaxConfig::Syntax_e e);
     void SetSyntaxConfig(const QRegExp &pattern, SyntaxConfig::Syntax_e e);
     void Clear();
+    void SetColorScheme(SyntaxColorScheme::ColorScheme_e e);
     void SetColorScheme(const SyntaxColorScheme &scheme);
     SyntaxColorScheme ColorScheme() const { return m_syntaxColorScheme; }
     NLGeneralSyntaxHighlighter & operator<<(const SyntaxConfig &conf) { AddSyntaxConfig(conf); return *this; }

@@ -5,7 +5,7 @@
 
 class QPushButton;
 class QPlainTextEdit;
-class QComboBox;
+class QActionGroup;
 class NLGeneralSyntaxHighlighter;
 
 class NLTextEditDialog : public QDialog
@@ -28,11 +28,14 @@ public Q_SLOTS:
     void SetText(const QString &text);
     virtual void accept();
     virtual void reject();
-    void SetSyntaxHighlighter(const QString &type = QString());
+    void SetSyntax(const QString &type);
 
 Q_SIGNALS:
     void textChanged(const QString &text);
     void textEdited(const QString &text);
+
+protected:
+    virtual void resizeEvent(QResizeEvent *event);
 
 private:
     void Init();
@@ -44,15 +47,20 @@ private Q_SLOTS:
     bool SaveToFile();
     bool LoadFromFile();
     void OnTextChanged();
-    void SetSyntaxHighlighter(int index);
+    void SetSyntaxHighlighter(QAction *action);
+    void SetSyntaxHighlighter(const QString &type = QString());
+    void SetHighlighterColorScheme(QAction *action);
 
 private:
     QPlainTextEdit *m_textEdit;
     QPushButton *m_saveButton;
-    QComboBox *m_hlComboBox;
+    QActionGroup *m_hlGroup;
+    QActionGroup *m_colorSchemeGroup;
     NLGeneralSyntaxHighlighter *m_hl;
     QString m_text;
     bool m_edited;
+
+    static QSize _lastSize;
 
     Q_DISABLE_COPY(NLTextEditDialog)
 };
