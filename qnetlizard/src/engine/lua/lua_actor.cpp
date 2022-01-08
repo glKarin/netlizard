@@ -11,6 +11,7 @@ extern "C" {
 #include "nlactor.h"
 #include "nlrigidbody.h"
 #include "lua_def.h"
+#include "lua_object.h"
 
 #define CALLER_ACTOR(L, name) GET_LUA_CALLER(L, NLActor, name)
 #define CALLER_ACTOR_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLActor, name)
@@ -163,31 +164,6 @@ static int Actor_Zoom(lua_State *L)
     return 1;
 }
 
-static int Actor_Name(lua_State *L)
-{
-    CALLER_ACTOR(L, actor);
-    QByteArray ba = actor->Name().toLocal8Bit();
-    lua_pushstring(L, ba.constData());
-    return 1;
-}
-
-static int Actor_ClassName(lua_State *L)
-{
-    CALLER_ACTOR(L, actor);
-    QByteArray ba = actor->ClassName().toLocal8Bit();
-    lua_pushstring(L, ba.constData());
-    return 1;
-}
-
-static int Actor_SetEnabled(lua_State *L)
-{
-    CALLER_ACTOR(L, actor);
-    int b = lua_toboolean(L, 2);
-    actor->SetEnabled(b ? true : false);
-    lua_pushboolean(L, 1);
-    return 1;
-}
-
 static int Actor_ChildrenCount(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
@@ -281,14 +257,6 @@ static int Actor_Scene(lua_State *L)
     {
         lua_pushnil(L);
     }
-    return 1;
-}
-
-static int Actor_IsEnabled(lua_State *L)
-{
-    CALLER_ACTOR(L, actor);
-    int i = actor->IsEnabled() ? 1 : 0;
-    lua_pushboolean(L, i);
     return 1;
 }
 
@@ -540,9 +508,6 @@ namespace NL
     ACTOR_FUNC(Move), \
     ACTOR_FUNC(Turn), \
     ACTOR_FUNC(Zoom), \
-    ACTOR_FUNC(Name), \
-    ACTOR_FUNC(ClassName), \
-    ACTOR_FUNC(SetEnabled), \
     ACTOR_FUNC(GetChild), \
     ACTOR_FUNC(ChildrenCount), \
     ACTOR_FUNC(ParentActor), \
@@ -551,7 +516,6 @@ namespace NL
     ACTOR_FUNC(Scene), \
     ACTOR_FUNC(IsRigidbody), \
     ACTOR_FUNC(ToRigidbody), \
-    ACTOR_FUNC(IsEnabled), \
     ACTOR_FUNC(CanRender), \
     ACTOR_FUNC(AddChild), \
     ACTOR_FUNC(RemoveChild), \
@@ -580,6 +544,7 @@ bool actor_register_metatable(struct lua_State *L)
             NULL_luaL_Reg
         };
         luaL_setfuncs(L, Funcs, 0);
+        register_object_metatable_function(L);
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
         lua_pop(L, 1);
@@ -605,6 +570,7 @@ bool rigidbody_register_metatable(struct lua_State *L)
             NULL_luaL_Reg
         };
         luaL_setfuncs(L, Funcs, 0);
+        register_object_metatable_function(L);
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
         lua_pop(L, 1);

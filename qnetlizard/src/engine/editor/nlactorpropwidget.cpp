@@ -33,8 +33,11 @@
 #define NLOBJECT_PTR_PROPERTY_NAME "NLObject"
 #define DOUBLE_SPINBOX_SINGLE_STEP 1 //0.1
 #define DOUBLE_SPINBOX_DECIMAL 6
+
 #define ACTION_ADD_COMPONENT 1
 #define ACTION_ADD_SCRIPT 2
+#define ACTION_REMOVE_COMPONENT 3
+#define ACTION_REMOVE_SCRIPT 4
 
 static bool NLPropertyInfoCmp(const NLPropertyInfo &a, const NLPropertyInfo &b)
 {
@@ -91,23 +94,16 @@ void NLPropSectionHeader::AddAction(QAction *action)
 {
     if(!m_menu)
     {
-        m_menu = new QMenu(this);
         QToolButton *button = new QToolButton;
+        m_menu = new QMenu(button);
         layout()->addWidget(button);
         //button->setArrowType(Qt::DownArrow);
         button->setPopupMode(QToolButton::InstantPopup);
         button->setAutoRaise(true);
         button->setMenu(m_menu);
+        connect(m_menu, SIGNAL(triggered(QAction *)), this, SIGNAL(actionTriggered(QAction *)));
     }
     m_menu->addAction(action);
-    connect(action, SIGNAL(triggered()), this, SLOT(OnActionTriggered()));
-}
-
-void NLPropSectionHeader::OnActionTriggered()
-{
-    QObject *obj = sender();
-    if(obj)
-        emit actionTriggered(static_cast<QAction *>(obj));
 }
 
 void NLPropSectionHeader::SetText(const QString &text)
@@ -166,6 +162,7 @@ void NLPropSectionHeader::SetExpand(bool b)
 NLFormGroupBox::NLFormGroupBox(QWidget *widget)
     : QGroupBox(widget),
       m_layout(0),
+      m_actionButton(0),
       m_expand(true)
 {
     setObjectName("NLFormGroupBox");
@@ -248,6 +245,35 @@ void NLFormGroupBox::AddRow(const QString &name, QWidget *widget)
     setCheckable(true);
 }
 
+void NLFormGroupBox::AddAction(QAction *action)
+{
+    if(!m_actionButton)
+    {
+        m_actionButton = new QToolButton(this);
+        QMenu *menu = new QMenu(m_actionButton);
+        //m_actionButton->setArrowType(Qt::DownArrow);
+        m_actionButton->setPopupMode(QToolButton::InstantPopup);
+        m_actionButton->setAutoRaise(true);
+        m_actionButton->setMenu(menu);
+        m_actionButton->setFixedSize(16, 16);
+        connect(menu, SIGNAL(triggered(QAction *)), this, SIGNAL(actionTriggered(QAction *)));
+    }
+    m_actionButton->menu()->addAction(action);
+}
+
+void NLFormGroupBox::SetData(const QVariant &data)
+{
+    if(m_data != data)
+        m_data = data;
+}
+
+void NLFormGroupBox::resizeEvent(QResizeEvent *event)
+{
+    QGroupBox::resizeEvent(event);
+    if(m_actionButton)
+        m_actionButton->move(width() - m_actionButton->width() - 2, 0);
+}
+
 
 
 NLPropSectionContent::NLPropSectionContent(QWidget *widget)
@@ -317,7 +343,10 @@ void NLPropSectionContent::Reset()
         item = m_layout->takeAt(0);
         QWidget *widget = item->widget();
         if(widget)
-            delete widget;
+        {
+            widget->deleteLater();
+            // delete widget; // because maybe deleted by itself.
+        }
         delete item;
     }
     m_widgets.clear();
@@ -526,6 +555,12 @@ void NLActorPropWidget::SetupComponentProperty(NLComponent *comp)
         groupBox->AddRow(item.name, widget);
     }
     connect(comp, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
+    QAction *action = new QAction(tr("Remove"), groupBox);
+    groupBox->AddAction(action);
+    action->setData(ACTION_REMOVE_COMPONENT);
+    action->setProperty("NLObject", QVariant::fromValue<QObject *>(comp));
+    connect(groupBox, SIGNAL(actionTriggered(QAction *)), this, SLOT(OnActionTriggered(QAction *)));
+    groupBox->AddAction(action);
     m_componentSection->AddWidget(groupBox);
     m_objectMap["NLComponent"].push_back(comp);
 }
@@ -915,6 +950,11 @@ void NLActorPropWidget::SetupScriptProperty(NLScript *script)
         groupBox->AddRow(item.name, widget);
     }
     connect(script, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
+    QAction *action = new QAction(tr("Remove"), groupBox);
+    action->setData(ACTION_REMOVE_SCRIPT);
+    action->setProperty("NLObject", QVariant::fromValue<QObject *>(script));
+    groupBox->AddAction(action);
+    connect(groupBox, SIGNAL(actionTriggered(QAction *)), this, SLOT(OnActionTriggered(QAction *)));
     m_scriptSection->AddWidget(groupBox);
     m_objectMap["NLScript"].push_back(script);
 }
@@ -987,5 +1027,18 @@ void NLActorPropWidget::OnActionTriggered(QAction *action)
     else if(data == ACTION_ADD_SCRIPT)
     {
         m_actor->CreateScript()->setObjectName("new_NLScript");
+    }
+    // QAction's parent is this
+    else if(data == ACTION_REMOVE_COMPONENT)
+    {
+        QObject * d = action->property("NLObject").value<QObject *>();
+        NLComponent *comp = static_cast<NLComponent *>(d);
+        m_actor->RemoveComponent(comp);
+    }
+    else if(data == ACTION_REMOVE_SCRIPT)
+    {
+        QObject * d = action->property("NLObject").value<QObject *>();
+        NLScript *script = static_cast<NLScript *>(d);
+        m_actor->RemoveScript(script);
     }
 }

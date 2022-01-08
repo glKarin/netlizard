@@ -42,7 +42,6 @@ private:
     void SetExpand(bool b);
 
 public Q_SLOTS:
-    void OnActionTriggered();
     void OnToggleExpand(bool on);
 
 private:
@@ -62,6 +61,15 @@ public:
     void AddRow(const QString &name, QWidget *widget);
     void Reset();
     QFormLayout * Layout() { return m_layout; }
+    void AddAction(QAction *action);
+    QVariant Data() const { return m_data; }
+    void SetData(const QVariant &data);
+
+Q_SIGNALS:
+    void actionTriggered(QAction *action);
+
+protected:
+    virtual void resizeEvent(QResizeEvent *event);
 
 private:
     void Init();
@@ -72,9 +80,11 @@ private Q_SLOTS:
 private:
     typedef QHash<QString, QWidget *> WidgetHash;
     QFormLayout *m_layout;
+    QToolButton *m_actionButton;
     WidgetHash m_widgetItemMaps;
     QStringList m_names;
     bool m_expand;
+    QVariant m_data;
 
     Q_DISABLE_COPY(NLFormGroupBox)
 };

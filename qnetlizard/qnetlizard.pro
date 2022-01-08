@@ -38,7 +38,8 @@ HEADERS += \
     src/misc/lang.h \
     src/engine/editor/widget/syntaxhighlighter/nlluasyntaxhighlighter.h \
     src/engine/editor/widget/syntaxhighlighter/nlgeneralsyntaxhighlighter.h \
-    src/engine/template/nlsequencemap.h
+    src/engine/template/nlsequencemap.h \
+    src/engine/lua/lua_object.h
 
 SOURCES += \
     main.cpp \
@@ -48,7 +49,8 @@ SOURCES += \
     src/misc/settings.cpp \
     src/misc/lang.cpp \
     src/engine/editor/widget/syntaxhighlighter/nlluasyntaxhighlighter.cpp \
-    src/engine/editor/widget/syntaxhighlighter/nlgeneralsyntaxhighlighter.cpp
+    src/engine/editor/widget/syntaxhighlighter/nlgeneralsyntaxhighlighter.cpp \
+    src/engine/lua/lua_object.cpp
 
 # Widget
 HEADERS += \

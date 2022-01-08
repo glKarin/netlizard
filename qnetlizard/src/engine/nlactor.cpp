@@ -390,6 +390,8 @@ void NLActor::Reset()
     emit propertyChanged("position", NLProperty::fromValue<NLVector3>(m_position));
     emit propertyChanged("rotation",  NLProperty::fromValue<NLVector3>(m_rotation));
     emit propertyChanged("scale",   NLProperty::fromValue<NLVector3>(m_scale));
+    if(m_scripts)
+        m_scripts->Reset();
     if(m_components)
         m_components->Reset();
     if(m_children)

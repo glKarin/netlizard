@@ -10,6 +10,7 @@ extern "C" {
 
 #include "nlscript.h"
 #include "lua_def.h"
+#include "lua_object.h"
 
 #define CALLER_SCRIPT(L, name) GET_LUA_CALLER(L, NLScript, name)
 #define CALLER_SCRIPT_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLScript, name)
@@ -28,31 +29,6 @@ static int Script_delete(lua_State *L)
     return 0;
 }
 
-static int Script_Name(lua_State *L)
-{
-    CALLER_SCRIPT(L, script);
-    QByteArray ba = script->Name().toLocal8Bit();
-    lua_pushstring(L, ba.constData());
-    return 1;
-}
-
-static int Script_ClassName(lua_State *L)
-{
-    CALLER_SCRIPT(L, script);
-    QByteArray ba = script->ClassName().toLocal8Bit();
-    lua_pushstring(L, ba.constData());
-    return 1;
-}
-
-static int Script_SetEnabled(lua_State *L)
-{
-    CALLER_SCRIPT(L, script);
-    int b = lua_toboolean(L, 2);
-    script->SetEnabled(b ? true : false);
-    lua_pushboolean(L, 1);
-    return 1;
-}
-
 static int Script_Actor(lua_State *L)
 {
     CALLER_SCRIPT(L, script);
@@ -65,14 +41,6 @@ static int Script_Actor(lua_State *L)
     {
         lua_pushnil(L);
     }
-    return 1;
-}
-
-static int Script_IsEnabled(lua_State *L)
-{
-    CALLER_SCRIPT(L, script);
-    int i = script->IsEnabled() ? 1 : 0;
-    lua_pushboolean(L, i);
     return 1;
 }
 
@@ -112,16 +80,13 @@ bool script_register_metatable(struct lua_State *L)
     if(luaL_newmetatable(L, "NLScript"))
     {
         const struct luaL_Reg Funcs[] = {
-            COMPONENT_FUNC(Name),
-            COMPONENT_FUNC(ClassName),
-            COMPONENT_FUNC(SetEnabled),
             COMPONENT_FUNC(Actor),
-            COMPONENT_FUNC(IsEnabled),
             COMPONENT_FUNC(SetScriptFile),
             COMPONENT_FUNC(SetScriptSource),
             NULL_luaL_Reg
         };
         luaL_setfuncs(L, Funcs, 0);
+        register_object_metatable_function(L);
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
         lua_pop(L, 1);
