@@ -31,7 +31,7 @@ public:
     NLINTERFACE void Render();
     NLGETTER(type) int Type() const { return m_type; }
     NLSETTER(type) void SetType(int type);
-    NLSceneCamera * Camera() { return m_camera; }
+    Q_INVOKABLE NLSceneCamera * Camera() { return m_camera; }
     void SetScene(NLScene *scene);
     void SetEnabled(bool enabled);
     bool IsEnabled() const;

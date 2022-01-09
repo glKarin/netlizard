@@ -68,7 +68,7 @@ void NLSceneOrthoCamera::Update(float width, float height)
         ortho[2] = -height / 2;
         ortho[3] = height / 2;
     }
-    Set(ortho[0], ortho[1], ortho[2], ortho[3]);
+    SetOrtho(ortho[0], ortho[1], ortho[2], ortho[3]);
 }
 
 void NLSceneOrthoCamera::SetLeft(float left)
@@ -131,7 +131,7 @@ void NLSceneOrthoCamera::SetZFar(float far)
     }
 }
 
-void NLSceneOrthoCamera::Set2D()
+void NLSceneOrthoCamera::Setup2D()
 {
     int b = 0;
     if(m_zNear != -1)
@@ -151,7 +151,27 @@ void NLSceneOrthoCamera::Set2D()
     }
 }
 
-void NLSceneOrthoCamera::Set(float left, float right, float bottom, float top, float near, float far)
+void NLSceneOrthoCamera::Setup3D(float near, float far)
+{
+    int b = 0;
+    if(m_zNear != near)
+    {
+        m_zNear = near;
+        b |= ORTHO_ZNEAR;
+    }
+    if(m_zFar != far)
+    {
+        m_zFar = far;
+        b |= ORTHO_ZFAR;
+    }
+    if(b)
+    {
+        UpdateMatrix();
+        EmitPropertyChanged(b);
+    }
+}
+
+void NLSceneOrthoCamera::SetOrtho(float left, float right, float bottom, float top, float near, float far)
 {
     int b = 0;
     if(m_left != left)
@@ -191,23 +211,6 @@ void NLSceneOrthoCamera::Set(float left, float right, float bottom, float top, f
     }
 }
 
-void NLSceneOrthoCamera::Set(float left, float right, float bottom, float top)
-{
-    Set(left, right, bottom, top, m_zNear, m_zFar);
-}
-
-void NLSceneOrthoCamera::Set2D(float left, float right, float bottom, float top)
-{
-    Set(left, right, bottom, top, NLSCENEORTHOCAMERA_DEFAULT_Z_NEAR, NLSCENEORTHOCAMERA_DEFAULT_Z_FAR);
-}
-
-void NLSceneOrthoCamera::Projection()
-{
-    //glOrtho(m_left, m_right, m_bottom, m_top, m_zNear, m_zFar);
-    //glMultMatrixf(GL_MATRIXV_M(ProjectionMatrix()));
-    NLSceneCameraBase::Projection();
-}
-
 void NLSceneOrthoCamera::UpdateProjectionMatrix(NLMatrix4 *mat)
 {
     Mesa_glLoadIdentity(mat);
@@ -228,7 +231,7 @@ void NLSceneOrthoCamera::SetAlignment(Qt::Alignment align)
 void NLSceneOrthoCamera::Reset()
 {
     NLSceneCameraBase::Reset();
-    Set(NLSCENEORTHOCAMERA_DEFAULT_LEFT, NLSCENEORTHOCAMERA_DEFAULT_RIGHT, NLSCENEORTHOCAMERA_DEFAULT_BOTTOM, NLSCENEORTHOCAMERA_DEFAULT_TOP, NLSCENEORTHOCAMERA_DEFAULT_Z_NEAR, NLSCENEORTHOCAMERA_DEFAULT_Z_FAR);
+    SetOrtho(NLSCENEORTHOCAMERA_DEFAULT_LEFT, NLSCENEORTHOCAMERA_DEFAULT_RIGHT, NLSCENEORTHOCAMERA_DEFAULT_BOTTOM, NLSCENEORTHOCAMERA_DEFAULT_TOP, NLSCENEORTHOCAMERA_DEFAULT_Z_NEAR, NLSCENEORTHOCAMERA_DEFAULT_Z_FAR);
     SetAlignment(Qt::AlignCenter);
 }
 

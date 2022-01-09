@@ -1,5 +1,8 @@
 #include "lua_object.h"
 
+#include <QMetaObject>
+#include <QMetaMethod>
+#include <QRegExp>
 #include <QDebug>
 
 extern "C" {
@@ -13,6 +16,17 @@ extern "C" {
 
 #define CALLER_OBJECT(L, name) GET_LUA_CALLER(L, NLObject, name)
 #define CALLER_OBJECT_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLObject, name)
+
+typedef struct GeneralData_s {
+    union {
+        bool b;
+        int i;
+        float f;
+        void *p;
+        const char *s;
+    } basic;
+    QString str;
+} GeneralData;
 
 static int Object_Name(lua_State *L)
 {
@@ -127,6 +141,189 @@ static int Object_SetProperty(lua_State *L)
     return 1;
 }
 
+static int Object_RemoveProperty(lua_State *L)
+{
+    CALLER_OBJECT(L, obj);
+    const char *name = lua_tostring(L, 2);
+    obj->RemoveProperty(name);
+    lua_pushboolean(L, 1);
+    return 1;
+}
+
+static int Object_Invoke(lua_State *L)
+{
+    CALLER_OBJECT(L, obj);
+    int res = 0;
+    int resNum = 1;
+
+    const QMetaObject *mo = obj->metaObject();
+    const char *methodName = lua_tostring(L, 2);
+    QByteArray methodBa = QMetaObject::normalizedSignature(methodName);
+    int index = mo->indexOfMethod(methodBa.constData());
+    qDebug() <<methodBa<<index;
+    if(index > 0)
+    {
+        int top = lua_gettop(L);
+        QMetaMethod method = mo->method(index);
+        QByteArray returnType;
+        if(top >= 3)
+            returnType = QMetaObject::normalizedType(lua_tostring(L, 3));
+        QGenericArgument args[10] = { QGenericArgument(0) };
+        GeneralData datas[10];
+
+        for(int i = 4, index = 0; i <= top && index < 10; i++, index++)
+        {
+            qDebug() << index << "-------" << i << "\n";
+            if(lua_isinteger(L, i))
+            {
+                datas[index].basic.i = lua_tointeger(L, i);
+                args[index] = Q_ARG(int, datas[index].basic.i);
+                qDebug() << "i" <<datas[index].basic.i;
+            }
+            else
+            {
+                int type = lua_type(L, i);
+                if(type == LUA_TNUMBER)
+                {
+                    datas[index].basic.f = lua_tonumber(L, i);
+                    args[index] = Q_ARG(float, datas[index].basic.f);
+                    qDebug() << "f" <<datas[index].basic.f;
+                }
+                else if(type == LUA_TBOOLEAN)
+                {
+                    datas[index].basic.b = lua_toboolean(L, i) ? true : false;
+                    args[index] = Q_ARG(bool, datas[index].basic.b);
+                    qDebug() << "b" <<datas[index].basic.b;
+                }
+                else if(type == LUA_TSTRING)
+                {
+                    datas[index].str = lua_tostring(L, i);
+                    args[index] = Q_ARG(QString, datas[index].str);
+                    qDebug() << "s" <<datas[index].str;
+                }
+                else if(type == LUA_TUSERDATA)
+                {
+                    void **p = (void **)(lua_touserdata(L, i));
+                    datas[index].basic.p = *p;
+                    args[index] = Q_ARG(void *, datas[index].basic.p);
+                    qDebug() << "p" <<datas[index].basic.p;
+                }
+                else if(type == LUA_TLIGHTUSERDATA)
+                {
+                    void *p = (void *)(lua_touserdata(L, i));
+                    datas[index].basic.p = p;
+                    args[index] = Q_ARG(void *, datas[index].basic.p);
+                    qDebug() << "p" <<datas[index].basic.p;
+                }
+                else
+                {
+                    datas[index].basic.p = 0;
+                    args[index] = Q_ARG(void *, 0);
+                    qDebug() << "p_void *" << 0;
+                }
+            }
+        }
+        bool noReturn = returnType.isEmpty() || returnType == "void";
+        if(noReturn)
+        {
+            res = method.invoke(obj, Qt::DirectConnection, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
+            lua_pushboolean(L, res);
+        }
+        else
+        {
+            GeneralData retData;
+            QGenericReturnArgument ret(returnType, returnType == "QString" ? (void *)&retData.str : (void *)&retData.basic);
+            res = method.invoke(obj, Qt::DirectConnection, ret, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
+            lua_pushboolean(L, res);
+            if(res)
+            {
+                resNum = 2;
+                if(returnType == "float"
+                        || returnType == "double"
+                        || returnType == "long double"
+                        )
+                {
+                    lua_pushnumber(L, retData.basic.f);
+                    qDebug() << "return f" << retData.basic.f;
+                }
+                else if(returnType == "int"
+                        || returnType == "char"
+                        || returnType == "short"
+                        || returnType == "long"
+                        || returnType == "long long"
+                        || returnType == "signed int"
+                        || returnType == "signed char"
+                        || returnType == "signed short"
+                        || returnType == "signed long"
+                        || returnType == "signed long long"
+                        || returnType == "unsigned"
+                        || returnType == "unsigned int"
+                        || returnType == "unsigned char"
+                        || returnType == "unsigned short"
+                        || returnType == "unsigned long"
+                        || returnType == "unsigned long long"
+                        )
+                {
+                    lua_pushnumber(L, retData.basic.i);
+                    qDebug() << "return i" << retData.basic.i;
+                }
+                else if(returnType == "bool")
+                {
+                    lua_pushboolean(L, retData.basic.b ? 1 : 0);
+                    qDebug() << "return b" << retData.basic.b;
+                }
+                else
+                {
+                    qDebug() << "return p" << retData.basic.p;
+                    if(returnType.indexOf("*") >= 0)
+                    {
+                        QString bas(returnType);
+                        QString fba = bas.replace(QRegExp("^const\\s*"), "").replace("*", "").trimmed();
+                        if(retData.basic.p)
+                        {
+                            void **p = (void **)lua_newuserdata(L, sizeof(void *));
+                            *p = retData.basic.p;
+                            if(fba != "void")
+                            {
+                                QByteArray fbab = fba.toLocal8Bit();
+                                if(luaL_getmetatable(L, fbab.constData()) != LUA_TTABLE)
+                                {
+                                    lua_pop(L, 1);
+                                    qDebug() << "return_metatable void *: " << fbab;
+                                }
+                                else
+                                {
+                                    lua_setmetatable(L, -2);
+                                    qDebug() << "return_metatable: " << fbab;
+                                }
+                            }
+                        }
+                        else
+                            lua_pushnil(L);
+                    }
+                    else
+                    {
+                        qDebug() << "return other: " << returnType;
+                        if(returnType == "QString")
+                        {
+                            QByteArray ba = retData.str.toLocal8Bit();
+                            lua_pushstring(L, ba.constData());
+                        }
+                        else
+                        {
+                            resNum = 1;
+                        }
+                    }
+                }
+            }
+        }
+        qDebug() <<res << noReturn << resNum;
+    }
+    else
+        lua_pushboolean(L, res);
+    return resNum;
+}
+
 namespace NL
 {
 
@@ -143,6 +340,8 @@ bool register_object_metatable_function(struct lua_State *L)
         OBJECT_FUNC(IsEnabled),
         OBJECT_FUNC(GetProperty),
         OBJECT_FUNC(SetProperty),
+        OBJECT_FUNC(RemoveProperty),
+        OBJECT_FUNC(Invoke),
         NULL_luaL_Reg
     };
     luaL_setfuncs(L, Funcs, 0);

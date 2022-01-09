@@ -74,38 +74,7 @@ void NLScenePerspectiveCamera::SetZFar(float far)
     }
 }
 
-void NLScenePerspectiveCamera::Set(float fovy, float width, float height, float near, float far)
-{
-    float aspect = CaleAspect(width, height);
-    int b = 0;
-    if(m_fovy != fovy)
-    {
-        m_fovy = fovy;
-        b |= PERSPECTIVE_FOVY;
-    }
-    if(m_aspect != aspect)
-    {
-        m_aspect = aspect;
-        b |= PERSPECTIVE_ASPECT;
-    }
-    if(m_zNear != near)
-    {
-        m_zNear = near;
-        b |= PERSPECTIVE_ZNEAR;
-    }
-    if(m_zFar != far)
-    {
-        m_zFar = far;
-        b |= PERSPECTIVE_ZFAR;
-    }
-    if(b)
-    {
-        UpdateMatrix();
-        EmitPropertyChanged(b);
-    }
-}
-
-void NLScenePerspectiveCamera::Set(float fovy, float aspect, float near, float far)
+void NLScenePerspectiveCamera::SetPerspective(float fovy, float aspect, float near, float far)
 {
     int b = 0;
     if(m_fovy != fovy)
@@ -133,13 +102,6 @@ void NLScenePerspectiveCamera::Set(float fovy, float aspect, float near, float f
         UpdateMatrix();
         EmitPropertyChanged(b);
     }
-}
-
-void NLScenePerspectiveCamera::Projection()
-{
-    //gluPerspective(m_fovy, m_aspect, m_zNear, m_zFar);
-    //glMultMatrixf(GL_MATRIXV_M(ProjectionMatrix()));
-    NLSceneCameraBase::Projection();
 }
 
 void NLScenePerspectiveCamera::UpdateProjectionMatrix(NLMatrix4 *mat)
@@ -151,7 +113,7 @@ void NLScenePerspectiveCamera::UpdateProjectionMatrix(NLMatrix4 *mat)
 void NLScenePerspectiveCamera::Reset()
 {
     NLSceneCameraBase::Reset();
-    Set(NLSCENEPERSPECTIVECAMERA_DEFAULT_FOVY, NLSCENEPERSPECTIVECAMERA_DEFAULT_ASPECT, NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_NEAR, NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_FAR);
+    SetPerspective(NLSCENEPERSPECTIVECAMERA_DEFAULT_FOVY, NLSCENEPERSPECTIVECAMERA_DEFAULT_ASPECT, NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_NEAR, NLSCENEPERSPECTIVECAMERA_DEFAULT_Z_FAR);
 }
 
 void NLScenePerspectiveCamera::EmitPropertyChanged(int b)

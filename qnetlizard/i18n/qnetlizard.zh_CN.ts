@@ -463,6 +463,10 @@
         <source>Add</source>
         <translation type="unfinished">创建</translation>
     </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished">移除</translation>
+    </message>
 </context>
 <context>
     <name>NLFileChooserWidget</name>
@@ -656,10 +660,6 @@
         <translation type="unfinished">加载文件</translation>
     </message>
     <message>
-        <source>Syntax: </source>
-        <translation type="unfinished">语法: </translation>
-    </message>
-    <message>
         <source>Error</source>
         <translation type="unfinished">错误</translation>
     </message>
@@ -682,6 +682,22 @@
     <message>
         <source>Load file finished: </source>
         <translation type="unfinished">加载文件: </translation>
+    </message>
+    <message>
+        <source>File</source>
+        <translation type="unfinished">文件</translation>
+    </message>
+    <message>
+        <source>Setting</source>
+        <translation type="unfinished">设置</translation>
+    </message>
+    <message>
+        <source>Syntax</source>
+        <translation type="unfinished">语法</translation>
+    </message>
+    <message>
+        <source>Color scheme</source>
+        <translation type="unfinished">配色方案</translation>
     </message>
 </context>
 <context>

@@ -4,16 +4,14 @@
 #include "nlproperties.h"
 
 #define GET_LUA_OBJECT(L, T, name, index) \
-    T *name = *((T **)(lua_touserdata(L, index)))
+    T *name = lua_isuserdata(L, index) ? *((T **)(lua_touserdata(L, index))) : 0
 
 #define GET_LUA_OBJECT_USERDATA(L, T, name, index) \
-    T **name = (T **)(lua_touserdata(L, index))
+    T **name = lua_isuserdata(L, index) ? (T **)(lua_touserdata(L, index)) : 0
 
-#define GET_LUA_CALLER(L, T, name) \
-    T *name = *((T **)(lua_touserdata(L, 1)))
+#define GET_LUA_CALLER(L, T, name) GET_LUA_OBJECT(L, T, name, 1)
 
-#define GET_LUA_CALLER_USERDATA(L, T, name) \
-    T **name = (T **)(lua_touserdata(L, 1))
+#define GET_LUA_CALLER_USERDATA(L, T, name) GET_LUA_OBJECT_USERDATA(L, T, name, 1)
 
 #define PUSH_NLOBJECT_TO_STACK(L, T, data) {\
     T **ptr = (T **)lua_newuserdata(L, sizeof(T **)); \

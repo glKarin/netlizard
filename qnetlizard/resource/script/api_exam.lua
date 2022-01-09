@@ -1,27 +1,40 @@
-print "-----------------------Helloworld--------------------";
+print "----------------------- Helloworld -----------------------";
 
 -- Globals variants
--- number nl_Delta: Is update time interval with ms.
+-- number nl_Delta: Is current update time interval with ms.
 print(nl_Delta);
 -- userdata<NLActor> nl_Actor: Is the script's actor object.
 print(nl_Actor);
 -- userdata<NLScene> nl_Scene: Is the script's actor's scene object.
 print(nl_Scene);
+-- userdata<NLScript> nl_Script: Is this script object.
+print(nl_Script);
 
 --[[
-userdata<NLActor> new_NLActor();
+userdata<NLActor> new_NLActor(table properties);
 void delete_NLActor(userdata<NLActor>);
 
-userdata<NLRigidbody> new_NLRigidbody();
+userdata<NLRigidbody> new_NLRigidbody(table properties);
 void delete_NLRigidbody(userdata<NLRigidbody>);
 
-userdata<NLComponent> new_NLComponent();
+userdata<NLComponent> new_NLComponent(table properties);
 void delete_NLComponent(userdata<NLComponent>);
 
-userdata<NLScript> new_NLScript();
+userdata<NLScript> new_NLScript(table properties);
 void delete_NLScript(userdata<NLScript>);
 
-metatable NLActor {
+virtual metatable NLObject { -- NLObject is not a metatable
+    string Name();
+    string ClassName();
+    boolean SetEnabled(boolean);
+    boolean IsEnabled();
+    string GetProperty(string);
+    boolean RemoveProperty(string);
+    boolean SetProperty(string, string|integer|number|boolean);
+    boolean is_success[, string|integer|number|boolean|userdata|nil return_value] Invoke(string method_sign, string return_type, ...arguments);
+};
+
+metatable NLActor : NLObject{
     number x, number y, number z Position();
     number x, number y, number z Rotation();
     number x, number y, number z Scale();
@@ -35,11 +48,7 @@ metatable NLActor {
     number x, number y, number z Up();
     number x, number y, number z Right();
 
-    string Name();
-    string ClassName();
-    boolean SetEnabled(boolean);
     userdata<NLScene> Scene();
-    boolean IsEnabled();
     boolean CanRender();
 
     integer ChildrenCount();
@@ -47,19 +56,19 @@ metatable NLActor {
     userdata<NLActor> ParentActor();
     boolean AddChild(userdata<NLActor>);
     boolean RemoveChild(integer | string | userdata<NLActor>);
-    userdata<NLActor> CreateChild();
+    userdata<NLActor> CreateChild(table properties);
 
     integer ComponentCount();
     userdata<NLComponent> GetComponent(integer | string);
     boolean AddComponent(userdata<NLComponent>);
     boolean RemoveComponent(integer | string | userdata<NLComponent>);
-    userdata<NLComponent> CreateComponent();
+    userdata<NLComponent> CreateComponent(table properties);
 
     boolean AddScript(userdata<NLScript>);
     boolean RemoveScript(integer | string | userdata<NLScript>);
     integer ScriptCount();
     userdata<NLScript> GetScript(integer | string);
-    userdata<NLScript> CreateScript();
+    userdata<NLScript> CreateScript(table properties);
 
     boolean IsRigidbody();
     userdata<NLRigidbody> ToRigidbody();
@@ -87,24 +96,20 @@ metatable NLScene {
     integer x, integer y MousePointerPosition();
     boolean KeyPressed(integer | string);
     boolean MousePressed(integer | string);
+    boolean SetCurrentCamera(userdata<NLSceneCamera>);
+    boolean AddActor(userdata<NLActor>);
+    boolean RemoveActor(integer | string | userdata<NLActor>);
+    userdata<NLActor> CreateActor(table properties);
 };
 
-metatable NLComponent {
-    string Name();
-    string ClassName();
-    boolean SetEnabled(boolean);
+metatable NLComponent : NLObject {
     userdata<NLActor> Actor();
-    boolean IsEnabled();
 };
 
-metatable NLScript {
-    string Name();
-    string ClassName();
-    boolean SetEnabled(boolean);
+metatable NLScript : NLObject {
     userdata<NLActor> Actor();
-    boolean IsEnabled();
-    boolean SetScriptFile(string);
-    boolean SetScriptSource(string);
+    // boolean SetScriptFile(string);
+    // boolean SetScriptSource(string);
 };
 
 metatable NLSceneCamera {
@@ -157,6 +162,6 @@ function Reset()
     print "Reset()";
 end
 
-print "-------------------- END --------------------";
+print "----------------------- END -----------------------";
 
 collectgarbage("collect");

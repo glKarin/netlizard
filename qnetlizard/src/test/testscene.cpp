@@ -70,15 +70,16 @@ void TestScene::Init()
     line->SetRotation(vr2);
 
     const char source[] =
-            "if(nl_Scene:KeyPressed(\"V\")) then;"
-            "nl_Actor:CreateScript({[\"name\"] = \"CCC\", [\"scriptSource\"] = \"print(\\\"CCCCCCCCCCCCC\\\");\"});"
-            "end;"
-            "if(nl_Scene:KeyPressed(\"B\")) then;"
-            "nl_Actor:RemoveScript(-1);"
-            "end;"
+            "if(nl_Scene:KeyPressed(\"V\")) then;\n"
+            "local comp = nl_Actor:GetComponent(0);\n"
+            "print(comp:Invoke('Testr(int,QString,float,bool,QObject*)', 'void', 1, 'strings', 0.2, true, nil));"
+            "end;\n\n"
+            "if(nl_Scene:KeyPressed(\"B\")) then;\n"
+            "nl_Actor:RemoveScript(-1);\n"
+            "end;\n"
             ;
     NLScript *script = new NLScript(NLProperties("objectName", "scrrr")("scriptSource", source));
-    objectActor->AddScript(script);
+    GetActor(0)->AddScript(script);
 
     NLComponent *comp = new NLComponent(NLProperties("name", "rrrrrr"));
     objectActor->AddComponent(comp);

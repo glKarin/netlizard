@@ -115,6 +115,9 @@ bool NLScript::Script_Lua::Exec(float delta)
         PUSH_NLOBJECT_TO_STACK(L, NLActor, script->Actor())
         lua_setglobal(L, "nl_Actor");
 
+        PUSH_NLOBJECT_TO_STACK(L, NLScript, script)
+        lua_setglobal(L, "nl_Script");
+
         lua_pushnumber(L, delta);
         lua_setglobal(L, "nl_Delta");
 
@@ -122,7 +125,7 @@ bool NLScript::Script_Lua::Exec(float delta)
         if(err)
         {
             const char *errstr = lua_tostring(L, -1);
-            qWarning() << "lua script initial exec -> error: " << err << errstr;
+            qWarning() << "lua script initial execute -> error: " << err << errstr;
             lua_pop(L, 1);
             Deinit();
             return false;

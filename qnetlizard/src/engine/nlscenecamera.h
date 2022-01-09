@@ -37,12 +37,6 @@ public:
     }
 
 protected:
-    virtual void Projection() {
-        if(m_type == NLSceneCamera::Type_Ortho)
-            NLSceneOrthoCamera::Projection();
-        else
-            NLScenePerspectiveCamera::Projection();
-    }
     virtual void UpdateProjectionMatrix(NLMatrix4 *mat) {
         if(m_type == NLSceneCamera::Type_Ortho)
             NLSceneOrthoCamera::UpdateProjectionMatrix(mat);

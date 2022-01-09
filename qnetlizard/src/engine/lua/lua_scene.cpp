@@ -216,6 +216,64 @@ static int Scene_CurrentCamera(lua_State *L)
     return 1;
 }
 
+static int Scene_SetCurrentCamera(lua_State *L)
+{
+    CALLER_SCENE(L, scene);
+    GET_LUA_OBJECT(L, NLSceneCamera, c, 2);
+    int b = 1;
+    scene->SetCurrentCamera(c);
+    lua_pushboolean(L, b);
+    return 1;
+}
+
+static int Scene_AddActor(lua_State *L)
+{
+    CALLER_SCENE(L, scene);
+    GET_LUA_OBJECT(L, NLActor, c, 2);
+    int b = 1;
+    scene->AddActor(c);
+    lua_pushboolean(L, b);
+    return 1;
+}
+
+static int Scene_RemoveActor(lua_State *L)
+{
+    CALLER_SCENE(L, scene);
+    int b = 1;
+    if(lua_isinteger(L, 2))
+    {
+        int i = lua_tointeger(L, 2);
+        scene->RemoveActor(i);
+    }
+    else
+    {
+        int type = lua_type(L, 2);
+        if(type == LUA_TUSERDATA)
+        {
+            GET_LUA_OBJECT(L, NLActor, c, 2);
+            if(c)
+                scene->RemoveActor(c);
+            else
+                b = 0;
+        }
+        else
+        {
+            const char *s = lua_tostring(L, 2);
+            scene->RemoveActor(s);
+        }
+    }
+    lua_pushboolean(L, b);
+    return 1;
+}
+
+static int Scene_CreateActor(lua_State *L)
+{
+    CALLER_SCENE(L, scene);
+    NLActor *a = scene->CreateActor(NL::lua_table_to_properties(L, 2));
+    PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
+    return 1;
+}
+
 namespace NL
 {
 
@@ -246,6 +304,10 @@ bool scene_register_metatable(struct lua_State *L)
             SCENE_FUNC(CurrentCamera),
             SCENE_FUNC(KeyPressed),
             SCENE_FUNC(MousePressed),
+            SCENE_FUNC(AddActor),
+            SCENE_FUNC(RemoveActor),
+            SCENE_FUNC(SetCurrentCamera),
+            SCENE_FUNC(CreateActor),
             NULL_luaL_Reg
         };
         luaL_setfuncs(L, Funcs, 0);
