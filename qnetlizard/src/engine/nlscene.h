@@ -14,6 +14,12 @@ class NLSceneCamera;
 class NLScene : public QGLWidget
 {
     Q_OBJECT
+
+    Q_PROPERTY(float fps READ FPS WRITE SetFPS)
+    Q_PROPERTY(int updateInterval READ UpdateInterval WRITE SetUpdateInterval)
+    Q_PROPERTY(QColor clearColor READ ClearColor WRITE SetClearColor)
+    Q_PROPERTY(bool grabMouse READ IsGrabMouseCursor WRITE GrabMouseCursor)
+
 public:
     explicit NLScene(QWidget *parent = 0);
     virtual ~NLScene();

@@ -3,8 +3,8 @@
 #include <QDebug>
 
 #include <QScrollArea>
+#include <QScrollBar>
 #include <QAction>
-#include <QGroupBox>
 #include <QVBoxLayout>
 #include <QColor>
 #include <QFile>
@@ -89,67 +89,55 @@ void HomeCell::TriggerAction()
 }
 
 
-
-class GroupBox : public QGroupBox
+GroupBox::GroupBox(QWidget *parent)
+    : QGroupBox(parent),
+      m_timer(0),
+      m_angle(0),
+      m_lastTime(0),
+      m_speed(20),
+      m_alphaFactory(0),
+      m_alphaAnim(1)
 {
-public:
-    explicit GroupBox(QWidget *parent = 0)
-        : QGroupBox(parent),
-          m_timer(0),
-          m_angle(0),
-          m_lastTime(0),
-          m_speed(20),
-          m_alphaFactory(0),
-          m_alphaAnim(1)
-    {
-        setObjectName("GroupBox");
-        Init();
-    }
-    GroupBox(const QString &title, QWidget *parent = 0)
-        : QGroupBox(title, parent),
-          m_timer(0),
-          m_angle(0),
-          m_lastTime(0),
-          m_speed(20),
-          m_alphaFactory(0),
-          m_alphaAnim(1)
-    {
-        setObjectName("GroupBox");
-        Init();
-    }
-    virtual ~GroupBox()
-    {
-        DEBUG_DESTROY_Q
-    }
+    setObjectName("GroupBox");
+    Init();
+}
 
-protected:
-    virtual void paintEvent(QPaintEvent *event);
-    virtual void resizeEvent(QResizeEvent *event);
+GroupBox::GroupBox(const QString &title, QWidget *parent)
+    : QGroupBox(title, parent),
+      m_timer(0),
+      m_angle(0),
+      m_lastTime(0),
+      m_speed(20),
+      m_alphaFactory(0),
+      m_alphaAnim(1)
+{
+    setObjectName("GroupBox");
+    Init();
+}
 
-private:
-    void Init();
-    void CalePainterPath();
-    int GetRadius() const { return qMax(qMin(width(), height()) / 2 - 18, 18); }
-
-private:
-    QTimer *m_timer;
-    float m_angle;
-    quint64 m_lastTime;
-    float m_speed;
-    float m_alphaFactory;
-    float m_alphaAnim;
-    QPainterPath m_diskPath;
-    QPainterPath m_diskCenterPath;
-};
+GroupBox::~GroupBox()
+{
+    DEBUG_DESTROY_Q
+}
 
 void GroupBox::Init()
 {
-    CalePainterPath();
     m_lastTime = QDateTime::currentMSecsSinceEpoch();
     m_timer = new QTimer(this);
     m_timer->setSingleShot(false);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(update()));
     m_timer->start(100);
+    m_rect.setSize(size());
+    CalePainterPath();
+}
+
+void GroupBox::ResetPaintSize(int value)
+{
+//    QScrollBar *bar = static_cast<QScrollArea *>(parentWidget()->parentWidget())->verticalScrollBar();
+//    int document_length = bar->maximum() - bar->minimum() + bar->pageStep();
+    m_rect.setTop(value);
+    m_rect.setHeight(parentWidget()->height());
+    repaint();
 }
 
 void GroupBox::CalePainterPath()
@@ -171,10 +159,16 @@ void GroupBox::CalePainterPath()
     m_diskCenterPath -= emptyPath;
 }
 
-void GroupBox::resizeEvent(QResizeEvent *event)
+void GroupBox::ResetPaintSize(const QSize &size)
 {
-    QGroupBox::resizeEvent(event);
-    CalePainterPath();
+    if(m_rect.size() != size)
+    {
+        QScrollBar *bar = static_cast<QScrollArea *>(parentWidget()->parentWidget())->verticalScrollBar();
+        m_rect.setTop(bar->value());
+        m_rect.setSize(size);
+        CalePainterPath();
+        repaint();
+    }
 }
 
 void GroupBox::paintEvent(QPaintEvent *event)
@@ -196,12 +190,12 @@ void GroupBox::paintEvent(QPaintEvent *event)
     }
     m_lastTime = ts;
     m_angle = NL::clamp_angle(m_angle - delta * m_speed);
-    const int W = width();
-    const int H = height();
+    const int W = m_rect.width();
+    const int H = m_rect.height();
     const int R = GetRadius();
 //    const int X = W / 2 - R;
 //    const int Y = H / 2 - R;
-    const QPoint Center(W / 2, H / 2);
+    const QPoint Center(W / 2, m_rect.top() + H / 2);
     p.translate(Center);
     p.rotate(m_angle);
     p.save();
@@ -262,7 +256,7 @@ const MenuItemList & IndexViewer::ActionMap()
 void IndexViewer::Init()
 {
     QScrollArea *root = new QScrollArea;
-    QGroupBox *container = new GroupBox;
+    GroupBox *container = new GroupBox(root);
     m_layout = new FlowLayout(container, CELL_SPACING, CELL_SPACING);
     SetTitleLabelVisible(false);
 
@@ -275,6 +269,7 @@ void IndexViewer::Init()
     root->setWidgetResizable(true);
     root->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     SetCentralWidget(root);
+    connect(root->verticalScrollBar(), SIGNAL(valueChanged(int)), container, SLOT(ResetPaintSize(int)));
 
     Layout();
 
@@ -289,6 +284,9 @@ void IndexViewer::resizeEvent(QResizeEvent *event)
     QScrollArea *container = static_cast<QScrollArea *>(CentralWidget());
     m_tools->move(container->width() - 80, 0);
     m_tools->setFixedHeight(container->height());
+    QSize size = container->size();
+    size.setWidth(size.width() - container->verticalScrollBar()->width());
+    static_cast<GroupBox *>(container->widget())->ResetPaintSize(size);
 }
 
 void IndexViewer::Layout()

@@ -39,7 +39,9 @@ HEADERS += \
     src/engine/editor/widget/syntaxhighlighter/nlluasyntaxhighlighter.h \
     src/engine/editor/widget/syntaxhighlighter/nlgeneralsyntaxhighlighter.h \
     src/engine/template/nlsequencemap.h \
-    src/engine/lua/lua_object.h
+    src/engine/lua/lua_object.h \
+    src/engine/editor/widget/nlpropformgroupwidget.h \
+    src/engine/editor/widget/nlpropsectionwidget.h
 
 SOURCES += \
     main.cpp \
@@ -50,7 +52,9 @@ SOURCES += \
     src/misc/lang.cpp \
     src/engine/editor/widget/syntaxhighlighter/nlluasyntaxhighlighter.cpp \
     src/engine/editor/widget/syntaxhighlighter/nlgeneralsyntaxhighlighter.cpp \
-    src/engine/lua/lua_object.cpp
+    src/engine/lua/lua_object.cpp \
+    src/engine/editor/widget/nlpropformgroupwidget.cpp \
+    src/engine/editor/widget/nlpropsectionwidget.cpp
 
 # Widget
 HEADERS += \

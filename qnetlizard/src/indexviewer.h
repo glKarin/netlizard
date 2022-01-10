@@ -3,6 +3,7 @@
 
 #include <QPushButton>
 #include <QVariant>
+#include <QGroupBox>
 
 #include "baseviewer.h"
 
@@ -79,6 +80,38 @@ private Q_SLOTS:
 
 private:
     QAction *m_action;
+};
+
+class GroupBox : public QGroupBox
+{
+    Q_OBJECT
+public:
+    explicit GroupBox(QWidget *parent = 0);
+    GroupBox(const QString &title, QWidget *parent = 0);
+    virtual ~GroupBox();
+
+public Q_SLOTS:
+    void ResetPaintSize(int value);
+    void ResetPaintSize(const QSize &size);
+
+protected:
+    virtual void paintEvent(QPaintEvent *event);
+
+private:
+    void Init();
+    void CalePainterPath();
+    int GetRadius() const { return qMax(qMin(m_rect.width(), m_rect.height()) / 2 - 18, 18); }
+
+private:
+    QTimer *m_timer;
+    float m_angle;
+    quint64 m_lastTime;
+    float m_speed;
+    float m_alphaFactory;
+    float m_alphaAnim;
+    QPainterPath m_diskPath;
+    QPainterPath m_diskCenterPath;
+    QRect m_rect;
 };
 
 class IndexViewer : public BaseViewer
