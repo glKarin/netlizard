@@ -72,11 +72,8 @@ int nl_log_func(int type, const char *str)
 }
 
 #ifdef _DEV_TEST
-#include "template/nlsequencemap.h"
 int Test(int argc, char **argv)
 {
-
-    NLSequenceHash<QString, QString> x;
     return 0;
 }
 #endif

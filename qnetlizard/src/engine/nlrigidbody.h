@@ -36,8 +36,11 @@ public:
     T * GetForce_T(int index);
     NLVector3 MoveDirection() const { return m_moveDirection; }
     virtual void SetRotation(const NLVector3 &v);
-    virtual NLActor * Move(const NLVector3 &v);
-    virtual NLActor * Turn(const NLVector3 &v);
+    virtual NLActor & Move(const NLVector3 &v);
+    virtual NLActor & Turn(const NLVector3 &v);
+    virtual void SetRotation(float x, float y, float z) { const NLVector3 v = VECTOR3(x, y, z); SetRotation(v); }
+    virtual NLActor & Move(float x, float y, float z) { const NLVector3 v = VECTOR3(x, y, z); return Move(v); }
+    virtual NLActor & Turn(float x, float y, float z) { const NLVector3 v = VECTOR3(x, y, z); return Turn(v); }
     void SetFree(bool b);
     bool Free() const { return m_free; }
     bool ZIsUp() const { return m_zIsUp; }
@@ -47,7 +50,7 @@ public:
     bool HasForce() const { return ForceCount() > 0; }
     NLGETTER(mass) NL::Physics::m Mass() const { return m_mass; }
     NLSETTER(mass) void SetMass(NL::Physics::m m);
-    NLActor * MoveSelfOriginal(const NLVector3 &v);
+    NLActor & MoveSelfOriginal(const NLVector3 &v);
     NLINTERFACE void ClearAllForces();
     NLINTERFACE void Collision();
     virtual void Reset();

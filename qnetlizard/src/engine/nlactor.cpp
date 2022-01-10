@@ -430,23 +430,23 @@ void NLActor::SetScale(const NLVector3 &v)
     emit propertyChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
 }
 
-NLActor * NLActor::Move(const NLVector3 &unit)
+NLActor & NLActor::Move(const NLVector3 &unit)
 {
     if(vector3_iszero(&unit))
-        return this;
+        return *this;
 
     NLVector3 pos = m_position;
     vector3_moveve(&pos, &m_right, VECTOR3_X(unit));
     vector3_moveve(&pos, &m_up, VECTOR3_Y(unit));
     vector3_moveve(&pos, &m_direction, VECTOR3_Z(unit));
     SetPosition(pos);
-    return this;
+    return *this;
 }
 
-NLActor * NLActor::MoveOriginal(const NLVector3 &unit)
+NLActor & NLActor::MoveOriginal(const NLVector3 &unit)
 {
     if(vector3_iszero(&unit))
-        return this;
+        return *this;
 
     NLVector3 pos = m_position;
     const NLVector3 &right = NL::Init_Right;
@@ -456,37 +456,37 @@ NLActor * NLActor::MoveOriginal(const NLVector3 &unit)
     vector3_moveve(&pos, &up, VECTOR3_Y(unit));
     vector3_moveve(&pos, &direction, VECTOR3_Z(unit));
     SetPosition(pos);
-    return this;
+    return *this;
 }
 
-NLActor * NLActor::MoveDirectionOriginal(float len, const NLVector3 &dir)
+NLActor & NLActor::MoveDirectionOriginal(float len, const NLVector3 &dir)
 {
     if(vector3_iszero(&dir) || len == 0.0)
-        return this;
+        return *this;
 
     NLVector3 pos = m_position;
     vector3_moveve(&pos, &dir, len);
     SetPosition(pos);
-    return this;
+    return *this;
 }
 
-NLActor * NLActor::MoveDirection(float len, const NLVector3 &dir)
+NLActor & NLActor::MoveDirection(float len, const NLVector3 &dir)
 {
     if(vector3_iszero(&dir) || len == 0.0)
-        return this;
+        return *this;
 
     NLVector3 pos = m_position;
     NLVector3 nd;
     Mesa_glTransform_row(VECTOR3_V(nd), VECTOR3_V(dir), &m_normalMatrix);
     vector3_moveve(&pos, &nd, len);
     SetPosition(pos);
-    return this;
+    return *this;
 }
 
-NLActor * NLActor::Turn(const NLVector3 &v)
+NLActor & NLActor::Turn(const NLVector3 &v)
 {
     if(vector3_iszero(&v))
-        return this;
+        return *this;
 
     NLVector3 rot = VECTOR3(
                 NL::clamp_angle(VECTOR3_X(m_rotation) + VECTOR3_X(v)),
@@ -494,16 +494,16 @@ NLActor * NLActor::Turn(const NLVector3 &v)
                 NL::clamp_angle(VECTOR3_Z(m_rotation) + VECTOR3_Z(v))
                 );
     SetRotation(rot);
-    return this;
+    return *this;
 }
 
-NLActor * NLActor::Zoom(const NLVector3 &v)
+NLActor & NLActor::Zoom(const NLVector3 &v)
 {
     //vector3_multiplyve(&m_scale, &v);
     vector3_addve(&m_scale, &v);
     UpdateMatrix();
     emit scaleChanged(m_scale);
-    return this;
+    return *this;
 }
 
 void NLActor::UpdateMatrix()

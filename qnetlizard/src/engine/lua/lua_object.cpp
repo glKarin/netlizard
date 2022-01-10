@@ -160,8 +160,8 @@ static int Object_Invoke(lua_State *L)
     const char *methodName = lua_tostring(L, 2);
     QByteArray methodBa = QMetaObject::normalizedSignature(methodName);
     int index = mo->indexOfMethod(methodBa.constData());
-    qDebug() <<methodBa<<index;
-    if(index > 0)
+
+    if(index >= 0)
     {
         int top = lua_gettop(L);
         QMetaMethod method = mo->method(index);
@@ -173,12 +173,10 @@ static int Object_Invoke(lua_State *L)
 
         for(int i = 4, index = 0; i <= top && index < 10; i++, index++)
         {
-            qDebug() << index << "-------" << i << "\n";
             if(lua_isinteger(L, i))
             {
                 datas[index].basic.i = lua_tointeger(L, i);
                 args[index] = Q_ARG(int, datas[index].basic.i);
-                qDebug() << "i" <<datas[index].basic.i;
             }
             else
             {
@@ -187,39 +185,33 @@ static int Object_Invoke(lua_State *L)
                 {
                     datas[index].basic.f = lua_tonumber(L, i);
                     args[index] = Q_ARG(float, datas[index].basic.f);
-                    qDebug() << "f" <<datas[index].basic.f;
                 }
                 else if(type == LUA_TBOOLEAN)
                 {
                     datas[index].basic.b = lua_toboolean(L, i) ? true : false;
                     args[index] = Q_ARG(bool, datas[index].basic.b);
-                    qDebug() << "b" <<datas[index].basic.b;
                 }
                 else if(type == LUA_TSTRING)
                 {
                     datas[index].str = lua_tostring(L, i);
                     args[index] = Q_ARG(QString, datas[index].str);
-                    qDebug() << "s" <<datas[index].str;
                 }
                 else if(type == LUA_TUSERDATA)
                 {
                     void **p = (void **)(lua_touserdata(L, i));
                     datas[index].basic.p = *p;
                     args[index] = Q_ARG(void *, datas[index].basic.p);
-                    qDebug() << "p" <<datas[index].basic.p;
                 }
                 else if(type == LUA_TLIGHTUSERDATA)
                 {
                     void *p = (void *)(lua_touserdata(L, i));
                     datas[index].basic.p = p;
                     args[index] = Q_ARG(void *, datas[index].basic.p);
-                    qDebug() << "p" <<datas[index].basic.p;
                 }
                 else
                 {
                     datas[index].basic.p = 0;
                     args[index] = Q_ARG(void *, 0);
-                    qDebug() << "p_void *" << 0;
                 }
             }
         }
@@ -244,7 +236,6 @@ static int Object_Invoke(lua_State *L)
                         )
                 {
                     lua_pushnumber(L, retData.basic.f);
-                    qDebug() << "return f" << retData.basic.f;
                 }
                 else if(returnType == "int"
                         || returnType == "char"
@@ -265,16 +256,13 @@ static int Object_Invoke(lua_State *L)
                         )
                 {
                     lua_pushnumber(L, retData.basic.i);
-                    qDebug() << "return i" << retData.basic.i;
                 }
                 else if(returnType == "bool")
                 {
                     lua_pushboolean(L, retData.basic.b ? 1 : 0);
-                    qDebug() << "return b" << retData.basic.b;
                 }
                 else
                 {
-                    qDebug() << "return p" << retData.basic.p;
                     if(returnType.indexOf("*") >= 0)
                     {
                         QString bas(returnType);
@@ -289,12 +277,10 @@ static int Object_Invoke(lua_State *L)
                                 if(luaL_getmetatable(L, fbab.constData()) != LUA_TTABLE)
                                 {
                                     lua_pop(L, 1);
-                                    qDebug() << "return_metatable void *: " << fbab;
                                 }
                                 else
                                 {
                                     lua_setmetatable(L, -2);
-                                    qDebug() << "return_metatable: " << fbab;
                                 }
                             }
                         }
@@ -303,7 +289,6 @@ static int Object_Invoke(lua_State *L)
                     }
                     else
                     {
-                        qDebug() << "return other: " << returnType;
                         if(returnType == "QString")
                         {
                             QByteArray ba = retData.str.toLocal8Bit();
@@ -317,7 +302,6 @@ static int Object_Invoke(lua_State *L)
                 }
             }
         }
-        qDebug() <<res << noReturn << resNum;
     }
     else
         lua_pushboolean(L, res);

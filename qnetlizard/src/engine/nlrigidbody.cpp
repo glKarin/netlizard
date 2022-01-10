@@ -75,18 +75,18 @@ void NLRigidbody::Construct()
 
 // limit x to [-90, 90]: [270, 360] | [0, 90]
 // limit z to [-90, 90]: [270, 360] | [0, 90]
-NLActor * NLRigidbody::Turn(const NLVector3 &v)
+NLActor & NLRigidbody::Turn(const NLVector3 &v)
 {
     if(m_free)
     {
         NLActor::Turn(v);
         m_moveRotation = Rotation();
         UpdateMoveMatrix();
-        return this;
+        return *this;
     }
 
     if(vector3_iszero(&v))
-        return this;
+        return *this;
 
     NLVector3 rot = Rotation();
     NLVector3 nv = v;
@@ -108,7 +108,7 @@ NLActor * NLRigidbody::Turn(const NLVector3 &v)
     rot = Rotation();
     VECTOR3_Y(m_moveRotation) = y;
     UpdateMoveMatrix();
-    return this;
+    return *this;
 }
 
 void NLRigidbody::SetRotation(const NLVector3 &v)
@@ -160,14 +160,14 @@ void NLRigidbody::UpdateMoveMatrix()
     Mesa_glTransform_row(VECTOR3_V(m_moveDirection), v, &m_moveMatrix);
 }
 
-NLActor * NLRigidbody::Move(const NLVector3 &v)
+NLActor & NLRigidbody::Move(const NLVector3 &v)
 {
     NLVector3 pos = NLActor::Position();
     if(m_free)
         return NLActor::Move(v);
 
     if(vector3_iszero(&v))
-        return this;
+        return *this;
 
     const NLVector3 right = NLActor::Right();
     const NLVector3 up = NLActor::Up();
@@ -175,17 +175,17 @@ NLActor * NLRigidbody::Move(const NLVector3 &v)
     vector3_moveve(&pos, &up, VECTOR3_Y(v));
     vector3_moveve(&pos, &m_moveDirection, VECTOR3_Z(v));
     NLActor::SetPosition(pos);
-    return this;
+    return *this;
 }
 
-NLActor * NLRigidbody::MoveSelfOriginal(const NLVector3 &unit)
+NLActor & NLRigidbody::MoveSelfOriginal(const NLVector3 &unit)
 {
     NLVector3 pos = NLActor::Position();
     if(!m_zIsUp)
         return NLActor::MoveOriginal(unit);
 
     if(vector3_iszero(&unit))
-        return this;
+        return *this;
 
     const NLVector3 &right = NL::Init_Right;
     const NLVector3 &up = m_zIsUp ? NL::Init_Up_z : NL::Init_Up_y;
@@ -195,7 +195,7 @@ NLActor * NLRigidbody::MoveSelfOriginal(const NLVector3 &unit)
     vector3_moveve(&pos, &direction, VECTOR3_Z(unit));
 
     NLActor::SetPosition(pos);
-    return this;
+    return *this;
 }
 
 void NLRigidbody::SetFree(bool b)

@@ -46,9 +46,9 @@ public:
     NLGETTER(globalMatrix) const NLMatrix4 * GlobalMatrix() const { return &m_globalMatrix; }
     NLGETTER(normalMatrix) const NLMatrix4 * NormalMatrix() const { return &m_normalMatrix; }
     NLGETTER(matrix) const NLMatrix4 * Matrix() const { return LocalMatrix(); }
-    NLINTERFACE virtual NLActor * Move(const NLVector3 &v);
-    NLINTERFACE virtual NLActor * Turn(const NLVector3 &v);
-    NLINTERFACE virtual NLActor * Zoom(const NLVector3 &v);
+    NLINTERFACE virtual NLActor & Move(const NLVector3 &v);
+    NLINTERFACE virtual NLActor & Turn(const NLVector3 &v);
+    NLINTERFACE virtual NLActor & Zoom(const NLVector3 &v);
     bool AddComponent(NLComponent *item);
     bool RemoveComponent(NLComponent *item);
     bool RemoveComponent(int index);
@@ -84,9 +84,16 @@ public:
     bool HasChildren() const { return ChildrenCount() > 0; }
     bool HasComponents() const { return ComponentCount() > 0; }
     bool CanRender() const { return m_renderable != 0; }
-    NLINTERFACE virtual NLActor * MoveOriginal(const NLVector3 &v); // original
-    NLINTERFACE virtual NLActor * MoveDirection(float len, const NLVector3 &dir); // local
-    NLINTERFACE virtual NLActor * MoveDirectionOriginal(float len, const NLVector3 &dir); // original
+    NLINTERFACE virtual NLActor & MoveOriginal(const NLVector3 &v); // original
+    NLINTERFACE virtual NLActor & MoveDirection(float len, const NLVector3 &dir); // local
+    NLINTERFACE virtual NLActor & MoveDirectionOriginal(float len, const NLVector3 &dir); // original
+    NLSETTER(position) virtual void SetPosition(float x, float y, float z) { const NLVector3 v = VECTOR3(x, y, z); SetPosition(v); }
+    NLSETTER(rotation) virtual void SetRotation(float x, float y, float z) { const NLVector3 v = VECTOR3(x, y, z); SetRotation(v); }
+    NLSETTER(scale) virtual void SetScale(float x, float y, float z) { const NLVector3 v = VECTOR3(x, y, z); SetScale(v); }
+    NLINTERFACE virtual NLActor & Move(float x, float y, float z) { const NLVector3 v = VECTOR3(x, y, z); return Move(v); }
+    NLINTERFACE virtual NLActor & Turn(float x, float y, float z) { const NLVector3 v = VECTOR3(x, y, z); return Turn(v); }
+    NLINTERFACE virtual NLActor & Zoom(float x, float y, float z) { const NLVector3 v = VECTOR3(x, y, z); return Zoom(v); }
+    NLINTERFACE virtual NLActor & MoveOriginal(float x, float y, float z) { const NLVector3 v = VECTOR3(x, y, z); return MoveOriginal(v); }
     int ChildrenTotalCount() const;
 
     template <class T>
