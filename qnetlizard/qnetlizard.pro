@@ -41,7 +41,8 @@ HEADERS += \
     src/engine/template/nlsequencemap.h \
     src/engine/lua/lua_object.h \
     src/engine/editor/widget/nlpropformgroupwidget.h \
-    src/engine/editor/widget/nlpropsectionwidget.h
+    src/engine/editor/widget/nlpropsectionwidget.h \
+    src/engine/trait/nlpropertytrait.h
 
 SOURCES += \
     main.cpp \
@@ -169,8 +170,8 @@ SOURCES += \
     src/comp/widget/actorpropertywidget.cpp
 
 # Engine
-DEPENDPATH += ./src/engine ./src/engine/editor ./src/engine/lua ./src/engine/editor/widget ./src/engine/template ./src/engine/editor/widget/syntaxhighlighter
-INCLUDEPATH += ./src/engine ./src/engine/editor ./src/engine/lua ./src/engine/editor/widget ./src/engine/template ./src/engine/editor/widget/syntaxhighlighter
+DEPENDPATH += ./src/engine ./src/engine/editor ./src/engine/lua ./src/engine/editor/widget ./src/engine/template ./src/engine/editor/widget/syntaxhighlighter ./src/engine/trait
+INCLUDEPATH += ./src/engine ./src/engine/editor ./src/engine/lua ./src/engine/editor/widget ./src/engine/template ./src/engine/editor/widget/syntaxhighlighter ./src/engine/trait
 
 HEADERS += \
     src/engine/nldef.h \

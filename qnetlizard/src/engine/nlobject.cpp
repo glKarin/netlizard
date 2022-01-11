@@ -174,58 +174,6 @@ void NLObject::SetContainer(NLObjectContainer *container)
     }
 }
 
-NLProperty NLObject::GetProperty(const QString &name, const NLProperty &def) const
-{
-    const QByteArray ba = name.toLocal8Bit();
-    NLProperty p = property(ba.constData());
-    if(!p.isValid())
-        return def;
-    return p;
-}
-
-void NLObject::SetProperty(const QString &name, const NLProperty &value)
-{
-    bool has = HasProperty(name);
-    if(has && NL::property_equals(GetProperty(name), value))
-    {
-        return;
-    }
-    const QByteArray ba = name.toLocal8Bit();
-    /*qDebug() << */setProperty(ba.constData(), value);
-    emit propertyChanged(name, value);
-}
-
-void NLObject::CoverProperty(const QString &name, const NLProperty &value)
-{
-    const QByteArray ba = name.toLocal8Bit();
-    /*qDebug() << */setProperty(ba.constData(), value);
-    emit propertyChanged(name, value);
-}
-
-void NLObject::RemoveProperty(const QString &name)
-{
-    bool has = HasProperty(name);
-    if(has)
-    {
-        return;
-    }
-    const QByteArray ba = name.toLocal8Bit();
-    setProperty(ba.constData(), NLProperty());
-    emit propertyChanged(name);
-}
-
-bool NLObject::HasProperty(const QString &name)
-{
-    const QMetaObject *metaObj = metaObject();
-    for(int i = 0 /*metaObj->propertyOffset()*/; i < metaObj->propertyCount(); i++)
-    {
-        QMetaProperty p = metaObj->property(i);
-        if(name == p.name())
-            return true;
-    }
-    return false;
-}
-
 void NLObject::SetScene(NLScene *scene)
 {
     if(m_scene != scene)
@@ -246,3 +194,5 @@ void NLObject::SetPropertyConfig(const NLProperties &props)
 {
     m_propertyConfig = props;
 }
+
+NLPROPERTY_DECL_TRAIT(NLObject, NL::property_equals, propertyChanged)
