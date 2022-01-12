@@ -4,6 +4,7 @@
 #include <QGLWidget>
 
 #include "nlactorcontainer.h"
+#include "nlpropertytrait.h"
 
 #define NL_MAX_KEY (Qt::Key_AsciiTilde + (Qt::Key_Direction_R - Qt::Key_Shift) + 1)
 #define NL_MAX_BUTTON 3
@@ -64,12 +65,14 @@ public:
     void RemoveActor(int index) { m_actors.Remove(index); }
     void RemoveActor(const NLName &name) { m_actors.Remove(name); }
     NLActor * CreateActor(const NLProperties &props = NLProperties());
+    NLPROPERTY_DEF_TRAIT
     
 signals:
     void sizeChanged(const QSize &s);
     void updated(float delta);
     void rendered(float fps);
     void actorChanged(NLActor *actor = 0);
+    void propertyChanged(const QString &name, const NLProperty &value = NLProperty(), int action = 0);
     
 public slots:
     void RunLoop(bool b);
@@ -155,5 +158,7 @@ T * NLScene::GetActor_T(const NLName &name)
         return 0;
     return dynamic_cast<T *>(obj);
 }
+
+NLPROPERTY_TEMPLATE_DECL_TRAIT(NLScene, propertyChanged)
 
 #endif // _KARIN_NLSCENE_H

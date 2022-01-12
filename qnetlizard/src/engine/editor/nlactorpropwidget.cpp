@@ -49,6 +49,12 @@ NLObjectPropFormGroupWidget::NLObjectPropFormGroupWidget(QWidget *widget)
     setObjectName("NLObjectPropFormGroupWidget");
 }
 
+NLObjectPropFormGroupWidget::NLObjectPropFormGroupWidget(const QString &title, QWidget *widget)
+    : NLPropFormGroupWidget(title, widget)
+{
+    setObjectName("NLObjectPropFormGroupWidget");
+}
+
 NLObjectPropFormGroupWidget::~NLObjectPropFormGroupWidget()
 {
 
@@ -225,7 +231,7 @@ void NLActorPropWidget::SetupComponentProperties()
     }
 }
 
-void NLActorPropWidget::OnPropertyChanged(const QString &name, const NLProperty &value)
+void NLActorPropWidget::OnPropertyChanged(const QString &name, const NLProperty &value, int action)
 {
     QObject *s = sender();
     if(!s)

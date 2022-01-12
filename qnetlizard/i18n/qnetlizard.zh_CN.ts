@@ -551,7 +551,7 @@
     </message>
     <message>
         <source>Initial fixed view matrix</source>
-        <translation type="unfinished">初始固定试图矩阵</translation>
+        <translation type="unfinished">初始固定视图矩阵</translation>
     </message>
     <message>
         <source>Invalid matrix!</source>
@@ -567,7 +567,7 @@
     </message>
     <message>
         <source>Normal matrix(transposed)</source>
-        <translation type="unfinished">发现矩阵(已转置)</translation>
+        <translation type="unfinished">法线矩阵(已转置)</translation>
     </message>
     <message>
         <source>Limit: </source>
@@ -584,26 +584,6 @@
     <message>
         <source>General</source>
         <translation type="unfinished">通用</translation>
-    </message>
-    <message>
-        <source>Choose color</source>
-        <translation type="unfinished">选择颜色</translation>
-    </message>
-    <message>
-        <source>ms</source>
-        <translation type="unfinished">毫秒</translation>
-    </message>
-    <message>
-        <source>FPS</source>
-        <translation type="unfinished">FPS</translation>
-    </message>
-    <message>
-        <source>Update interval</source>
-        <translation type="unfinished">更新间隔</translation>
-    </message>
-    <message>
-        <source>Clear color</source>
-        <translation type="unfinished">清除颜色</translation>
     </message>
     <message>
         <source>Setting</source>

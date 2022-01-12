@@ -5,6 +5,7 @@
 #include <QMetaProperty>
 
 #include "nlobject.h"
+#include "nlscene.h"
 
 namespace NL
 {
@@ -33,6 +34,8 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
     }
     else if(type == "bool")
         widget = "checkbox";
+    else if(type == "QColor")
+        widget = "colordialog";
     else
     {
         if(t == QMetaType::QObjectStar || t == QMetaType::QWidgetStar || t == QMetaType::VoidStar)
@@ -64,7 +67,7 @@ NLPropertyInfoList object_propertics(const NLObject *obj)
     NLPropertyInfoList ret;
     const NLProperties config = obj->PropertyConfig();
 
-    for(int i = 0 /*metaObj->propertyOffset()*/; i < metaObj->propertyCount(); i++)
+    for(int i = 0; i < metaObj->propertyCount(); i++)
     {
         QMetaProperty p = metaObj->property(i);
         QString name(p.name());
@@ -84,6 +87,42 @@ NLPropertyInfoList object_propertics(const NLObject *obj)
 
         QVariantHash prop = config.value(name).toHash();
         NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p, obj->GetInitProperty(name), prop);
+
+        ret.push_back(info);
+    }
+
+    return ret;
+}
+
+NLPropertyInfoList scene_propertics(const NLScene *obj)
+{
+    const QMetaObject *metaObj = obj->metaObject();
+    NLPropertyInfoList ret;
+    int offset = obj->PropertyNames().indexOf("fps");
+    //const NLProperties config = obj->PropertyConfig();
+
+    for(int i = offset; i < metaObj->propertyCount(); i++)
+    {
+        QMetaProperty p = metaObj->property(i);
+        QString name(p.name());
+
+        //QVariantHash prop = config.value(name).toHash();
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p.read(obj), NLProperty());
+
+        qDebug() << name;
+
+        ret.push_back(info);
+    }
+
+    // dynamic property
+    const QList<QByteArray> list = obj->dynamicPropertyNames();
+    Q_FOREACH(const QByteArray &ba, list)
+    {
+        QVariant p = obj->property(ba.constData());
+        QString name(ba);
+
+        //QVariantHash prop = config.value(name).toHash();
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p, NLProperty());
 
         ret.push_back(info);
     }

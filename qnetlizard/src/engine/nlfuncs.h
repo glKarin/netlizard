@@ -4,12 +4,14 @@
 #include "nlproperties.h"
 
 class NLObject;
+class NLScene;
 
 namespace NL
 {
 template <class T> T clamp(T t, T min, T max);
 
 NLPropertyInfoList object_propertics(const NLObject *obj);
+NLPropertyInfoList scene_propertics(const NLScene *obj);
 bool property_equals(const NLProperty &a, const NLProperty &b);
 }
 

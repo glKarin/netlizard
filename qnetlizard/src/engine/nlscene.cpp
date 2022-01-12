@@ -5,6 +5,8 @@
 #include <QDateTime>
 #include <QWaitCondition>
 #include <QMutex>
+#include <QMetaObject>
+#include <QMetaProperty>
 
 #include <QMouseEvent>
 
@@ -246,6 +248,7 @@ void NLScene::GrabMouseCursor(bool b)
         SetCursorVisible(!b);
         if(m_grabMouse)
             MoveCursorToCenter();
+        emit propertyChanged("grabMouse", m_grabMouse);
     }
 }
 
@@ -311,6 +314,7 @@ void NLScene::SetClearColor(const QColor &color)
         m_clearColor = color;
         qglClearColor(m_clearColor);
         updateGL();
+        emit propertyChanged("clearColor", m_clearColor);
     }
 }
 
@@ -371,6 +375,7 @@ void NLScene::SetFPS(float fps)
             m_updateGLInterval = qRound(1000.0 / (float)m_fps);
             qDebug() << "SetFPS" << m_fps << "UpdateGLInterval" << m_updateGLInterval;
         }
+        emit propertyChanged("fps", m_fps);
     }
 }
 
@@ -381,6 +386,7 @@ void NLScene::SetUpdateInterval(int ui)
         m_updateInterval = ui;
         if(m_updateInterval < 0)
             m_updateInterval = 0;
+        emit propertyChanged("updateInterval", m_updateInterval);
     }
 }
 
@@ -509,3 +515,5 @@ NLActor * NLScene::CreateActor(const NLProperties &props)
     AddActor(actor);
     return actor;
 }
+
+NLPROPERTY_DECL_TRAIT(NLScene, NL::property_equals, propertyChanged)

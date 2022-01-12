@@ -42,7 +42,8 @@ HEADERS += \
     src/engine/lua/lua_object.h \
     src/engine/editor/widget/nlpropformgroupwidget.h \
     src/engine/editor/widget/nlpropsectionwidget.h \
-    src/engine/trait/nlpropertytrait.h
+    src/engine/trait/nlpropertytrait.h \
+    src/engine/editor/widget/nlcolorchooserwidget.h
 
 SOURCES += \
     main.cpp \
@@ -55,7 +56,8 @@ SOURCES += \
     src/engine/editor/widget/syntaxhighlighter/nlgeneralsyntaxhighlighter.cpp \
     src/engine/lua/lua_object.cpp \
     src/engine/editor/widget/nlpropformgroupwidget.cpp \
-    src/engine/editor/widget/nlpropsectionwidget.cpp
+    src/engine/editor/widget/nlpropsectionwidget.cpp \
+    src/engine/editor/widget/nlcolorchooserwidget.cpp
 
 # Widget
 HEADERS += \

@@ -22,6 +22,7 @@
 #include "nlrenderable.h"
 #include "nlvector3widget.h"
 #include "nlfilechooserwidget.h"
+#include "nlcolorchooserwidget.h"
 #include "nltexteditwidget.h"
 #include "nlobject.h"
 #include "nlrenderable.h"
@@ -41,24 +42,33 @@
 #define WIDGETNAME_IS_TYPE(w, T) (w) == #T
 #define WIDGET_IS_TYPE(w, T) (WIDGET_TYPE(w)) == #T
 
-NLPropFormGroupWidget::NLPropFormGroupWidget(QWidget *widget)
+NLFormGroupWidget::NLFormGroupWidget(QWidget *widget)
     : QGroupBox(widget),
       m_layout(0),
       m_actionButton(0),
-      m_expand(true),
-      m_object(0)
+      m_expand(true)
 {
     setObjectName("NLPropFormGroupWidget");
     Init();
 }
 
-NLPropFormGroupWidget::~NLPropFormGroupWidget()
+NLFormGroupWidget::NLFormGroupWidget(const QString &title, QWidget *widget)
+    : QGroupBox(title, widget),
+      m_layout(0),
+      m_actionButton(0),
+      m_expand(true)
+{
+    setObjectName("NLPropFormGroupWidget");
+    Init();
+}
+
+NLFormGroupWidget::~NLFormGroupWidget()
 {
     DEBUG_DESTROY_Q
     Reset();
 }
 
-void NLPropFormGroupWidget::Init()
+void NLFormGroupWidget::Init()
 {
     m_layout = new QFormLayout;
     m_layout->setRowWrapPolicy(QFormLayout::WrapLongRows);
@@ -68,7 +78,7 @@ void NLPropFormGroupWidget::Init()
     setLayout(m_layout);
 }
 
-void NLPropFormGroupWidget::ToggleGroupBox(bool on)
+void NLFormGroupWidget::ToggleGroupBox(bool on)
 {
     if(m_expand == on)
         return;
@@ -93,13 +103,8 @@ void NLPropFormGroupWidget::ToggleGroupBox(bool on)
     m_expand = on;
 }
 
-void NLPropFormGroupWidget::Reset()
+void NLFormGroupWidget::Reset()
 {
-    if(m_object)
-    {
-        m_object->disconnect(this);
-        m_object = 0;
-    }
     QLayoutItem *item;
     if(m_expand)
     {
@@ -124,14 +129,14 @@ void NLPropFormGroupWidget::Reset()
     setCheckable(false);
 }
 
-void NLPropFormGroupWidget::AddRow(const QString &name, QWidget *widget)
+void NLFormGroupWidget::AddRow(const QString &name, QWidget *widget)
 {
     m_layout->addRow(name, widget);
     m_nameWidgetMap.insert(name, widget);
     setCheckable(true);
 }
 
-void NLPropFormGroupWidget::AddAction(QAction *action)
+void NLFormGroupWidget::AddAction(QAction *action)
 {
     if(!m_actionButton)
     {
@@ -147,17 +152,38 @@ void NLPropFormGroupWidget::AddAction(QAction *action)
     m_actionButton->menu()->addAction(action);
 }
 
-void NLPropFormGroupWidget::SetData(const QVariant &data)
+void NLFormGroupWidget::SetData(const QVariant &data)
 {
     if(m_data != data)
         m_data = data;
 }
 
-void NLPropFormGroupWidget::resizeEvent(QResizeEvent *event)
+void NLFormGroupWidget::resizeEvent(QResizeEvent *event)
 {
     QGroupBox::resizeEvent(event);
     if(m_actionButton)
         m_actionButton->move(width() - m_actionButton->width() - 2, 0);
+}
+
+
+
+NLPropFormGroupWidget::NLPropFormGroupWidget(QWidget *widget)
+    : NLFormGroupWidget(widget),
+      m_object(0)
+{
+    setObjectName("NLPropFormGroupWidget");
+}
+
+NLPropFormGroupWidget::NLPropFormGroupWidget(const QString &title, QWidget *widget)
+    : NLFormGroupWidget(title, widget),
+      m_object(0)
+{
+    setObjectName("NLPropFormGroupWidget");
+}
+
+NLPropFormGroupWidget::~NLPropFormGroupWidget()
+{
+    DEBUG_DESTROY_Q
 }
 
 void NLPropFormGroupWidget::SetObject(QObject *obj)
@@ -190,7 +216,6 @@ void NLPropFormGroupWidget::SetupObjectProperty()
     {
         QWidget *widget = GenWidget(m_object, item);
         AddRow(item.name, widget);
-        m_nameWidgetMap.insert(item.name, widget);
     }
 }
 
@@ -348,6 +373,15 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
         connect(w, SIGNAL(fileReload(const QString &)), this, SLOT(OnStringReload(const QString &)));
         widget = w;
     }
+    else if(item.widget == "colordialog")
+    {
+        NLColorChooserWidget *w = new NLColorChooserWidget;
+        WIDGET_SET_TYPE(w, NLColorChooserWidget);
+        w->SetColor(QColor(item.value.toString()));
+        w->SetReadOnly(item.readonly);
+        connect(w, SIGNAL(colorChanged(const QColor &)), this, SLOT(OnColorChanged(const QColor &)));
+        widget = w;
+    }
     else/* if(item.widget == "label")*/
     {
         int type = item.value.type();
@@ -392,7 +426,7 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
 
 void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const NLProperty &value)
 {
-    QWidget *widget = m_nameWidgetMap.value(name);
+    QWidget *widget = WidgetForName(name);
     if(!widget)
         return;
     QString type = WIDGET_TYPE(widget);
@@ -438,6 +472,10 @@ void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const NLP
     else if(WIDGETNAME_IS_TYPE(type, NLTextEditWidget))
     {
         static_cast<NLTextEditWidget *>(widget)->SetText(value.toString());
+    }
+    else if(WIDGETNAME_IS_TYPE(type, NLColorChooserWidget))
+    {
+        static_cast<NLColorChooserWidget *>(widget)->SetColor(value.value<QColor>());
     }
     else
         qWarning() << "Unsupported widget type -> " << type;
@@ -501,9 +539,26 @@ void NLPropFormGroupWidget::OnStringReload(const QString &str)
     CoverObjectProperty(m_object, s->objectName(), str);
 }
 
+void NLPropFormGroupWidget::OnColorChanged(const QColor &color)
+{
+    QObject *s = sender();
+    SetObjectProperty(m_object, s->objectName(), color);
+}
+
 void NLPropFormGroupWidget::OnItemDestroy(QObject *obj)
 {
     QObject *o = obj ? obj : sender();
     if(o)
         DEBUG_DESTROY_QQV(obj)
 }
+
+void NLPropFormGroupWidget::Reset()
+{
+    if(m_object)
+    {
+        m_object->disconnect(this);
+        m_object = 0;
+    }
+    NLFormGroupWidget::Reset();
+}
+

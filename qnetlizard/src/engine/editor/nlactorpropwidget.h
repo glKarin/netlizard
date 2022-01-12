@@ -16,6 +16,7 @@ class NLObjectPropFormGroupWidget : public NLPropFormGroupWidget
     Q_OBJECT
 public:
     explicit NLObjectPropFormGroupWidget(QWidget *widget = 0);
+    explicit NLObjectPropFormGroupWidget(const QString &title, QWidget *widget = 0);
     virtual ~NLObjectPropFormGroupWidget();
 
 protected:
@@ -56,7 +57,7 @@ private Q_SLOTS:
     void OnActorChanged();
     void SetupComponent();
     void SetupScript();
-    void OnPropertyChanged(const QString &name, const NLProperty &value);
+    void OnPropertyChanged(const QString &name, const NLProperty &value, int action = 0);
     void OnActionTriggered(QAction *action);
 
 private:

@@ -2,6 +2,7 @@
 #define _KARIN_NLNLSceneInfoWidget_H
 
 #include <QTabWidget>
+#include "nlpropformgroupwidget.h"
 
 class NLScene;
 class QTextBrowser;
@@ -10,6 +11,21 @@ class QSpinBox;
 class QGroupBox;
 class QComboBox;
 class QPushButton;
+
+class NLScenePropFormGroupWidget : public NLPropFormGroupWidget
+{
+    Q_OBJECT
+public:
+    explicit NLScenePropFormGroupWidget(QWidget *widget = 0);
+    explicit NLScenePropFormGroupWidget(const QString &title, QWidget *widget = 0);
+    virtual ~NLScenePropFormGroupWidget();
+
+protected:
+    virtual void SetObjectProperty(QObject *obj, const QString &name, const QVariant &value);
+    virtual void CoverObjectProperty(QObject *obj, const QString &name, const QVariant &value);
+    virtual NLPropertyInfoList GetPropertyInfoList(QObject *obj);
+    virtual void SortProperties(NLPropertyInfoList &list);
+};
 
 class NLSceneInfoWidget : public QTabWidget
 {
@@ -30,7 +46,7 @@ private:
     void Init();
 
 private Q_SLOTS:
-    void ChooseClearColor();
+    void OnPropertyChanged(const QString &name, const NLProperty &value, int action = 0);
 
 private:
     NLScene *m_scene;
@@ -38,10 +54,7 @@ private:
     QTextBrowser *m_cameraInfo;
     QStackedWidget *m_cameraMatrix;
     QComboBox *m_matrixList;
-    QGroupBox *m_settingGroupBox;
-    QSpinBox *m_fpsSpinBox;
-    QSpinBox *m_updateSpinBox;
-    QPushButton *m_colorButton;
+    NLScenePropFormGroupWidget *m_settingGroupBox;
 
     Q_DISABLE_COPY(NLSceneInfoWidget)
     

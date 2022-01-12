@@ -11,11 +11,11 @@ class NLFileChooserWidgetLabel : public QLineEdit
     Q_OBJECT
 
 public:
-    NLFileChooserWidgetLabel(QWidget *parent = 0)
+    explicit NLFileChooserWidgetLabel(QWidget *parent = 0)
         : QLineEdit(parent) { setObjectName("NLFileChooserWidgetLabel"); }
-    NLFileChooserWidgetLabel(const QString &contents, QWidget *parent = 0)
+   explicit  NLFileChooserWidgetLabel(const QString &contents, QWidget *parent = 0)
         : QLineEdit(contents, parent) { setObjectName("NLFileChooserWidgetLabel"); }
-    ~NLFileChooserWidgetLabel();
+    virtual ~NLFileChooserWidgetLabel();
 
 Q_SIGNALS:
     void dblClicked();

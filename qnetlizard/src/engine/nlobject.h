@@ -67,7 +67,7 @@ signals:
     void initilized();
     void destroying();
     void reseted();
-    void propertyChanged(const QString &name, const NLProperty &value = NLProperty());
+    void propertyChanged(const QString &name, const NLProperty &value = NLProperty(), int action = 0);
     
 public slots:
 

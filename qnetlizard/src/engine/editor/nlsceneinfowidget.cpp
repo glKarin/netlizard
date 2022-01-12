@@ -42,6 +42,45 @@
 
 #endif
 
+NLScenePropFormGroupWidget::NLScenePropFormGroupWidget(QWidget *widget)
+    : NLPropFormGroupWidget(widget)
+{
+    setObjectName("NLScenePropFormGroupWidget");
+}
+
+NLScenePropFormGroupWidget::NLScenePropFormGroupWidget(const QString &title, QWidget *widget)
+    : NLPropFormGroupWidget(title, widget)
+{
+    setObjectName("NLScenePropFormGroupWidget");
+}
+
+NLScenePropFormGroupWidget::~NLScenePropFormGroupWidget()
+{
+
+}
+
+void NLScenePropFormGroupWidget::SetObjectProperty(QObject *obj, const QString &name, const QVariant &value)
+{
+    static_cast<NLScene *>(obj)->SetProperty(name, value);
+}
+
+void NLScenePropFormGroupWidget::CoverObjectProperty(QObject *obj, const QString &name, const QVariant &value)
+{
+    static_cast<NLScene *>(obj)->CoverProperty(name, value);
+}
+
+NLPropertyInfoList NLScenePropFormGroupWidget::GetPropertyInfoList(QObject *obj)
+{
+    return NL::scene_propertics(static_cast<NLScene *>(obj));
+}
+
+void NLScenePropFormGroupWidget::SortProperties(NLPropertyInfoList &list)
+{
+    //qSort(list.begin(), list.end(), NLPropertyInfoCmp);
+}
+
+
+
 NLSceneInfoWidget::NLSceneInfoWidget(QWidget *parent) :
     QTabWidget(parent),
     m_scene(0),
@@ -49,10 +88,7 @@ NLSceneInfoWidget::NLSceneInfoWidget(QWidget *parent) :
     m_cameraInfo(0),
     m_cameraMatrix(0),
     m_matrixList(0),
-    m_settingGroupBox(0),
-    m_fpsSpinBox(0),
-    m_updateSpinBox(0),
-    m_colorButton(0)
+    m_settingGroupBox(0)
 {
     setObjectName("NLSceneInfoWidget");
     Init();
@@ -72,11 +108,7 @@ void NLSceneInfoWidget::Init()
     QWidget *matrixWidget = new QWidget(cameraTab);
     m_matrixList = new QComboBox;
     QVBoxLayout *matrixLayout = new QVBoxLayout;
-    m_settingGroupBox = new QGroupBox(tr("General"), this);
-    QFormLayout *settingLayout = new QFormLayout;
-    m_fpsSpinBox = new QSpinBox;
-    m_updateSpinBox = new QSpinBox;
-    m_colorButton = new QPushButton(tr("Choose color"));
+    m_settingGroupBox = new NLScenePropFormGroupWidget(tr("General"), this);
 
     m_baseInfo->setAcceptRichText(RICH_TEXT);
     m_cameraInfo->setAcceptRichText(RICH_TEXT);
@@ -105,19 +137,6 @@ void NLSceneInfoWidget::Init()
 
     cameraTab->addTab(m_cameraInfo, tr("Base"));
     cameraTab->addTab(matrixWidget, tr("Matrix"));
-
-    m_fpsSpinBox->setMinimum(0);
-    m_updateSpinBox->setMinimum(0);
-    m_fpsSpinBox->setMaximum(300);
-    m_updateSpinBox->setMaximum(1000);
-    m_fpsSpinBox->setSuffix(tr("ms"));
-    m_updateSpinBox->setSuffix(tr("ms"));
-    connect(m_colorButton, SIGNAL(clicked()), this, SLOT(ChooseClearColor()));
-    settingLayout->addRow(tr("FPS"), m_fpsSpinBox);
-    settingLayout->addRow(tr("Update interval"), m_updateSpinBox);
-    settingLayout->addRow(tr("Clear color"), m_colorButton);
-    settingLayout->setRowWrapPolicy(QFormLayout::WrapLongRows);
-    m_settingGroupBox->setLayout(settingLayout);
 
     addTab(m_baseInfo, tr("Base"));
     addTab(cameraTab, tr("Camera"));
@@ -222,34 +241,13 @@ void NLSceneInfoWidget::SetScene(NLScene *scene)
         if(m_scene)
         {
             m_matrixList->setEnabled(true);
-            m_settingGroupBox->setEnabled(true);
-            m_fpsSpinBox->setValue(m_scene->FPS());
-            m_updateSpinBox->setValue(m_scene->UpdateInterval());
-            QString c(m_scene->ClearColor().name().toUpper());
-            m_colorButton->setText(c);
-            m_colorButton->setProperty("color", c);
-            m_colorButton->setStyleSheet(QString("QPushButton { color: %1; }").arg(c));
-            connect(m_fpsSpinBox, SIGNAL(valueChanged(int)), m_scene, SLOT(SetFPS(float)));
-            connect(m_updateSpinBox, SIGNAL(valueChanged(int)), m_scene, SLOT(SetUpdateInterval(int)));
             connect(m_scene, SIGNAL(updated(float)), this, SLOT(UpdateSceneInfo()));
             connect(m_scene, SIGNAL(destroyed()), this, SLOT(Reset()));
+            m_settingGroupBox->SetObject(m_scene);
+            connect(m_scene, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
         }
         UpdateSceneInfo();
     }
-}
-
-void NLSceneInfoWidget::ChooseClearColor()
-{
-    if(!m_scene)
-        return;
-    QPushButton *w = static_cast<QPushButton *>(sender());
-    QVariant va = w->property("color");
-    QColor color = QColorDialog::getColor(QColor(va.toString()), w);
-    QString c(color.name().toUpper());
-    w->setText(c);
-    w->setProperty("color", c);
-    w->setStyleSheet(QString("QPushButton { color: %1; }").arg(c));
-    m_scene->SetClearColor(color);
 }
 
 void NLSceneInfoWidget::Reset()
@@ -257,15 +255,14 @@ void NLSceneInfoWidget::Reset()
     if(m_scene)
         m_scene->disconnect(this);
     m_scene = 0;
-    m_fpsSpinBox->disconnect();
-    m_updateSpinBox->disconnect();
-    m_fpsSpinBox->setValue(0);
-    m_updateSpinBox->setValue(0);
-    QString c("#000000");
-    m_colorButton->setText(tr("Choose color"));
-    m_colorButton->setProperty("color", c);
-    m_colorButton->setStyleSheet(QString("QPushButton { color: %1; }").arg(c));
-    m_settingGroupBox->setEnabled(false);
+    m_settingGroupBox->SetObject(0);
     m_matrixList->setEnabled(false);
     UpdateSceneInfo();
+}
+
+void NLSceneInfoWidget::OnPropertyChanged(const QString &name, const NLProperty &value, int action)
+{
+    if(!m_scene || m_scene != sender())
+        return;
+    m_settingGroupBox->NotifyPropertyChanged(name, value);
 }
