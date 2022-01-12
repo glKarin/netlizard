@@ -148,6 +148,7 @@ bool NLScript::Script_Lua::Exec(float delta)
             if(ret)
             {
                 qDebug() << "lua script Init() -> true";
+                RegisterGlobalVariant();
             }
             else
             {
@@ -219,6 +220,7 @@ bool NLScript::Script_Lua::Exec(float delta)
                 Deinit();
                 return false;
             }
+            RegisterGlobalVariant();
             //qDebug() << "lua script Update(number)" << delta;
         }
         else
@@ -237,6 +239,82 @@ bool NLScript::Script_Lua::Exec(float delta)
     }
 
     return true;
+}
+
+void NLScript::Script_Lua::RegisterGlobalVariant()
+{
+    if(!L)
+        return;
+    lua_pushglobaltable(L);
+
+    NLVariantSequenceHash props;
+
+    lua_pushnil(L);
+    while (lua_next(L, -2) != 0)
+    {
+        QString key(lua_tostring(L, -2));
+        //qDebug() << key;
+        if(key != "_G" && key != "_VERSION"
+                && key != "nl_Actor"
+                && key != "nl_Delta"
+                && key != "nl_Script"
+                && key != "nl_Scene"
+                )
+        {
+            if(lua_isinteger(L, -1))
+            {
+                int i = lua_tointeger(L, -1);
+                props.insert(key, i);
+            }
+            else
+            {
+                int type = lua_type(L, -1);
+                if(type == LUA_TNUMBER)
+                {
+                    float f = lua_tonumber(L, -1);
+                    props.insert(key, f);
+                }
+                else if(type == LUA_TBOOLEAN)
+                {
+                    bool b = lua_toboolean(L, -1);
+                    props.insert(key, b);
+                }
+                else if(type == LUA_TSTRING)
+                {
+                    const char *s = lua_tostring(L, -1);
+                    props.insert(key, QString(s));
+                }
+                else if(type == LUA_TLIGHTUSERDATA)
+                {
+                    void *p = (void *)(lua_touserdata(L, -1));
+                    if(p)
+                    {
+                        QObject *o = reinterpret_cast<QObject *>(p);
+                        if(o)
+                            props.insert(key, QVariant::fromValue<QObject *>(o));
+                    }
+                }
+                else if(type == LUA_TUSERDATA)
+                {
+                    void **p = (void **)(lua_touserdata(L, -1));
+                    if(*p)
+                    {
+                        QObject *o = reinterpret_cast<QObject *>(*p);
+                        if(o)
+                            props.insert(key, QVariant::fromValue<QObject *>(o));
+                    }
+                }
+                else
+                {
+                }
+            }
+        }
+
+        lua_pop(L, 1);
+    }
+
+    script->SetGlobalVariant(props);
+    lua_pop(L, 1);
 }
 
 NLScript::NLScript(NLActor *parent) :
@@ -438,6 +516,7 @@ bool NLScript::DeinitLua()
 {
     if(!IsMounted())
         return false;
+    ClearGlobalVariant();
     return m_lua.Deinit();
 }
 
@@ -459,4 +538,26 @@ void NLScript::Reset()
 {
     NLObject::Reset();
     m_lua.Reset();
+}
+
+void NLScript::SetGlobalVariant(const NLVariantSequenceHash &list)
+{
+    Q_FOREACH(const QString &key, list.SequenceKeys())
+    {
+        qDebug() << key << list.value(key);
+        qDebug() << HasProperty(key) << property("aaa").isValid();
+        SetProperty(key, list.value(key));
+    }
+    m_globalVaraint = list;
+}
+
+void NLScript::ClearGlobalVariant()
+{
+    Q_FOREACH(const QString &key, m_globalVaraint.SequenceKeys())
+    {
+        qDebug() << key << GetProperty(key);
+        qDebug() << HasProperty(key) << property("aaa").isValid();
+        RemoveProperty(key);
+    }
+    m_globalVaraint.clear();
 }

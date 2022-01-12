@@ -202,7 +202,9 @@ void NLPropFormGroupWidget::SetObject(QObject *obj)
 
 void NLPropFormGroupWidget::OnObjectChanged()
 {
-    Reset();
+    if(!m_object)
+        return;
+    NLFormGroupWidget::Reset();
     SetupObjectProperty();
 }
 

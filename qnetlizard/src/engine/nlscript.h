@@ -2,6 +2,7 @@
 #define _KARIN_NLSCRIPTT_H
 
 #include "nlobject.h"
+#include "nlsequencemap.h"
 
 class NLScriptContainer;
 class NLActor;
@@ -51,6 +52,8 @@ public slots:
 private:
     void Construct();
     bool ExecScript(float delta) { return m_lua.Exec(delta); }
+    void SetGlobalVariant(const NLVariantSequenceHash &list);
+    void ClearGlobalVariant();
 
 private:
     struct Script_Lua
@@ -78,6 +81,7 @@ private:
         bool Deinit();
         bool Exec(float delta);
         bool Reset();
+        void RegisterGlobalVariant();
         operator bool() const { return L != 0; }
     };
 
@@ -85,6 +89,7 @@ private:
     QByteArray m_data;
     QString m_sourceFile;
     Script_Lua m_lua;
+    NLVariantSequenceHash m_globalVaraint;
 
     friend class NLScriptContainer;
     friend class NLActor;

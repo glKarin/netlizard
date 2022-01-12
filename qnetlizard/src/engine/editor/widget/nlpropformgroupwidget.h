@@ -64,6 +64,7 @@ public:
 public Q_SLOTS:
     virtual void Reset();
     void NotifyPropertyChanged(const QString &name, const QVariant &value);
+    void OnObjectChanged();
 
 protected:
     virtual QWidget * GenWidget(QObject *obj, const NLPropertyInfo &prop);
@@ -74,7 +75,6 @@ protected:
 
 private:
     void SetupObjectProperty();
-    void OnObjectChanged();
 
 private Q_SLOTS:
     void OnItemDestroy(QObject *obj);

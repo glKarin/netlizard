@@ -242,7 +242,11 @@ void NLActorPropWidget::OnPropertyChanged(const QString &name, const NLProperty 
     NLPropFormGroupWidget *widget = m_propWidgetMap[obj];
     if(!widget)
         return;
-    widget->NotifyPropertyChanged(name, value);
+    qDebug() << action;
+    if(action == 0)
+        widget->NotifyPropertyChanged(name, value);
+    else
+        widget->OnObjectChanged();
 }
 
 void NLActorPropWidget::SetupScriptProperty(NLScript *script)
@@ -251,7 +255,7 @@ void NLActorPropWidget::SetupScriptProperty(NLScript *script)
     groupBox->setTitle(script->ClassName() + "(" + script->Name() + ")");
     groupBox->SetObject(script);
     m_propWidgetMap.insert(script, groupBox);
-    connect(script, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
+    connect(script, SIGNAL(propertyChanged(const QString &, const NLProperty &, int)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &, int)));
     QAction *action = new QAction(tr("Remove"), groupBox);
     action->setData(ACTION_REMOVE_SCRIPT);
     action->setProperty("NLObject", QVariant::fromValue<QObject *>(script));
