@@ -7,6 +7,7 @@
 #include <QToolButton>
 
 #include "qdef.h"
+#include "guiutility.h"
 
 NLPropSectionHeader::NLPropSectionHeader(QWidget *widget)
     : QWidget(widget),
@@ -162,17 +163,16 @@ void NLPropSectionContent::Toggle(bool on)
 
 void NLPropSectionContent::Reset()
 {
-    QLayoutItem *item;
-    while(!m_layout->isEmpty())
+    if(m_expand)
     {
-        item = m_layout->takeAt(0);
-        QWidget *widget = item->widget();
-        if(widget)
+        GuiUtility::ClearLayoutLater(m_layout);
+    }
+    else
+    {
+        Q_FOREACH(QWidget *widget, m_widgets)
         {
             widget->deleteLater();
-            // delete widget; // because maybe deleted by itself.
         }
-        delete item;
     }
     m_widgets.clear();
     m_expand = true;

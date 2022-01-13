@@ -70,12 +70,21 @@ void TestScene::Init()
     line->SetRotation(vr2);
 
     const char source[] =
+            "aaa = 123;\n"
+            "function Init()\n"
+            "bbb = 0.456;\n"
+            "return true;\n"
+            "end;\n"
+            "\n"
+            "function Update(delta)\n"
             "if(nl_Scene:KeyPressed(\"V\")) then;\n"
-            "local comp = nl_Actor:GetComponent(0);\n"
-            "print(comp:Invoke('Testr(int,QString,float,bool,QObject*)', 'void', 1, 'strings', 0.2, true, nil));"
-            "end;\n\n"
+            "ccc = 'abc';\n"
+            "\n"
+            "end;\n"
+            "\n"
             "if(nl_Scene:KeyPressed(\"B\")) then;\n"
-            "nl_Actor:RemoveScript(-1);\n"
+            "bbb = nil;\n"
+            "end;\n"
             "end;\n"
             ;
     NLScript *script = new NLScript(NLProperties("objectName", "scrrr")("scriptSource", source));

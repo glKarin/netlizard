@@ -26,6 +26,7 @@
 #include "nltexteditwidget.h"
 #include "nlobject.h"
 #include "nlrenderable.h"
+#include "guiutility.h"
 
 #define DOUBLE_SPINBOX_SINGLE_STEP 1 //0.1
 #define DOUBLE_SPINBOX_DECIMAL 6
@@ -93,27 +94,22 @@ void NLFormGroupWidget::ToggleGroupBox(bool on)
     }
     else
     {
-        while(!m_layout->isEmpty())
-        {
-            QLayoutItem *item = m_layout->takeAt(0);
-            item->widget()->hide();
-            delete item;
-        }
+//        while(!m_layout->isEmpty())
+//        {
+//            QLayoutItem *item = m_layout->takeAt(0);
+//            item->widget()->hide();
+//            delete item;
+//        }
+        GuiUtility::TakeLayout(m_layout);
     }
     m_expand = on;
 }
 
 void NLFormGroupWidget::Reset()
 {
-    QLayoutItem *item;
     if(m_expand)
     {
-        while(!m_layout->isEmpty())
-        {
-            item = m_layout->takeAt(0);
-            delete item->widget();
-            delete item;
-        }
+        GuiUtility::ClearLayout(m_layout);
     }
     else
     {
@@ -204,6 +200,7 @@ void NLPropFormGroupWidget::OnObjectChanged()
 {
     if(!m_object)
         return;
+    qDebug() << "OnObjectChanged";
     NLFormGroupWidget::Reset();
     SetupObjectProperty();
 }

@@ -69,6 +69,7 @@ bool NLScript::Script_Lua::Deinit()
     qDebug() << "lua script engine destroyed!";
     L = 0;
     func = -1;
+    script->ClearGlobalVariant();
     return true;
 }
 
@@ -106,7 +107,48 @@ bool NLScript::Script_Lua::Exec(float delta)
     if(!L)
         return false;
 
-    if(func < 0)
+    if(func >= 0)
+    {
+        lua_pushnumber(L, delta);
+        lua_setglobal(L, "nl_Delta");
+        if(func & Script_Lua_Func_Update)
+        {
+            RestoreGlobalVariant();
+            {
+                lua_getglobal(L, "Update");
+                lua_pushnumber(L, delta);
+                int err = lua_pcall(L, 1, 0, 0);
+                if(err)
+                {
+                    const char *errstr = lua_tostring(L, -1);
+                    qWarning() << "lua script Update(number) -> error: " << err << errstr;
+                    lua_pop(L, 1);
+                    Deinit();
+                    return false;
+                }
+            }
+            DumpGlobalVariant();
+            //qDebug() << "lua script Update(number)" << delta;
+        }
+        else
+        {
+            RestoreGlobalVariant();
+            {
+                int err = luaL_dostring(L, script->m_data.constData());
+                if(err)
+                {
+                    const char *errstr = lua_tostring(L, -1);
+                    qWarning() << "lua script when Update! -> error: " << err << errstr;
+                    lua_pop(L, 1);
+                    Deinit();
+                    return false;
+                }
+            }
+            DumpGlobalVariant();
+            //lua_settop(L, 0);
+        }
+    }
+    else
     {
         func = 0;
         PUSH_NLOBJECT_TO_STACK(L, NLScene, script->Scene())
@@ -162,6 +204,7 @@ bool NLScript::Script_Lua::Exec(float delta)
         {
             qWarning() << "lua script Init()......missing";
             lua_pop(L, 1); // pop function
+            RegisterGlobalVariant();
         }
 
         if(lua_getglobal(L, "Update") == LUA_TFUNCTION)
@@ -203,62 +246,101 @@ bool NLScript::Script_Lua::Exec(float delta)
             qWarning() << "lua script Reset()......missing";
         lua_pop(L, 1); // pop function
     }
-    else
+
+    return true;
+}
+
+void NLScript::Script_Lua::RestoreGlobalVariant()
+{
+    if(!L)
+        return;
+    Q_FOREACH(const QString &key, script->m_globalVaraint.SequenceKeys())
     {
-        lua_pushnumber(L, delta);
-        lua_setglobal(L, "nl_Delta");
-        if(func & Script_Lua_Func_Update)
+        QVariant va = script->m_globalVaraint.value(key);
+        QByteArray ba = key.toLocal8Bit();
+        const char *keyName = ba.constData();
+        int type = lua_getglobal(L, keyName);
+        lua_pop(L, -1);
+        bool pushed = true;
+        if(lua_isinteger(L, -1))
         {
-            lua_getglobal(L, "Update");
-            lua_pushnumber(L, delta);
-            int err = lua_pcall(L, 1, 0, 0);
-            if(err)
-            {
-                const char *errstr = lua_tostring(L, -1);
-                qWarning() << "lua script Update(number) -> error: " << err << errstr;
-                lua_pop(L, 1);
-                Deinit();
-                return false;
-            }
-            RegisterGlobalVariant();
-            //qDebug() << "lua script Update(number)" << delta;
+            lua_pushinteger(L, va.toInt());
         }
         else
         {
-            int err = luaL_dostring(L, script->m_data.constData());
-            if(err)
+            if(type == LUA_TNUMBER)
             {
-                const char *errstr = lua_tostring(L, -1);
-                qWarning() << "lua script when Update! -> error: " << err << errstr;
-                lua_pop(L, 1);
-                Deinit();
-                return false;
+                lua_pushnumber(L, va.toDouble());
             }
-            //lua_settop(L, 0);
+            else if(type == LUA_TBOOLEAN)
+            {
+                lua_pushboolean(L, va.toBool() ? 1 : 0);
+            }
+            else if(type == LUA_TSTRING)
+            {
+                QByteArray str = va.toByteArray();
+                lua_pushstring(L, str.constData());
+            }
+            else if(type == LUA_TLIGHTUSERDATA)
+            {
+                lua_pushlightuserdata(L, va.value<QObject *>());
+            }
+            else if(type == LUA_TUSERDATA)
+            {
+                void **p = (void **)(lua_newuserdata(L, sizeof(void *)));
+                *p = va.value<QObject *>();
+            }
+            else
+            {
+                pushed = false;
+            }
         }
-    }
 
-    return true;
+        if(pushed)
+            lua_setglobal(L, keyName);
+    }
 }
 
 void NLScript::Script_Lua::RegisterGlobalVariant()
 {
     if(!L)
         return;
-    lua_pushglobaltable(L);
+    NLVariantSequenceHash props = GetGlobalVariant();
+    script->SetGlobalVariant(props);
+}
 
+void NLScript::Script_Lua::DumpGlobalVariant()
+{
+    if(!L)
+        return;
+    NLVariantSequenceHash props = GetGlobalVariant();
+    script->SetGlobalVariant(props);
+}
+
+NLVariantSequenceHash NLScript::Script_Lua::GetGlobalVariant()
+{
     NLVariantSequenceHash props;
+
+    if(!L)
+        return props;
+    lua_pushglobaltable(L);
 
     lua_pushnil(L);
     while (lua_next(L, -2) != 0)
     {
         QString key(lua_tostring(L, -2));
         //qDebug() << key;
+        // lua internal globals
         if(key != "_G" && key != "_VERSION"
+                // internal globals
                 && key != "nl_Actor"
                 && key != "nl_Delta"
                 && key != "nl_Script"
                 && key != "nl_Scene"
+                // internal
+                && key != "scriptSource"
+                && key != "scriptFile"
+                && key != "enabled"
                 )
         {
             if(lua_isinteger(L, -1))
@@ -313,8 +395,8 @@ void NLScript::Script_Lua::RegisterGlobalVariant()
         lua_pop(L, 1);
     }
 
-    script->SetGlobalVariant(props);
     lua_pop(L, 1);
+    return props;
 }
 
 NLScript::NLScript(NLActor *parent) :
@@ -516,7 +598,6 @@ bool NLScript::DeinitLua()
 {
     if(!IsMounted())
         return false;
-    ClearGlobalVariant();
     return m_lua.Deinit();
 }
 
@@ -542,12 +623,22 @@ void NLScript::Reset()
 
 void NLScript::SetGlobalVariant(const NLVariantSequenceHash &list)
 {
-    Q_FOREACH(const QString &key, list.SequenceKeys())
+    const QList<QString> keys = list.SequenceKeys();
+    Q_FOREACH(const QString &key, keys)
     {
-        qDebug() << key << list.value(key);
-        qDebug() << HasProperty(key) << property("aaa").isValid();
+        //qDebug() << "Set -> " << key << GetProperty(key) << list.value(key) << GetProperty(key) == list.value(key);
         SetProperty(key, list.value(key));
     }
+
+    Q_FOREACH(const QString &key, m_globalVaraint.SequenceKeys())
+    {
+        if(!keys.contains(key))
+        {
+            RemoveProperty(key);
+            //qDebug() << "Remove unused -> " << key << GetProperty(key);
+        }
+    }
+
     m_globalVaraint = list;
 }
 
@@ -555,8 +646,7 @@ void NLScript::ClearGlobalVariant()
 {
     Q_FOREACH(const QString &key, m_globalVaraint.SequenceKeys())
     {
-        qDebug() << key << GetProperty(key);
-        qDebug() << HasProperty(key) << property("aaa").isValid();
+        //qDebug() << "REMOVE -> " << key << GetProperty(key);
         RemoveProperty(key);
     }
     m_globalVaraint.clear();

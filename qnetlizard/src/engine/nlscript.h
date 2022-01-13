@@ -81,7 +81,10 @@ private:
         bool Deinit();
         bool Exec(float delta);
         bool Reset();
+        NLVariantSequenceHash GetGlobalVariant();
         void RegisterGlobalVariant();
+        void DumpGlobalVariant();
+        void RestoreGlobalVariant();
         operator bool() const { return L != 0; }
     };
 
