@@ -2,9 +2,28 @@
 #define _KARIN_SETTINGWIDGET_H
 
 #include <QWidget>
-#include <QGroupBox>
 
 #include "settings.h"
+#include "nlpropformgroupwidget.h"
+
+class SettingsPropFormGroupWidget : public NLPropFormGroupWidget
+{
+    Q_OBJECT
+public:
+    explicit SettingsPropFormGroupWidget(const Settings::SettingItemCategory *c, QWidget *widget = 0);
+    explicit SettingsPropFormGroupWidget(const Settings::SettingItemCategory *c, const QString &title, QWidget *widget = 0);
+    virtual ~SettingsPropFormGroupWidget();
+
+protected:
+    virtual void SetObjectProperty(QObject *obj, const QString &name, const QVariant &value);
+    virtual void CoverObjectProperty(QObject *obj, const QString &name, const QVariant &value);
+    virtual NLPropertyInfoList GetPropertyInfoList(QObject *obj);
+    virtual void SortProperties(NLPropertyInfoList &list);
+
+private:
+    const Settings::SettingItemCategory *m_sc;
+};
+
 
 class SettingGroup : public QGroupBox
 {

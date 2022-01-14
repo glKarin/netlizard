@@ -60,6 +60,15 @@ NLObjectPropFormGroupWidget::~NLObjectPropFormGroupWidget()
 
 }
 
+void NLObjectPropFormGroupWidget::SetObject(QObject *obj)
+{
+    NLPropFormGroupWidget::SetObject(obj);
+    if(obj)
+    {
+        connect(obj, SIGNAL(destroying()), this, SLOT(Reset()));
+    }
+}
+
 void NLObjectPropFormGroupWidget::SetObjectProperty(QObject *obj, const QString &name, const QVariant &value)
 {
     static_cast<NLObject *>(obj)->SetProperty(name, value);
@@ -109,6 +118,7 @@ void NLActorPropWidget::Init()
     m_scriptSection = new NLPropSection;
     QAction *action;
 
+    m_actorGroupBox->setObjectName(m_actorGroupBox->objectName() + "_actor");
     label = new QLabel(tr("Actor: "));
     mainLayout->addWidget(label);
     mainLayout->addSpacing(1);
@@ -205,6 +215,7 @@ void NLActorPropWidget::SetupActorProperty()
 void NLActorPropWidget::SetupComponentProperty(NLComponent *comp)
 {
     NLObjectPropFormGroupWidget *groupBox = new NLObjectPropFormGroupWidget;
+    groupBox->setObjectName(m_actorGroupBox->objectName() + "_component");
     groupBox->setTitle(comp->ClassName() + "(" + comp->Name() + ")");
     groupBox->SetObject(comp);
     m_propWidgetMap.insert(comp, groupBox);
@@ -242,7 +253,6 @@ void NLActorPropWidget::OnPropertyChanged(const QString &name, const NLProperty 
     NLPropFormGroupWidget *widget = m_propWidgetMap[obj];
     if(!widget)
         return;
-    qDebug() << action;
     if(action == 0)
         widget->NotifyPropertyChanged(name, value);
     else
@@ -252,6 +262,7 @@ void NLActorPropWidget::OnPropertyChanged(const QString &name, const NLProperty 
 void NLActorPropWidget::SetupScriptProperty(NLScript *script)
 {
     NLObjectPropFormGroupWidget *groupBox = new NLObjectPropFormGroupWidget;
+    groupBox->setObjectName(m_actorGroupBox->objectName() + "_script");
     groupBox->setTitle(script->ClassName() + "(" + script->Name() + ")");
     groupBox->SetObject(script);
     m_propWidgetMap.insert(script, groupBox);

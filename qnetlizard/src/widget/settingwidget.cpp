@@ -16,6 +16,57 @@
 #include "qdef.h"
 #include "lang.h"
 
+SettingsPropFormGroupWidget::SettingsPropFormGroupWidget(const Settings::SettingItemCategory *c, QWidget *widget)
+    : NLPropFormGroupWidget(widget),
+      m_sc(c)
+{
+    setObjectName("SettingsPropFormGroupWidget");
+}
+
+SettingsPropFormGroupWidget::SettingsPropFormGroupWidget(const Settings::SettingItemCategory *c, const QString &title, QWidget *widget)
+    : NLPropFormGroupWidget(title, widget),
+      m_sc(c)
+{
+    setObjectName("SettingsPropFormGroupWidget");
+}
+
+SettingsPropFormGroupWidget::~SettingsPropFormGroupWidget()
+{
+    m_sc = 0;
+}
+
+void SettingsPropFormGroupWidget::SetObjectProperty(QObject *obj, const QString &name, const QVariant &value)
+{
+    static_cast<Settings *>(obj)->operator()(name, value);
+}
+
+void SettingsPropFormGroupWidget::CoverObjectProperty(QObject *obj, const QString &name, const QVariant &value)
+{
+    static_cast<Settings *>(obj)->operator()(name, value);
+}
+
+NLPropertyInfoList SettingsPropFormGroupWidget::GetPropertyInfoList(QObject *obj)
+{
+    Settings *settings = static_cast<Settings *>(obj);
+    const LangHelper lang("SETTING");
+
+    Q_FOREACH(const Settings::SettingItem *si, m_sc->settings)
+    {
+        if(!si->IsValid())
+            continue;
+
+        QWidget *widget = 0;
+        QString tail = si->description.isEmpty() ? "" : QString("(%1)").arg(lang[si->description]);
+        QString label(lang[si->title] + tail);
+    }
+}
+
+void SettingsPropFormGroupWidget::SortProperties(NLPropertyInfoList &list)
+{
+    //qSort(list.begin(), list.end(), NLPropertyInfoCmp);
+}
+
+
 SettingGroup::SettingGroup(QWidget *parent)
     : QGroupBox(parent)
 {

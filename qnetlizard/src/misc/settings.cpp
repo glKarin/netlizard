@@ -128,7 +128,20 @@ Settings::~Settings()
 
 QVariant Settings::operator[](const QString &name)
 {
-    return GetSetting<QVariant>(name, GetDefaultSetting(name));
+    if(!m_settings->contains(name))
+        return QVariant();
+    return m_settings->value(name);
+}
+
+void Settings::operator()(const QString &name, const QVariant &val)
+{
+    QVariant v = QVariant::fromValue(val);
+    QVariant old = m_settings->value(name);
+    if(!m_settings->contains(name) || v != old)
+    {
+        m_settings->setValue(name, val);
+        emit settingChanged(name, v, old);
+    }
 }
 
 SINGLE_INSTANCE_DECL(Settings)

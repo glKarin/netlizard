@@ -71,16 +71,20 @@ struct NLPropertyInfo
     bool readonly;
     NLProperty default_value;
     QVariantHash prop;
+    QString label;
 
-    NLPropertyInfo(const QString &name, const NLProperty &value, const QString &type, const QString &widget, bool readonly = true, const NLProperty &def_value = NLProperty(), const QVariantHash &config = QVariantHash())
+    NLPropertyInfo(const QString &name, const NLProperty &value, const QString &type, const QString &widget, bool readonly = true, const NLProperty &def_value = NLProperty(), const QVariantHash &config = QVariantHash(), const QString &label = QString())
         : name(name),
           value(value),
           type(type),
           widget(widget),
           readonly(readonly),
           default_value(def_value),
-          prop(config)
+          prop(config),
+          label(label)
     {
+        if(this->label.isEmpty())
+            this->label = name;
     }
 
     NLPropertyInfo & operator()(const QString &name, const QVariant &val)

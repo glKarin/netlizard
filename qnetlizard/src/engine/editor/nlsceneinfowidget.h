@@ -19,6 +19,7 @@ public:
     explicit NLScenePropFormGroupWidget(QWidget *widget = 0);
     explicit NLScenePropFormGroupWidget(const QString &title, QWidget *widget = 0);
     virtual ~NLScenePropFormGroupWidget();
+    virtual void SetObject(QObject *obj);
 
 protected:
     virtual void SetObjectProperty(QObject *obj, const QString &name, const QVariant &value);

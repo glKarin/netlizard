@@ -95,11 +95,12 @@ public:
 
 public:
     virtual ~Settings();
-    SINGLE_INSTANCE_DEF(Settings);
+    SINGLE_INSTANCE_DEF(Settings)
     static const SettingItemMap & SettingsConfig();
     template<class T> T GetSetting(const QString &name, const T &def = T());
     template<class T> void SetSetting(const QString &name, const T &val);
     QVariant operator[](const QString &name);
+    void operator()(const QString &name, const QVariant &val);
     QVariant GetDefaultSetting(const QString &name);
     
 signals:

@@ -60,7 +60,7 @@ public:
     explicit NLPropFormGroupWidget(QWidget *widget = 0);
     explicit NLPropFormGroupWidget(const QString &title, QWidget *widget = 0);
     virtual ~NLPropFormGroupWidget();
-    void SetObject(QObject *obj);
+    virtual void SetObject(QObject *obj);
     QObject * Object() { return m_object; }
 
 public Q_SLOTS:

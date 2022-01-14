@@ -37,6 +37,10 @@
 #define ACTION_REMOVE_SCRIPT 4
 
 #define WIDGET_TYPE_KEY "QWidget"
+#define LAYOUT_COUNTER_NAME "_Count"
+
+#define LAYOUT_COUNTER_NUM(layout) (layout)->property(LAYOUT_COUNTER_NAME).toInt()
+#define LAYOUT_COUNTER_INCREMENT(layout) (layout)->setProperty(LAYOUT_COUNTER_NAME, LAYOUT_COUNTER_NUM(layout) + 1)
 
 #define WIDGET_SET_TYPE(w, T) (w)->setProperty(WIDGET_TYPE_KEY, #T)
 #define WIDGET_TYPE(w) (w)->property(WIDGET_TYPE_KEY).toString()
@@ -110,10 +114,16 @@ void NLFormGroupWidget::Reset()
 {
     if(m_expand)
     {
-        GuiUtility::ClearLayout(m_layout);
-        delete m_layout;
-        m_layout = 0;
-        CreateLayout();
+        if(m_layout)
+        {
+            if(LAYOUT_COUNTER_NUM(m_layout))
+            {
+                GuiUtility::ClearLayout(m_layout);
+                delete m_layout;
+                m_layout = 0;
+                CreateLayout();
+            }
+        }
     }
     else
     {
@@ -145,6 +155,7 @@ void NLFormGroupWidget::AddRow(const QString &name, QWidget *widget)
 {
     CreateLayout();
     m_layout->addRow(name, widget);
+    LAYOUT_COUNTER_INCREMENT(m_layout);
     m_nameWidgetMap.insert(name, widget);
     setCheckable(true);
 }
@@ -205,10 +216,6 @@ void NLPropFormGroupWidget::SetObject(QObject *obj)
     {
         Reset();
         m_object = obj;
-        if(m_object)
-        {
-            connect(m_object, SIGNAL(destroying()), this, SLOT(Reset()));
-        }
         SetupObjectProperty();
     }
 }
@@ -231,7 +238,7 @@ void NLPropFormGroupWidget::SetupObjectProperty()
     Q_FOREACH(const NLPropertyInfo &item, list)
     {
         QWidget *widget = GenWidget(m_object, item);
-        AddRow(item.name, widget);
+        AddRow(item.label, widget);
     }
 }
 

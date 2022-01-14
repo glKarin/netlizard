@@ -59,6 +59,15 @@ NLScenePropFormGroupWidget::~NLScenePropFormGroupWidget()
 
 }
 
+void NLScenePropFormGroupWidget::SetObject(QObject *obj)
+{
+    NLPropFormGroupWidget::SetObject(obj);
+    if(obj)
+    {
+        connect(obj, SIGNAL(destroyed()), this, SLOT(Reset()));
+    }
+}
+
 void NLScenePropFormGroupWidget::SetObjectProperty(QObject *obj, const QString &name, const QVariant &value)
 {
     static_cast<NLScene *>(obj)->SetProperty(name, value);

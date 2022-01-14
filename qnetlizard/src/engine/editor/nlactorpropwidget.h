@@ -18,6 +18,7 @@ public:
     explicit NLObjectPropFormGroupWidget(QWidget *widget = 0);
     explicit NLObjectPropFormGroupWidget(const QString &title, QWidget *widget = 0);
     virtual ~NLObjectPropFormGroupWidget();
+    virtual void SetObject(QObject *obj);
 
 protected:
     virtual void SetObjectProperty(QObject *obj, const QString &name, const QVariant &value);
