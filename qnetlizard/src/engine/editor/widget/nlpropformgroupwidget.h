@@ -36,9 +36,11 @@ protected:
 
 private Q_SLOTS:
     void ToggleGroupBox(bool on);
+    void OnItemDestroyed();
 
 private:
     void Init();
+    void CreateLayout();
 
 private:
     typedef NLSequenceHash<QString, QWidget *> WidgetHash;

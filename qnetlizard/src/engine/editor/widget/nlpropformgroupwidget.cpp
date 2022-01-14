@@ -71,12 +71,14 @@ NLFormGroupWidget::~NLFormGroupWidget()
 
 void NLFormGroupWidget::Init()
 {
-    m_layout = new QFormLayout;
-    m_layout->setRowWrapPolicy(QFormLayout::WrapLongRows);
     setCheckable(false);
     setChecked(true);
     connect(this, SIGNAL(toggled(bool)), this, SLOT(ToggleGroupBox(bool)));
-    setLayout(m_layout);
+}
+
+void NLFormGroupWidget::OnItemDestroyed()
+{
+    DEBUG_DESTROY_QQV(sender())
 }
 
 void NLFormGroupWidget::ToggleGroupBox(bool on)
@@ -85,22 +87,21 @@ void NLFormGroupWidget::ToggleGroupBox(bool on)
         return;
     if(on)
     {
+        CreateLayout();
         Q_FOREACH(const QString &name, m_nameWidgetMap.SequenceKeys())
         {
             QWidget *widget = m_nameWidgetMap[name];
+            widget->setParent(this);
             widget->show();
             m_layout->addRow(name, widget);
         }
     }
     else
     {
-//        while(!m_layout->isEmpty())
-//        {
-//            QLayoutItem *item = m_layout->takeAt(0);
-//            item->widget()->hide();
-//            delete item;
-//        }
-        GuiUtility::TakeLayout(m_layout);
+        GuiUtility::TakeFormLayout(m_layout);
+        delete m_layout;
+        m_layout = 0;
+        CreateLayout();
     }
     m_expand = on;
 }
@@ -110,6 +111,9 @@ void NLFormGroupWidget::Reset()
     if(m_expand)
     {
         GuiUtility::ClearLayout(m_layout);
+        delete m_layout;
+        m_layout = 0;
+        CreateLayout();
     }
     else
     {
@@ -125,8 +129,21 @@ void NLFormGroupWidget::Reset()
     setCheckable(false);
 }
 
+void NLFormGroupWidget::CreateLayout()
+{
+    if(m_layout)
+        return;
+    static uint _index_no = 0;
+    m_layout = new QFormLayout;
+    m_layout->setRowWrapPolicy(QFormLayout::WrapLongRows);
+    m_layout->setObjectName(objectName() + "::QFormLayout" + QString::number(_index_no++));
+    connect(m_layout, SIGNAL(destroyed()), this, SLOT(OnItemDestroyed()));
+    setLayout(m_layout);
+}
+
 void NLFormGroupWidget::AddRow(const QString &name, QWidget *widget)
 {
+    CreateLayout();
     m_layout->addRow(name, widget);
     m_nameWidgetMap.insert(name, widget);
     setCheckable(true);
