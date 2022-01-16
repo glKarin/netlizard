@@ -1,7 +1,7 @@
 #ifndef _KARIN_SPRITESCENE_H
 #define _KARIN_SPRITESCENE_H
 
-#include "nlscene.h"
+#include "engine/nlscene.h"
 #include "gl/nl_gl.h"
 
 class QColor;

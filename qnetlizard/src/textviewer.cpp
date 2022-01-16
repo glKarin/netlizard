@@ -8,7 +8,7 @@
 #include <QHBoxLayout>
 #include <QTextBrowser>
 
-#include "utils/ioutility.h"
+#include "utils/nlioutility.h"
 
 #include "netlizard.h"
 #include "qdef.h"
@@ -140,7 +140,7 @@ bool TextViewer::SaveData(const QString &file)
         QMessageBox::warning(this, tr("Error"), tr("No data!"));
         return false;
     }
-    bool res = IOUtility::file_put_contents(file, m_data.data, (quint64)m_data.len);
+    bool res = NLIOUtility::file_put_contents(file, m_data.data, (quint64)m_data.len);
     if(res)
         QMessageBox::information(this, tr("Success"), tr("File path is ") + file);
     else

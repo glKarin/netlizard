@@ -3,6 +3,22 @@
 
 // SOIL
 
+#if defined(__WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__MINGW32__) || defined(_WIN32)
+#    define NLSOIL_EXPORT __declspec(dllexport)
+#    define NLSOIL_IMPORT __declspec(dllimport)
+#    define NLSOIL_HIDDEN
+#else
+#  define NLSOIL_EXPORT     __attribute__((visibility("default")))
+#  define NLSOIL_IMPORT     __attribute__((visibility("default")))
+#  define NLSOIL_HIDDEN     __attribute__((visibility("hidden")))
+#endif
+
+#if defined(_NL_DLL)
+#  define NLSOILAPI NLSOIL_EXPORT
+#else
+#  define NLSOILAPI NLSOIL_IMPORT
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -23,7 +39,7 @@ enum
     SOIL_LOAD_RGBA = 4
 };
 
-int
+NLSOILAPI int
     SOIL_save_image
     (
         const char *filename,
@@ -32,7 +48,7 @@ int
         const unsigned char *const data
     );
 
-unsigned char*
+NLSOILAPI unsigned char*
     SOIL_load_image
     (
         const char *filename,
@@ -40,7 +56,7 @@ unsigned char*
         int force_channels
     );
 
-unsigned char*
+NLSOILAPI unsigned char*
     SOIL_load_image_from_memory
     (
         const unsigned char *const buffer,

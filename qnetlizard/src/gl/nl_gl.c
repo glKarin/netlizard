@@ -6,11 +6,11 @@
 
 #include "netlizard.h"
 #include "netlizard_3d.h"
-#include "lib/vector3.h"
+#include "math/vector3.h"
 #include "nl_texture.h"
-#include "lib/triangle.h"
-#include "lib/plane.h"
-#include "lib/bound.h"
+#include "math/triangle.h"
+#include "math/plane.h"
+#include "math/bound.h"
 
 //#define MAKE_WITH_SCENE_BOUND_IF_NO_PLANE_DATA
 

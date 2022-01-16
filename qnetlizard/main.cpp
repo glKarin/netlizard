@@ -6,9 +6,9 @@
 #include "mainwindow.h"
 #include "logoutput.h"
 #include "qdef.h"
-#include "nlglobals.h"
+#include "engine/nlglobals.h"
 #include "lang.h"
-#include "nldef.h"
+#include "engine/nldef.h"
 
 static int Test(int argc, char **argv);
 static int nl_log_func(int type, const char *str);

@@ -17,3 +17,9 @@ BUILD_DIR_NAME = .build
 
 BUILD_DIR = $$PWD/$$BUILD_DIR_NAME
 OBJ_DIR_NAME = obj
+
+unix {
+DEFINES += _OS_UNIX
+} else:win32 {
+DEFINES += _OS_WIN
+}

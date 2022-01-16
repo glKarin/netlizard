@@ -1,7 +1,7 @@
 #ifndef _KARIN_NETLIZARDITEMMODELRENDERER_H
 #define _KARIN_NETLIZARDITEMMODELRENDERER_H
 
-#include "nlrenderable.h"
+#include "engine/nlrenderable.h"
 #include "gl/nl_gl.h"
 
 NLRENDERER(NETLizardItemModelRenderer)

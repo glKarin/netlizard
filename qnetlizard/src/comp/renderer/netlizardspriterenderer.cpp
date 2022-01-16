@@ -4,8 +4,8 @@
 
 #include <GL/gl.h>
 
-#include "nlactor.h"
-#include "nlscene.h"
+#include "engine/nlactor.h"
+#include "engine/nlscene.h"
 #include "qdef.h"
 
 NETLizardSpriteRenderer::NETLizardSpriteRenderer(NLActor *actor) :

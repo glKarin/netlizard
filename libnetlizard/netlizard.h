@@ -4,6 +4,22 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#if defined(__WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__MINGW32__) || defined(_WIN32)
+#    define NL_EXPORT __declspec(dllexport)
+#    define NL_IMPORT __declspec(dllimport)
+#    define NL_HIDDEN
+#else
+#  define NL_EXPORT     __attribute__((visibility("default")))
+#  define NL_IMPORT     __attribute__((visibility("default")))
+#  define NL_HIDDEN     __attribute__((visibility("hidden")))
+#endif
+
+#if defined(_NL_DLL)
+#  define NLAPI NL_EXPORT
+#else
+#  define NLAPI NL_IMPORT
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -447,167 +463,167 @@ typedef struct NETLizard_Level_Door_s
 
 ////////// function //////////
 /* PNG util */
-NLboolean nlIsPNGFile(const char *name); // check file is normal png
-NLboolean nlIsPNG(const char *data, NLsizei len); // check data is normal png
-NLboolean nlIsNLPNGFile(const char *name); // check file is NETLizard png
-NLboolean nlIsNLPNG(const char *data, NLsizei len); // check data is NETLizard png
-NL_RET_PTR_REF_ARG(char *, data) char * nlEncodeDecodeData(const char *arr, char *data, NLsizei length); // encode/decode data to special data
-NL_RET_PTR_ALLOC(char *) char * nlEncodeDecodeFile(const char *file, NLint *rlen); // encode/decode file to new adta
-NL_RET_PTR_REF_ARG(char *, arr) char * nlEncodeDecodeDatav(char *arr, NLsizei length); // encode/decode data self
-NL_RET_PTR_ALLOC(char *) char * nlEncodeDecodeDataa(const char *arr, NLsizei length); // encode/decode data to new adta
+NLAPI NLboolean nlIsPNGFile(const char *name); // check file is normal png
+NLAPI NLboolean nlIsPNG(const char *data, NLsizei len); // check data is normal png
+NLAPI NLboolean nlIsNLPNGFile(const char *name); // check file is NETLizard png
+NLAPI NLboolean nlIsNLPNG(const char *data, NLsizei len); // check data is NETLizard png
+NLAPI NL_RET_PTR_REF_ARG(char *, data) char * nlEncodeDecodeData(const char *arr, char *data, NLsizei length); // encode/decode data to special data
+NLAPI NL_RET_PTR_ALLOC(char *) char * nlEncodeDecodeFile(const char *file, NLint *rlen); // encode/decode file to new adta
+NLAPI NL_RET_PTR_REF_ARG(char *, arr) char * nlEncodeDecodeDatav(char *arr, NLsizei length); // encode/decode data self
+NLAPI NL_RET_PTR_ALLOC(char *) char * nlEncodeDecodeDataa(const char *arr, NLsizei length); // encode/decode data to new adta
 
 /* Texture util */
-NLboolean nlIsNL3DTextureV2File(const char *name); // check file is NETLizard 3D texture v2
-NLboolean nlIsNL3DTextureV2(const char *data, NLsizei length); // check data is NETLizard 3D texture v2
-NLboolean nlIsNL3DTextureV3File(const char *name); // check file is NETLizard 3D texture v3
-NLboolean nlIsNL3DTextureV3(const char *data, NLsizei length); // check data is NETLizard 3D texture v3
+NLAPI NLboolean nlIsNL3DTextureV2File(const char *name); // check file is NETLizard 3D texture v2
+NLAPI NLboolean nlIsNL3DTextureV2(const char *data, NLsizei length); // check data is NETLizard 3D texture v2
+NLAPI NLboolean nlIsNL3DTextureV3File(const char *name); // check file is NETLizard 3D texture v3
+NLAPI NLboolean nlIsNL3DTextureV3(const char *data, NLsizei length); // check data is NETLizard 3D texture v3
 
 /* String util: In java source, some string using integer array */
-NL_RET_PTR_ALLOC(char *) char * nlDecodeStringi(const NLint *arr, NLsizei length); // decode integer array to string
-NL_RET_PTR_ALLOC(char *) char * nlDecodeStringCi(const NLint *arr, NLsizei length); // decode integer array to string(C)
-NL_RET_PTR_ALLOC(char *) char * nlDecodeString(const char *arr, NLsizei length); // decode byte array to string
-NL_RET_PTR_ALLOC(char *) char * nlDecodeStringC(const char *arr, NLsizei length); // decode byte array to string(C)
-NL_RET_PTR_ALLOC(char *) NLint * nlEncodeStringC(const char *str, NLint *rlen); // encode string to integer array
+NLAPI NL_RET_PTR_ALLOC(char *) char * nlDecodeStringi(const NLint *arr, NLsizei length); // decode integer array to string
+NLAPI NL_RET_PTR_ALLOC(char *) char * nlDecodeStringCi(const NLint *arr, NLsizei length); // decode integer array to string(C)
+NLAPI NL_RET_PTR_ALLOC(char *) char * nlDecodeString(const char *arr, NLsizei length); // decode byte array to string
+NLAPI NL_RET_PTR_ALLOC(char *) char * nlDecodeStringC(const char *arr, NLsizei length); // decode byte array to string(C)
+NLAPI NL_RET_PTR_ALLOC(char *) NLint * nlEncodeStringC(const char *str, NLint *rlen); // encode string to integer array
 
 /* Text util: exam some text in `about`, `help` menu */
-NL_RET_PTR_ALLOC(char *) char * nlReadAndHandleTextFile(const char *name, NLint *len); // decode text file to data
-NL_RET_PTR_ALLOC(char *) char * nlLoadAndHandleTextData(const char *data, NLsizei len, NLint *rlen); // decode text data to data
-NLboolean nlConvertAndHandleTextFile(const char *from, const char *to); // decode text file to file
-NLboolean nlSaveAndHandleTextData(const char *data, NLsizei len, const char *to); // decode text data to file
+NLAPI NL_RET_PTR_ALLOC(char *) char * nlReadAndHandleTextFile(const char *name, NLint *len); // decode text file to data
+NLAPI NL_RET_PTR_ALLOC(char *) char * nlLoadAndHandleTextData(const char *data, NLsizei len, NLint *rlen); // decode text data to data
+NLAPI NLboolean nlConvertAndHandleTextFile(const char *from, const char *to); // decode text file to file
+NLAPI NLboolean nlSaveAndHandleTextData(const char *data, NLsizei len, const char *to); // decode text data to file
 
 /* Media util */
-NL_RET_PTR_REF_ARG(char *, level) char * nlGet3DGameLevelMusicFileName(NETLizard_Game game, NLint level, char *file NL_ARG_MIN_LEN(8)); // get 3D game music file of level
-NL_RET_PTR_REF_ARG(char *, file) char * nlGet3DGameMenuMusicFileName(NETLizard_Game game, char *file NL_ARG_MIN_LEN(8)); // get 3D game main menu music file
+NLAPI NL_RET_PTR_REF_ARG(char *, level) char * nlGet3DGameLevelMusicFileName(NETLizard_Game game, NLint level, char *file NL_ARG_MIN_LEN(8)); // get 3D game music file of level
+NLAPI NL_RET_PTR_REF_ARG(char *, file) char * nlGet3DGameMenuMusicFileName(NETLizard_Game game, char *file NL_ARG_MIN_LEN(8)); // get 3D game main menu music file
 
 /* 3D sprite: exam broken bodies in `3D Clone` */
-NLint nlGetSpiritFileCount(const char *file);
-NLint nlGetSpiritDataCount(const char *data, NLsizei length);
-NLboolean nlReadSpiritMapFile(const char *file, NETLizard_Sprite *ret);
-NLboolean nlLoadSpiritMapData(const char *data, NLsizei len, NETLizard_Sprite *ret);
-void nlDeleteNETLizardSprite(NETLizard_Sprite *sprite); // free sprite
+NLAPI NLint nlGetSpiritFileCount(const char *file);
+NLAPI NLint nlGetSpiritDataCount(const char *data, NLsizei length);
+NLAPI NLboolean nlReadSpiritMapFile(const char *file, NETLizard_Sprite *ret);
+NLAPI NLboolean nlLoadSpiritMapData(const char *data, NLsizei len, NETLizard_Sprite *ret);
+NLAPI void nlDeleteNETLizardSprite(NETLizard_Sprite *sprite); // free sprite
 
 /* Font: exam `fnt.png` */
-NLboolean nlLoadNETLizardFontData(const char *data, NLsizei size, NETLizard_Font *fnt); // load font data
-NLboolean nlReadNETLizardFontFile(const char *map_file, NETLizard_Font *fnt); // load font file
-void nlDeleteNETLizardFont(NETLizard_Font *fnt); // free font
+NLAPI NLboolean nlLoadNETLizardFontData(const char *data, NLsizei size, NETLizard_Font *fnt); // load font data
+NLAPI NLboolean nlReadNETLizardFontFile(const char *map_file, NETLizard_Font *fnt); // load font file
+NLAPI void nlDeleteNETLizardFont(NETLizard_Font *fnt); // free font
 
 // 3D
-void nlDeleteNETLizard3DMesh(NETLizard_3D_Mesh *mesh); // free 3D mesh
-void nlDeleteNETLizard3DItemMesh(NETLizard_3D_Item_Mesh *mesh); // free 3D item mesh
-void nlDeleteNETLizard3DModel(NETLizard_3D_Model *model); // free 3D model
+NLAPI void nlDeleteNETLizard3DMesh(NETLizard_3D_Mesh *mesh); // free 3D mesh
+NLAPI void nlDeleteNETLizard3DItemMesh(NETLizard_3D_Item_Mesh *mesh); // free 3D item mesh
+NLAPI void nlDeleteNETLizard3DModel(NETLizard_3D_Model *model); // free 3D model
 
 // util
-NL_RET_PTR_CONST(char *) const char * nlGet3DModelFrameAnimationName(NETLizard_3D_Animation_Type anim); // get 3D Egypt/3D Clone player character animation name
-NLboolean nlCheck3DGameLevelIsAvailable(NETLizard_Game game, int level); // check 3D game level is availabel
-int nlGetItemType(NETLizard_Game game, int index); // get 3D game item type
-const NETLizard_3D_Frame_Animation * nlGet3DModelFrameAnimationConfig(NETLizard_Game game, NLuint index); // get 3D Egypt/3D Clone player character animation index start and end
-NL_RET_PTR_CONST(char *) const char * nlGet3DGameLevelName(NETLizard_Game game, NLuint level);
-NLboolean nlGet3DGameLevelRange(NETLizard_Game game, NLint *start, NLint *count);
-NL_RET_PTR_CONST(char *) const char * nlGet3DGameName(NETLizard_Game game);
-const NETLizard_3D_Model_Config * nlGet3DGameModelConfig(NETLizard_Game game);
-const NETLizard_Level_Teleport * nlGet3DGameTeleport(NLenum game, NLint level, NLint item_id, NLint *length);
-const NETLizard_Level_Elevator * nlGet3DGameElevator(NLenum game, NLint level, NLint item_id, NLint *length);
-const NETLizard_Level_Door * nlGet3DGameDoor(NLenum game, NLint level, NLint item_id, NLint *length);
+NLAPI NL_RET_PTR_CONST(char *) const char * nlGet3DModelFrameAnimationName(NETLizard_3D_Animation_Type anim); // get 3D Egypt/3D Clone player character animation name
+NLAPI NLboolean nlCheck3DGameLevelIsAvailable(NETLizard_Game game, int level); // check 3D game level is availabel
+NLAPI int nlGetItemType(NETLizard_Game game, int index); // get 3D game item type
+NLAPI const NETLizard_3D_Frame_Animation * nlGet3DModelFrameAnimationConfig(NETLizard_Game game, NLuint index); // get 3D Egypt/3D Clone player character animation index start and end
+NLAPI NL_RET_PTR_CONST(char *) const char * nlGet3DGameLevelName(NETLizard_Game game, NLuint level);
+NLAPI NLboolean nlGet3DGameLevelRange(NETLizard_Game game, NLint *start, NLint *count);
+NLAPI NL_RET_PTR_CONST(char *) const char * nlGet3DGameName(NETLizard_Game game);
+NLAPI const NETLizard_3D_Model_Config * nlGet3DGameModelConfig(NETLizard_Game game);
+NLAPI const NETLizard_Level_Teleport * nlGet3DGameTeleport(NLenum game, NLint level, NLint item_id, NLint *length);
+NLAPI const NETLizard_Level_Elevator * nlGet3DGameElevator(NLenum game, NLint level, NLint item_id, NLint *length);
+NLAPI const NETLizard_Level_Door * nlGet3DGameDoor(NLenum game, NLint level, NLint item_id, NLint *length);
 
 // Contr Terrisiem 3D
-NLboolean nlReadCT3DModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlLoadCT3DModelData(const char* data, NLsizei size, NLint level, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlReadCT3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
-NLboolean nlLoadCT3DItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadCT3DModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadCT3DModelData(const char* data, NLsizei size, NLint level, const char *resc_path, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadCT3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadCT3DItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
 
 // Army Ranger 3D: Operation Artcle
-NLboolean nlReadSpecnaz3DModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlLoadSpecnaz3DModelData(const char* data, NLsizei size, int level, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlReadSpecnaz3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
-NLboolean nlLoadSpecnaz3DItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadSpecnaz3DModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadSpecnaz3DModelData(const char* data, NLsizei size, int level, const char *resc_path, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadSpecnaz3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadSpecnaz3DItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
 
 // Contr Terrisiem 3D: Episode-2
-NLboolean nlReadCT3DEp2ModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlLoadCT3DEp2ModelData(const char* data, NLsizei size, NLint level, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlReadCT3DEp2ItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
-NLboolean nlLoadCT3DEp2ItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadCT3DEp2ModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadCT3DEp2ModelData(const char* data, NLsizei size, NLint level, const char *resc_path, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadCT3DEp2ItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadCT3DEp2ItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
 
 // 3D Shadows of Egypt
-NLboolean nlReadEgypt3DModelFile(const char* name, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlLoadEgypt3DModelData(const char* data, NLsizei size, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlReadEgypt3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
-NLboolean nlLoadEgypt3DItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
-NLboolean nlReadEgypt3DRoleModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
-NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadEgypt3DModelFile(const char* name, const char *resc_path, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadEgypt3DModelData(const char* data, NLsizei size, const char *resc_path, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadEgypt3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadEgypt3DItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadEgypt3DRoleModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadEgypt3DRoleModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
 
 // Clone 3D
-NLboolean nlReadClone3DModelFile(const char* name, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlLoadClone3DModelData(const char* data, NLsizei size, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlReadClone3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
-NLboolean nlLoadClone3DItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
-NLboolean nlReadClone3DRoleModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
-NLboolean nlLoadClone3DRoleModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadClone3DModelFile(const char* name, const char *resc_path, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadClone3DModelData(const char* data, NLsizei size, const char *resc_path, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadClone3DItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadClone3DItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadClone3DRoleModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadClone3DRoleModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
 
 // Contr Terrisiem 3D: Episode-3
-NLboolean nlReadCT3DEp3ModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlLoadCT3DEp3ModelData(const char* data, NLsizei size, NLint level, const char *resc_path, NETLizard_3D_Model *model);
-NLboolean nlReadCT3DEp3ItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
-NLboolean nlLoadCT3DEp3ItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadCT3DEp3ModelFile(const char* name, NLint level, const char *resc_path, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadCT3DEp3ModelData(const char* data, NLsizei size, NLint level, const char *resc_path, NETLizard_3D_Model *model);
+NLAPI NLboolean nlReadCT3DEp3ItemModelFile(const char* name, NLint index, NETLizard_3D_Model *model);
+NLAPI NLboolean nlLoadCT3DEp3ItemModelData(const char* data, NLsizei size, NLint index, NETLizard_3D_Model *model);
 
 // Racing Evolution 3D
-NLboolean nlIsRE3DMeshFile(const char *name);
-NLboolean nlIsRE3DMesh(const char *data, NLsizei len);
-void nlDeleteNETLizardRE3DMesh(NETLizard_RE3D_Mesh *mesh);
-void nlDeleteNETLizardRE3DModel(NETLizard_RE3D_Model *model);
-NLboolean nlReadRE3DMeshFile(const char *name, NETLizard_RE3D_Model *model);
-NLboolean nlLoadRE3DMeshData(const char *data,  NLsizei size,  NETLizard_RE3D_Model *model);
+NLAPI NLboolean nlIsRE3DMeshFile(const char *name);
+NLAPI NLboolean nlIsRE3DMesh(const char *data, NLsizei len);
+NLAPI void nlDeleteNETLizardRE3DMesh(NETLizard_RE3D_Mesh *mesh);
+NLAPI void nlDeleteNETLizardRE3DModel(NETLizard_RE3D_Model *model);
+NLAPI NLboolean nlReadRE3DMeshFile(const char *name, NETLizard_RE3D_Model *model);
+NLAPI NLboolean nlLoadRE3DMeshData(const char *data,  NLsizei size,  NETLizard_RE3D_Model *model);
 
 /* Texture util */
-NETLizard_Texture_Type nlGetPNGType(const char *data, NLsizei length); // check png image/texture file type
-NETLizard_Texture_Type nlGetPNGFileType(const char *file); // check png image/texture data type
-void nlDeleteNETLizardTexture(NETLizard_Texture *tex); // free texture
+NLAPI NETLizard_Texture_Type nlGetPNGType(const char *data, NLsizei length); // check png image/texture file type
+NLAPI NETLizard_Texture_Type nlGetPNGFileType(const char *file); // check png image/texture data type
+NLAPI void nlDeleteNETLizardTexture(NETLizard_Texture *tex); // free texture
 
 /* PNG */
-NL_RET_PTR_ALLOC(char *) char * nlReadAndHandlePNGFile(const char *name, NLint *len); // encode/decode png file to data
-NL_RET_PTR_ALLOC(char *) char * nlLoadAndHandlePNGData(const char *data, NLint len); // encode/decode png data to data
-NLboolean nlConvertAndHandlePNGFile(const char *from, const char *to); // encode/decode png file to file
-NLboolean nlSaveAndHandlePNGData(const char *data, NLint len, const char *to); // encode/decode png data to file
+NLAPI NL_RET_PTR_ALLOC(char *) char * nlReadAndHandlePNGFile(const char *name, NLint *len); // encode/decode png file to data
+NLAPI NL_RET_PTR_ALLOC(char *) char * nlLoadAndHandlePNGData(const char *data, NLint len); // encode/decode png data to data
+NLAPI NLboolean nlConvertAndHandlePNGFile(const char *from, const char *to); // encode/decode png file to file
+NLAPI NLboolean nlSaveAndHandlePNGData(const char *data, NLint len, const char *to); // encode/decode png data to file
 
 /* Texture v2 */
-NLboolean nlReadTextureV2File(const char *name, NETLizard_Texture *tex); // load 3D texture v2 file
-NLboolean nlLoadTextureV2Data(const char *data, NLsizei length, NETLizard_Texture *tex); // load 3D texture v2 data
-NLboolean nlConvertTextureV2FileToImageFile(const char *from, const char *to, int img_type); // save 3D texture v2 file to normal png/jpg file
-NLboolean nlSaveTextureV2DataToImageFile(const NETLizard_Texture *tex, const char *to, int img_type); // save 3D texture v2 data to normal png/jpg file
-NLboolean nlSavePixelDataToTextureV2File(const NLuchar *data,  int width, int height, NETLizard_Texture_format format, const char *to); // save raw pixel data to 3D texture v2 file
-NLboolean nlConvertImageFileToTextureV2File(const char *from, const char *to); // save normal png/jpg file to 3D texture v2 file
+NLAPI NLboolean nlReadTextureV2File(const char *name, NETLizard_Texture *tex); // load 3D texture v2 file
+NLAPI NLboolean nlLoadTextureV2Data(const char *data, NLsizei length, NETLizard_Texture *tex); // load 3D texture v2 data
+NLAPI NLboolean nlConvertTextureV2FileToImageFile(const char *from, const char *to, int img_type); // save 3D texture v2 file to normal png/jpg file
+NLAPI NLboolean nlSaveTextureV2DataToImageFile(const NETLizard_Texture *tex, const char *to, int img_type); // save 3D texture v2 data to normal png/jpg file
+NLAPI NLboolean nlSavePixelDataToTextureV2File(const NLuchar *data,  int width, int height, NETLizard_Texture_format format, const char *to); // save raw pixel data to 3D texture v2 file
+NLAPI NLboolean nlConvertImageFileToTextureV2File(const char *from, const char *to); // save normal png/jpg file to 3D texture v2 file
 
 /* Texture v3 */
-NLboolean nlReadTextureV3File(const char *name, NLint i1, NETLizard_Texture *tex); // load 3D texture v3 file
-NLboolean nlLoadTextureV3Data(const char *data, NLsizei length, NLint i1, NETLizard_Texture *tex); // load 3D texture v3 data
-NLboolean nlConvertTextureV3FileToImageFile(const char *from, NLint i, const char *to, int img_type); // save 3D texture v3 file to normal png/jpg file
-NLboolean nlSaveTextureV3DataToImageFile(const NETLizard_Texture *tex, const char *to, int img_type); // save 3D texture v3 data to normal png/jpg file
-NLboolean nlSavePixelDataToTextureV3File(const NLuchar *data, NLint _i, int width, int height, NETLizard_Texture_format format, const char *to); // save raw pixel data to 3D texture v3 file
+NLAPI NLboolean nlReadTextureV3File(const char *name, NLint i1, NETLizard_Texture *tex); // load 3D texture v3 file
+NLAPI NLboolean nlLoadTextureV3Data(const char *data, NLsizei length, NLint i1, NETLizard_Texture *tex); // load 3D texture v3 data
+NLAPI NLboolean nlConvertTextureV3FileToImageFile(const char *from, NLint i, const char *to, int img_type); // save 3D texture v3 file to normal png/jpg file
+NLAPI NLboolean nlSaveTextureV3DataToImageFile(const NETLizard_Texture *tex, const char *to, int img_type); // save 3D texture v3 data to normal png/jpg file
+NLAPI NLboolean nlSavePixelDataToTextureV3File(const NLuchar *data, NLint _i, int width, int height, NETLizard_Texture_format format, const char *to); // save raw pixel data to 3D texture v3 file
 
 /* Texture v3 compress */
-NLboolean nlReadCompressTextureV3File(const char *name, NETLizard_Texture *tex); // load 3D texture v3 file
-NLboolean nlLoadCompressTextureV3Data(const char *data, NLsizei length, NETLizard_Texture *tex); // load 3D texture v3 data
-NLboolean nlConvertTextureV3CompressFileToImageFile(const char *from, const char *to, int img_type); // save 3D texture v3 file to normal png/jpg file
-NLboolean nlSaveTextureV3CompressDataToImageFile(const NETLizard_Texture *tex, const char *to, int img_type); // save 3D texture v3 data to normal png/jpg file
+NLAPI NLboolean nlReadCompressTextureV3File(const char *name, NETLizard_Texture *tex); // load 3D texture v3 file
+NLAPI NLboolean nlLoadCompressTextureV3Data(const char *data, NLsizei length, NETLizard_Texture *tex); // load 3D texture v3 data
+NLAPI NLboolean nlConvertTextureV3CompressFileToImageFile(const char *from, const char *to, int img_type); // save 3D texture v3 file to normal png/jpg file
+NLAPI NLboolean nlSaveTextureV3CompressDataToImageFile(const NETLizard_Texture *tex, const char *to, int img_type); // save 3D texture v3 data to normal png/jpg file
 
 /* OpenGL util */
-NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelDataRGBACompress(const NETLizard_Texture *tex, NLint *rlen);
-NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelDataRGB(const NETLizard_Texture *tex, NLint *rlen);
-NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelDataRGBA(const NETLizard_Texture *tex, NLint *rlen);
-NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelData(const NETLizard_Texture *tex, NLint *rlen);
+NLAPI NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelDataRGBACompress(const NETLizard_Texture *tex, NLint *rlen);
+NLAPI NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelDataRGB(const NETLizard_Texture *tex, NLint *rlen);
+NLAPI NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelDataRGBA(const NETLizard_Texture *tex, NLint *rlen);
+NLAPI NL_RET_PTR_ALLOC(NLuchar *) NLuchar * nlMakePixelData(const NETLizard_Texture *tex, NLint *rlen);
 
 /* misc */
-void nlEnable(NLenum e);
-void nlDisable(NLenum e);
-NLboolean nlIsEnabled(NLenum e);
-NLenum nlGetError(void);
-NL_RET_PTR_CONST(char *) const char * nlErrorString(NLenum error);
-NL_RET_PTR_CONST(char *) const char * nlGetString(NLenum name);
-void nlGetIntegerv(NLenum name, NLint *ret);
-void nlGetFloatv(NLenum name, NLfloat *ret);
-void nlGetBooleanv(NLenum name, NLboolean *ret);
-void nlGetPointerv(NLenum name, NLvoid **ret);
+NLAPI void nlEnable(NLenum e);
+NLAPI void nlDisable(NLenum e);
+NLAPI NLboolean nlIsEnabled(NLenum e);
+NLAPI NLenum nlGetError(void);
+NLAPI NL_RET_PTR_CONST(char *) const char * nlErrorString(NLenum error);
+NLAPI NL_RET_PTR_CONST(char *) const char * nlGetString(NLenum name);
+NLAPI void nlGetIntegerv(NLenum name, NLint *ret);
+NLAPI void nlGetFloatv(NLenum name, NLfloat *ret);
+NLAPI void nlGetBooleanv(NLenum name, NLboolean *ret);
+NLAPI void nlGetPointerv(NLenum name, NLvoid **ret);
 
-void nlLogFunc(NLenum type, NLenum way, void *f);
+NLAPI void nlLogFunc(NLenum type, NLenum way, void *f);
 
 #ifdef __cplusplus
 }

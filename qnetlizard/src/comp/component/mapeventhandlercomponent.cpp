@@ -6,13 +6,13 @@
 
 #include "settings.h"
 #include "qdef.h"
-#include "nlscene.h"
-#include "nlrigidbody.h"
-#include "nlscenecamera.h"
-#include "matrix.h"
-#include "bound.h"
+#include "engine/nlscene.h"
+#include "engine/nlrigidbody.h"
+#include "engine/nlscenecamera.h"
+#include "math/matrix.h"
+#include "math/bound.h"
 #include "nl_util.h"
-#include "nlmath.h"
+#include "engine/nlmath.h"
 
 MapEventHandlerContainer::MapEventHandlerContainer()
 {

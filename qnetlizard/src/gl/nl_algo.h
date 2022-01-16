@@ -2,7 +2,6 @@
 #define _KARIN_NLALGO_H
 
 #include "nl_gl.h"
-#include "lib/vector3.h"
 #include "nl_util.h"
 
 #ifdef __cplusplus

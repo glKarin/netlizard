@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-#include "lib/vector3.h"
+#include "math/vector3.h"
 
 static GLboolean NETLizard_NotCullFace(int item_type)
 {

@@ -7,9 +7,9 @@
 #include <QHBoxLayout>
 #include <QGroupBox>
 
-#include "nlactor.h"
-#include "nlscene.h"
-#include "nlactorpropwidget.h"
+#include "engine/nlactor.h"
+#include "engine/nlscene.h"
+#include "editor/nlactorpropwidget.h"
 #include "qdef.h"
 
 ActorPropertyWidget::ActorPropertyWidget(QWidget *parent) :

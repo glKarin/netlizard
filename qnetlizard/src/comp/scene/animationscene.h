@@ -1,7 +1,7 @@
 #ifndef _KARIN_ANIMATIONSCENE_H
 #define _KARIN_ANIMATIONSCENE_H
 
-#include "nlscene.h"
+#include "engine/nlscene.h"
 #include "gl/nl_gl.h"
 
 class NETLizardAnimationModelRenderer;

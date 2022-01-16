@@ -23,12 +23,10 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "utils/ioutility.h"
-
 #include "netlizard.h"
 #include "flowlayout.h"
 #include "qdef.h"
-#include "nlmath.h"
+#include "engine/nlmath.h"
 #include "lang.h"
 
 #define CELL_SIZE 128

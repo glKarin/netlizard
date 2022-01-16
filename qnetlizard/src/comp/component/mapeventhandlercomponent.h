@@ -1,9 +1,9 @@
 #ifndef _KARIN_MAPEVENTHANDLERCOMPONENT_H
 #define _KARIN_MAPEVENTHANDLERCOMPONENT_H
 
-#include "nlcomponent.h"
+#include "engine/nlcomponent.h"
 #include "gl/nl_gl.h"
-#include "bound.h"
+#include "math/bound.h"
 
 class NLRigidbody;
 class NLSceneCamera;

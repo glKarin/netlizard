@@ -5,12 +5,11 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "nlscenecamera.h"
-#include "nlsceneperspectivecamera.h"
+#include "engine/nlscenecamera.h"
+#include "engine/nlsceneperspectivecamera.h"
 #include "simplecontrol2dcomponent.h"
 #include "simplecontrolcomponent.h"
 #include "simplecameracomponent.h"
-#include "lib/vector3.h"
 
 SimpleCameraActor::SimpleCameraActor(const NLProperties &prop, NLActor *parent) :
     NLRigidbody(prop, parent),

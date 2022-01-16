@@ -1,7 +1,7 @@
 #ifndef _KARIN_TESTSCENE_H
 #define _KARIN_TESTSCENE_H
 
-#include "nlscene.h"
+#include "engine/nlscene.h"
 
 class NLModelRenderer;
 

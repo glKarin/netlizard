@@ -1,9 +1,9 @@
 #ifndef _KARIN_SIMPLECAMERACOMPONENT_H
 #define _KARIN_SIMPLECAMERACOMPONENT_H
 
-#include "nlcomponent.h"
+#include "engine/nlcomponent.h"
 
-#include "nlactor.h"
+#include "engine/nlactor.h"
 
 class NLSceneCamera;
 class CameraNotifyFunc;

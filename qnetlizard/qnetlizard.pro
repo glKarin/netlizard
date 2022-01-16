@@ -9,12 +9,8 @@ include(../netlizard.pri)
 
 QT += opengl xml
 
-DEPENDPATH += . .. ../libnetlizard ./src ./src/utils ./src/widget ./src/misc
-INCLUDEPATH += . .. ../libnetlizard ./src ./src/utils ./src/widget ./src/misc
-
-DEPENDPATH += ./extern/lua
-INCLUDEPATH += ./extern/lua/include
-LIBS += -L$$PWD/extern/lua -llua53
+DEPENDPATH += . .. ../libnetlizard ./src ./src/widget ./src/misc
+INCLUDEPATH += . .. ../libnetlizard ./src ./src/widget ./src/misc
 
 #LIBS += ../libnetlizard/debug/libnetlizard.a
 
@@ -24,42 +20,24 @@ RCC_DIR = $$BUILD_DIR/$$TARGET/
 UI_DIR = $$BUILD_DIR/$$TARGET/ui
 DESTDIR = $$BUILD_DIR/
 
-PRE_TARGETDEPS += $$BUILD_DIR/netlizard.dll
-LIBS += -L$$DESTDIR -lnetlizard
+PRE_TARGETDEPS += $$BUILD_DIR/netlizard.dll $$BUILD_DIR/nl.dll
+LIBS += -L$$DESTDIR -lnetlizard -lnl
 
 CONFIG += qt
 
 # Input
 HEADERS += \
     src/qdef.h \
-    src/utils/ioutility.h \
     src/misc/logoutput.h \
     src/misc/settings.h \
-    src/misc/lang.h \
-    src/engine/editor/widget/syntaxhighlighter/nlluasyntaxhighlighter.h \
-    src/engine/editor/widget/syntaxhighlighter/nlgeneralsyntaxhighlighter.h \
-    src/engine/template/nlsequencemap.h \
-    src/engine/lua/lua_object.h \
-    src/engine/editor/widget/nlpropformgroupwidget.h \
-    src/engine/editor/widget/nlpropsectionwidget.h \
-    src/engine/trait/nlpropertytrait.h \
-    src/engine/editor/widget/nlcolorchooserwidget.h \
-    src/utils/guiutility.h
+    src/misc/lang.h
 
 SOURCES += \
     main.cpp \
     src/qdef.cpp \
-    src/utils/ioutility.cpp \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
-    src/misc/lang.cpp \
-    src/engine/editor/widget/syntaxhighlighter/nlluasyntaxhighlighter.cpp \
-    src/engine/editor/widget/syntaxhighlighter/nlgeneralsyntaxhighlighter.cpp \
-    src/engine/lua/lua_object.cpp \
-    src/engine/editor/widget/nlpropformgroupwidget.cpp \
-    src/engine/editor/widget/nlpropsectionwidget.cpp \
-    src/engine/editor/widget/nlcolorchooserwidget.cpp \
-    src/utils/guiutility.cpp
+    src/misc/lang.cpp
 
 # Widget
 HEADERS += \
@@ -173,133 +151,6 @@ SOURCES += \
     src/comp/widget/scenetreewidget.cpp \
     src/comp/widget/actorpropertywidget.cpp
 
-# Engine
-DEPENDPATH += ./src/engine ./src/engine/editor ./src/engine/lua ./src/engine/editor/widget ./src/engine/template ./src/engine/editor/widget/syntaxhighlighter ./src/engine/trait
-INCLUDEPATH += ./src/engine ./src/engine/editor ./src/engine/lua ./src/engine/editor/widget ./src/engine/template ./src/engine/editor/widget/syntaxhighlighter ./src/engine/trait
-
-HEADERS += \
-    src/engine/nldef.h \
-    src/engine/nlscene.h \
-    src/engine/nlobject.h \
-    src/engine/nlactor.h \
-    src/engine/nlrenderable.h \
-    src/engine/nlobjectcontainer.h \
-    src/engine/nlactorcontainer.h \
-    src/engine/nlcomponent.h \
-    src/engine/nlcomponentcontainer.h \
-    src/engine/nlobjectpool.h \
-    src/engine/nlscenecamera.h \
-    src/engine/nlsceneorthocamera.h \
-    src/engine/nlsceneperspectivecamera.h \
-    src/engine/nlfuncs.h \
-    src/engine/nlmath.h \
-    src/engine/nlrigidbody.h \
-    src/engine/nlphysics.h \
-    src/engine/nlforce.h \
-    src/engine/nlforcecontainer.h \
-    src/engine/nlproperties.h \
-    src/engine/nlglobals.h \
-    src/engine/nlscenecamerabase.h \
-    src/engine/nlrendermodel.h \
-    src/engine/nlscript.h \
-    src/engine/nlscriptcontainer.h \
-    src/engine/nlmodelrenderer.h
-
-SOURCES += \
-    src/engine/nldef.cpp \
-    src/engine/nlscene.cpp \
-    src/engine/nlobject.cpp \
-    src/engine/nlactor.cpp \
-    src/engine/nlrenderable.cpp \
-    src/engine/nlobjectcontainer.cpp \
-    src/engine/nlactorcontainer.cpp \
-    src/engine/nlcomponent.cpp \
-    src/engine/nlcomponentcontainer.cpp \
-    src/engine/nlobjectpool.cpp \
-    src/engine/nlscenecamera.cpp \
-    src/engine/nlsceneorthocamera.cpp \
-    src/engine/nlsceneperspectivecamera.cpp \
-    src/engine/nlfuncs.cpp \
-    src/engine/nlmath.cpp \
-    src/engine/nlrigidbody.cpp \
-    src/engine/nlphysics.cpp \
-    src/engine/nlforce.cpp \
-    src/engine/nlforcecontainer.cpp \
-    src/engine/nlproperties.cpp \
-    src/engine/nlglobals.cpp \
-    src/engine/nlscenecamerabase.cpp \
-    src/engine/nlrendermodel.cpp \
-    src/engine/nlscript.cpp \
-    src/engine/nlscriptcontainer.cpp \
-    src/engine/nlmodelrenderer.cpp
-
-HEADERS += \
-    src/engine/editor/widget/nlvector3widget.h \
-    src/engine/editor/widget/nlfilechooserwidget.h \
-    src/engine/editor/widget/nltexteditwidget.h \
-    src/engine/editor/widget/nltexteditdialog.h \
-    src/engine/editor/nlscenetreewidget.h \
-    src/engine/editor/nlsceneinfowidget.h \
-    src/engine/editor/nlactorpropwidget.h
-
-SOURCES += \
-    src/engine/editor/widget/nlvector3widget.cpp \
-    src/engine/editor/widget/nlfilechooserwidget.cpp \
-    src/engine/editor/widget/nltexteditwidget.cpp \
-    src/engine/editor/widget/nltexteditdialog.cpp \
-    src/engine/editor/nlscenetreewidget.cpp \
-    src/engine/editor/nlsceneinfowidget.cpp \
-    src/engine/editor/nlactorpropwidget.cpp
-
-HEADERS += \
-    src/engine/lua/lua_actor.h \
-    src/engine/lua/lua_component.h \
-    src/engine/lua/lua_scene.h \
-    src/engine/lua/lua_def.h \
-    src/engine/lua/lua_scenecamera.h \
-    src/engine/lua/lua_script.h
-
-SOURCES += \
-    src/engine/lua/lua_actor.cpp \
-    src/engine/lua/lua_component.cpp \
-    src/engine/lua/lua_scene.cpp \
-    src/engine/lua/lua_def.cpp \
-    src/engine/lua/lua_scenecamera.cpp \
-    src/engine/lua/lua_script.cpp
-
-# Lib
-DEPENDPATH += ./lib
-INCLUDEPATH += ./lib
-
-HEADERS += \
-    lib/mesa_gl_math.h \
-#    lib/camera.h \
-    lib/vector3.h \
-    lib/bound.h \
-    lib/plane.h \
-    lib/triangle.h \
-    lib/line.h \
-    lib/ortho.h \
-    lib/frustum.h \
-    lib/matrix.h \
-    lib/math_std.h \
-    lib/euler.h \
-    lib/opengl_render.h
-
-SOURCES += \
-    lib/mesa_gl_math.c \
-#    lib/camera.c \
-    lib/vector3.c \
-    lib/bound.c \
-    lib/plane.c \
-    lib/triangle.c \
-    lib/line.c \
-    lib/ortho.c \
-    lib/frustum.c \
-    lib/matrix.c \
-    lib/euler.c \
-    lib/opengl_render.c
-
 # NL-GL
 DEPENDPATH += ./src/gl
 INCLUDEPATH += ./src/gl
@@ -335,39 +186,11 @@ SOURCES += \
     src/gl/linkedlist.c \
     src/gl/nl_gl_algo_debug.c
 
-# Mesa GL math
-DEPENDPATH += ./lib/mesa_math
-INCLUDEPATH += ./lib/mesa_math
 
-HEADERS += \
-           lib/mesa_math/m_clip_tmp.h \
-           lib/mesa_math/m_copy_tmp.h \
-           lib/mesa_math/m_debug.h \
-           lib/mesa_math/m_debug_util.h \
-           lib/mesa_math/m_dotprod_tmp.h \
-           lib/mesa_math/m_eval.h \
-           lib/mesa_math/m_matrix.h \
-           lib/mesa_math/m_norm_tmp.h \
-           lib/mesa_math/m_trans_tmp.h \
-           lib/mesa_math/m_translate.h \
-           lib/mesa_math/m_vector.h \
-           lib/mesa_math/m_xform.h \
-           lib/mesa_math/m_xform_tmp.h \
-           lib/mesa_math/main/compiler.h \
-           lib/mesa_math/main/config.h \
-           lib/mesa_math/main/glheader.h \
-           lib/mesa_math/main/imports.h \
-           lib/mesa_math/main/macros.h
-SOURCES += \
-           lib/mesa_math/m_debug_clip.c \
-           lib/mesa_math/m_debug_norm.c \
-           lib/mesa_math/m_debug_xform.c \
-           lib/mesa_math/m_eval.c \
-           lib/mesa_math/m_matrix.c \
-           lib/mesa_math/m_translate.c \
-           lib/mesa_math/m_vector.c \
-           lib/mesa_math/m_xform.c \
-           lib/mesa_math/main/imports.c
+ENGINE_PROJECT_PATH = $$PWD/../nl
+# Engine
+DEPENDPATH += $$ENGINE_PROJECT_PATH
+INCLUDEPATH += $$ENGINE_PROJECT_PATH
 
 # Test
 CONFIG(debug, debug|release) {
@@ -420,5 +243,3 @@ OTHER_FILES += README.md \
                 resource/cfg/setting.xml \
                 resource/cfg/lang.zh_CN.xml \
                 resource/script/api_exam.lua
-
-#INSTALLS += qnetlizard

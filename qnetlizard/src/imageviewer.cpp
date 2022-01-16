@@ -12,8 +12,6 @@
 #include <QComboBox>
 #include <QMessageBox>
 
-#include "utils/ioutility.h"
-
 #include "imagescene.h"
 #include "gl/nl_gl.h"
 #include "netlizard.h"

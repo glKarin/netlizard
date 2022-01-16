@@ -6,9 +6,9 @@
 
 #include "netlizard.h"
 #include "netlizard_3d.h"
-#include "lib/vector3.h"
-#include "lib/bound.h"
-#include "lib/triangle.h"
+#include "math/vector3.h"
+#include "math/bound.h"
+#include "math/triangle.h"
 #include "nl_texture.h"
 #include "nl_util.h"
 

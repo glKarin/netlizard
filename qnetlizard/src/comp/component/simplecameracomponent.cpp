@@ -4,13 +4,10 @@
 #include <QMetaObject>
 #include <QMetaProperty>
 
-#include "nlscene.h"
-#include "nlfuncs.h"
+#include "engine/nlscene.h"
+#include "engine/nlscenecamera.h"
+#include "engine/nlfuncs.h"
 #include "qdef.h"
-
-#include "nlsceneperspectivecamera.h"
-#include "nlsceneorthocamera.h"
-#include "nlscenecamera.h"
 
 class CameraNotifyFunc : public NLSceneCamera::NLSceneCameraChangedNotify
 {

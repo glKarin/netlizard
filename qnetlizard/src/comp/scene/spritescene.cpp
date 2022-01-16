@@ -6,9 +6,8 @@
 #include <QColor>
 
 #include "qdef.h"
-#include "nlscenecamera.h"
+#include "engine/nlscenecamera.h"
 #include "simplecameraactor.h"
-#include "nlsceneorthocamera.h"
 #include "netlizardspriterenderer.h"
 #include "simpleimagecontrolcomponent.h"
 #include "settings.h"

@@ -1,6 +1,6 @@
 #include "nl_util.h"
 
-#include "bound.h"
+#include "math/bound.h"
 
 int NETLizard_GetMapRenderScenes(const GL_NETLizard_3D_Model *model, int scenes[], float frustum[6][4])
 {

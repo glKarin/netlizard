@@ -27,7 +27,7 @@
 #include "settings.h"
 #include "settingdialog.h"
 #include "changelogdialog.h"
-#include "nlscene.h"
+#include "engine/nlscene.h"
 #include "sceneinfowidget.h"
 #include "scenetreewidget.h"
 #include "actorpropertywidget.h"

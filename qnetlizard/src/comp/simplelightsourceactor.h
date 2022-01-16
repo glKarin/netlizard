@@ -1,7 +1,7 @@
 #ifndef _KARIN_SIMPLELIGHTSOURCEACTOR_H
 #define _KARIN_SIMPLELIGHTSOURCEACTOR_H
 
-#include "nlactor.h"
+#include "engine/nlactor.h"
 
 class SimpleLightSourceComponent;
 

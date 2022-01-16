@@ -5,9 +5,9 @@
 
 #include "qdef.h"
 #include "simplecameraactor.h"
-#include "nlmodelrenderer.h"
-#include "nlscript.h"
-#include "nlcomponent.h"
+#include "engine/nlmodelrenderer.h"
+#include "engine/nlscript.h"
+#include "engine/nlcomponent.h"
 #include "settings.h"
 
 TestScene::TestScene(QWidget *parent)

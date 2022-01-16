@@ -2,9 +2,9 @@
 
 #include <QDebug>
 
-#include "nlactor.h"
-#include "nlscene.h"
-#include "nlscenetreewidget.h"
+#include "engine/nlactor.h"
+#include "engine/nlscene.h"
+#include "editor/nlscenetreewidget.h"
 #include "qdef.h"
 
 SceneTreeWidget::SceneTreeWidget(QWidget *parent) :

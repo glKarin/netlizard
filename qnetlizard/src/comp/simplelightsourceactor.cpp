@@ -2,7 +2,6 @@
 
 #include <QDebug>
 
-#include "lib/vector3.h"
 #include "simplelightsourcecomponent.h"
 
 SimpleLightSourceActor::SimpleLightSourceActor(const NLProperties &prop, NLActor *parent) :

@@ -8,7 +8,7 @@
 #include "simplecameraactor.h"
 #include "netlizardanimationmodelrenderer.h"
 #include "simplecontrolcomponent.h"
-#include "nlsceneorthocamera.h"
+#include "engine/nlsceneorthocamera.h"
 #include "settings.h"
 
 AnimationScene::AnimationScene(QWidget *parent)

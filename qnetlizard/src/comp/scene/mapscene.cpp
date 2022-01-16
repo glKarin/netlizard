@@ -13,18 +13,14 @@
 #include "simplecontrolcomponent.h"
 #include "simplelightsourceactor.h"
 #include "simplelightsourcecomponent.h"
-#include "nlsceneorthocamera.h"
-#include "nlsceneperspectivecamera.h"
-#include "nlscenecamera.h"
+#include "engine/nlscenecamera.h"
 #include "netlizardtexturerenderer.h"
 #include "mapeventhandlercomponent.h"
 #include "settings.h"
-#include "matrix.h"
 #include "nl_util.h"
 #include "nl_shadow_render.h"
 #include "nl_algo.h"
-#include "nlforce.h"
-#include "lib/bound.h"
+#include "engine/nlforce.h"
 
 #define OBJ_RADIUS 50
 #define OBJ_HEIGHT 180

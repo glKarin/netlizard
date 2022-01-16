@@ -1,7 +1,7 @@
 #ifndef _KARIN_SIMPLELIGHTSOURCECOMPONENT_H
 #define _KARIN_SIMPLELIGHTSOURCECOMPONENT_H
 
-#include "nlcomponent.h"
+#include "engine/nlcomponent.h"
 
 NLCOMPONENT(SimpleLightSourceComponent)
 class SimpleLightSourceComponent : public NLComponent

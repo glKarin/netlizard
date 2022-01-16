@@ -4,8 +4,8 @@
 
 #include "settings.h"
 #include "qdef.h"
-#include "nlscene.h"
-#include "nlactor.h"
+#include "engine/nlscene.h"
+#include "engine/nlactor.h"
 
 const float SimpleControl2DComponent::M_Move_Sens = 1000;
 

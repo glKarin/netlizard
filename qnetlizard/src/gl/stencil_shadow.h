@@ -1,7 +1,7 @@
 #ifndef _KARIN_SHADOW_H
 #define _KARIN_SHADOW_H
 
-#include "lib/vector3.h"
+#include "math/vector3.h"
 #include "nl_gl.h"
 
 #ifdef __cplusplus

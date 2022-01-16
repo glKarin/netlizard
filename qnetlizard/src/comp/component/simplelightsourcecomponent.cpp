@@ -4,8 +4,8 @@
 
 #include "settings.h"
 #include "qdef.h"
-#include "nlscene.h"
-#include "nlactor.h"
+#include "engine/nlscene.h"
+#include "engine/nlactor.h"
 
 SimpleLightSourceComponent::SimpleLightSourceComponent(const NLProperties &prop, NLActor *parent) :
     NLComponent(prop, parent),

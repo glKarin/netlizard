@@ -1,7 +1,7 @@
 #ifndef _KARIN_NETLIZARDSHADOWMODELRENDERER_H
 #define _KARIN_NETLIZARDSHADOWMODELRENDERER_H
 
-#include "nlrenderable.h"
+#include "engine/nlrenderable.h"
 #include "gl/nl_gl.h"
 #include "stencil_shadow.h"
 

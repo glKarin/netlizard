@@ -1,7 +1,7 @@
 #ifndef _KARIN_SIMPLECONTROL2DCOMPONENT_H
 #define _KARIN_SIMPLECONTROL2DCOMPONENT_H
 
-#include "nlcomponent.h"
+#include "engine/nlcomponent.h"
 
 NLCOMPONENT(SimpleControl2DComponent)
 class SimpleControl2DComponent : public NLComponent

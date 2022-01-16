@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 #include "qdef.h"
-#include "ioutility.h"
+#include "utils/nlioutility.h"
 #include "settings.h"
 
 #define LOG_DIR_NAME "logs"
@@ -106,7 +106,7 @@ void LogOutput::OutputFile(const QString &str)
     if(!MkLogDir())
         return;
     MkLogFile();
-    IOUtility::file_put_contents(m_logFile, str + "\n", "UTF-8", 1);
+    NLIOUtility::file_put_contents(m_logFile, str + "\n", "UTF-8", 1);
 }
 
 QString LogOutput::CurrentDatetime() const

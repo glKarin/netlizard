@@ -2,9 +2,9 @@
 
 #include <stdlib.h>
 
-#include "lib/vector3.h"
-#include "lib/line.h"
-#include "lib/bound.h"
+#include "math/vector3.h"
+#include "math/line.h"
+#include "math/bound.h"
 #include "nl_util.h"
 
 #define BEGIN_DEBUG_RENDER \

@@ -4,7 +4,7 @@
 #include <QWidget>
 
 #include "settings.h"
-#include "nlpropformgroupwidget.h"
+#include "widget/nlpropformgroupwidget.h"
 
 class SettingsPropFormGroupWidget : public NLPropFormGroupWidget
 {
@@ -19,6 +19,8 @@ protected:
     virtual void CoverObjectProperty(QObject *obj, const QString &name, const QVariant &value);
     virtual NLPropertyInfoList GetPropertyInfoList(QObject *obj);
     virtual void SortProperties(NLPropertyInfoList &list);
+    virtual QVariant GetObjectProperty(QObject *obj, const QString &name);
+    virtual bool HandleAction(QAction *action);
 
 private:
     const Settings::SettingItemCategory *m_sc;
@@ -36,7 +38,7 @@ public:
 
 private:
     void Init();
-    void GenSettingConfig(QWidget *parent, const Settings::SettingItemCategory *c);
+    SettingsPropFormGroupWidget * GenSettingConfig(QWidget *parent, const Settings::SettingItemCategory *c);
     bool IsGroupSettingConfig(const Settings::SettingItemCategory *c);
     const Settings::SettingItemCategory * FindSettingConfig(const Settings::SettingItemCategory *c, const QString &name);
 
@@ -45,14 +47,11 @@ Q_SIGNALS:
     void openSettingGroup(const QString &name);
 
 private Q_SLOTS:
-    void OnValueChanged(const QString &val);
-    void OnBoolChanged(bool b);
-    void OnIntChanged(int i);
-    void OnItemDestroy(QObject *item = 0);
-    void ChooseColor();
 
 private:
     QString m_name;
+
+    friend class SettingsPropFormGroupWidget;
 
     Q_DISABLE_COPY(SettingGroup)
 };

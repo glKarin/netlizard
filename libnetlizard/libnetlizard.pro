@@ -14,6 +14,8 @@ CONFIG += shared dll
 
 CONFIG -= qt
 
+DEFINES += _NL_DLL
+
 QT -= gui core
 
 OBJECTS_DIR = $$BUILD_DIR/$$TARGET/$$OBJ_DIR_NAME

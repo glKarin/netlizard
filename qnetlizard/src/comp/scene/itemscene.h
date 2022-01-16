@@ -1,7 +1,7 @@
 #ifndef _KARIN_ITEMSCENE_H
 #define _KARIN_ITEMSCENE_H
 
-#include "nlscene.h"
+#include "engine/nlscene.h"
 #include "gl/nl_gl.h"
 
 class NETLizardMapModelRenderer;

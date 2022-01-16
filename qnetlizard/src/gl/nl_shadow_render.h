@@ -2,7 +2,7 @@
 #define _KARIN_NL_SHADOW_H
 
 #include "nl_gl.h"
-#include "lib/vector3.h"
+#include "math/vector3.h"
 
 #ifdef __cplusplus
 extern "C" {

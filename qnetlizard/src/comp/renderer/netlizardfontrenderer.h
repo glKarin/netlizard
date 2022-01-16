@@ -3,7 +3,7 @@
 
 #include <QStringList>
 
-#include "nlrenderable.h"
+#include "engine/nlrenderable.h"
 #include "gl/nl_gl.h"
 
 NLRENDERER(NETLizardFontRenderer)

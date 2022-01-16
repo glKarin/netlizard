@@ -1,8 +1,7 @@
 #ifndef _KARIN_SIMPLECAMERAACTOR_H
 #define _KARIN_SIMPLECAMERAACTOR_H
 
-#include "nlactor.h"
-#include "nlrigidbody.h"
+#include "engine/nlrigidbody.h"
 
 class SimpleCameraComponent;
 class SimpleControlComponent;

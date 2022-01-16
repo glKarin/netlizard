@@ -1,7 +1,7 @@
 #ifndef _KARIN_IMAGESCENE_H
 #define _KARIN_IMAGESCENE_H
 
-#include "nlscene.h"
+#include "engine/nlscene.h"
 #include "netlizard.h"
 
 class NETLizardTextureRenderer;

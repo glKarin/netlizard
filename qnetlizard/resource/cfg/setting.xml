@@ -62,7 +62,7 @@
                 <option name="min" value="0"></option>
                 <option name="max" value="1000"></option>
             </item>
-            <item alias="RENDER/clear_color" name="Clear color" widget="color_dialog" type="color" default-value="#000000">
+            <item alias="RENDER/clear_color" name="Clear color" widget="colordialog" type="color" default-value="#000000">
             </item>
         </category>
     </category>

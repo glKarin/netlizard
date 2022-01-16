@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include "glk.h"
 
-#include "lib/line.h"
-#include "lib/triangle.h"
-#include "lib/matrix.h"
+#include "math/line.h"
+#include "math/triangle.h"
+#include "math/matrix.h"
 #include "linkedlist.h"
 
 #define F_ZERO 0.1

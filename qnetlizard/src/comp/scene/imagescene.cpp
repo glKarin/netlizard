@@ -6,11 +6,10 @@
 #include "gl/nl_gl.h"
 #include "gl/gl_texture.h"
 #include "gl/nl_texture.h"
-#include "utils/ioutility.h"
+#include "utils/nlioutility.h"
 #include "qdef.h"
-#include "nlscenecamera.h"
+#include "engine/nlscenecamera.h"
 #include "simplecameraactor.h"
-#include "nlsceneorthocamera.h"
 #include "simpleimagecontrolcomponent.h"
 #include "simplecontrol2dcomponent.h"
 #include "netlizardtexturerenderer.h"
@@ -149,7 +148,7 @@ bool ImageScene::LoadFile(const QString &file, int type, int index)
     case NL_TEXTURE_NORMAL_PNG:
     {
         quint64 len;
-        char *data = IOUtility::file_get_contents(ba.constData(), &len);
+        char *data = NLIOUtility::file_get_contents(ba.constData(), &len);
         if(!data)
             return false;
 
@@ -316,7 +315,7 @@ bool ImageScene::SaveData(const QString &file)
     {
         case NL_TEXTURE_NORMAL_PNG:
         case NL_TEXTURE_ENCODE_PNG:
-        res = IOUtility::file_put_contents(file, (char *)m_data.data.image, (quint64)m_data.len);
+        res = NLIOUtility::file_put_contents(file, (char *)m_data.data.image, (quint64)m_data.len);
             break;
         case NL_TEXTURE_3D_ENGINE_V2:
         res = nlSaveTextureV2DataToImageFile(m_data.data.texture, ba.constData(), 1);

@@ -7,9 +7,9 @@
 #include <QHBoxLayout>
 #include <QGroupBox>
 
-#include "nlactor.h"
-#include "nlscene.h"
-#include "nlsceneinfowidget.h"
+#include "engine/nlactor.h"
+#include "engine/nlscene.h"
+#include "editor/nlsceneinfowidget.h"
 #include "qdef.h"
 
 SceneInfoWidget::SceneInfoWidget(QWidget *parent) :

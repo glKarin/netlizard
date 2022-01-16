@@ -8,8 +8,7 @@
 #include "simplecameraactor.h"
 #include "netlizardmapmodelrenderer.h"
 #include "simplecontrolcomponent.h"
-#include "nlsceneorthocamera.h"
-#include "nlscenecamera.h"
+#include "engine/nlscenecamera.h"
 #include "settings.h"
 
 ItemScene::ItemScene(QWidget *parent)

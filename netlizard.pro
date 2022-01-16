@@ -4,6 +4,6 @@
 
 TEMPLATE = subdirs
 
-SUBDIRS = libnetlizard qnetlizard
+SUBDIRS = libnetlizard nl qnetlizard
 
 CONFIG += ordered

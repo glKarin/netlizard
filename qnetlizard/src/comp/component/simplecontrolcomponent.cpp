@@ -4,8 +4,8 @@
 
 #include "settings.h"
 #include "qdef.h"
-#include "nlscene.h"
-#include "nlactor.h"
+#include "engine/nlscene.h"
+#include "engine/nlactor.h"
 
 const int SimpleControlComponent::M_Move_Sens = 1500;
 const int SimpleControlComponent::M_Turn_Sens = 180;

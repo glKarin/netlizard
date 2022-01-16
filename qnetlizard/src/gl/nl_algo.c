@@ -7,9 +7,9 @@
 #include <float.h>
 
 #include "nl_util.h"
-#include "lib/bound.h"
-#include "lib/line.h"
-#include "lib/euler.h"
+#include "math/bound.h"
+#include "math/line.h"
+#include "math/euler.h"
 
 #define PRINT(fmt, args...) { fprintf(stderr, fmt, ##args); fprintf(stderr, "\n"); fflush(stderr); }
 
@@ -43,32 +43,6 @@
 #define IS_FLOOR(plane) NETLizard_IsFloorPlane(&plane)
 //#define IS_CEIL(normal) ((normal)[2] < -UP_NORMAL_LIMIT)
 #define IS_CEIL(plane) NETLizard_IsCeilPlane(&plane)
-
-#define PUSH_BACK(T, arr, count, t) \
-{ \
-    T *_narr = (T *)calloc(count + 1, sizeof(T)); \
-    if(arr) { \
-        memcpy(_narr, arr, count * sizeof(T)); \
-        free(arr); \
-    } \
-    _narr[count] = t; \
-    count++; \
-    arr = _narr; \
-}
-
-static void * push_back(int size, void **arr, int *count, const void *t)
-{
-    void *_narr = calloc(*count + 1, size);
-    if(*arr)
-    {
-        memcpy(_narr, *arr, *count * size);
-        free(*arr);
-    }
-    memcpy((char *)_narr + *count * size, t, size);
-    *count += 1;
-    *arr = _narr;
-    return _narr;
-}
 
 static bound_t NETLizard_SceneBound(const GL_NETLizard_3D_Mesh *scene)
 {

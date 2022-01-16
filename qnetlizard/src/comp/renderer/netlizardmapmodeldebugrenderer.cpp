@@ -5,8 +5,8 @@
 #include "nl_gl_debug.h"
 #include "nl_gl_algo_debug.h"
 #include "nl_algo.h"
-#include "nlscenecamera.h"
-#include "lib/matrix.h"
+#include "engine/nlscenecamera.h"
+#include "math/matrix.h"
 #include "qdef.h"
 
 NETLizardMapModelDebugRenderer::NETLizardMapModelDebugRenderer(NLActor *actor) :
