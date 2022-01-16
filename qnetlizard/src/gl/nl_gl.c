@@ -4,8 +4,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "netlizard.h"
-#include "netlizard_3d.h"
 #include "math/vector3.h"
 #include "nl_texture.h"
 #include "math/triangle.h"
@@ -290,8 +288,8 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                     texture_s *tex = texes[m->tex_index[o]];
                     if(!tex && m->tex_index[o] < tex_count && m->tex_index[o] > 0)
 					{
-						char subfix[SUBFIX_LENGTH];
-						memset(subfix, '\0', SUBFIX_LENGTH);
+						char subfix[NL_RESOURCE_FILE_FORMAT_LENGTH];
+						memset(subfix, '\0', NL_RESOURCE_FILE_FORMAT_LENGTH);
 						sprintf(subfix, subfix_str, m->tex_index[o]);
 						char *name = NULL;
                         if(resource_path)
@@ -564,8 +562,8 @@ GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *r
                     texture_s *tex = texes[m->tex_index[o]];
                     if(!tex && m->tex_index[o] < tex_count && m->tex_index[o] > 0)
 					{
-						char subfix[SUBFIX_LENGTH];
-						memset(subfix, '\0', SUBFIX_LENGTH);
+						char subfix[NL_RESOURCE_FILE_FORMAT_LENGTH];
+						memset(subfix, '\0', NL_RESOURCE_FILE_FORMAT_LENGTH);
                         sprintf(subfix, subfix_str, m->tex_index[o]);
 						char *name = NULL;
                         if(resource_path)

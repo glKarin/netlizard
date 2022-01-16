@@ -14,22 +14,22 @@ public:
     explicit NLComponentContainer(NLScene *scene, NLActor *parent = 0);
     virtual ~NLComponentContainer();
     bool Exists(const NLComponent &item) const;
-    NLName Find(const NLComponent *item);
+    QString Find(const NLComponent *item);
     bool Add(NLComponent *item);
     bool Remove(NLComponent *item);
     bool Remove(int index);
-    bool Remove(const NLName &name);
-    NLComponent * Get(const NLName &name);
+    bool Remove(const QString &name);
+    NLComponent * Get(const QString &name);
     NLComponent * Get(int index);
     virtual void Clear();
 
-    NLComponent * operator[](const NLName &name) { return Get(name); }
+    NLComponent * operator[](const QString &name) { return Get(name); }
     NLComponent * operator[](int index) { return Get(index); }
     NLComponentContainer & operator<<(NLComponent *item) { Add(item); return *this; }
     NLComponentContainer & operator+(NLComponent *item) { Add(item); return *this; }
     NLComponentContainer & operator-(NLComponent *item) { Remove(item); return *this; }
     NLComponentContainer & operator-(int index) { Remove(index); return *this; }
-    NLComponentContainer & operator-(const NLName &name) { Remove(name); return *this; }
+    NLComponentContainer & operator-(const QString &name) { Remove(name); return *this; }
     NLActor * Actor();
     const NLActor * Actor() const;
     bool ComponentIsAvailable(NLComponent *item) const;

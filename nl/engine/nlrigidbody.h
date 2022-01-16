@@ -24,14 +24,14 @@ public:
     bool AddForce(NLForce *actor);
     bool RemoveForce(NLForce *actor);
     bool RemoveForce(int index);
-    bool RemoveForce(const NLName &name);
-    NLForce * GetForce(const NLName &name);
+    bool RemoveForce(const QString &name);
+    NLForce * GetForce(const QString &name);
     NLForce * GetForce(int index);
     NLRigidbody & operator<<(NLForce *item) { AddForce(item); return *this; }
     NLRigidbody & operator+(NLForce *item) { AddForce(item); return *this; }
     NLRigidbody & operator-(NLForce *item) { RemoveForce(item); return *this; }
     template <class T>
-    T * GetForce_T(const NLName &name);
+    T * GetForce_T(const QString &name);
     template <class T>
     T * GetForce_T(int index);
     NLVector3 MoveDirection() const { return m_moveDirection; }
@@ -59,7 +59,7 @@ public:
     template <class T>
     bool ForceIsType(int index) const;
     template <class T>
-    bool ForceIsType(const NLName &name) const;
+    bool ForceIsType(const QString &name) const;
     template <class T>
     int TypeForceCount() const;
     template <class T>
@@ -103,7 +103,7 @@ private:
 };
 
 template <class T>
-T * NLRigidbody::GetForce_T(const NLName &name)
+T * NLRigidbody::GetForce_T(const QString &name)
 {
     NLForce *obj = GetForce(name);
     if(!obj)
@@ -129,7 +129,7 @@ bool NLRigidbody::ForceIsType(int index) const
 }
 
 template <class T>
-bool NLRigidbody::ForceIsType(const NLName &name) const
+bool NLRigidbody::ForceIsType(const QString &name) const
 {
     if(!m_forces)
         return false;

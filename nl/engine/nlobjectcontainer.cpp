@@ -70,7 +70,7 @@ void NLObjectContainer::Reset()
     }
 }
 
-bool NLObjectContainer::Exists(const NLName &name) const
+bool NLObjectContainer::Exists(const QString &name) const
 {
     Q_FOREACH(NLObject *obj, m_objectList)
     {
@@ -87,7 +87,7 @@ bool NLObjectContainer::Exists(const NLObject *item) const
     return m_objectList.contains((NLObject *)item);
 }
 
-NLName NLObjectContainer::Find(const NLObject *item)
+QString NLObjectContainer::Find(const NLObject *item)
 {
     if(!item)
         return QString();
@@ -140,13 +140,13 @@ bool NLObjectContainer::Remove(int index)
     return Remove(item);
 }
 
-bool NLObjectContainer::Remove(const NLName &name)
+bool NLObjectContainer::Remove(const QString &name)
 {
     NLObject *item = Get(name);
     return Remove(item);
 }
 
-NLObject * NLObjectContainer::Get(const NLName &name)
+NLObject * NLObjectContainer::Get(const QString &name)
 {
     Q_FOREACH(NLObject *obj, m_objectList)
     {

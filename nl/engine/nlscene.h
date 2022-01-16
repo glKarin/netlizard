@@ -48,22 +48,22 @@ public:
 
     NLSceneCamera * CurrentCamera() { return m_currentCamera; }
     NLActor * GetActor(int index) { return m_actors.Get(index); }
-    NLActor * GetActor(const NLName &name) { return m_actors.Get(name); }
+    NLActor * GetActor(const QString &name) { return m_actors.Get(name); }
     template <class T>
     T * GetActor_T(int index);
     template <class T>
-    T * GetActor_T(const NLName &name);
+    T * GetActor_T(const QString &name);
     NLActor * operator[](int index) { return GetActor(index); }
-    NLActor * operator[](const NLName &name) { return GetActor(name); }
+    NLActor * operator[](const QString &name) { return GetActor(name); }
     NLScene & operator<<(NLActor *actor) { AddActor(actor); return *this; }
     NLScene & operator+(NLActor *actor) { AddActor(actor); return *this; }
     NLScene & operator-(NLActor *actor) { RemoveActor(actor); return *this; }
     NLScene & operator-(int index) { RemoveActor(index); return *this; }
-    NLScene & operator-(const NLName &name) { RemoveActor(name); return *this; }
+    NLScene & operator-(const QString &name) { RemoveActor(name); return *this; }
     void AddActor(NLActor *actor);
     void RemoveActor(NLActor *actor);
     void RemoveActor(int index) { m_actors.Remove(index); }
-    void RemoveActor(const NLName &name) { m_actors.Remove(name); }
+    void RemoveActor(const QString &name) { m_actors.Remove(name); }
     NLActor * CreateActor(const NLProperties &props = NLProperties());
     NLPROPERTY_DEF_TRAIT
     
@@ -72,7 +72,7 @@ signals:
     void updated(float delta);
     void rendered(float fps);
     void actorChanged(NLActor *actor = 0);
-    void propertyChanged(const QString &name, const NLProperty &value = NLProperty(), int action = 0);
+    void propertyChanged(const QString &name, const QVariant &value = QVariant(), int action = 0);
     
 public slots:
     void RunLoop(bool b);
@@ -151,7 +151,7 @@ T * NLScene::GetActor_T(int index)
 }
 
 template <class T>
-T * NLScene::GetActor_T(const NLName &name)
+T * NLScene::GetActor_T(const QString &name)
 {
     NLActor *obj = GetActor(name);
     if(!obj)

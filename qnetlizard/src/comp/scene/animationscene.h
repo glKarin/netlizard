@@ -1,9 +1,10 @@
 #ifndef _KARIN_ANIMATIONSCENE_H
 #define _KARIN_ANIMATIONSCENE_H
 
+#include "netlizard.h"
 #include "engine/nlscene.h"
-#include "gl/nl_gl.h"
 
+struct _GL_NETLizard_3D_Model;
 class NETLizardAnimationModelRenderer;
 class SimpleControlComponent;
 
@@ -15,7 +16,7 @@ public:
     explicit AnimationScene(QWidget *parent = 0);
     virtual ~AnimationScene();
     bool IsValid() const;
-    const GL_NETLizard_3D_Model * Model() const { return m_model; }
+    const struct _GL_NETLizard_3D_Model * Model() const { return m_model; }
     const NETLizard_3D_Frame_Animation * Config() const { return m_frameAnim; }
     const NETLizard_3D_Frame_Animation * CurrentAnimation() const;
     int CurrentAnimationFrames() const;
@@ -58,7 +59,7 @@ private:
     void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
 
 private:
-    GL_NETLizard_3D_Model *m_model;
+    struct _GL_NETLizard_3D_Model *m_model;
     NETLizardAnimationModelRenderer *m_renderer;
     const NETLizard_3D_Frame_Animation *m_frameAnim;
     int m_anim;

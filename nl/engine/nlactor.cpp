@@ -280,7 +280,7 @@ bool NLActor::RemoveComponent(int index)
     return RemoveComponent(comp);
 }
 
-bool NLActor::RemoveComponent(const NLName &name)
+bool NLActor::RemoveComponent(const QString &name)
 {
     if(!m_components)
         return false;
@@ -327,7 +327,7 @@ bool NLActor::RemoveChild(int index)
     return RemoveChild(actor);
 }
 
-bool NLActor::RemoveChild(const NLName &name)
+bool NLActor::RemoveChild(const QString &name)
 {
     if(!m_children)
         return false;
@@ -335,7 +335,7 @@ bool NLActor::RemoveChild(const NLName &name)
     return RemoveChild(actor);
 }
 
-NLActor * NLActor::GetChild(const NLName &name)
+NLActor * NLActor::GetChild(const QString &name)
 {
     if(!m_children)
         return 0;
@@ -349,7 +349,7 @@ NLActor * NLActor::GetChild(int index)
     return m_children->Get(index);
 }
 
-NLComponent * NLActor::GetComponent(const NLName &name)
+NLComponent * NLActor::GetComponent(const QString &name)
 {
     if(!m_components)
         return 0;
@@ -387,9 +387,9 @@ void NLActor::Reset()
     emit positionChanged(m_position);
     emit rotationChanged(m_rotation);
     emit scaleChanged(m_scale);
-    emit propertyChanged("position", NLProperty::fromValue<NLVector3>(m_position));
-    emit propertyChanged("rotation",  NLProperty::fromValue<NLVector3>(m_rotation));
-    emit propertyChanged("scale",   NLProperty::fromValue<NLVector3>(m_scale));
+    emit propertyChanged("position", QVariant::fromValue<NLVector3>(m_position));
+    emit propertyChanged("rotation",  QVariant::fromValue<NLVector3>(m_rotation));
+    emit propertyChanged("scale",   QVariant::fromValue<NLVector3>(m_scale));
     if(m_scripts)
         m_scripts->Reset();
     if(m_components)
@@ -406,7 +406,7 @@ void NLActor::SetPosition(const NLVector3 &v)
     m_position = v;
     UpdateMatrix();
     emit positionChanged(m_position);
-    emit propertyChanged("position", NLProperty::fromValue<NLVector3>(m_position));
+    emit propertyChanged("position", QVariant::fromValue<NLVector3>(m_position));
 }
 
 void NLActor::SetRotation(const NLVector3 &v)
@@ -417,7 +417,7 @@ void NLActor::SetRotation(const NLVector3 &v)
     UpdateMatrix();
     UpdateDirection();
     emit rotationChanged(m_rotation);
-    emit propertyChanged("rotation", NLProperty::fromValue<NLVector3>(m_rotation));
+    emit propertyChanged("rotation", QVariant::fromValue<NLVector3>(m_rotation));
 }
 
 void NLActor::SetScale(const NLVector3 &v)
@@ -427,7 +427,7 @@ void NLActor::SetScale(const NLVector3 &v)
     m_scale = v;
     UpdateMatrix();
     emit scaleChanged(m_scale);
-    emit propertyChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
+    emit propertyChanged("scale", QVariant::fromValue<NLVector3>(m_scale));
 }
 
 NLActor & NLActor::Move(const NLVector3 &unit)
@@ -679,7 +679,7 @@ bool NLActor::RemoveScript(int index)
     return RemoveScript(script);
 }
 
-bool NLActor::RemoveScript(const NLName &name)
+bool NLActor::RemoveScript(const QString &name)
 {
     if(!m_scripts)
         return false;
@@ -687,7 +687,7 @@ bool NLActor::RemoveScript(const NLName &name)
     return RemoveScript(script);
 }
 
-NLScript * NLActor::GetScript(const NLName &name)
+NLScript * NLActor::GetScript(const QString &name)
 {
     if(!m_scripts)
         return 0;

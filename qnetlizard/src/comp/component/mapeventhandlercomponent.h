@@ -1,10 +1,12 @@
 #ifndef _KARIN_MAPEVENTHANDLERCOMPONENT_H
 #define _KARIN_MAPEVENTHANDLERCOMPONENT_H
 
+#include "netlizard.h"
 #include "engine/nlcomponent.h"
-#include "gl/nl_gl.h"
 #include "math/bound.h"
 
+struct _GL_NETLizard_3D_Mesh;
+struct _GL_NETLizard_3D_Model;
 class NLRigidbody;
 class NLSceneCamera;
 
@@ -19,11 +21,11 @@ public:
     };
 
 public:
-    explicit MapEventHandler(GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
+    explicit MapEventHandler(struct _GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
     virtual ~MapEventHandler();
     virtual void Update(float delta) = 0;
     virtual bool Start();
-    GL_NETLizard_3D_Mesh * Item() { return m_item; }
+    struct _GL_NETLizard_3D_Mesh * Item() { return m_item; }
     bool Loop() const { return m_loop; }
     bool IsRunning() const { return m_state == Handler_Running; }
     bool IsFinished() const { return m_state == Handler_Finished; }
@@ -34,7 +36,7 @@ protected:
     NLRigidbody * Actor() { return m_actor; }
 
 private:
-    GL_NETLizard_3D_Mesh *m_item;
+    struct _GL_NETLizard_3D_Mesh *m_item;
     bool m_loop;
     Handler_State_e m_state;
     NLRigidbody *m_actor;
@@ -50,7 +52,7 @@ public:
         Elevator_Front_And_Back = 3
     };
 public:
-    explicit MapEventHandler_elevator(float min, float max, Elevator_Mask_e mask, bool invert, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
+    explicit MapEventHandler_elevator(float min, float max, Elevator_Mask_e mask, bool invert, struct _GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
     virtual ~MapEventHandler_elevator();
     virtual void Update(float delta);
     virtual bool Start();
@@ -84,7 +86,7 @@ public:
         Fan_Roll = 4
     };
 public:
-    explicit MapEventHandler_fan(int mask, bool invert, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
+    explicit MapEventHandler_fan(int mask, bool invert, struct _GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
     virtual ~MapEventHandler_fan();
     virtual void Update(float delta);
 
@@ -112,7 +114,7 @@ public:
         Orientation_Horizontal_Y = 3
     };
 public:
-    explicit MapEventHandler_door(const float min[3], const float max[3], Door_Mask_e mask, Orientation_e orientation, float start2, float end2, GL_NETLizard_3D_Mesh *other, float start1, float end1, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
+    explicit MapEventHandler_door(const float min[3], const float max[3], Door_Mask_e mask, Orientation_e orientation, float start2, float end2, struct _GL_NETLizard_3D_Mesh *other, float start1, float end1, struct _GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
     virtual ~MapEventHandler_door();
     virtual void Update(float delta);
     virtual bool Start();
@@ -132,7 +134,7 @@ private:
     void UpdateDoor(float delta, int coord);
 
 private:
-    GL_NETLizard_3D_Mesh *m_otherPart;
+    struct _GL_NETLizard_3D_Mesh *m_otherPart;
     Door_State_e m_doorState;
     Door_State_e m_otherDoorState;
     bound_t m_box;
@@ -154,7 +156,7 @@ public:
         Ladder_Move_Down = 2
     };
 public:
-    explicit MapEventHandler_ladder(Ladder_Movment_e movment, GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
+    explicit MapEventHandler_ladder(Ladder_Movment_e movment, struct _GL_NETLizard_3D_Mesh *item, NLRigidbody *actor, bool loop = false);
     virtual ~MapEventHandler_ladder();
     virtual void Update(float delta);
 
@@ -190,8 +192,8 @@ class MapEventHandlerComponent : public NLComponent
 public:
     explicit MapEventHandlerComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~MapEventHandlerComponent();
-    GL_NETLizard_3D_Model * Model() { return m_model; }
-    void SetModel(GL_NETLizard_3D_Model *model, int level);
+    struct _GL_NETLizard_3D_Model * Model() { return m_model; }
+    void SetModel(struct _GL_NETLizard_3D_Model *model, int level);
     virtual void Reset();
     bool Trigger(int item);
     bool Collision(int item);
@@ -218,11 +220,11 @@ protected:
     bool HandleLadder(int item);
 
 private:
-    typedef QHash<NLint, const NETLizard_Level_Teleport *> MapTeleportMap;
+    typedef QHash<int, const NETLizard_Level_Teleport *> MapTeleportMap;
     typedef QList<const NETLizard_Level_Elevator *> MapElevatorList;
-    typedef QHash<NLint, MapElevatorList> MapElevatorMap;
-    typedef QHash<NLint, const NETLizard_Level_Door *> MapDoorMap;
-    GL_NETLizard_3D_Model *m_model;
+    typedef QHash<int, MapElevatorList> MapElevatorMap;
+    typedef QHash<int, const NETLizard_Level_Door *> MapDoorMap;
+    struct _GL_NETLizard_3D_Model *m_model;
     NLRigidbody *m_teleportActor;
     MapTeleportMap m_teleport;
     MapElevatorMap m_elevator;

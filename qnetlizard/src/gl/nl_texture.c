@@ -2,9 +2,10 @@
 
 #include <stdlib.h>
 
+#include "gl_texture.h"
 #include "netlizard.h"
 
-GLboolean new_texture_from_nl_file(texture_s *tex, const char *name)
+unsigned new_texture_from_nl_file(texture_s *tex, const char *name)
 {
     int len;
 
@@ -17,7 +18,7 @@ GLboolean new_texture_from_nl_file(texture_s *tex, const char *name)
     return res;
 }
 
-GLboolean new_texture_from_nl_v2_3d_file(texture_s *g_tex, const char *name)
+unsigned new_texture_from_nl_v2_3d_file(texture_s *g_tex, const char *name)
 {
     NETLizard_Texture png;
     NLboolean res = nlReadTextureV2File(name, &png);
@@ -38,7 +39,7 @@ GLboolean new_texture_from_nl_v2_3d_file(texture_s *g_tex, const char *name)
     return ok;
 }
 
-GLboolean new_texture_from_nl_v3_3d_file(texture_s *g_tex, const char *name)
+unsigned new_texture_from_nl_v3_3d_file(texture_s *g_tex, const char *name)
 {
     NETLizard_Texture png;
     NLboolean res = nlReadTextureV3File(name, -1, &png);
@@ -59,7 +60,7 @@ GLboolean new_texture_from_nl_v3_3d_file(texture_s *g_tex, const char *name)
     return ok;
 }
 
-GLboolean new_texture_from_nl_v3_3d_compress_file(texture_s *g_tex, const char *name)
+unsigned new_texture_from_nl_v3_3d_compress_file(texture_s *g_tex, const char *name)
 {
     NETLizard_Texture png;
     NLboolean res = nlReadCompressTextureV3File(name, &png);

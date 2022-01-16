@@ -59,7 +59,7 @@ private Q_SLOTS:
     void OnActorChanged();
     void SetupComponent();
     void SetupScript();
-    void OnPropertyChanged(const QString &name, const NLProperty &value, int action = 0);
+    void OnPropertyChanged(const QString &name, const QVariant &value, int action = 0);
     void OnActionTriggered(QAction *action);
 
 private:

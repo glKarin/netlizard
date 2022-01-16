@@ -1,7 +1,8 @@
 #ifndef _KARIN_NLGLDEBUG_H
 #define _KARIN_NLGLDEBUG_H
 
-#include "nl_gl.h"
+struct _GL_NETLizard_3D_Model;
+struct _GL_NETLizard_3D_Mesh;
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,17 +33,17 @@ extern "C" {
 #define NETLizard_DebugRenderGL3DModel_Plane(m, t) NETLizard_DebugRenderGL3DModel(m, t, NETLizard_DebugRenderGL3DMeshPlane)
 #define NETLizard_DebugRenderGL3DMapModelScene_Plane(m, s, c, t) NETLizard_DebugRenderGL3DMapModelScene(m, s, c, t, NETLizard_DebugRenderGL3DMeshPlane)
 
-typedef void (*GL_NETLizard_Debug_Render_Mesh_f)(const GL_NETLizard_3D_Mesh *mesh);
+typedef void (*GL_NETLizard_Debug_Render_Mesh_f)(const struct _GL_NETLizard_3D_Mesh *mesh);
 
-void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, GLuint type, GL_NETLizard_Debug_Render_Mesh_f func);
-void NETLizard_DebugRenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint *scene, GLuint count, GLuint type,  GL_NETLizard_Debug_Render_Mesh_f func);
+void NETLizard_DebugRenderGL3DModel(const struct _GL_NETLizard_3D_Model *model, unsigned int type, GL_NETLizard_Debug_Render_Mesh_f func);
+void NETLizard_DebugRenderGL3DMapModelScene(const struct _GL_NETLizard_3D_Model *model, int *scene, unsigned int count, unsigned int type,  GL_NETLizard_Debug_Render_Mesh_f func);
 
-GLvoid NETLizard_DebugRenderGL3DMeshVertexNormal(const GL_NETLizard_3D_Mesh *m);
-GLvoid NETLizard_DebugRenderGL3DMeshBound(const GL_NETLizard_3D_Mesh *m);
-GLvoid NETLizard_DebugRenderGL3DMeshPlane(const GL_NETLizard_3D_Mesh *m);
+void NETLizard_DebugRenderGL3DMeshVertexNormal(const struct _GL_NETLizard_3D_Mesh *m);
+void NETLizard_DebugRenderGL3DMeshBound(const struct _GL_NETLizard_3D_Mesh *m);
+void NETLizard_DebugRenderGL3DMeshPlane(const struct _GL_NETLizard_3D_Mesh *m);
 
-void NETLizard_DebugRenderGL3DMapModelBound(const GL_NETLizard_3D_Model *model);
-void NETLizard_DebugRenderGL3DMapModelBSP(const GL_NETLizard_3D_Model *model);
+void NETLizard_DebugRenderGL3DMapModelBound(const struct _GL_NETLizard_3D_Model *model);
+void NETLizard_DebugRenderGL3DMapModelBSP(const struct _GL_NETLizard_3D_Model *model);
 
 #ifdef __cplusplus
 }

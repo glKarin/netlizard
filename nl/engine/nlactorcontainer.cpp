@@ -82,7 +82,7 @@ bool NLActorContainer::WheelEventHandler(int mouse, int orientation, int delta, 
     return i > 0;
 }
 
-NLName NLActorContainer::Find(const NLActor *item)
+QString NLActorContainer::Find(const NLActor *item)
 {
     return NLObjectContainer::Find(item);
 }
@@ -114,14 +114,14 @@ bool NLActorContainer::Remove(int index)
     return res;
 }
 
-bool NLActorContainer::Remove(const NLName &name)
+bool NLActorContainer::Remove(const QString &name)
 {
     NLActor *item = Get(name);
     bool res = Remove(item);
     return res;
 }
 
-NLActor * NLActorContainer::Get(const NLName &name)
+NLActor * NLActorContainer::Get(const QString &name)
 {
     return static_cast<NLActor *>(NLObjectContainer::Get(name));
 }

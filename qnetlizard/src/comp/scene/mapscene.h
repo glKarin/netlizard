@@ -4,8 +4,8 @@
 #include <QHash>
 
 #include "engine/nlscene.h"
-#include "gl/nl_gl.h"
 
+struct _GL_NETLizard_3D_Model;
 class NETLizardMapModelRenderer;
 class NETLizardTextureRenderer;
 class NETLizardItemModelRenderer;
@@ -25,7 +25,7 @@ public:
     explicit MapScene(QWidget *parent = 0);
     virtual ~MapScene();
     bool IsValid() const { return m_model != 0; }
-    const GL_NETLizard_3D_Model * Model() const { return m_model; }
+    const struct _GL_NETLizard_3D_Model * Model() const { return m_model; }
     int CurrentScene() const { return m_currentScene; }
     int CurrentViewItem() const { return m_currentViewItem; }
     int CurrentCollisionItem() const { return m_currentCollisionItem; }
@@ -68,7 +68,7 @@ protected:
     void UpdateSkybox();
 
 private:
-    GL_NETLizard_3D_Model *m_model;
+    struct _GL_NETLizard_3D_Model *m_model;
     SimpleCameraActor *m_mainCameraActor;
     NLActor *m_mapActor;
     NLActor *m_shadowActor;

@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "netlizard.h"
-#include "netlizard_3d.h"
 #include "math/vector3.h"
 #include "math/bound.h"
 #include "math/triangle.h"

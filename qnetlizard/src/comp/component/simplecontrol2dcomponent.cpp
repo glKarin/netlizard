@@ -130,7 +130,7 @@ void SimpleControl2DComponent::Transform(float delta)
 
 void SimpleControl2DComponent::InitProperty()
 {
-    NLProperty v;
+    QVariant v;
     v = GetInitProperty("moveSens");
     if(v.isValid())
         SetMoveSens(v.toFloat());

@@ -27,7 +27,7 @@ void NLScriptContainer::Construct()
     setObjectName("NLScriptContainer");
 }
 
-NLName NLScriptContainer::Find(const NLScript *item)
+QString NLScriptContainer::Find(const NLScript *item)
 {
     return NLObjectContainer::Find(item);
 }
@@ -53,14 +53,14 @@ bool NLScriptContainer::Remove(int index)
     return res;
 }
 
-bool NLScriptContainer::Remove(const NLName &name)
+bool NLScriptContainer::Remove(const QString &name)
 {
     NLScript *item = Get(name);
     bool res = Remove(item);
     return res;
 }
 
-NLScript * NLScriptContainer::Get(const NLName &name)
+NLScript * NLScriptContainer::Get(const QString &name)
 {
     return static_cast<NLScript *>(NLObjectContainer::Get(name));
 }

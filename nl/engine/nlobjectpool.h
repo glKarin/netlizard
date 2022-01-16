@@ -13,29 +13,29 @@ public:
     virtual ~NLObjectPool();
     static NLObjectPool * Instance();
     int Count() const { return m_pool.count(); }
-    bool Exists(const NLName &name) const { return m_pool.contains(name); }
+    bool Exists(const QString &name) const { return m_pool.contains(name); }
     bool Exists(const NLObject *item) const { return m_itemPool.contains(item); }
     bool IsEmpty() const { return m_pool.isEmpty(); }
-    NLName Find(const NLObject *item);
-    NLName Attach(NLObject *item);
+    QString Find(const NLObject *item);
+    QString Attach(NLObject *item);
     NLObjectPool * Detach(NLObject *item);
-    NLObject * Detach(const NLName &name);
-    NLObject * Get(const NLName &name);
+    NLObject * Detach(const QString &name);
+    NLObject * Get(const QString &name);
     void Clear() { m_pool.clear(); m_itemPool.clear();}
     void Reset();
 
-    NLObject * operator[](const NLName &name) { return Get(name); }
+    NLObject * operator[](const QString &name) { return Get(name); }
     NLObjectPool & operator<<(NLObject *item) { Attach(item); return *this; }
     NLObjectPool & operator+(NLObject *item) { Attach(item); return *this; }
     NLObjectPool & operator-(NLObject *item) { Detach(item); return *this; }
-    NLObjectPool & operator-(const NLName &name) { Detach(name); return *this; }
+    NLObjectPool & operator-(const QString &name) { Detach(name); return *this; }
 
 private:
-    NLName GenName(const NLObject *item);
+    QString GenName(const NLObject *item);
 
 private:
-    typedef QHash<NLName, NLObject *> ObjectPool;
-    typedef QList<NLName> NamePool;
+    typedef QHash<QString, NLObject *> ObjectPool;
+    typedef QList<QString> NamePool;
     typedef QList<const NLObject *> ItemPool;
     NLObjectPool(QObject *parent = 0);
     ObjectPool m_pool;

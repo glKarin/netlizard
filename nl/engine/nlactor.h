@@ -52,28 +52,28 @@ public:
     bool AddComponent(NLComponent *item);
     bool RemoveComponent(NLComponent *item);
     bool RemoveComponent(int index);
-    bool RemoveComponent(const NLName &name);
+    bool RemoveComponent(const QString &name);
     bool AddChild(NLActor *actor);
     bool RemoveChild(NLActor *actor);
     bool RemoveChild(int index);
-    bool RemoveChild(const NLName &name);
-    NLActor * GetChild(const NLName &name);
+    bool RemoveChild(const QString &name);
+    NLActor * GetChild(const QString &name);
     NLActor * GetChild(int index);
-    NLComponent * GetComponent(const NLName &name);
+    NLComponent * GetComponent(const QString &name);
     NLComponent * GetComponent(int index);
     NLActor & operator<<(NLActor *actor) { AddChild(actor); return *this; }
     NLActor * operator[](int index) { return GetChild(index); }
-    NLActor * operator[](const NLName &name) { return GetChild(name); }
+    NLActor * operator[](const QString &name) { return GetChild(name); }
     template <class T>
-    T * GetChild_T(const NLName &name);
+    T * GetChild_T(const QString &name);
     template <class T>
     T * GetChild_T(int index);
     template <class T>
-    T * GetComponent_T(const NLName &name);
+    T * GetComponent_T(const QString &name);
     template <class T>
     T * GetComponent_T(int index);
     template <class T>
-    T * GetScript_T(const NLName &name);
+    T * GetScript_T(const QString &name);
     template <class T>
     T * GetScript_T(int index);
     NLActor & operator+(NLComponent *item) { AddComponent(item); return *this; }
@@ -99,7 +99,7 @@ public:
     template <class T>
     bool ChildIsType(int index) const;
     template <class T>
-    bool ChildIsType(const NLName &name) const;
+    bool ChildIsType(const QString &name) const;
     template <class T>
     int TypeChildCount() const;
     template <class T>
@@ -116,7 +116,7 @@ public:
     template <class T>
     bool ComponentIsType(int index) const;
     template <class T>
-    bool ComponentIsType(const NLName &name) const;
+    bool ComponentIsType(const QString &name) const;
     template <class T>
     int TypeComponentCount() const;
     template <class T>
@@ -133,8 +133,8 @@ public:
     bool AddScript(NLScript *item);
     bool RemoveScript(NLScript *item);
     bool RemoveScript(int index);
-    bool RemoveScript(const NLName &name);
-    NLScript * GetScript(const NLName &name);
+    bool RemoveScript(const QString &name);
+    NLScript * GetScript(const QString &name);
     NLScript * GetScript(int index);
     NLActor & operator+(NLScript *item) { AddScript(item); return *this; }
     NLActor & operator-(NLScript *item) { RemoveScript(item); return *this; }
@@ -144,7 +144,7 @@ public:
     template <class T>
     bool ScriptIsType(int index) const;
     template <class T>
-    bool ScriptIsType(const NLName &name) const;
+    bool ScriptIsType(const QString &name) const;
     template <class T>
     int TypeScriptCount() const;
     template <class T>
@@ -226,7 +226,7 @@ private:
 typedef QList<NLActor *> NLActorList;
 
 template <class T>
-T * NLActor::GetChild_T(const NLName &name)
+T * NLActor::GetChild_T(const QString &name)
 {
     NLActor *obj = GetChild(name);
     if(!obj)
@@ -244,7 +244,7 @@ T * NLActor::GetChild_T(int index)
 }
 
 template <class T>
-T * NLActor::GetComponent_T(const NLName &name)
+T * NLActor::GetComponent_T(const QString &name)
 {
     NLComponent *obj = GetComponent(name);
     if(!obj)
@@ -270,7 +270,7 @@ bool NLActor::ChildIsType(int index) const
 }
 
 template <class T>
-bool NLActor::ChildIsType(const NLName &name) const
+bool NLActor::ChildIsType(const QString &name) const
 {
     if(!m_children)
         return false;
@@ -344,7 +344,7 @@ bool NLActor::ComponentIsType(int index) const
 }
 
 template <class T>
-bool NLActor::ComponentIsType(const NLName &name) const
+bool NLActor::ComponentIsType(const QString &name) const
 {
     if(!m_components)
         return false;
@@ -410,7 +410,7 @@ int NLActor::RemoveTypeComponents()
 }
 
 template <class T>
-T * NLActor::GetScript_T(const NLName &name)
+T * NLActor::GetScript_T(const QString &name)
 {
     NLScript *obj = GetScript(name);
     if(!obj)
@@ -436,7 +436,7 @@ bool NLActor::ScriptIsType(int index) const
 }
 
 template <class T>
-bool NLActor::ScriptIsType(const NLName &name) const
+bool NLActor::ScriptIsType(const QString &name) const
 {
     if(!m_scripts)
         return false;

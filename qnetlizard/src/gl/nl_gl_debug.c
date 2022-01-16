@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 
+#include "nl_gl.h"
 #include "math/vector3.h"
 #include "math/line.h"
 #include "math/bound.h"
@@ -45,7 +46,7 @@
 #define BITS_FALSE(b, t) (((b) & (t)) == 0)
 #define BITS_TRUE(b, t) (((b) & (t)) != 0)
 
-void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, GLuint type, GL_NETLizard_Debug_Render_Mesh_f func)
+void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, unsigned int type, GL_NETLizard_Debug_Render_Mesh_f func)
 {
     if(!model || !func)
 		return;
@@ -54,7 +55,7 @@ void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, GLuint t
 
     if(model->meshes && BITS_TRUE(type, NETLIZARD_DEBUG_TYPE_SCENE))
 	{
-		GLuint i;
+        unsigned int i;
 		for(i = 0; i < model->count; i++)
         {
             const GL_NETLizard_3D_Mesh *m = model->meshes + i;
@@ -62,7 +63,7 @@ void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, GLuint t
 #if 0
             if(model->item_meshes)
 			{
-				GLuint j;
+                unsigned int j;
 				for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++) 
                 {
 					GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
@@ -77,7 +78,7 @@ void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, GLuint t
 
     if(model->item_meshes && BITS_TRUE(type, NETLIZARD_DEBUG_TYPE_ITEM))
 	{
-		GLuint i;
+        unsigned int i;
 		for(i = 0; i < model->item_count; i++)
         {
             const GL_NETLizard_3D_Item_Mesh *m = model->item_meshes + i;
@@ -90,7 +91,7 @@ void NETLizard_DebugRenderGL3DModel(const GL_NETLizard_3D_Model *model, GLuint t
 	}
 }
 
-void NETLizard_DebugRenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint *scene, GLuint count, GLuint type, GL_NETLizard_Debug_Render_Mesh_f func)
+void NETLizard_DebugRenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, int *scene, unsigned int count, unsigned int type, GL_NETLizard_Debug_Render_Mesh_f func)
 {
     if(!model)
         return;
@@ -100,8 +101,8 @@ void NETLizard_DebugRenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, 
     if(!model->meshes)
         return;
 
-    GLuint c = scene ? count : model->count;
-    GLuint i;
+    unsigned int c = scene ? count : model->count;
+    unsigned int i;
     for(i = 0; i < c; i++)
     {
         int s = scene ? scene[i] : i;
@@ -113,7 +114,7 @@ void NETLizard_DebugRenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, 
 
             if(model->item_meshes && BITS_TRUE(type, NETLIZARD_DEBUG_TYPE_ITEM))
             {
-                GLuint j;
+                unsigned int j;
                 for(j = m->item_index_range[0]; j < m->item_index_range[1]; j++)
                 {
                     const GL_NETLizard_3D_Item_Mesh *im = model->item_meshes + j;
@@ -128,7 +129,7 @@ void NETLizard_DebugRenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, 
     }
 }
 
-GLvoid NETLizard_DebugRenderGL3DMeshVertexNormal(const GL_NETLizard_3D_Mesh *m)
+void NETLizard_DebugRenderGL3DMeshVertexNormal(const GL_NETLizard_3D_Mesh *m)
 {
     if(!m)
 		return;
@@ -144,8 +145,8 @@ GLvoid NETLizard_DebugRenderGL3DMeshVertexNormal(const GL_NETLizard_3D_Mesh *m)
             glRotatef(m->rotation[1], 0.0f, 0.0f, 1.0f);
             glRotatef(m->rotation[2], 0.0f, 1.0f, 0.0f);
 
-            GLuint j;
-            GLuint i;
+            unsigned int j;
+            unsigned int i;
 
             for(j = 0; j < m->count; j++)
             {
@@ -179,7 +180,7 @@ GLvoid NETLizard_DebugRenderGL3DMeshVertexNormal(const GL_NETLizard_3D_Mesh *m)
     END_DEBUG_RENDER
 }
 
-GLvoid NETLizard_DebugRenderGL3DMeshBound(const GL_NETLizard_3D_Mesh *m)
+void NETLizard_DebugRenderGL3DMeshBound(const GL_NETLizard_3D_Mesh *m)
 {
     if(!m)
         return;
@@ -235,7 +236,7 @@ GLvoid NETLizard_DebugRenderGL3DMeshBound(const GL_NETLizard_3D_Mesh *m)
     END_DEBUG_RENDER
 }
 
-GLvoid NETLizard_DebugRenderGL3DMeshPlane(const GL_NETLizard_3D_Mesh *m)
+void NETLizard_DebugRenderGL3DMeshPlane(const GL_NETLizard_3D_Mesh *m)
 {
     if(!m)
         return;
@@ -253,7 +254,7 @@ GLvoid NETLizard_DebugRenderGL3DMeshPlane(const GL_NETLizard_3D_Mesh *m)
             glRotatef(m->rotation[1], 0.0f, 0.0f, 1.0f);
             glRotatef(m->rotation[2], 0.0f, 1.0f, 0.0f);
 
-            GLuint j;
+            unsigned int j;
 
             for(j = 0; j < m->plane_count; j++)
             {
@@ -282,7 +283,7 @@ GLvoid NETLizard_DebugRenderGL3DMeshPlane(const GL_NETLizard_3D_Mesh *m)
     END_DEBUG_RENDER
 }
 
-GLvoid NETLizard_DebugRenderGL3DMapModelBSP(const GL_NETLizard_3D_Model *m)
+void NETLizard_DebugRenderGL3DMapModelBSP(const GL_NETLizard_3D_Model *m)
 {
     if(!m)
         return;
@@ -294,7 +295,7 @@ GLvoid NETLizard_DebugRenderGL3DMapModelBSP(const GL_NETLizard_3D_Model *m)
     {
         glEnableClientState(GL_VERTEX_ARRAY);
 
-        GLuint i;
+        unsigned int i;
         for(i = 0; i < m->bsp_count; i++)
         {
             const GL_NETLizard_BSP_Tree_Node *node = m->bsp_data + i;

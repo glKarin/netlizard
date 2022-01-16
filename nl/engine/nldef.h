@@ -70,14 +70,9 @@ enum NLAction_e
 };
 typedef NLAction_e NLActionType;
 
-typedef QString NLName;
-#if 0
-typedef QVariantHash NLProperties;
-typedef QVariant NLProperty;
-#endif
-
 typedef struct vector3_s NLVector3;
 typedef GLmatrix NLMatrix4;
+typedef QPair<QString, QVariant> QVariantPair;
 
 #define NLINTERFACE
 #define NLGETTER(x)

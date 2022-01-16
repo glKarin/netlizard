@@ -9,7 +9,7 @@
 
 namespace NL
 {
-static NLPropertyInfo make_property_info(const QString &name, int t, const QString &typeName, const QVariant &value, const NLProperty &defValue = NLProperty(), const QVariantHash &props = QVariantHash())
+static NLPropertyInfo make_property_info(const QString &name, int t, const QString &typeName, const QVariant &value, const QVariant &defValue = QVariant(), const QVariantHash &props = QVariantHash())
 {
     QString type(typeName);
     QString widget;
@@ -107,7 +107,7 @@ NLPropertyInfoList scene_propertics(const NLScene *obj)
         QString name(p.name());
 
         //QVariantHash prop = config.value(name).toHash();
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p.read(obj), NLProperty());
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p.read(obj), QVariant());
 
         qDebug() << name;
 
@@ -122,7 +122,7 @@ NLPropertyInfoList scene_propertics(const NLScene *obj)
         QString name(ba);
 
         //QVariantHash prop = config.value(name).toHash();
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p, NLProperty());
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p, QVariant());
 
         ret.push_back(info);
     }
@@ -130,7 +130,7 @@ NLPropertyInfoList scene_propertics(const NLScene *obj)
     return ret;
 }
 
-bool property_equals(const NLProperty &a, const NLProperty &b)
+bool property_equals(const QVariant &a, const QVariant &b)
 {
     QVariant::Type at = a.type();
     QVariant::Type bt = b.type();

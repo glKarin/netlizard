@@ -40,8 +40,8 @@ public:
     public:
             explicit NLSceneCameraChangedNotify(int type);
             virtual ~NLSceneCameraChangedNotify();
-            virtual void PropertyChanged(const QString &name, const NLProperty &value) = 0;
-            virtual void ValueChanged(const QString &name, const NLProperty &value) = 0;
+            virtual void PropertyChanged(const QString &name, const QVariant &value) = 0;
+            virtual void ValueChanged(const QString &name, const QVariant &value) = 0;
 
     protected:
         void SetType(int type);
@@ -95,8 +95,8 @@ protected:
     virtual void View();
     virtual void UpdateProjectionMatrix(NLMatrix4 *mat);
     void UpdateMatrix();
-    void PropertyChanged(const QString &name, const NLProperty &value);
-    void ValueChanged(const QString &name, const NLProperty &value);
+    void PropertyChanged(const QString &name, const QVariant &value);
+    void ValueChanged(const QString &name, const QVariant &value);
 
 private:
     typedef struct GL_matrix_status_s {

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <float.h>
 
+#include "nl_gl.h"
 #include "nl_util.h"
 #include "math/bound.h"
 #include "math/line.h"

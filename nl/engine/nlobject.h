@@ -46,14 +46,14 @@ public:
     NLScene * Scene() { return m_scene; }
     virtual bool IsEnabled() const { return m_enabled; }
     virtual void SetEnabled(bool enabled);
-    NLProperty GetInitProperty(const QString &name, const NLProperty &def = QVariant()) const { return m_property.Get(name, def); }
+    QVariant GetInitProperty(const QString &name, const QVariant &def = QVariant()) const { return m_property.Get(name, def); }
     template<class T> T GetInitProperty_T(const QString &name, const T &def = T());
     NLProperties PropertyConfig() const { return m_propertyConfig; }
     NLPROPERTY_DEF_TRAIT
 
 protected:
-    void SetName(const NLName &name);
-    void SetClassName(const NLName &name);
+    void SetName(const QString &name);
+    void SetClassName(const QString &name);
     void SetType(NLObject_Type type);
     void SetContainer(NLObjectContainer *container);
     virtual void Init();
@@ -67,7 +67,7 @@ signals:
     void initilized();
     void destroying();
     void reseted();
-    void propertyChanged(const QString &name, const NLProperty &value = NLProperty(), int action = 0);
+    void propertyChanged(const QString &name, const QVariant &value = QVariant(), int action = 0);
     
 public slots:
 

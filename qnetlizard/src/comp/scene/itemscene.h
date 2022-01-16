@@ -2,8 +2,8 @@
 #define _KARIN_ITEMSCENE_H
 
 #include "engine/nlscene.h"
-#include "gl/nl_gl.h"
 
+struct _GL_NETLizard_3D_Model;
 class NETLizardMapModelRenderer;
 class SimpleControlComponent;
 
@@ -15,7 +15,7 @@ public:
     explicit ItemScene(QWidget *parent = 0);
     virtual ~ItemScene();
     bool IsValid() const { return m_model != 0; }
-    const GL_NETLizard_3D_Model * Model() const { return m_model; }
+    const struct _GL_NETLizard_3D_Model * Model() const { return m_model; }
 
 public Q_SLOTS:
     bool LoadFile(const QString &file, const QString &resourcePath, int game, int index);
@@ -31,7 +31,7 @@ protected:
     void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
 
 private:
-    GL_NETLizard_3D_Model *m_model;
+    struct _GL_NETLizard_3D_Model *m_model;
     NETLizardMapModelRenderer *m_renderer;
     SimpleControlComponent *m_control;
 

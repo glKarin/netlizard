@@ -13,23 +13,23 @@ public:
     explicit NLActorContainer(NLScene *scene, QObject *parent = 0);
     virtual ~NLActorContainer();
     bool Exists(const NLActor &item) const;
-    NLName Find(const NLActor *item);
+    QString Find(const NLActor *item);
     bool Add(NLActor *item);
     bool Remove(NLActor *item);
     bool Remove(int index);
-    bool Remove(const NLName &name);
-    NLActor * Get(const NLName &name);
+    bool Remove(const QString &name);
+    NLActor * Get(const QString &name);
     NLActor * Get(int index);
     virtual void Clear();
     virtual void Render();
 
-    NLActor * operator[](const NLName &name) { return Get(name); }
+    NLActor * operator[](const QString &name) { return Get(name); }
     NLActor * operator[](int index) { return Get(index); }
     NLActorContainer & operator<<(NLActor *item) { Add(item); return *this; }
     NLActorContainer & operator+(NLActor *item) { Add(item); return *this; }
     NLActorContainer & operator-(NLActor *item) { Remove(item); return *this; }
     NLActorContainer & operator-(int index) { Remove(index); return *this; }
-    NLActorContainer & operator-(const NLName &name) { Remove(name); return *this; }
+    NLActorContainer & operator-(const QString &name) { Remove(name); return *this; }
     NLActor * Actor();
     const NLActor * Actor() const;
     int TotalCount() const;

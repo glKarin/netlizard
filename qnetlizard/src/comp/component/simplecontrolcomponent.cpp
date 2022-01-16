@@ -57,7 +57,7 @@ void SimpleControlComponent::Reset()
 
 void SimpleControlComponent::InitProperty()
 {
-    NLProperty v;
+    QVariant v;
     v = GetInitProperty("moveSens");
     if(v.isValid())
         SetMoveSens(v.toFloat());

@@ -2,8 +2,8 @@
 #define _KARIN_FONTSCENE_H
 
 #include "engine/nlscene.h"
-#include "gl/nl_gl.h"
 
+struct _GL_NETLizard_Font;
 class QColor;
 class NETLizardFontRenderer;
 
@@ -14,7 +14,7 @@ class FontScene : public NLScene
 public:
     explicit FontScene(QWidget *parent = 0);
     virtual ~FontScene();
-    GL_NETLizard_Font * Font() { return m_font; }
+    struct _GL_NETLizard_Font * Font() { return m_font; }
     bool IsValid() const { return m_font != 0; }
 
 public Q_SLOTS:
@@ -38,7 +38,7 @@ public slots:
 
 private:
     NETLizardFontRenderer *m_renderer;
-    GL_NETLizard_Font *m_font;
+    struct _GL_NETLizard_Font *m_font;
     QString m_text;
     int m_lineCount;
     int m_paddingWidth;

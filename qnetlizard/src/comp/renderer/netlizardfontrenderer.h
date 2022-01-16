@@ -4,7 +4,8 @@
 #include <QStringList>
 
 #include "engine/nlrenderable.h"
-#include "gl/nl_gl.h"
+
+struct _GL_NETLizard_Font;
 
 NLRENDERER(NETLizardFontRenderer)
 class NETLizardFontRenderer : public NLRenderable
@@ -12,8 +13,8 @@ class NETLizardFontRenderer : public NLRenderable
 public:
     explicit NETLizardFontRenderer(NLActor *actor = 0);
     virtual ~NETLizardFontRenderer();
-    GL_NETLizard_Font * Font() { return m_font; }
-    void SetFont(GL_NETLizard_Font *tex);
+    struct _GL_NETLizard_Font * Font() { return m_font; }
+    void SetFont(struct _GL_NETLizard_Font *tex);
     void SetText(const QString &str);
     void UpdateLayout();
 
@@ -26,7 +27,7 @@ private:
     void RenderText();
 
 private:
-    GL_NETLizard_Font *m_font;
+    struct _GL_NETLizard_Font *m_font;
     QString m_text;
     QStringList m_list;
     int m_paddingWidth;

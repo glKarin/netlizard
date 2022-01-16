@@ -11,6 +11,7 @@
 #include <QTextEdit>
 #include <QColorDialog>
 
+#include "gl/nl_gl.h"
 #include "fontscene.h"
 #include "qdef.h"
 

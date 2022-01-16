@@ -203,3 +203,12 @@ CONFIG(debug, debug|release) {
 } else {
 
 }
+
+TRANSLATIONS += i18n/nl.zh_CN.ts
+
+i18n.files = \
+    i18n/nl.zh_CN.ts \
+    i18n/nl.zh_CN.qm
+i18n.path = $$DESTDIR/i18n
+
+INSTALLS += i18n

@@ -16,17 +16,17 @@ public:
     virtual ~NLObjectContainer();
     int Count() const { return m_objectList.count(); }
     bool IsEmpty() const { return m_objectList.isEmpty(); }
-    bool Exists(const NLName &name) const;
+    bool Exists(const QString &name) const;
     bool Exists(const NLObject *item) const;
-    NLName Find(const NLObject *item);
+    QString Find(const NLObject *item);
     bool Add(NLObject *item);
     bool Remove(NLObject *item);
     bool Remove(int index);
-    bool Remove(const NLName &name);
-    NLObject * Get(const NLName &name);
+    bool Remove(const QString &name);
+    NLObject * Get(const QString &name);
     NLObject * Get(int index);
     template <class T>
-    T * Get_T(const NLName &name);
+    T * Get_T(const QString &name);
     template <class T>
     T * Get_T(int index);
     virtual void Clear();
@@ -39,18 +39,18 @@ public:
     NLScene * Scene() { return m_scene; }
     bool ObjectIsAvailable(NLObject *item) const;
 
-    NLObject * operator[](const NLName &name) { return Get(name); }
+    NLObject * operator[](const QString &name) { return Get(name); }
     NLObject * operator[](int index) { return Get(index); }
     NLObjectContainer & operator<<(NLObject *item) { Add(item); return *this; }
     NLObjectContainer & operator+(NLObject *item) { Add(item); return *this; }
     NLObjectContainer & operator-(NLObject *item) { Remove(item); return *this; }
     NLObjectContainer & operator-(int index) { Remove(index); return *this; }
-    NLObjectContainer & operator-(const NLName &name) { Remove(name); return *this; }
+    NLObjectContainer & operator-(const QString &name) { Remove(name); return *this; }
 
     template <class T>
     bool IsType(int index) const;
     template <class T>
-    bool IsType(const NLName &name) const;
+    bool IsType(const QString &name) const;
     template <class T>
     int TypeCount() const;
     template <class T>
@@ -89,7 +89,7 @@ private:
 };
 
 template <class T>
-T * NLObjectContainer::Get_T(const NLName &name)
+T * NLObjectContainer::Get_T(const QString &name)
 {
     NLObject *obj = Get(name);
     if(!obj)
@@ -114,7 +114,7 @@ bool NLObjectContainer::IsType(int index) const
 }
 
 template <class T>
-bool NLObjectContainer::IsType(const NLName &name) const
+bool NLObjectContainer::IsType(const QString &name) const
 {
     NLObject *obj = Get(name);
     return dynamic_cast<T *>(obj) != 0;

@@ -14,7 +14,7 @@ class Lang : public QObject
     Q_OBJECT
 public:
     virtual ~Lang();
-    SINGLE_INSTANCE_DEF(Lang);
+    SINGLE_INSTANCE_DEF(Lang)
     static const LangDict & GetLangDict();
     QString Tr(const QString &name, const QString &context = QString(), const QString &def = QString()) const;
     QString L(const QString &name, const QString &context = QString(), const QString &def = QString()) const { return Tr(name, context, def); }

@@ -5,7 +5,6 @@
 #include <stdio.h>
 
 #include "nl_texture.h"
-#include "gl_texture.h"
 
 GLboolean NETLizard_ReadSpirit(GL_NETLizard_Sprite *sprite, const char *map_file, const char *tex_file)
 {

@@ -301,7 +301,7 @@ bool NLRigidbody::RemoveForce(int index)
     return RemoveForce(force);
 }
 
-bool NLRigidbody::RemoveForce(const NLName &name)
+bool NLRigidbody::RemoveForce(const QString &name)
 {
     if(!m_forces)
         return false;
@@ -309,7 +309,7 @@ bool NLRigidbody::RemoveForce(const NLName &name)
     return RemoveForce(force);
 }
 
-NLForce * NLRigidbody::GetForce(const NLName &name)
+NLForce * NLRigidbody::GetForce(const QString &name)
 {
     if(!m_forces)
         return 0;

@@ -11,6 +11,7 @@
 #include <QListWidget>
 #include <QColorDialog>
 
+#include "gl/nl_gl.h"
 #include "spritescene.h"
 #include "qdef.h"
 

@@ -2,6 +2,8 @@
 
 #include <QDebug>
 
+#include "gl/nl_gl.h"
+#include "gl/nl_util.h"
 #include "nl_gl_debug.h"
 #include "nl_gl_algo_debug.h"
 #include "nl_algo.h"

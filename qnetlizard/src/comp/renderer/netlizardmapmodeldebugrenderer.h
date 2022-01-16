@@ -2,9 +2,9 @@
 #define _KARIN_NETLIZARDMAPMODELDEBUGRENDERER_H
 
 #include "engine/nlrenderable.h"
-#include "gl/nl_gl.h"
 
 class NLSceneCamera;
+struct _GL_NETLizard_3D_Model;
 
 NLRENDERER(NETLizardMapModelDebugRenderer)
 class NETLizardMapModelDebugRenderer : public NLRenderable
@@ -12,8 +12,8 @@ class NETLizardMapModelDebugRenderer : public NLRenderable
 public:
     explicit NETLizardMapModelDebugRenderer(NLActor *actor = 0);
     virtual ~NETLizardMapModelDebugRenderer();
-    GL_NETLizard_3D_Model * Model() { return m_model; }
-    void SetModel(GL_NETLizard_3D_Model *model);
+    struct _GL_NETLizard_3D_Model * Model() { return m_model; }
+    void SetModel(struct _GL_NETLizard_3D_Model *model);
     void SetupScenes(bool b);
     int * Scenes() { return m_scenes; }
     void SetCull(bool b);
@@ -35,7 +35,7 @@ protected:
     void RenderHighlight();
 
 private:
-    GL_NETLizard_3D_Model *m_model;
+    struct _GL_NETLizard_3D_Model *m_model;
     bool m_cull;
     int *m_scenes;
     int m_sceneCount;

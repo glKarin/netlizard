@@ -1,6 +1,9 @@
 #include "nlglobals.h"
 
 #include <QVariant>
+#include <QLocale>
+#include <QTranslator>
+#include <QApplication>
 #include <QDebug>
 
 #include "nldef.h"
@@ -10,6 +13,25 @@ static bool _engine_inited = false;
 
 namespace NL
 {
+static bool load_translator()
+{
+    const QString locale = QLocale::system().name();
+    const QString qmFile("nl." + locale);
+    static QTranslator translator;
+
+    if(translator.load(qmFile, "i18n"))
+    {
+        qDebug() << "Load nl i18n -> " + qmFile + ".qm ......done!";
+        qApp->installTranslator(&translator);
+        return true;
+    }
+    else
+    {
+        qDebug() << "Load nl i18n -> " + qmFile + ".qm ......fail!";
+        return false;
+    }
+}
+
 bool init_engine()
 {
     if(_engine_inited)
@@ -24,6 +46,8 @@ bool init_engine()
     qRegisterMetaType<NL::Physics::F>("NLPhysics_F");
     qRegisterMetaType<NL::Physics::t>("NLPhysics_t");
     qRegisterMetaType<NL::Physics::d>("NLPhysics_d");
+
+    load_translator();
 
     _engine_inited = true;
     return _engine_inited;

@@ -5,6 +5,7 @@
 
 #include <QColor>
 
+#include "gl/nl_gl.h"
 #include "qdef.h"
 #include "engine/nlscenecamera.h"
 #include "simplecameraactor.h"

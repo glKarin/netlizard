@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-#include <GL/gl.h>
+#include "GL/gl_texture.h"
 
 #include "qdef.h"
 

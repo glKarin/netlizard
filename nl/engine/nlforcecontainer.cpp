@@ -27,7 +27,7 @@ void NLForceContainer::Construct()
     setObjectName("NLForceContainer");
 }
 
-NLName NLForceContainer::Find(const NLForce *item)
+QString NLForceContainer::Find(const NLForce *item)
 {
     return NLObjectContainer::Find(item);
 }
@@ -59,14 +59,14 @@ bool NLForceContainer::Remove(int index)
     return res;
 }
 
-bool NLForceContainer::Remove(const NLName &name)
+bool NLForceContainer::Remove(const QString &name)
 {
     NLForce *item = Get(name);
     bool res = Remove(item);
     return res;
 }
 
-NLForce * NLForceContainer::Get(const NLName &name)
+NLForce * NLForceContainer::Get(const QString &name)
 {
     return static_cast<NLForce *>(NLObjectContainer::Get(name));
 }

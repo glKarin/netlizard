@@ -1,6 +1,8 @@
 #include "nl_util.h"
 
+#include "gl/nl_gl.h"
 #include "math/bound.h"
+#include "math/vector3.h"
 
 int NETLizard_GetMapRenderScenes(const GL_NETLizard_3D_Model *model, int scenes[], float frustum[6][4])
 {
@@ -346,7 +348,7 @@ void NETLizard_GetMeshBound(const GL_NETLizard_3D_Mesh *scene, bound_t *bound)
     }
 }
 
-void NETLizard_GetSceneFullBound(const GL_NETLizard_3D_Model *model, GLuint s, bound_t *bound)
+void NETLizard_GetSceneFullBound(const GL_NETLizard_3D_Model *model, unsigned int s, bound_t *bound)
 {
     if(!model || !bound)
         return;

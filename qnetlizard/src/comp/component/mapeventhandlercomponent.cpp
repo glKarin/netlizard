@@ -4,6 +4,7 @@
 #include <QList>
 #include <QHash>
 
+#include "gl/nl_gl.h"
 #include "settings.h"
 #include "qdef.h"
 #include "engine/nlscene.h"

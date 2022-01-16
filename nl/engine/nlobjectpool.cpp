@@ -16,11 +16,11 @@ NLObjectPool::~NLObjectPool()
     NLDEBUG_DESTROY_Q
 }
 
-NLName NLObjectPool::GenName(const NLObject *item)
+QString NLObjectPool::GenName(const NLObject *item)
 {
 typedef quint64 index_t;
 #define INDEX_MAX std::numeric_limits<index_t>::max()
-    NLName name;
+    QString name;
     static index_t _i = 0;
     static char _n = '0';
     static char _c = 'a';
@@ -63,19 +63,19 @@ typedef quint64 index_t;
     return name;
 }
 
-NLObject * NLObjectPool::Get(const NLName &name)
+NLObject * NLObjectPool::Get(const QString &name)
 {
     if(!m_pool.contains(name))
         return 0;
     return m_pool[name];
 }
 
-NLName NLObjectPool::Find(const NLObject *item)
+QString NLObjectPool::Find(const NLObject *item)
 {
     if(!item)
         return QString();
 
-    Q_FOREACH(const NLName &name, m_pool.keys())
+    Q_FOREACH(const QString &name, m_pool.keys())
     {
         if(m_pool.value(name) == item)
             return name;
@@ -83,13 +83,13 @@ NLName NLObjectPool::Find(const NLObject *item)
     return QString();
 }
 
-NLName NLObjectPool::Attach(NLObject *item)
+QString NLObjectPool::Attach(NLObject *item)
 {
     if(!item)
-        return NLName();
+        return QString();
     if(!Find(item).isEmpty())
-        return NLName();
-    NLName name = GenName(item);
+        return QString();
+    QString name = GenName(item);
     m_pool.insert(name, item);
     m_itemPool.push_back(item);
     return name;
@@ -99,7 +99,7 @@ NLObjectPool * NLObjectPool::Detach(NLObject *item)
 {
     if(!item)
         return this;
-    Q_FOREACH(const NLName &name, m_pool.keys())
+    Q_FOREACH(const QString &name, m_pool.keys())
     {
         if(m_pool.value(name) == item)
         {
@@ -112,7 +112,7 @@ NLObjectPool * NLObjectPool::Detach(NLObject *item)
     return this;
 }
 
-NLObject * NLObjectPool::Detach(const NLName &name)
+NLObject * NLObjectPool::Detach(const QString &name)
 {
     NLObject *res = 0;
     if(m_pool.contains(name))

@@ -133,7 +133,7 @@ static void OpenGL_TexImage2D(GLenum target, GLint level, GLint internalformat, 
     }
 }
 
-GLboolean new_OpenGL_texture_2d_from_memory(const unsigned char *d, unsigned int len, texture_s *g_tex)
+unsigned new_OpenGL_texture_2d_from_memory(const unsigned char *d, unsigned int len, texture_s *g_tex)
 {
     if(!d)
         return GL_FALSE;
@@ -182,7 +182,7 @@ GLboolean new_OpenGL_texture_2d_from_memory(const unsigned char *d, unsigned int
     return GL_TRUE;
 }
 
-GLboolean make_OpenGL_texture_2d(const char *data, int len, int width, int height, GLenum format, texture_s *g_tex)
+unsigned make_OpenGL_texture_2d(const char *data, int len, int width, int height, GLenum format, texture_s *g_tex)
 {
     memset(g_tex, 0, sizeof(texture_s));
     g_tex->width = width;
@@ -210,7 +210,7 @@ GLboolean make_OpenGL_texture_2d(const char *data, int len, int width, int heigh
     return GL_TRUE;
 }
 
-GLboolean new_OpenGL_texture_2d(texture_s *g_tex, const char *dds)
+unsigned new_OpenGL_texture_2d(texture_s *g_tex, const char *dds)
 {
     if(!dds)
         return GL_FALSE;

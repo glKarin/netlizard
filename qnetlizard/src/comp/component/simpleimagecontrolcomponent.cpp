@@ -56,7 +56,7 @@ void SimpleImageControlComponent::Reset()
 
 void SimpleImageControlComponent::InitProperty()
 {
-    NLProperty v;
+    QVariant v;
     v = GetInitProperty("transSens");
     if(v.isValid())
         SetTransSens(v.toFloat());

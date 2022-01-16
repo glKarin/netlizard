@@ -2,8 +2,8 @@
 #define _KARIN_SPRITESCENE_H
 
 #include "engine/nlscene.h"
-#include "gl/nl_gl.h"
 
+struct _GL_NETLizard_Sprite;
 class QColor;
 class NETLizardSpriteRenderer;
 class SimpleImageControlComponent;
@@ -16,7 +16,7 @@ public:
     explicit SpriteScene(QWidget *parent = 0);
     virtual ~SpriteScene();
     bool IsValid() const { return m_sprite != 0; }
-    GL_NETLizard_Sprite * Sprite() { return m_sprite; }
+    struct _GL_NETLizard_Sprite * Sprite() { return m_sprite; }
     int Count() const;
 
 public Q_SLOTS:
@@ -39,7 +39,7 @@ public slots:
 
 private:
     NETLizardSpriteRenderer *m_renderer;
-    GL_NETLizard_Sprite *m_sprite;
+    struct _GL_NETLizard_Sprite *m_sprite;
     int m_index;
     SimpleImageControlComponent *m_control;
 

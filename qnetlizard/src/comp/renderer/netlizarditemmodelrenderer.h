@@ -2,7 +2,9 @@
 #define _KARIN_NETLIZARDITEMMODELRENDERER_H
 
 #include "engine/nlrenderable.h"
-#include "gl/nl_gl.h"
+
+struct _GL_NETLizard_3D_Mesh;
+struct _texture_s;
 
 NLRENDERER(NETLizardItemModelRenderer)
 class NETLizardItemModelRenderer : public NLRenderable
@@ -10,8 +12,8 @@ class NETLizardItemModelRenderer : public NLRenderable
 public:
     explicit NETLizardItemModelRenderer(NLActor *actor = 0);
     virtual ~NETLizardItemModelRenderer();
-    GL_NETLizard_3D_Mesh * Model() { return m_itemMesh; }
-    void SetModel(GL_NETLizard_3D_Mesh *model, texture_s **tex);
+    struct _GL_NETLizard_3D_Mesh * Model() { return m_itemMesh; }
+    void SetModel(struct _GL_NETLizard_3D_Mesh *model, struct _texture_s **tex);
     void SetIndex(int index);
 
 protected:
@@ -20,8 +22,8 @@ protected:
     virtual void DeinitRender();
 
 private:
-    GL_NETLizard_3D_Mesh *m_itemMesh;
-    texture_s **m_tex;
+    struct _GL_NETLizard_3D_Mesh *m_itemMesh;
+    struct _texture_s **m_tex;
     int m_index;
 
     Q_DISABLE_COPY(NETLizardItemModelRenderer)

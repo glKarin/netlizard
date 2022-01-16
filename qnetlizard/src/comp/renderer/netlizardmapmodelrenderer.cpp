@@ -2,6 +2,7 @@
 
 #include <QDebug>
 
+#include "gl/nl_gl.h"
 #include "qdef.h"
 
 NETLizardMapModelRenderer::NETLizardMapModelRenderer(NLActor *actor) :

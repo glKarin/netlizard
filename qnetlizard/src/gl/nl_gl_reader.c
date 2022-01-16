@@ -1,5 +1,4 @@
 #include "nl_gl.h"
-#include "netlizard.h"
  
 #include <stdlib.h>
 

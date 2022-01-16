@@ -2,7 +2,8 @@
 #define _KARIN_NETLIZARDMAPMODELRENDERER_H
 
 #include "engine/nlrenderable.h"
-#include "gl/nl_gl.h"
+
+struct _GL_NETLizard_3D_Model;
 
 NLRENDERER(NETLizardMapModelRenderer)
 class NETLizardMapModelRenderer : public NLRenderable
@@ -17,8 +18,8 @@ class NETLizardMapModelRenderer : public NLRenderable
 public:
     explicit NETLizardMapModelRenderer(NLActor *actor = 0);
     virtual ~NETLizardMapModelRenderer();
-    GL_NETLizard_3D_Model * Model() { return m_model; }
-    void SetModel(GL_NETLizard_3D_Model *model);
+    struct _GL_NETLizard_3D_Model * Model() { return m_model; }
+    void SetModel(struct _GL_NETLizard_3D_Model *model);
     void SetupCull(bool b);
     int * Scenes() { return m_scenes; }
     void SetCull(bool b);
@@ -42,7 +43,7 @@ protected:
     virtual void DeinitRender();
 
 private:
-    GL_NETLizard_3D_Model *m_model;
+    struct _GL_NETLizard_3D_Model *m_model;
     bool m_cull;
     int *m_scenes;
     int m_sceneCount;

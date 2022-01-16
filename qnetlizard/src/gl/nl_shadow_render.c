@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "nl_gl.h"
+#include "math/vector3.h"
 #include "stencil_shadow.h"
 
 //#define _SHADOW_DEBUG

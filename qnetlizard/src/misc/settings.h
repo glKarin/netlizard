@@ -1,9 +1,7 @@
 #ifndef _KARIN_SETTINGS_H
 #define _KARIN_SETTINGS_H
 
-#include <QObject>
 #include <QSettings>
-#include <QVariant>
 #include <QDebug>
 
 #include "qdef.h"

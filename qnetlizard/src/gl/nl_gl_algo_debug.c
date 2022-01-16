@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "nl_gl.h"
 #include "math/vector3.h"
 #include "math/line.h"
 #include "math/bound.h"
@@ -138,7 +139,7 @@ static void render_highlight_lines(const LineList *lines, const GLfloat color[4]
     END_DEBUG_RENDER
 }
 
-void NETLizard_DebugHighlightRenderGL3DModelPlane(const GL_NETLizard_3D_Model *model, GLuint scene, GLuint plane_index)
+void NETLizard_DebugHighlightRenderGL3DModelPlane(const GL_NETLizard_3D_Model *model, unsigned int scene, unsigned int plane_index)
 {
     if(!model)
         return;
@@ -194,7 +195,7 @@ void NETLizard_DebugHighlightRenderGL3DModelPlane(const GL_NETLizard_3D_Model *m
     List_DeleteAll(&lines);
 }
 
-void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model *model, GLuint scene, GLuint item_index, const vector3_t *pos, const vector3_t *dir)
+void NETLizard_DebugHighlightRenderGL3DItemModelEdge(const GL_NETLizard_3D_Model *model, unsigned int scene, unsigned int item_index, const vector3_t *pos, const vector3_t *dir)
 {
     if(!model || !pos)
         return;

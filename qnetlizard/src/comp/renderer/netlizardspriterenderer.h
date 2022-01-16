@@ -2,7 +2,8 @@
 #define _KARIN_NETLIZARDSPRITEENDERER_H
 
 #include "engine/nlrenderable.h"
-#include "gl/nl_gl.h"
+
+struct _GL_NETLizard_Sprite;
 
 NLRENDERER(NETLizardSpriteRenderer)
 class NETLizardSpriteRenderer : public NLRenderable
@@ -10,8 +11,8 @@ class NETLizardSpriteRenderer : public NLRenderable
 public:
     explicit NETLizardSpriteRenderer(NLActor *actor = 0);
     virtual ~NETLizardSpriteRenderer();
-    GL_NETLizard_Sprite * Sprite() { return m_sprite; }
-    void SetSprite(GL_NETLizard_Sprite *sprite);
+    struct _GL_NETLizard_Sprite * Sprite() { return m_sprite; }
+    void SetSprite(struct _GL_NETLizard_Sprite *sprite);
     void SetIndex(int i);
 
 protected:
@@ -23,7 +24,7 @@ private:
     void RenderSprite();
 
 private:
-    GL_NETLizard_Sprite *m_sprite;
+    struct _GL_NETLizard_Sprite *m_sprite;
     int m_index;
 
     Q_DISABLE_COPY(NETLizardSpriteRenderer)

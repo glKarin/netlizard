@@ -1,14 +1,14 @@
 #ifndef _KARIN_NL_GL_H
 #define _KARIN_NL_GL_H
 
+#include "netlizard.h"
+#include "gl_texture.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "netlizard.h"
-
-#include "gl_texture.h"
-
+struct _texture_s;
 typedef struct _GL_NETLizard_3D_Plane
 {
 	GLfloat position[3];
@@ -93,9 +93,9 @@ typedef struct _GL_NETLizard_3D_Model
 	GLuint count;
     GL_NETLizard_3D_Item_Mesh *item_meshes;
 	GLuint item_count;
-    texture_s **texes;
+    struct _texture_s **texes;
 	GLuint tex_count;
-    texture_s *bg_tex;
+    struct _texture_s *bg_tex;
 	GLfloat start_position[3];
 	GLfloat start_rotation[2];
 	GL_NETLizard_BSP_Tree_Node *bsp_data;
@@ -105,19 +105,19 @@ typedef struct _GL_NETLizard_3D_Model
 typedef struct _GL_NETLizard_3D_Item_Model
 {
 	GL_NETLizard_3D_Mesh item_mesh;
-    texture_s tex;
+    struct _texture_s tex;
 } GL_NETLizard_3D_Item_Model;
 
-GLvoid NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model);
-GLvoid NETLizard_RenderGL3DItemModel(const GL_NETLizard_3D_Item_Model *m);
-GLvoid NETLizard_RenderGL3DMapModel(const GL_NETLizard_3D_Model *model, GLint *scenes, GLuint count);
-GLvoid NETLizard_RenderGL3DModelFrameAnimation(const GL_NETLizard_3D_Model *m, const NETLizard_3D_Frame_Animation *config, GLuint anim, GLuint frame);
-GLvoid NETLizard_RenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint *scene, GLuint count);
-GLvoid NETLizard_RenderGL3DMapModelItem(const GL_NETLizard_3D_Model *model, GLint *items, GLuint count);
+void NETLizard_RenderGL3DModel(const GL_NETLizard_3D_Model *model);
+void NETLizard_RenderGL3DItemModel(const GL_NETLizard_3D_Item_Model *m);
+void NETLizard_RenderGL3DMapModel(const GL_NETLizard_3D_Model *model, GLint *scenes, GLuint count);
+void NETLizard_RenderGL3DModelFrameAnimation(const GL_NETLizard_3D_Model *m, const NETLizard_3D_Frame_Animation *config, GLuint anim, GLuint frame);
+void NETLizard_RenderGL3DMapModelScene(const GL_NETLizard_3D_Model *model, GLint *scene, GLuint count);
+void NETLizard_RenderGL3DMapModelItem(const GL_NETLizard_3D_Model *model, GLint *items, GLuint count);
 
-GLvoid delete_GL_NETLizard_3D_Material(GL_NETLizard_3D_Material *mat);
-GLvoid delete_GL_NETLizard_3D_Mesh(GL_NETLizard_3D_Mesh *mesh);
-GLvoid delete_GL_NETLizard_3D_Model(GL_NETLizard_3D_Model *model);
+void delete_GL_NETLizard_3D_Material(GL_NETLizard_3D_Material *mat);
+void delete_GL_NETLizard_3D_Mesh(GL_NETLizard_3D_Mesh *mesh);
+void delete_GL_NETLizard_3D_Model(GL_NETLizard_3D_Model *model);
 
 GLboolean NETLizard_MakeGL3DModel(const NETLizard_3D_Model *model, const char *resource_path, GL_NETLizard_3D_Model *glmodel);
 GLboolean NETLizard_MakeGLRE3DModel(const NETLizard_RE3D_Model *model, const char *resource_path, GL_NETLizard_3D_Model *glmodel);
@@ -146,8 +146,8 @@ GLboolean NETLizard_ReadGLClone3DMapModelFile(const char *name, const char *reso
 GLboolean NETLizard_ReadGLClone3DItemModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Model *model);
 GLboolean NETLizard_ReadGLClone3DRoleModelFile(const char *name, int index, const char *resource_path, GL_NETLizard_3D_Model *model);
 
-GLvoid NETLizard_RenderGL3DMesh(const GL_NETLizard_3D_Mesh *m, texture_s **const texes);
-GLvoid NETLizard_RenderGL3DItemMesh(const GL_NETLizard_3D_Mesh *m, const texture_s *tex);
+void NETLizard_RenderGL3DMesh(const GL_NETLizard_3D_Mesh *m, struct _texture_s **const texes);
+void NETLizard_RenderGL3DItemMesh(const GL_NETLizard_3D_Mesh *m, const struct _texture_s *tex);
 
 typedef struct _GL_NETLizard_Font_Char
 {
@@ -171,15 +171,15 @@ typedef struct _GL_NETLizard_Font
     GLboolean private_l;
     GLboolean private_m;
 
-    texture_s tex;
+    struct _texture_s tex;
 
     GLfloat width;
     GLfloat height;
 } GL_NETLizard_Font;
 
 GLboolean NETLizard_ReadFont(GL_NETLizard_Font * fnt, const char *map_file, const char *tex_file);
-GLvoid delete_GL_NETLizard_Font(GL_NETLizard_Font *fnt);
-GLvoid NETLizard_RenderFontChar(const GL_NETLizard_Font *fnt, GLuint i);
+void delete_GL_NETLizard_Font(GL_NETLizard_Font *fnt);
+void NETLizard_RenderFontChar(const GL_NETLizard_Font *fnt, GLuint i);
 GLint NETLizard_GetFontIndex(const GL_NETLizard_Font *fnt, int ch);
 
 void NETLizard_FontRenderString(const GL_NETLizard_Font *f, GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b, GLfloat a, const char *str);
@@ -206,14 +206,14 @@ typedef struct _GL_NETLizard_Sprite
 {
     GL_NETLizard_Sprite_Cell *sprites;
     GLuint sprite_count;
-    texture_s tex;
+    struct _texture_s tex;
 } GL_NETLizard_Sprite;
 
 GLboolean NETLizard_ReadSpirit(GL_NETLizard_Sprite *sprite, const char *map_file, const char *tex_file);
-GLvoid delete_GL_NETLizard_Sprite(GL_NETLizard_Sprite *s);
-GLvoid NETLizard_RenderSpirit(const GL_NETLizard_Sprite *s, GLuint i);
+void delete_GL_NETLizard_Sprite(GL_NETLizard_Sprite *s);
+void NETLizard_RenderSpirit(const GL_NETLizard_Sprite *s, GLuint i);
 
-GLvoid NETLizard_MoveItemModel(GL_NETLizard_3D_Item_Mesh *dst, GL_NETLizard_3D_Item_Mesh *src);
+void NETLizard_MoveItemModel(GL_NETLizard_3D_Item_Mesh *dst, GL_NETLizard_3D_Item_Mesh *src);
 
 #ifdef __cplusplus
 }

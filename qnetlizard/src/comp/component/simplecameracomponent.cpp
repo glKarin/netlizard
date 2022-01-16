@@ -14,8 +14,8 @@ class CameraNotifyFunc : public NLSceneCamera::NLSceneCameraChangedNotify
 public:
     explicit CameraNotifyFunc(SimpleCameraComponent *comp);
     virtual ~CameraNotifyFunc();
-    virtual void PropertyChanged(const QString &name, const NLProperty &value);
-    virtual void ValueChanged(const QString &name, const NLProperty &value) { Q_UNUSED(name); Q_UNUSED(value); }
+    virtual void PropertyChanged(const QString &name, const QVariant &value);
+    virtual void ValueChanged(const QString &name, const QVariant &value) { Q_UNUSED(name); Q_UNUSED(value); }
 
 private:
     SimpleCameraComponent *m_comp;
@@ -33,7 +33,7 @@ CameraNotifyFunc::~CameraNotifyFunc()
     DEBUG_DESTROY(CameraNotifyFunc)
 }
 
-void CameraNotifyFunc::PropertyChanged(const QString &name, const NLProperty &value)
+void CameraNotifyFunc::PropertyChanged(const QString &name, const QVariant &value)
 {
     if(m_comp)
     {
@@ -59,7 +59,7 @@ SimpleCameraComponent::SimpleCameraComponent(const NLProperties &prop, NLActor *
 
     sl.push_back(NLPropertyPair("Perspective", static_cast<int>(NLSceneCamera::Type_Perspective)));
     sl.push_back(NLPropertyPair("Ortho",  static_cast<int>(NLSceneCamera::Type_Ortho)));
-    m.insert("enum", NLProperty::fromValue<NLPropertyPairList>(sl));
+    m.insert("enum", QVariant::fromValue<NLPropertyPairList>(sl));
     props.Insert("type", m);
 
     m.clear();
@@ -70,7 +70,7 @@ SimpleCameraComponent::SimpleCameraComponent(const NLProperties &prop, NLActor *
     sl.push_back(NLPropertyPair("Left-Center", static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter)));
     sl.push_back(NLPropertyPair("Center-Top", static_cast<int>(Qt::AlignHCenter | Qt::AlignTop)));
     sl.push_back(NLPropertyPair("Center-Bottom", static_cast<int>(Qt::AlignHCenter | Qt::AlignBottom)));
-    m.insert("enum", NLProperty::fromValue<NLPropertyPairList>(sl));
+    m.insert("enum", QVariant::fromValue<NLPropertyPairList>(sl));
     props.Insert("alignment", m);
 
     SetPropertyConfig(props);
@@ -239,7 +239,7 @@ void SimpleCameraComponent::SetAlignment(int align)
     if(m_camera->Alignment() != a)
     {
         m_camera->SetAlignment(a);
-        emit propertyChanged("alignment", NLProperty::fromValue<int>(m_camera->Alignment()));
+        emit propertyChanged("alignment", QVariant::fromValue<int>(m_camera->Alignment()));
     }
 }
 

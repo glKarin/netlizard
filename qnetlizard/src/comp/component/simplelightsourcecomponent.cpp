@@ -49,7 +49,7 @@ void SimpleLightSourceComponent::Reset()
 
 void SimpleLightSourceComponent::InitProperty()
 {
-    NLProperty v;
+    QVariant v;
     v = GetInitProperty("type");
     if(v.isValid())
         SetType(static_cast<SimpleLightSourceComponent::LightSourceType>(v.toInt()));
@@ -71,9 +71,9 @@ void SimpleLightSourceComponent::SetPosition(const NLVector3 &pos)
             NLVector3 dir = m_position;
             vector3_normalize(&dir);
             m_direction = dir;
-            emit propertyChanged("direction", NLProperty::fromValue<NLVector3>(m_direction));
+            emit propertyChanged("direction", QVariant::fromValue<NLVector3>(m_direction));
         }
-        emit propertyChanged("position",  NLProperty::fromValue<NLVector3>(m_position));
+        emit propertyChanged("position",  QVariant::fromValue<NLVector3>(m_position));
     }
 }
 
@@ -84,6 +84,6 @@ void SimpleLightSourceComponent::SetDirecton(const NLVector3 &dir)
     if(!vector3_equals(&m_direction, &dir))
     {
         m_direction = dir;
-        emit propertyChanged("direction", NLProperty::fromValue<NLVector3>(m_direction));
+        emit propertyChanged("direction", QVariant::fromValue<NLVector3>(m_direction));
     }
 }

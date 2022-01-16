@@ -42,7 +42,6 @@ extern "C" {
 #define RE3D_CAR_FILE_SUBFIX "car%d.png"
 #define RE3D_LEVEL_FILE_SUBFIX "track0%d.png"
 
-#define SUBFIX_LENGTH 12
 #define SKYFILE_LENGTH 10
 #define OBJ_SUBFIX_LENGTH 14
 

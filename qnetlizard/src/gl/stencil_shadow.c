@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include "glk.h"
 
+#include "math/vector3.h"
+#include "nl_gl.h"
 #include "math/line.h"
 #include "math/triangle.h"
 #include "math/matrix.h"

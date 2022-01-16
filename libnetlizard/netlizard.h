@@ -49,6 +49,7 @@ extern "C" {
 #define NL_RE3D_MESH_HEADER_MAGIC "NL_MESH"
 /* NETLizard game png encode/decode factor. exam: a_byte = a_byte ^ 100 */
 #define NL_ENCODE_DECODE_FACTOR 100
+#define NL_RESOURCE_FILE_FORMAT_LENGTH 12
 
 #define NL_VERSION_1_0 0x01000101
 #define NL_VERSION_LASTEST NL_VERSION_1_0
@@ -346,7 +347,7 @@ typedef struct NETLizard_RE3D_Model_s
 } NETLizard_RE3D_Model;
 
 /* NETLizard 3D model frame animation */
-typedef struct _NETLizard_3D_Frame_Animation
+typedef struct NETLizard_3D_Frame_Animation_s
 {
     NETLizard_3D_Animation_Type type;
     NLint begin_frame;

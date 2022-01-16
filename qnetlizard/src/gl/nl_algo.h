@@ -1,8 +1,9 @@
 #ifndef _KARIN_NLALGO_H
 #define _KARIN_NLALGO_H
 
-#include "nl_gl.h"
-#include "nl_util.h"
+#include "math/vector3.h"
+
+struct _GL_NETLizard_3D_Model;
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,10 +39,10 @@ typedef struct collision_object_s
     float head_height; // sys - head
 } collision_object_t;
 
-int NETLizard_FindScenePointIn(const GL_NETLizard_3D_Model *map, const nl_vector3_t *p);
-int NETLizard_GetScenePointZCoord(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, int scene, unsigned include_item, int *rscene, float *rglz);
-int NETLizard_MapCollisionTesting(const GL_NETLizard_3D_Model *map, const collision_object_t *obj, nl_vector3_t *new_pos, int *scene, unsigned include_item, int *collision_item);
-int NETLizard_RayIntersect(const GL_NETLizard_3D_Model *map, const nl_vector3_t *obj, const nl_vector3_t *direction, unsigned include_item, int *scene, int *collision_id, int *collision_type, nl_vector3_t *cpoint, float *dis);
+int NETLizard_FindScenePointIn(const struct _GL_NETLizard_3D_Model *map, const vector3_t *p);
+int NETLizard_GetScenePointZCoord(const struct _GL_NETLizard_3D_Model *map, const collision_object_t *obj, int scene, unsigned include_item, int *rscene, float *rglz);
+int NETLizard_MapCollisionTesting(const struct _GL_NETLizard_3D_Model *map, const collision_object_t *obj, vector3_t *new_pos, int *scene, unsigned include_item, int *collision_item);
+int NETLizard_RayIntersect(const struct _GL_NETLizard_3D_Model *map, const vector3_t *obj, const vector3_t *direction, unsigned include_item, int *scene, int *collision_id, int *collision_type, vector3_t *cpoint, float *dis);
 
 #ifdef __cplusplus
 }

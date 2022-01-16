@@ -5,14 +5,14 @@
 extern "C" {
 #endif
 
-#include "gl_texture.h"
+struct _texture_s;
 
-typedef GLboolean (*new_netlizard_texture_from_file)(texture_s *tex, const char *name);
+typedef unsigned (*new_netlizard_texture_from_file)(struct _texture_s *tex, const char *name);
 
-GLboolean new_texture_from_nl_file(texture_s *tex, const char *name);
-GLboolean new_texture_from_nl_v2_3d_file(texture_s *tex, const char *name);
-GLboolean new_texture_from_nl_v3_3d_file(texture_s *tex, const char *name);
-GLboolean new_texture_from_nl_v3_3d_compress_file(texture_s *tex, const char *name);
+unsigned new_texture_from_nl_file(struct _texture_s *tex, const char *name);
+unsigned new_texture_from_nl_v2_3d_file(struct _texture_s *tex, const char *name);
+unsigned new_texture_from_nl_v3_3d_file(struct _texture_s *tex, const char *name);
+unsigned new_texture_from_nl_v3_3d_compress_file(struct _texture_s *tex, const char *name);
 
 #ifdef __cplusplus
 }

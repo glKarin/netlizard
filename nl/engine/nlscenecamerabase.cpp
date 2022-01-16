@@ -98,7 +98,7 @@ void NLSceneCameraBase::SetPosition(const NLVector3 &v)
         return;
     m_position = v;
     UpdateMatrix();
-    ValueChanged("position", NLProperty::fromValue<NLVector3>(m_position));
+    ValueChanged("position", QVariant::fromValue<NLVector3>(m_position));
 }
 
 void NLSceneCameraBase::SetRotation(const NLVector3 &v)
@@ -108,7 +108,7 @@ void NLSceneCameraBase::SetRotation(const NLVector3 &v)
     m_rotation = v;
     UpdateMatrix();
     UpdateDirection();
-    ValueChanged("rotation", NLProperty::fromValue<NLVector3>(m_rotation));
+    ValueChanged("rotation", QVariant::fromValue<NLVector3>(m_rotation));
 }
 
 void NLSceneCameraBase::SetScale(const NLVector3 &v)
@@ -117,7 +117,7 @@ void NLSceneCameraBase::SetScale(const NLVector3 &v)
         return;
     m_scale = v;
     UpdateMatrix();
-    ValueChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
+    ValueChanged("scale", QVariant::fromValue<NLVector3>(m_scale));
 }
 
 NLSceneCameraBase * NLSceneCameraBase::Move(const NLVector3 &unit)
@@ -152,7 +152,7 @@ NLSceneCameraBase * NLSceneCameraBase::Zoom(const NLVector3 &v)
     //vector3_multiplyve(&m_scale, &v);
     vector3_addve(&m_scale, &v);
     UpdateMatrix();
-    ValueChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
+    ValueChanged("scale", QVariant::fromValue<NLVector3>(m_scale));
     return this;
 }
 
@@ -256,11 +256,11 @@ void NLSceneCameraBase::Reset()
 {
     SetGlobalMatrix(0);
     m_position = NL::Init_Position;
-    ValueChanged("position", NLProperty::fromValue<NLVector3>(m_position));
+    ValueChanged("position", QVariant::fromValue<NLVector3>(m_position));
     m_rotation = NL::Init_Rotation;
-    ValueChanged("rotation", NLProperty::fromValue<NLVector3>(m_rotation));
+    ValueChanged("rotation", QVariant::fromValue<NLVector3>(m_rotation));
     m_scale = NL::Init_Scale;
-    ValueChanged("scale", NLProperty::fromValue<NLVector3>(m_scale));
+    ValueChanged("scale", QVariant::fromValue<NLVector3>(m_scale));
     m_up = m_zIsUp ? NL::Init_Up_z : NL::Init_Up_y;
     if(m_zIsUp)
     {
@@ -355,7 +355,7 @@ void NLSceneCameraBase::SetZIsUp(bool b)
 
         UpdateMatrix();
         UpdateDirection();
-        PropertyChanged("zIsUp", NLProperty::fromValue(m_zIsUp));
+        PropertyChanged("zIsUp", QVariant::fromValue(m_zIsUp));
     }
 }
 
@@ -369,7 +369,7 @@ void NLSceneCameraBase::SetEnabled(bool b)
     if(m_enabled != b)
     {
         m_enabled = b;
-        PropertyChanged("enabled", NLProperty::fromValue(m_enabled));
+        PropertyChanged("enabled", QVariant::fromValue(m_enabled));
     }
 }
 
@@ -380,13 +380,13 @@ void NLSceneCameraBase::SetChangedNotifyFunc(NLSceneCameraBase::NLSceneCameraCha
         m_notifyFunc = func;
 }
 
-void NLSceneCameraBase::PropertyChanged(const QString &name, const NLProperty &value)
+void NLSceneCameraBase::PropertyChanged(const QString &name, const QVariant &value)
 {
     if(m_notifyFunc && (m_notifyFunc->m_type & NLSceneCameraBase::NLSceneCameraChangedNotify::Notify_PropertyChanged))
         m_notifyFunc->PropertyChanged(name, value);
 }
 
-void NLSceneCameraBase::ValueChanged(const QString &name, const NLProperty &value)
+void NLSceneCameraBase::ValueChanged(const QString &name, const QVariant &value)
 {
     if(m_notifyFunc && (m_notifyFunc->m_type & NLSceneCameraBase::NLSceneCameraChangedNotify::Notify_ValueChanged))
         m_notifyFunc->ValueChanged(name, value);

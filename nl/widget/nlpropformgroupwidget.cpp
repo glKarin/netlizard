@@ -263,7 +263,6 @@ NLPropFormGroupWidget::NLPropFormGroupWidget(const QString &title, QWidget *widg
 
 NLPropFormGroupWidget::~NLPropFormGroupWidget()
 {
-    NLDEBUG_DESTROY_Q
 }
 
 void NLPropFormGroupWidget::SetObject(QObject *obj)
@@ -511,7 +510,7 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
     return widget;
 }
 
-void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const NLProperty &value)
+void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const QVariant &value)
 {
     QWidget *widget = WidgetForName(name);
     if(!widget)
@@ -616,7 +615,7 @@ void NLPropFormGroupWidget::OnBoolChanged(bool b)
 void NLPropFormGroupWidget::OnVector3Changed(const NLVector3 &v)
 {
     QObject *s = sender();
-    SetObjectProperty(m_object, s->objectName(), NLProperty::fromValue<NLVector3>(v));
+    SetObjectProperty(m_object, s->objectName(), QVariant::fromValue<NLVector3>(v));
 }
 
 void NLPropFormGroupWidget::OnStringChanged(const QString &str)
@@ -661,7 +660,7 @@ void NLPropFormGroupWidget::OnItemDestroy(QObject *obj)
 {
     QObject *o = obj ? obj : sender();
     if(o)
-        NLDEBUG_DESTROY_QQV(obj)
+        qDebug() << "Q ~" + objectName() + "::" + obj->objectName();
 }
 
 void NLPropFormGroupWidget::Reset()

@@ -254,7 +254,7 @@ void NLSceneInfoWidget::SetScene(NLScene *scene)
             connect(m_scene, SIGNAL(updated(float)), this, SLOT(UpdateSceneInfo()));
             connect(m_scene, SIGNAL(destroyed()), this, SLOT(Reset()));
             m_settingGroupBox->SetObject(m_scene);
-            connect(m_scene, SIGNAL(propertyChanged(const QString &, const NLProperty &)), this, SLOT(OnPropertyChanged(const QString &, const NLProperty &)));
+            connect(m_scene, SIGNAL(propertyChanged(const QString &, const QVariant &)), this, SLOT(OnPropertyChanged(const QString &, const QVariant &)));
         }
         UpdateSceneInfo();
     }
@@ -270,7 +270,7 @@ void NLSceneInfoWidget::Reset()
     UpdateSceneInfo();
 }
 
-void NLSceneInfoWidget::OnPropertyChanged(const QString &name, const NLProperty &value, int action)
+void NLSceneInfoWidget::OnPropertyChanged(const QString &name, const QVariant &value, int action)
 {
     if(!m_scene || m_scene != sender())
         return;

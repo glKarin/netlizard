@@ -2,8 +2,7 @@
 
 #include <QDebug>
 
-#include <GL/gl.h>
-
+#include "gl/nl_gl.h"
 #include "engine/nlactor.h"
 #include "engine/nlscene.h"
 #include "qdef.h"

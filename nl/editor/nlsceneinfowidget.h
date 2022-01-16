@@ -48,7 +48,7 @@ private:
     void Init();
 
 private Q_SLOTS:
-    void OnPropertyChanged(const QString &name, const NLProperty &value, int action = 0);
+    void OnPropertyChanged(const QString &name, const QVariant &value, int action = 0);
 
 private:
     NLScene *m_scene;

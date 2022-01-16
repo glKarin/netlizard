@@ -5,7 +5,6 @@
 #include <stdio.h>
 
 #include "nl_texture.h"
-#include "gl_texture.h"
 
 static char * itostr(int i)
 {

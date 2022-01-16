@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QByteArray>
 
+#include "gl/nl_gl.h"
 #include "qdef.h"
 #include "simplecameraactor.h"
 #include "netlizardmapmodelrenderer.h"

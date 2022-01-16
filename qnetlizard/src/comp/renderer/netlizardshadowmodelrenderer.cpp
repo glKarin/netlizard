@@ -3,6 +3,7 @@
 #include <QDebug>
 
 #include "nl_shadow_render.h"
+#include "gl/nl_gl.h"
 #include "qdef.h"
 
 NETLizardShadowModelRenderer::NETLizardShadowModelRenderer(int method, NLActor *actor) :
