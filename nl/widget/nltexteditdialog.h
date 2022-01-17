@@ -13,8 +13,8 @@ class NLTextEditDialog : public QDialog
     Q_OBJECT
 
 public:
-    NLTextEditDialog(QWidget *parent = 0, Qt::WindowFlags f = 0);
-    NLTextEditDialog(const QString &contents, QWidget *parent = 0, Qt::WindowFlags f = 0);
+    explicit NLTextEditDialog(QWidget *parent = 0, Qt::WindowFlags f = 0);
+    explicit NLTextEditDialog(const QString &contents, QWidget *parent = 0, Qt::WindowFlags f = 0);
     virtual ~NLTextEditDialog();
     QString Text() const { return m_text; }
     QString EditText() const;

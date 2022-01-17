@@ -30,6 +30,12 @@ NLProperties::NLProperties(const QString &name, const QVariant &value)
     insert(name, value);
 }
 
+NLProperties::NLProperties(const NLVariantSequenceHash &hash)
+    : NLVariantSequenceHash(hash)
+{
+
+}
+
 NLProperties::~NLProperties()
 {
 }

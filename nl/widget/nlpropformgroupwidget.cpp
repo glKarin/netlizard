@@ -55,7 +55,7 @@
 #define WIDGET_SET_LABEL(w, d) (w)->setProperty(WIDGET_LABEL_KEY, d)
 
 #define ACTION_SET_TYPE(w, d) (w)->setProperty(WIDGET_ACTION_TYPE_KEY, d)
-#define ACTION_SET_WIDGET(w, d) (w)->setProperty(WIDGET_ACTION_WIDGET_KEY, d)
+#define ACTION_SET_WIDGET(w, d) (w)->setProperty(WIDGET_ACTION_WIDGET_KEY, QVariant::fromValue<QWidget *>(static_cast<QWidget *>(d)))
 
 #define WIDGET_SET_TYPE(w, T) (w)->setProperty(WIDGET_TYPE_KEY, #T)
 #define WIDGET_TYPE(w) (w)->property(WIDGET_TYPE_KEY).toString()
@@ -349,8 +349,10 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
         else if(item.type == "int")
         {
             QGroupBox *w = new QGroupBox;
+            WIDGET_SET_TYPE(w, QButtonGroup);
             QButtonGroup *g = new QButtonGroup(w);
             WIDGET_SET_TYPE(g, QButtonGroup);
+            w->setProperty("QButtonGroup", QVariant::fromValue<QObject *>(g));
             g->setObjectName(item.name);
             g->setExclusive(false);
             QVBoxLayout *vbox = new QVBoxLayout;
@@ -651,7 +653,7 @@ void NLPropFormGroupWidget::OnLinkActivated(const QString &link)
 {
     QAction action(0);
     ACTION_SET_TYPE(&action, "link");
-    ACTION_SET_WIDGET(&action, QVariant::fromValue<QWidget *>(static_cast<QWidget *>(sender())));
+    ACTION_SET_WIDGET(&action, sender());
     action.setData(link);
     HandleAction(&action);
 }

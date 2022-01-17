@@ -31,13 +31,14 @@ class NLLIB_EXPORT NLProperties : public NLVariantSequenceHash
 {
 public:
     explicit NLProperties();
+    explicit NLProperties(const NLVariantSequenceHash &hash);
     explicit NLProperties(const QString &name, const QVariant &value);
     virtual ~NLProperties();
     NLProperties & Insert(const QString &name, const QVariant &value) { insert(name, value); return *this; }
     NLProperties & Insert(const NLPropertyPair &p) { return Insert(p.first, p.second); }
     NLProperties & operator<<(const NLPropertyPair &p) {  return Insert(p); }
-    friend NLProperties & operator+(NLProperties &props, const NLPropertyPair &p) { return props.Insert(p); }
-    friend NLProperties & operator-(NLProperties &props, const QString &name) { return props.Remove(name); }
+    NLProperties & operator+(const NLPropertyPair &p) { return Insert(p); }
+    NLProperties & operator-(const QString &name) { return Remove(name); }
     NLProperties & Remove(const QString &name) { remove(name); return *this; }
     QVariant Get(const QString &name, const QVariant &def = QVariant()) const;
     template <class T>

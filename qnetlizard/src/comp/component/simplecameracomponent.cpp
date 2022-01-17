@@ -54,24 +54,21 @@ SimpleCameraComponent::SimpleCameraComponent(const NLProperties &prop, NLActor *
     m_camera->SetChangedNotifyFunc(static_cast<CameraNotifyFunc *>(m_cameraNotifyFunc));
 
     NLProperties props;
-    NLProperties m;
-    NLPropertyPairList sl;
 
-    sl.push_back(NLPropertyPair("Perspective", static_cast<int>(NLSceneCamera::Type_Perspective)));
-    sl.push_back(NLPropertyPair("Ortho",  static_cast<int>(NLSceneCamera::Type_Ortho)));
-    m.insert("enum", QVariant::fromValue<NLPropertyPairList>(sl));
-    props.Insert("type", m);
+    props.Insert("type", NLProperties("enum",
+                                      QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
+                                                                              << NLPropertyPair("Perspective", static_cast<int>(NLSceneCamera::Type_Perspective))
+                                                                              << NLPropertyPair("Ortho",  static_cast<int>(NLSceneCamera::Type_Ortho))
+                                                                                      )));
 
-    m.clear();
-    sl.clear();
-    sl.push_back(NLPropertyPair("Center", static_cast<int>(Qt::AlignCenter)));
-    sl.push_back(NLPropertyPair("Left-Top", static_cast<int>(Qt::AlignLeft | Qt::AlignTop)));
-    sl.push_back(NLPropertyPair("Left-Bottom", static_cast<int>(Qt::AlignLeft | Qt::AlignBottom)));
-    sl.push_back(NLPropertyPair("Left-Center", static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter)));
-    sl.push_back(NLPropertyPair("Center-Top", static_cast<int>(Qt::AlignHCenter | Qt::AlignTop)));
-    sl.push_back(NLPropertyPair("Center-Bottom", static_cast<int>(Qt::AlignHCenter | Qt::AlignBottom)));
-    m.insert("enum", QVariant::fromValue<NLPropertyPairList>(sl));
-    props.Insert("alignment", m);
+    props.Insert("alignment",  NLProperties("enum", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
+                                                                                            << NLPropertyPair("Center", static_cast<int>(Qt::AlignCenter))
+                                                                                            << NLPropertyPair("Left-Top", static_cast<int>(Qt::AlignLeft | Qt::AlignTop))
+                                                                                            << NLPropertyPair("Left-Bottom", static_cast<int>(Qt::AlignLeft | Qt::AlignBottom))
+                                                                                            << NLPropertyPair("Left-Center", static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter))
+                                                                                            << NLPropertyPair("Center-Top", static_cast<int>(Qt::AlignHCenter | Qt::AlignTop))
+                                                                                            << NLPropertyPair("Center-Bottom", static_cast<int>(Qt::AlignHCenter | Qt::AlignBottom))
+                                                                                            )));
 
     SetPropertyConfig(props);
 }

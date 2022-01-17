@@ -23,6 +23,8 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
     {
         if(props.contains("enum"))
             widget = "combobox";
+        if(props.contains("option"))
+            widget = "checkbox";
         else
             widget = "spinbox";
     }
@@ -99,17 +101,16 @@ NLPropertyInfoList scene_propertics(const NLScene *obj)
     const QMetaObject *metaObj = obj->metaObject();
     NLPropertyInfoList ret;
     int offset = obj->PropertyNames().indexOf("fps");
-    //const NLProperties config = obj->PropertyConfig();
+    const NLProperties config = obj->PropertyConfig();
 
     for(int i = offset; i < metaObj->propertyCount(); i++)
     {
         QMetaProperty p = metaObj->property(i);
         QString name(p.name());
 
-        //QVariantHash prop = config.value(name).toHash();
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p.read(obj), QVariant());
-
-        qDebug() << name;
+        QVariantHash prop = config.value(name).toHash();
+        QVariant v = p.read(obj);
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), v, v, prop);
 
         ret.push_back(info);
     }
@@ -121,8 +122,8 @@ NLPropertyInfoList scene_propertics(const NLScene *obj)
         QVariant p = obj->property(ba.constData());
         QString name(ba);
 
-        //QVariantHash prop = config.value(name).toHash();
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p, QVariant());
+        QVariantHash prop = config.value(name).toHash();
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p, p, prop);
 
         ret.push_back(info);
     }

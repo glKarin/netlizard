@@ -135,6 +135,7 @@ void NLTextEditDialog::Init()
     connect(m_saveButton, SIGNAL(clicked()), this, SLOT(accept()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
+    m_textEdit->setTabStopWidth(40);
     StartEdit();
 
     QAction *action = new QAction(m_textEdit);

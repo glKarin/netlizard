@@ -54,6 +54,13 @@ NLScene::NLScene(QWidget *parent) :
                 //1.0, 1.0, 1.0
                 0.0, 0.0, 0.0
                 );
+
+    NLProperties props;
+
+    props.Insert("fps", NLProperties("range", NLProperties("min", 0)("max", 300)));
+    props.Insert("updateInterval", NLProperties("range", NLProperties("min", 0)("max", 1000)));
+
+    SetPropertyConfig(props);
 }
 
 NLScene::~NLScene()
@@ -514,6 +521,11 @@ NLActor * NLScene::CreateActor(const NLProperties &props)
     NLActor *actor = new NLActor(props);
     AddActor(actor);
     return actor;
+}
+
+void NLScene::SetPropertyConfig(const NLProperties &props)
+{
+    m_propertyConfig = props;
 }
 
 NLPROPERTY_DECL_TRAIT(NLScene, NL::property_equals, propertyChanged)

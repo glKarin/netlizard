@@ -65,11 +65,7 @@ void NLRigidbody::Construct()
     m_moveDirection = Direction();
 
     NLProperties props;
-    NLProperties m;
-    NLProperties sm;
-    sm.insert("min", 0);
-    m.insert("range", sm);
-    props.Insert("mass", m);
+    props.Insert("mass", NLProperties("range", NLProperties("min", 0)));
     SetPropertyConfig(props);
 }
 

@@ -45,6 +45,7 @@ public:
     bool KeyPressed(int key);
     bool MousePressed(int button);
     void SetCurrentCamera(NLSceneCamera *camera);
+    NLProperties PropertyConfig() const { return m_propertyConfig; }
 
     NLSceneCamera * CurrentCamera() { return m_currentCamera; }
     NLActor * GetActor(int index) { return m_actors.Get(index); }
@@ -88,6 +89,7 @@ protected:
     virtual void Init();
     virtual void Deinit();
     bool MousePressed() const { return m_pressed; }
+    void SetPropertyConfig(const NLProperties &props);
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
@@ -137,6 +139,7 @@ private:
     bool m_mouseState[NL_MAX_BUTTON];
     bool m_keyPressed[NL_MAX_KEY];
     bool m_mousePressed[NL_MAX_BUTTON];
+    NLProperties m_propertyConfig;
 
     Q_DISABLE_COPY(NLScene)
 };

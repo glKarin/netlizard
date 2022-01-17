@@ -365,7 +365,7 @@ NLVariantSequenceHash NLScript::Script_Lua::GetGlobalVariant()
                 }
                 else if(type == LUA_TBOOLEAN)
                 {
-                    bool b = lua_toboolean(L, -1);
+                    bool b = lua_toboolean(L, -1) ? true : false;
                     props.insert(key, b);
                 }
                 else if(type == LUA_TSTRING)
@@ -376,12 +376,7 @@ NLVariantSequenceHash NLScript::Script_Lua::GetGlobalVariant()
                 else if(type == LUA_TLIGHTUSERDATA)
                 {
                     void *p = (void *)(lua_touserdata(L, -1));
-                    if(p)
-                    {
-                        QObject *o = reinterpret_cast<QObject *>(p);
-                        if(o)
-                            props.insert(key, QVariant::fromValue<QObject *>(o));
-                    }
+                    props.insert(key, QVariant::fromValue<void *>(p));
                 }
                 else if(type == LUA_TUSERDATA)
                 {
@@ -389,9 +384,10 @@ NLVariantSequenceHash NLScript::Script_Lua::GetGlobalVariant()
                     if(*p)
                     {
                         QObject *o = reinterpret_cast<QObject *>(*p);
-                        if(o)
-                            props.insert(key, QVariant::fromValue<QObject *>(o));
+                        props.insert(key, QVariant::fromValue<QObject *>(o));
                     }
+                    else
+                        props.insert(key, QVariant::fromValue<QObject *>(0));
                 }
                 else
                 {
@@ -451,16 +447,12 @@ void NLScript::Construct()
     SetType(NLObject::Type_Script);
 
     NLProperties props;
-    NLProperties m;
 
-    m.insert("file", true);
-    props.Insert("scriptFile", m);
-
-    m.clear();
-    m.insert("multiline", true);
-    m.insert("direct", false);
-    m.insert("syntax", "lua");
-    props.Insert("scriptSource", m);
+    props.Insert("scriptFile", NLProperties("file", true));
+    props.Insert("scriptSource", NLProperties("multiline", true)
+                 ("direct", false)
+                 ("syntax", "lua")
+                 );
 
     SetPropertyConfig(props);
     m_lua.script = this;
