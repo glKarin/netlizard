@@ -69,7 +69,7 @@ bool NLScript::Script_Lua::Deinit()
     qDebug() << "lua script engine destroyed!";
     L = 0;
     func = -1;
-    script->ClearGlobalVariant();
+    UnregisterGlobalVariant();
     return true;
 }
 
@@ -306,7 +306,14 @@ void NLScript::Script_Lua::RegisterGlobalVariant()
     if(!L)
         return;
     NLVariantSequenceHash props = GetGlobalVariant();
+    script->connect(script, SIGNAL(propertyChanged(const QString &, const QVariant &, int)), script, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
     script->SetGlobalVariant(props);
+}
+
+void NLScript::Script_Lua::UnregisterGlobalVariant()
+{
+    script->ClearGlobalVariant();
+    script->disconnect(script, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
 }
 
 void NLScript::Script_Lua::DumpGlobalVariant()
@@ -621,6 +628,20 @@ void NLScript::Reset()
     m_lua.Reset();
 }
 
+void NLScript::OnPropertyChanged(const QString &name, const QVariant &value, int type)
+{
+    if(name == "objectName"
+            || name == "enabled"
+            || name == "scriptFile"
+            || name == "scriptSource"
+            )
+        return;
+    if(type == -1)
+        m_globalVaraint.remove(name);
+    else
+        m_globalVaraint[name] = value;
+}
+
 void NLScript::SetGlobalVariant(const NLVariantSequenceHash &list)
 {
     const QList<QString> keys = list.SequenceKeys();
@@ -638,8 +659,6 @@ void NLScript::SetGlobalVariant(const NLVariantSequenceHash &list)
             //qDebug() << "Remove unused -> " << key << GetProperty(key);
         }
     }
-
-    m_globalVaraint = list;
 }
 
 void NLScript::ClearGlobalVariant()

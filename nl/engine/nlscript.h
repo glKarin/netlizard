@@ -46,14 +46,17 @@ signals:
 public slots:
     bool SetScriptFile(const QString &file);
     void SetScriptSource(const QString &src);
-    bool InitLua();
-    bool DeinitLua();
 
 private:
     void Construct();
     bool ExecScript(float delta) { return m_lua.Exec(delta); }
     void SetGlobalVariant(const NLVariantSequenceHash &list);
     void ClearGlobalVariant();
+    bool InitLua();
+    bool DeinitLua();
+
+private slots:
+    void OnPropertyChanged(const QString &name, const QVariant &value, int type);
 
 private:
     struct Script_Lua
@@ -83,6 +86,7 @@ private:
         bool Reset();
         NLVariantSequenceHash GetGlobalVariant();
         void RegisterGlobalVariant();
+        void UnregisterGlobalVariant();
         void DumpGlobalVariant();
         void RestoreGlobalVariant();
         operator bool() const { return L != 0; }
