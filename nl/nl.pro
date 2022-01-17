@@ -53,7 +53,8 @@ HEADERS += \
     engine/nlscript.h \
     engine/nlscriptcontainer.h \
     engine/nlmodelrenderer.h \
-    engine/nldbg.h
+    engine/nldbg.h \
+    widget/nlbuttongroupwidget.h
 
 SOURCES += \
     engine/nldef.cpp \
@@ -81,7 +82,8 @@ SOURCES += \
     engine/nlrendermodel.cpp \
     engine/nlscript.cpp \
     engine/nlscriptcontainer.cpp \
-    engine/nlmodelrenderer.cpp
+    engine/nlmodelrenderer.cpp \
+    widget/nlbuttongroupwidget.cpp
 
 HEADERS += \
     widget/syntaxhighlighter/nlluasyntaxhighlighter.h \
