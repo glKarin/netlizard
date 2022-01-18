@@ -5,7 +5,6 @@
 
 #include "nldef.h"
 #include "nlproperties.h"
-#include "nlfuncs.h"
 #include "trait/nlpropertytrait.h"
 
 #define CLASS_NAME(x) SetClassName(#x)

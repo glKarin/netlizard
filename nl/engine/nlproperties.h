@@ -2,7 +2,6 @@
 #define _KARIN_NLPROPERTIES_H
 
 #include <QPair>
-#include "nldef.h"
 #include "template/nlsequencemap.h"
 
 #define NLPROPERTIES_NAME(p, x) NLProperties(p).TrySet("name", #x)

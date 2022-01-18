@@ -17,6 +17,7 @@
 #include <QFormLayout>
 #include <QColorDialog>
 
+#include "engine/nlfuncs.h"
 #include "engine/nlscene.h"
 #include "engine/nlscenecamera.h"
 #include "engine/nldbg.h"

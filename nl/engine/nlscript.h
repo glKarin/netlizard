@@ -4,6 +4,7 @@
 #include "nlobject.h"
 #include "template/nlsequencemap.h"
 
+template <class K, class V> class NLSequenceHash;
 class NLScriptContainer;
 class NLActor;
 
@@ -50,7 +51,7 @@ public slots:
 private:
     void Construct();
     bool ExecScript(float delta) { return m_lua.Exec(delta); }
-    void SetGlobalVariant(const NLVariantSequenceHash &list);
+    void SetGlobalVariant(const NLSequenceHash<QString, QVariant> &list);
     void ClearGlobalVariant();
     bool InitLua();
     bool DeinitLua();
@@ -89,7 +90,7 @@ private:
         bool Deinit();
         bool Exec(float delta);
         bool Reset();
-        NLVariantSequenceHash GetGlobalVariant();
+        NLSequenceHash<QString, QVariant> GetGlobalVariant();
         void RegisterGlobalVariant();
         void UnregisterGlobalVariant();
         void DumpGlobalVariant();
@@ -101,7 +102,7 @@ private:
     QByteArray m_data;
     QString m_sourceFile;
     Script_Lua m_lua;
-    NLVariantSequenceHash m_globalVaraint;
+    NLSequenceHash<QString, QVariant> m_globalVaraint;
     bool m_globalDataDirty;
     bool m_globalDataUpdateLock;
 

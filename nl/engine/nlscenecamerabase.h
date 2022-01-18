@@ -2,7 +2,6 @@
 #define _KARIN_NLSCENECAMERABASE_H
 
 #include "nldef.h"
-#include "nlproperties.h"
 
 class NLScene;
 class NLActor;

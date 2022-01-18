@@ -13,6 +13,7 @@ extern "C" {
 
 #include "nldbg.h"
 #include "nlactor.h"
+#include "template/nlsequencemap.h"
 #include "nlscriptcontainer.h"
 #include "lua/lua_actor.h"
 #include "lua/lua_component.h"
