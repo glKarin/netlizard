@@ -25,6 +25,7 @@
 #include "nlfilechooserwidget.h"
 #include "nlcolorchooserwidget.h"
 #include "nltexteditwidget.h"
+#include "nlbuttongroupwidget.h"
 #include "engine/nlobject.h"
 #include "utils/nlguiutility.h"
 
@@ -348,35 +349,13 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
         }
         else if(item.type == "int")
         {
-            QGroupBox *w = new QGroupBox;
-            WIDGET_SET_TYPE(w, QButtonGroup);
-            QButtonGroup *g = new QButtonGroup(w);
-            WIDGET_SET_TYPE(g, QButtonGroup);
-            w->setProperty("QButtonGroup", QVariant::fromValue<QObject *>(g));
-            g->setObjectName(item.name);
-            g->setExclusive(false);
-            QVBoxLayout *vbox = new QVBoxLayout;
+            NLButtonGroupWidget *w = new NLButtonGroupWidget;
+            WIDGET_SET_TYPE(w, NLButtonGroupWidget);
+            w->setObjectName(item.name);
             const NLPropertyPairList items = item.prop.value("option").value<NLPropertyPairList>();
             int target = item.value.toInt();
-            for(int i = 0; i < items.size(); i++)
-            {
-                const NLPropertyPair &p = items[i];
-                int iv = p.second.toInt();
-                QCheckBox *cb = new QCheckBox(p.first);
-                cb->setProperty("_Data", p.second);
-                g->addButton(cb, iv);
-
-                if(target & iv)
-                    cb->setChecked(true);
-                vbox->addWidget(cb);
-            }
-            vbox->addStretch(1);
-
-            vbox->setContentsMargins(0, 0, 0, 0);
-            w->setLayout(vbox);
-            //w->setTitle(ITEM_LABEL(item));
-            //w->setCheckable(true);
-            connect(g, SIGNAL(buttonClicked(int)), this, SLOT(OnIndexChanged(int)));
+            w->SetBitList(items, target);
+            connect(w, SIGNAL(bitResult(int)), this, SLOT(OnIntChanged(int)));
             widget = w;
         }
     }
@@ -565,6 +544,10 @@ void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const QVa
     {
         static_cast<NLColorChooserWidget *>(widget)->SetColor(value.value<QColor>());
     }
+    else if(WIDGETNAME_IS_TYPE(type, NLButtonGroupWidget))
+    {
+        static_cast<NLButtonGroupWidget *>(widget)->SetBit(value.toUInt());
+    }
     else
         qWarning() << "Unsupported widget type -> " << type;
 }
@@ -583,22 +566,6 @@ void NLPropFormGroupWidget::OnIndexChanged(int i)
     {
         QComboBox *cb = static_cast<QComboBox *>(s);
         SetObjectProperty(m_object, s->objectName(), cb->itemData(i));
-    }
-    else if(WIDGETNAME_IS_TYPE(type, QButtonGroup))
-    {
-        QButtonGroup *bg = static_cast<QButtonGroup *>(s);
-        QAbstractButton *btn = bg->button(i);
-        QString name = s->objectName();
-        int cs = GetObjectProperty(m_object, name).toInt();
-        if(btn->isChecked())
-        {
-            cs |= i;
-        }
-        else
-        {
-            cs &= ~i;
-        }
-        SetObjectProperty(m_object, name, cs);
     }
 }
 

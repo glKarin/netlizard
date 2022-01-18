@@ -33,7 +33,7 @@ NLButtonGroupWidget::NLButtonGroupWidget(const QString &title, QWidget *widget)
       m_buttonGroup(0),
       m_bitResult(0)
 {
-    setObjectName("NLPropFormGroupWidget");
+    setObjectName("NLButtonGroupWidget");
     Init();
 }
 
@@ -46,8 +46,8 @@ void NLButtonGroupWidget::Init()
 {
     m_layout = new QVBoxLayout;
     m_buttonGroup = new QButtonGroup(this);
-    m_buttonGroup->setExclusive(true);
 
+    m_buttonGroup->setExclusive(false);
     setContentsMargins(0, 0, 0, 0);
     setLayout(m_layout);
 
@@ -60,45 +60,44 @@ void NLButtonGroupWidget::Reset()
 {
     m_buttonGroup->disconnect(this);
     QList<QAbstractButton *> buttons = m_buttonGroup->buttons();
-    QAbstractButton *b;
-    while((b = buttons.takeAt(0)) != 0)
+    ;
+    Q_FOREACH(QAbstractButton *b, buttons)
         m_buttonGroup->removeButton(b);
     NLGUIUtility::ClearLayout(m_layout);
     m_bitResult = 0;
     m_listResult.clear();
     m_indexResult.clear();
     setChecked(false);
-    setCheckable(true);
+    setCheckable(false);
 }
 
-void NLButtonGroupWidget::SetBitList(const NLSequenceHash<QString, QVariant> &hash, uint init)
+void NLButtonGroupWidget::SetBitList(const NLPropertyPairList &list, uint init)
 {
-    SetList(hash);
+    SetList(list);
     SetBit(init);
 }
 
-void NLButtonGroupWidget::SetIndexList(const NLSequenceHash<QString, QVariant> &hash, const QSet<uint> &init)
+void NLButtonGroupWidget::SetIndexList(const NLPropertyPairList &list, const QSet<uint> &init)
 {
-    SetList(hash);
+    SetList(list);
     SetIndex(init);
 }
 
-void NLButtonGroupWidget::SetDataList(const NLSequenceHash<QString, QVariant> &hash, const QVariantList &init)
+void NLButtonGroupWidget::SetDataList(const NLPropertyPairList &list, const QVariantList &init)
 {
-    SetList(hash);
+    SetList(list);
     SetData(init);
 }
 
-void NLButtonGroupWidget::SetList(const NLVariantSequenceHash &hash)
+void NLButtonGroupWidget::SetList(const NLPropertyPairList &list)
 {
     Reset();
     int i = 0;
-    Q_FOREACH(const QString &name, hash.SequenceKeys())
+    Q_FOREACH(const NLPropertyPair &p, list)
     {
-        QVariant v = hash.value(name);
-        QCheckBox *cb = new QCheckBox(name);
-        SET_DATA(cb, v);
-        SET_BIT(cb, v);
+        QCheckBox *cb = new QCheckBox(p.first);
+        SET_DATA(cb, p.second);
+        SET_BIT(cb, p.second);
         m_buttonGroup->addButton(cb, i);
         m_layout->addWidget(cb);
         i++;

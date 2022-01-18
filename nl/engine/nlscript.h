@@ -54,6 +54,11 @@ private:
     void ClearGlobalVariant();
     bool InitLua();
     bool DeinitLua();
+    void LockGlobalDataUpdate() { m_globalDataUpdateLock = true; }
+    void UnlockGlobalDataUpdate() { m_globalDataUpdateLock = false; }
+    bool IsLockGlobalDataUpdate() const { return m_globalDataUpdateLock; }
+    void SetGlobalDataDirty(bool b) { if(!m_globalDataUpdateLock) m_globalDataDirty = b; }
+    bool IsGlobalDataDirty() const { return m_globalDataDirty; }
 
 private slots:
     void OnPropertyChanged(const QString &name, const QVariant &value, int type);
@@ -97,6 +102,8 @@ private:
     QString m_sourceFile;
     Script_Lua m_lua;
     NLVariantSequenceHash m_globalVaraint;
+    bool m_globalDataDirty;
+    bool m_globalDataUpdateLock;
 
     friend class NLScriptContainer;
     friend class NLActor;

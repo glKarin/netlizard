@@ -8,9 +8,9 @@
 #define NLPROPERTY_DEF_TRAIT \
     public: \
     QVariant GetProperty(const QString &name, const QVariant &def = QVariant()) const; \
-    void SetProperty(const QString &name, const QVariant &value); \
+    int SetProperty(const QString &name, const QVariant &value); \
     void CoverProperty(const QString &name, const QVariant &value); \
-    void RemoveProperty(const QString &name); \
+    bool RemoveProperty(const QString &name); \
     bool HasProperty(const QString &name) const; \
     bool IsDynamicProperty(const QString &name) const; \
     bool IsDeclareProperty(const QString &name) const; \
@@ -27,7 +27,7 @@
     QVariantHash GetUserProperties() const; \
     QVariantHash GetProperties() const; \
     template<class T> T GetProperty_T(const QString &name, const T &def = T()) const; \
-    template<class T> void SetProperty_T(const QString &name, const T &value); \
+    template<class T> int SetProperty_T(const QString &name, const T &value); \
     template<class T> void CoverProperty_T(const QString &name, const T &value);
 
 #if 0
@@ -45,12 +45,13 @@
 #endif
 
 #define NLPROPERTY_DECL_TRAIT(Clazz, var_equals_func, signal_func) \
-void Clazz::RemoveProperty(const QString &name) { \
+bool Clazz::RemoveProperty(const QString &name) { \
     if(!HasProperty(name)) \
-        return; \
+        return false; \
     const QByteArray ba = name.toLocal8Bit(); \
     setProperty(ba.constData(), QVariant()); \
     emit signal_func(name, QVariant(), -1); \
+    return true; \
 } \
 bool Clazz::HasProperty(const QString &name) const { \
     NLPROPERTY_HASPROPERTY_TRAIT(name) \
@@ -62,13 +63,14 @@ QVariant Clazz::GetProperty(const QString &name, const QVariant &def) const { \
         return def; \
     return p; \
 } \
-void Clazz::SetProperty(const QString &name, const QVariant &value) { \
+int Clazz::SetProperty(const QString &name, const QVariant &value) { \
     bool has = HasProperty(name); \
     if(has && var_equals_func(GetProperty(name), value)) \
-        return; \
+        return 0; \
     const QByteArray ba = name.toLocal8Bit(); \
     /*qDebug() << */setProperty(ba.constData(), value); \
     emit signal_func(name, value, has ? 0 : 1); \
+    return has ? 1 : 2; \
 } \
 void Clazz::CoverProperty(const QString &name, const QVariant &value) { \
     const QByteArray ba = name.toLocal8Bit(); \
@@ -188,13 +190,14 @@ template <class T> T Clazz::GetProperty_T(const QString &name, const T &def) con
         return def; \
     return p.value<T>(); \
 } \
-template<class T> void Clazz::SetProperty_T(const QString &name, const T &value) { \
+template<class T> int Clazz::SetProperty_T(const QString &name, const T &value) { \
     bool has = HasProperty(name); \
     if(has && GetProperty(name).value<T>() == value) \
-        return; \
+        return 0; \
     const QByteArray ba = name.toLocal8Bit(); \
     setProperty(ba.constData(), value); \
     emit signal_func(name, QVariant::fromValue(value), has ? 0 : 1); \
+    return has ? 1 : 2; \
 } \
 template<class T> void Clazz::CoverProperty_T(const QString &name, const T &value) { \
     const QByteArray ba = name.toLocal8Bit(); \

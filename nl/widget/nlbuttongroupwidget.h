@@ -2,12 +2,11 @@
 #define _KARIN_NLBUTTONGROUPWIDGET_H
 
 #include <QGroupBox>
-#include <QList>
 
+#include "engine/nlproperties.h"
 #include "engine/nldef.h"
 
 class QVBoxLayout;
-template <class K, class V> class NLSequenceHash;
 class QButtonGroup;
 
 class NLLIB_EXPORT NLButtonGroupWidget : public QGroupBox
@@ -25,20 +24,20 @@ public:
     explicit NLButtonGroupWidget(QWidget *widget = 0);
     explicit NLButtonGroupWidget(const QString &title, QWidget *widget = 0);
     virtual ~NLButtonGroupWidget();
-    void SetList(const NLSequenceHash<QString, QVariant> &hash);
-    void SetBitList(const NLSequenceHash<QString, QVariant> &hash, uint init);
-    void SetIndexList(const NLSequenceHash<QString, QVariant> &hash, const QSet<uint> &init);
-    void SetDataList(const NLSequenceHash<QString, QVariant> &hash, const QVariantList &init);
+    void SetList(const NLPropertyPairList &list);
+    void SetBitList(const NLPropertyPairList &list, uint init);
+    void SetIndexList(const NLPropertyPairList &list, const QSet<uint> &init);
+    void SetDataList(const NLPropertyPairList &list, const QVariantList &init);
     void SetBit(uint init);
     void SetIndex(const QSet<uint> &init);
     void SetData(const QVariantList &init);
-    uint BitResult() const { return m_bitResult; }
+    int BitResult() const { return m_bitResult; }
     QVariantList ListResult() const { return m_listResult; }
     QVariantList IndexResult() const { return m_indexResult; }
 
 Q_SIGNALS:
     void result();
-    void bitResult(uint result);
+    void bitResult(int result);
     void listResult(const QVariantList &result);
     void indexResult(const QVariantList &result);
 

@@ -252,7 +252,7 @@ bool NLScript::Script_Lua::Exec(float delta)
 
 void NLScript::Script_Lua::RestoreGlobalVariant()
 {
-    if(!L)
+    if(!L || !script->IsGlobalDataDirty())
         return;
     Q_FOREACH(const QString &key, script->m_globalVaraint.SequenceKeys())
     {
@@ -402,9 +402,13 @@ NLVariantSequenceHash NLScript::Script_Lua::GetGlobalVariant()
     return props;
 }
 
+
+
 NLScript::NLScript(NLActor *parent) :
     NLObject(NLPROPERTIY_NAME(NLScript), parent),
-    m_mounted(false)
+    m_mounted(false),
+    m_globalDataDirty(false),
+    m_globalDataUpdateLock(false)
 {
     Construct();
     if(parent)
@@ -413,21 +417,27 @@ NLScript::NLScript(NLActor *parent) :
 
 NLScript::NLScript(const NLProperties &prop, NLActor *parent) :
     NLObject(NLPROPERTIES_NAME(prop, NLScript), parent),
-    m_mounted(false)
+    m_mounted(false),
+    m_globalDataDirty(false),
+    m_globalDataUpdateLock(false)
 {
     Construct();
 }
 
 NLScript::NLScript(NLScene *scene, NLActor *parent) :
     NLObject(scene, NLPROPERTIY_NAME(NLScript), parent),
-    m_mounted(false)
+    m_mounted(false),
+    m_globalDataDirty(false),
+    m_globalDataUpdateLock(false)
 {
     Construct();
 }
 
 NLScript::NLScript(NLScene *scene, const NLProperties &prop, NLActor *parent) :
     NLObject(scene, NLPROPERTIES_NAME(prop, NLScript), parent),
-    m_mounted(false)
+    m_mounted(false),
+    m_globalDataDirty(false),
+    m_globalDataUpdateLock(false)
 {
     Construct();
 }
@@ -618,10 +628,14 @@ void NLScript::Reset()
 {
     NLObject::Reset();
     m_lua.Reset();
+    UnlockGlobalDataUpdate();
+    SetGlobalDataDirty(false);
 }
 
 void NLScript::OnPropertyChanged(const QString &name, const QVariant &value, int type)
 {
+    if(IsLockGlobalDataUpdate())
+        return;
     if(name == "objectName"
             || name == "enabled"
             || name == "scriptFile"
@@ -632,10 +646,12 @@ void NLScript::OnPropertyChanged(const QString &name, const QVariant &value, int
         m_globalVaraint.remove(name);
     else
         m_globalVaraint[name] = value;
+    SetGlobalDataDirty(true);
 }
 
 void NLScript::SetGlobalVariant(const NLVariantSequenceHash &list)
 {
+    LockGlobalDataUpdate();
     const QList<QString> keys = list.SequenceKeys();
     Q_FOREACH(const QString &key, keys)
     {
@@ -651,14 +667,20 @@ void NLScript::SetGlobalVariant(const NLVariantSequenceHash &list)
             //qDebug() << "Remove unused -> " << key << GetProperty(key);
         }
     }
+    m_globalVaraint = list;
+    UnlockGlobalDataUpdate();
+    SetGlobalDataDirty(false);
 }
 
 void NLScript::ClearGlobalVariant()
 {
+    LockGlobalDataUpdate();
     Q_FOREACH(const QString &key, m_globalVaraint.SequenceKeys())
     {
         //qDebug() << "REMOVE -> " << key << GetProperty(key);
         RemoveProperty(key);
     }
     m_globalVaraint.clear();
+    UnlockGlobalDataUpdate();
+    SetGlobalDataDirty(false);
 }
