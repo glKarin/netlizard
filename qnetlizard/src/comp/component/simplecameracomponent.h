@@ -3,8 +3,6 @@
 
 #include "engine/nlcomponent.h"
 
-#include "engine/nlactor.h"
-
 class NLSceneCamera;
 class CameraNotifyFunc;
 

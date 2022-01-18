@@ -1,12 +1,12 @@
 #ifndef _KARIN_SHADOW_H
 #define _KARIN_SHADOW_H
 
-struct _GL_NETLizard_3D_Mesh;
-struct vector3_s;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct _GL_NETLizard_3D_Mesh;
+struct vector3_s;
 
 #define SHADOW_Z_PASS 1
 #define SHADOW_Z_FAIL 2

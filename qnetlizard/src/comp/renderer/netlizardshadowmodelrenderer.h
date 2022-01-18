@@ -2,7 +2,6 @@
 #define _KARIN_NETLIZARDSHADOWMODELRENDERER_H
 
 #include "engine/nlrenderable.h"
-#include "stencil_shadow.h"
 
 struct _GL_NETLizard_3D_Model;
 
@@ -10,7 +9,7 @@ NLRENDERER(NETLizardShadowModelRenderer)
 class NETLizardShadowModelRenderer : public NLRenderable
 {
 public:
-    explicit NETLizardShadowModelRenderer(int method = SHADOW_Z_FAIL, NLActor *actor = 0);
+    explicit NETLizardShadowModelRenderer(int method = 2, NLActor *actor = 0);
     virtual ~NETLizardShadowModelRenderer();
     struct _GL_NETLizard_3D_Model * Model() { return m_model; }
     void SetModel(struct _GL_NETLizard_3D_Model *model);

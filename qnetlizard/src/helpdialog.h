@@ -2,7 +2,6 @@
 #define _KARIN_HELPDIALOG_H
 
 #include <QDialog>
-#include <QVector>
 #include <QStringList>
 
 class QListWidgetItem;

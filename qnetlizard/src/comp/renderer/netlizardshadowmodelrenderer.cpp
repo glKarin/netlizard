@@ -2,6 +2,7 @@
 
 #include <QDebug>
 
+#include "stencil_shadow.h"
 #include "nl_shadow_render.h"
 #include "gl/nl_gl.h"
 #include "qdef.h"

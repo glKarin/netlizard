@@ -6,7 +6,7 @@
 #include <QTextStream>
 #include <QTextCodec>
 
-int NLIOUtility::file_put_contents(const QString &file, const char *data, quint64 len, int flags)
+bool NLIOUtility::file_put_contents(const QString &file, const char *data, uint len, int flags)
 {
     bool res;
 
@@ -26,7 +26,7 @@ int NLIOUtility::file_put_contents(const QString &file, const char *data, quint6
     return res;
 }
 
-char * NLIOUtility::file_get_contents(const QString &file, quint64 *len)
+char * NLIOUtility::file_get_contents(const QString &file, uint *len)
 {
     QFile f(file);
     if(!f.exists())
@@ -37,25 +37,29 @@ char * NLIOUtility::file_get_contents(const QString &file, quint64 *len)
     QByteArray ba;
     const int BUF_SIZE = 1024;
     int l;
+    uint rlen = 0;
     char buf[BUF_SIZE];
     while((l = is.readRawData(buf, BUF_SIZE)) > 0)
     {
         ba.append(buf, l);
+        rlen += l;
     }
     f.close();
-    int size = ba.length();
-    char *res = new char[size];
-    memcpy(res, ba.constData(), size);
+    char *res = NULL;
+    int size = 0;
+    if(rlen)
+    {
+        size = ba.size();
+        res = new char[size];
+        memcpy(res, ba.constData(), size);
+    }
     if(len)
         *len = size;
     return res;
 }
 
-int NLIOUtility::file_put_contents(const QString &file, const QString &str, const QString &code, int flags)
+bool NLIOUtility::file_put_contents(const QString &file, const QString &str, const QString &code, int flags)
 {
-    bool res;
-
-    res = false;
     QFile f(file);
     QIODevice::OpenMode mode = QIODevice::WriteOnly | QIODevice::Text;
     if(flags & 1)
@@ -72,6 +76,25 @@ int NLIOUtility::file_put_contents(const QString &file, const QString &str, cons
     }
     os << str;
     f.flush();
+    f.close();
+    return true;
+}
+
+QString NLIOUtility::file_get_contents(const QString &file, const QString &code)
+{
+    QFile f(file);
+    if(!f.exists())
+        return QString();
+    if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
+        return QString();
+    QTextStream is(&f);
+    if(!code.isEmpty())
+    {
+        QTextCodec *codec = QTextCodec::codecForName(code.toLocal8Bit());
+        if(codec)
+            is.setCodec(codec);
+    }
+    QString res = is.readAll();
     f.close();
     return res;
 }

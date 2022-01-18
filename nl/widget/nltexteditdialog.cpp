@@ -7,7 +7,6 @@
 #include <QVBoxLayout>
 #include <QAction>
 #include <QToolBar>
-#include <QFile>
 #include <QFileDialog>
 #include <QDataStream>
 #include <QTextStream>
@@ -21,6 +20,7 @@
 
 #include "engine/nldbg.h"
 #include "engine/nldef.h"
+#include "utils/nlioutility.h"
 #include "syntaxhighlighter/nlluasyntaxhighlighter.h"
 
 QSize NLTextEditDialog::_lastSize;
@@ -170,25 +170,16 @@ bool NLTextEditDialog::SaveToFile()
     if(file.isEmpty())
         return false;
 
-    QFile f(file);
-    QIODevice::OpenMode mode = QIODevice::WriteOnly | QIODevice::Text;
-
-    if(!f.open(mode))
+    bool res = NLIOUtility::file_put_contents(file, m_text/*, "utf-8"*/);
+    if(res)
+    {
+        QMessageBox::information(this, tr("Success"), tr("Save text file: ") + file);
+    }
+    else
     {
         QMessageBox::warning(this, tr("Error"), tr("Can not open file: ") + file);
-        return false;
     }
-    QTextStream os(&f);
-#if 0
-    QTextCodec *codec = QTextCodec::codecForName("utf-8");
-    if(codec)
-        os.setCodec(codec);
-#endif
-    os << m_text;
-    f.flush();
-    f.close();
-    QMessageBox::information(this, tr("Success"), tr("Save text file: ") + file);
-    return true;
+    return res;
 }
 
 bool NLTextEditDialog::LoadFromFile()
@@ -197,30 +188,23 @@ bool NLTextEditDialog::LoadFromFile()
     if(file.isEmpty())
         return false;
 
-    QFile f(file);
-    if(!f.exists())
-    {
-        QMessageBox::warning(this, tr("Error"), tr("Can not open file: ") + file);
-        return false;
-    }
-    if(!f.open(QIODevice::ReadOnly))
+    QString text = NLIOUtility::file_get_contents(file, m_text/*, "utf-8"*/);
+    if(text.isEmpty())
     {
         QMessageBox::warning(this, tr("Error"), tr("Can not read file: ") + file);
         return false;
     }
-    QTextStream is(&f);
-    QString text = is.readAll();
-    f.close();
 
-    FinishEdit();
-    m_textEdit->disconnect(this);
+    //FinishEdit();
+    //m_textEdit->disconnect(this);
     m_textEdit->setPlainText(text);
-    if(m_text != text)
-    {
-        m_text = text;
-        emit textChanged(m_text);
-    }
-    StartEdit();
+//    if(m_text != text)
+//    {
+//        m_text = text;
+//        m_saveButton->setEnabled(true);
+//        emit textChanged(m_text);
+//    }
+    //StartEdit();
 
     QMessageBox::information(this, tr("Success"), tr("Load file finished: ") + file);
     return true;
@@ -257,7 +241,7 @@ void NLTextEditDialog::FinishEdit()
     if(m_edited)
     {
         m_edited = false;
-        m_saveButton->setEnabled(false);
+        //m_saveButton->setEnabled(false);
         setWindowTitle(tr("Edit"));
     }
 }

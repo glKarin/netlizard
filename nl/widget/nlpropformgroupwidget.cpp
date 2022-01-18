@@ -515,7 +515,10 @@ void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const QVa
     }
     else if(WIDGETNAME_IS_TYPE(type, QLineEdit))
     {
-        static_cast<QLineEdit *>(widget)->setText(value.toString());
+        QString text(value.toString());
+        QLineEdit *lineEdit = static_cast<QLineEdit *>(widget);
+        if(lineEdit->text() != text)
+            lineEdit->setText(text);
     }
     else if(WIDGETNAME_IS_TYPE(type, QComboBox))
     {

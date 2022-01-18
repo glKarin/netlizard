@@ -3,11 +3,11 @@
 
 #include "math/vector3.h"
 
-struct _GL_NETLizard_3D_Model;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct _GL_NETLizard_3D_Model;
 
 typedef enum NETLizard_Collision_Testing_Scene_Result_e
 {

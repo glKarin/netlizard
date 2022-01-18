@@ -1,12 +1,11 @@
 #ifndef _KARIN_NLGLALGODEBUG_H
 #define _KARIN_NLGLALGODEBUG_H
 
-struct _GL_NETLizard_3D_Model;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+struct _GL_NETLizard_3D_Model;
 struct vector3_s;
 
 void NETLizard_DebugHighlightRenderGL3DModelPlane(const struct _GL_NETLizard_3D_Model *model, unsigned int scene, unsigned int plane_index);

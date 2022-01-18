@@ -4,6 +4,7 @@
 #include <QList>
 #include <QHash>
 
+#include "netlizard.h"
 #include "gl/nl_gl.h"
 #include "settings.h"
 #include "qdef.h"

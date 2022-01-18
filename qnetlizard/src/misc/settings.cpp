@@ -7,7 +7,9 @@
 #include <QDomDocument>
 #include <QDomNode>
 #include <QDomNodeList>
+#include <QDebug>
 
+#include "qdef.h"
 #include "stencil_shadow.h"
 #include "nl_shadow_render.h"
 
@@ -110,6 +112,24 @@ static Settings::SettingItemCategory * LoadSettingCategories(const QDomElement &
     }
 
     return sc;
+}
+
+Settings::SettingItem::~SettingItem()
+{
+    DEBUG_DESTROY(SettingItem)
+}
+
+Settings::SettingItemContent::~SettingItemContent()
+{
+    DEBUG_DESTROY(SettingItemContent)
+}
+
+Settings::SettingItemCategory::~SettingItemCategory()
+{
+    Q_FOREACH(SettingItem *item, settings)
+        delete item;
+    settings.clear();
+    DEBUG_DESTROY(SettingItemCategory)
 }
 
 Settings::Settings(QObject *parent) :

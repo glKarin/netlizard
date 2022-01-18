@@ -2,6 +2,7 @@
 
 #include <QDebug>
 
+#include "netlizard.h"
 #include "gl/nl_gl.h"
 #include "qdef.h"
 

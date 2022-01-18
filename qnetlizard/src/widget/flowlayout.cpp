@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <QWidget>
+#include <QRect>
 #include <QDebug>
 
 #include "qdef.h"

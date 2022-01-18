@@ -147,7 +147,7 @@ bool ImageScene::LoadFile(const QString &file, int type, int index)
     {
     case NL_TEXTURE_NORMAL_PNG:
     {
-        quint64 len;
+        uint len;
         char *data = NLIOUtility::file_get_contents(ba.constData(), &len);
         if(!data)
             return false;

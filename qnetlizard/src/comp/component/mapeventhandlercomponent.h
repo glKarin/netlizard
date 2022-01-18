@@ -1,12 +1,14 @@
 #ifndef _KARIN_MAPEVENTHANDLERCOMPONENT_H
 #define _KARIN_MAPEVENTHANDLERCOMPONENT_H
 
-#include "netlizard.h"
 #include "engine/nlcomponent.h"
 #include "math/bound.h"
 
 struct _GL_NETLizard_3D_Mesh;
 struct _GL_NETLizard_3D_Model;
+struct NETLizard_Level_Teleport_s;
+struct NETLizard_Level_Elevator_s;
+struct NETLizard_Level_Door_s;
 class NLRigidbody;
 class NLSceneCamera;
 
@@ -220,10 +222,10 @@ protected:
     bool HandleLadder(int item);
 
 private:
-    typedef QHash<int, const NETLizard_Level_Teleport *> MapTeleportMap;
-    typedef QList<const NETLizard_Level_Elevator *> MapElevatorList;
+    typedef QHash<int, const struct NETLizard_Level_Teleport_s *> MapTeleportMap;
+    typedef QList<const struct NETLizard_Level_Elevator_s *> MapElevatorList;
     typedef QHash<int, MapElevatorList> MapElevatorMap;
-    typedef QHash<int, const NETLizard_Level_Door *> MapDoorMap;
+    typedef QHash<int, const struct NETLizard_Level_Door_s *> MapDoorMap;
     struct _GL_NETLizard_3D_Model *m_model;
     NLRigidbody *m_teleportActor;
     MapTeleportMap m_teleport;

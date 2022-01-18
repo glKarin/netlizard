@@ -2,12 +2,9 @@
 #define _KARIN_FLOWLAYOUT_H
 
 #include <QLayout>
-#include <QRect>
 #include <QStyle>
 
-#include <QLayout>
-#include <QRect>
-#include <QStyle>
+class QRect;
 
 class FlowLayout : public QLayout
 {

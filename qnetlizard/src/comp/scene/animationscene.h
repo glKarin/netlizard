@@ -1,10 +1,10 @@
 #ifndef _KARIN_ANIMATIONSCENE_H
 #define _KARIN_ANIMATIONSCENE_H
 
-#include "netlizard.h"
 #include "engine/nlscene.h"
 
 struct _GL_NETLizard_3D_Model;
+struct NETLizard_3D_Frame_Animation_s;
 class NETLizardAnimationModelRenderer;
 class SimpleControlComponent;
 
@@ -17,8 +17,8 @@ public:
     virtual ~AnimationScene();
     bool IsValid() const;
     const struct _GL_NETLizard_3D_Model * Model() const { return m_model; }
-    const NETLizard_3D_Frame_Animation * Config() const { return m_frameAnim; }
-    const NETLizard_3D_Frame_Animation * CurrentAnimation() const;
+    const struct NETLizard_3D_Frame_Animation_s * Config() const { return m_frameAnim; }
+    const struct NETLizard_3D_Frame_Animation_s * CurrentAnimation() const;
     int CurrentAnimationFrames() const;
     int Anim() const { return m_anim; }
     int Frame() const { return m_frame; }
@@ -61,7 +61,7 @@ private:
 private:
     struct _GL_NETLizard_3D_Model *m_model;
     NETLizardAnimationModelRenderer *m_renderer;
-    const NETLizard_3D_Frame_Animation *m_frameAnim;
+    const struct NETLizard_3D_Frame_Animation_s *m_frameAnim;
     int m_anim;
     int m_frame;
     bool m_playing;

@@ -1,13 +1,13 @@
 #ifndef _KARIN_NL_SHADOW_H
 #define _KARIN_NL_SHADOW_H
 
-struct _GL_NETLizard_3D_Mesh;
-struct _GL_NETLizard_3D_Model;
-struct vector3_s;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct _GL_NETLizard_3D_Mesh;
+struct _GL_NETLizard_3D_Model;
+struct vector3_s;
 
 #define NETLIZARD_SHADOW_RENDER_NONE 0
 #define NETLIZARD_SHADOW_RENDER_ITEM 1

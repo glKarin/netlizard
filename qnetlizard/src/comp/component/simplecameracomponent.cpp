@@ -4,6 +4,7 @@
 #include <QMetaObject>
 #include <QMetaProperty>
 
+#include "engine/nlactor.h"
 #include "engine/nlscene.h"
 #include "engine/nlscenecamera.h"
 #include "engine/nlfuncs.h"

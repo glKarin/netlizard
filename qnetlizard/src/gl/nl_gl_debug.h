@@ -1,12 +1,12 @@
 #ifndef _KARIN_NLGLDEBUG_H
 #define _KARIN_NLGLDEBUG_H
 
-struct _GL_NETLizard_3D_Model;
-struct _GL_NETLizard_3D_Mesh;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct _GL_NETLizard_3D_Model;
+struct _GL_NETLizard_3D_Mesh;
 
 #define NETLIZARD_DEBUG_TYPE_ITEM 1
 #define NETLIZARD_DEBUG_TYPE_SCENE (1 << 1)

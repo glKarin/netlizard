@@ -20,6 +20,7 @@
 #include "settings.h"
 #include "nl_util.h"
 #include "nl_shadow_render.h"
+#include "stencil_shadow.h"
 #include "nl_algo.h"
 #include "engine/nlforce.h"
 

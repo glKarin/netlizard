@@ -6,14 +6,13 @@
 
 #include "engine/nldef.h"
 
-class QString;
-
 class NLLIB_EXPORT NLIOUtility
 {
 public:
-    static int file_put_contents(const QString &file, const char *data, quint64 len, int flags = 0);
-    static char * file_get_contents(const QString &file, quint64 *len);
-    static int file_put_contents(const QString &file, const QString &str, const QString &codec = QString(), int flags = 0);
+    static bool file_put_contents(const QString &file, const char *data, uint len, int flags = 0);
+    static char * file_get_contents(const QString &file, uint *len);
+    static bool file_put_contents(const QString &file, const QString &str, const QString &codec = QString(), int flags = 0);
+    static QString file_get_contents(const QString &file, const QString &codec = QString());
 
 private:
     NLIOUtility();

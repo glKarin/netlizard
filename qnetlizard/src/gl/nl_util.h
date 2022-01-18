@@ -1,16 +1,16 @@
 #ifndef _KARIN_NL_UTIL_H
 #define _KARIN_NL_UTIL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct _GL_NETLizard_3D_Model;
 struct _GL_NETLizard_3D_Mesh;
 
 struct bound_s;
 struct plane_s;
 struct vector3_s;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 typedef struct vector3_s nl_vector3_t;
 

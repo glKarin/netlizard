@@ -4,6 +4,7 @@
 #include <QByteArray>
 #include <QFileInfo>
 
+#include "netlizard.h"
 #include "gl/nl_gl.h"
 #include "qdef.h"
 #include "simplecameraactor.h"

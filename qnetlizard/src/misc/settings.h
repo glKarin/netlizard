@@ -2,9 +2,6 @@
 #define _KARIN_SETTINGS_H
 
 #include <QSettings>
-#include <QDebug>
-
-#include "qdef.h"
 
 class Settings : public QObject
 {
@@ -30,10 +27,7 @@ public:
               description(d)
         {
         }
-        virtual ~SettingItem()
-        {
-            DEBUG_DESTROY(SettingItem)
-        }
+        virtual ~SettingItem();
 
         bool IsValid() const { return item_type != Item_Invalid; }
         void Invalid() { item_type = Item_Invalid; }
@@ -52,10 +46,7 @@ public:
               widget(w)
         {
         }
-        virtual ~SettingItemContent()
-        {
-            DEBUG_DESTROY(SettingItemContent)
-        }
+        virtual ~SettingItemContent();
         SettingItem & operator()(const QString &name, const QVariant &val)
         {
             prop.insert(name, val);
@@ -71,13 +62,7 @@ public:
             : SettingItem(n, t, SettingItem::Item_Category, d)
         {
         }
-        virtual ~SettingItemCategory()
-        {
-            Q_FOREACH(SettingItem *item, settings)
-                delete item;
-            settings.clear();
-            DEBUG_DESTROY(SettingItemCategory)
-        }
+        virtual ~SettingItemCategory();
 
         SettingItemCategory & operator<<(SettingItem *item)
         {
@@ -93,7 +78,7 @@ public:
 
 public:
     virtual ~Settings();
-    SINGLE_INSTANCE_DEF(Settings)
+    static Settings * Instance();
     static const SettingItemMap & SettingsConfig();
     template<class T> T GetSetting(const QString &name, const T &def = T());
     template<class T> void SetSetting(const QString &name, const T &val);
