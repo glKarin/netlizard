@@ -9,9 +9,41 @@ extern "C" {
 }
 
 #include "engine/nlscenecamera.h"
+#include "engine/nlactor.h"
+#include "engine/nlscene.h"
 #include "lua_def.h"
 
 #define CALLER_SCENECAMERA(L, name) GET_LUA_CALLER(L, NLSceneCamera, name)
+#define CALLER_SCENECAMERA_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLSceneCamera, name)
+
+static int SceneCamera_new(lua_State *L)
+{
+    int top = lua_gettop(L);
+    if(top == 0)
+    {
+        PUSH_NLOBJECT_TO_STACK(L, NLSceneCamera, new NLSceneCamera)
+    }
+    else if(top == 1)
+    {
+        GET_LUA_OBJECT(L, NLScene, scene, 1);
+        PUSH_NLOBJECT_TO_STACK(L, NLSceneCamera, new NLSceneCamera(scene))
+    }
+    else
+    {
+        GET_LUA_OBJECT(L, NLScene, scene, 1);
+        int type = lua_tointeger(L, 2);
+        PUSH_NLOBJECT_TO_STACK(L, NLSceneCamera, new NLSceneCamera(static_cast<NLSceneCamera::SceneCamera_Type>(type), scene))
+    }
+    return 1;
+}
+
+static int SceneCamera_delete(lua_State *L)
+{
+    CALLER_SCENECAMERA_USERDATA(L, camera);
+    delete *camera;
+    *camera = 0;
+    return 0;
+}
 
 static int SceneCamera_Type(lua_State *L)
 {
@@ -211,6 +243,24 @@ static int SceneCamera_ZIsUp(lua_State *L)
     return 1;
 }
 
+static int SceneCamera_UpdateCamera(lua_State *L)
+{
+    CALLER_SCENECAMERA(L, camera);
+    GET_LUA_OBJECT(L, NLActor, actor, 2);
+    NLScene *scene = camera->Scene();
+    camera->Update(scene->width(), scene->height());
+    if(actor)
+    {
+        NLActor *pa = actor->ParentActor();
+        if(pa)
+            camera->SetGlobalMatrix(pa->GlobalMatrix());
+        camera->SetPosition(actor->Position());
+        camera->SetRotation(actor->Rotation());
+    }
+    lua_pushboolean(L, 1);
+    return 1;
+}
+
 namespace NL
 {
 
@@ -222,6 +272,9 @@ bool scenecamera_register_metatable(struct lua_State *L)
 {
     if(metatable_is_register(L, "NLSceneCamera"))
         return true;
+
+    SET_GLOBAL_CFUNC(L, "new_NLSceneCamera", SceneCamera_new)
+    SET_GLOBAL_CFUNC(L, "delete_NLSceneCamera", SceneCamera_delete)
     if(luaL_newmetatable(L, "NLSceneCamera"))
     {
         const struct luaL_Reg Funcs[] = {
@@ -244,6 +297,7 @@ bool scenecamera_register_metatable(struct lua_State *L)
             SCENECAMERA_FUNC(Zoom),
             SCENECAMERA_FUNC(SetZIsUp),
             SCENECAMERA_FUNC(ZIsUp),
+            SCENECAMERA_FUNC(UpdateCamera),
             NULL_luaL_Reg
         };
         luaL_setfuncs(L, Funcs, 0);

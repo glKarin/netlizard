@@ -16,6 +16,10 @@ public:
     static int TakeFormLayout(QFormLayout *layout, QVariantList *ret = 0);
     static void ClearLayoutLater(QLayout *layout);
 
+    static void UnsetFixedSize(QWidget *widget);
+    static void UnsetFixedWidth(QWidget *widget);
+    static void UnsetFixedHeight(QWidget *widget);
+
 private:
     NLGUIUtility();
 };

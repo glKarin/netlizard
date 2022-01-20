@@ -114,14 +114,9 @@ void SimpleCameraComponent::Reset()
 
 void SimpleCameraComponent::Destroy()
 {
-    NLScene *scene = Scene();
-    if(scene && scene->CurrentCamera() == m_camera)
-    {
-        scene->SetCurrentCamera(0);
-    }
-    m_type = 0;
     delete m_camera;
     m_camera = 0;
+    m_type = 0;
     NLComponent::Destroy();
 }
 

@@ -12,6 +12,7 @@ NLACTOR(SimpleCameraActor)
 class SimpleCameraActor : public NLRigidbody
 {
     Q_OBJECT
+    Q_PROPERTY(NLComponent* control READ Control FINAL)
 public:
     explicit SimpleCameraActor(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleCameraActor();

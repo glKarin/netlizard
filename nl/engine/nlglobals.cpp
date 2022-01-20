@@ -9,6 +9,16 @@
 #include "nldef.h"
 #include "nlphysics.h"
 
+class NLRenderable;
+class NLComponent;
+class NLActor;
+class NLScript;
+class NLScene;
+class NLSceneCamera;
+class NLForce;
+class NLObject;
+class NLRigidbody;
+
 static bool _engine_inited = false;
 
 namespace NL
@@ -46,6 +56,15 @@ bool init_engine()
     qRegisterMetaType<NL::Physics::F>("NLPhysics_F");
     qRegisterMetaType<NL::Physics::t>("NLPhysics_t");
     qRegisterMetaType<NL::Physics::d>("NLPhysics_d");
+    qRegisterMetaType<NLRenderable *>("NLRenderable *");
+    qRegisterMetaType<NLComponent *>("NLComponent *");
+    qRegisterMetaType<NLActor *>("NLActor *");
+    qRegisterMetaType<NLScript *>("NLScript *");
+    qRegisterMetaType<NLScene *>("NLScene *");
+    qRegisterMetaType<NLSceneCamera *>("NLSceneCamera *");
+    qRegisterMetaType<NLForce *>("NLForce *");
+    qRegisterMetaType<NLObject *>("NLObject *");
+    qRegisterMetaType<NLRigidbody *>("NLRigidbody *");
 
     load_translator();
 

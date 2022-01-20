@@ -12,19 +12,19 @@ public:
     void SetFovy(float fovy);
     void SetAspect(float aspect);
     void SetWidthAndHeight(float width, float height) { SetAspect(CaleAspect(width, height)); }
-    virtual void SetZNear(float near);
-    virtual void SetZFar(float far);
+    void SetZNear(float near);
+    void SetZFar(float far);
     void SetPerspective(float fovy, float width, float height, float znear, float zfar) {
         SetPerspective(fovy, CaleAspect(width, height), znear, zfar);
     }
     void SetPerspective(float fovy, float aspect, float near, float far);
     float Fovy() const { return m_fovy; }
     float Aspect() const { return m_aspect; }
-    virtual float ZNear() const { return m_zNear; }
-    virtual float ZFar() const { return m_zFar; }
-    virtual float ZDistance() const { return m_zFar - m_zNear; }
+    float ZNear() const { return m_zNear; }
+    float ZFar() const { return m_zFar; }
+    float ZDistance() const { return m_zFar - m_zNear; }
     void ResetFovy() { SetFovy(45); }
-    virtual void Reset();
+    void Reset();
 
 protected:
     virtual void UpdateProjectionMatrix(NLMatrix4 *mat);

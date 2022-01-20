@@ -27,4 +27,6 @@ private:
     Q_DISABLE_COPY(NLRenderable)
 };
 
+Q_DECLARE_METATYPE(NLRenderable*)
+
 #endif // _KARIN_RENDERABLE_H

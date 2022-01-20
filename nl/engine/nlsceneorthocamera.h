@@ -17,8 +17,8 @@ public:
     void SetRight(float right);
     void SetBottom(float bottom);
     void SetTop(float top);
-    virtual void SetZNear(float near);
-    virtual void SetZFar(float far);
+    void SetZNear(float near);
+    void SetZFar(float far);
     void Setup2D();
     void Setup3D(float near, float far);
     void SetOrtho2D(float left, float right, float bottom, float top) { SetOrtho(left, right, bottom, top, -1, 1); }
@@ -28,12 +28,12 @@ public:
     float Right() const { return m_right; }
     float Bottom() const { return m_bottom; }
     float Top() const { return m_top; }
-    virtual float ZNear() const { return m_zNear; }
-    virtual float ZFar() const { return m_zFar; }
+    float ZNear() const { return m_zNear; }
+    float ZFar() const { return m_zFar; }
     float XDistance() const { return m_right - m_left; }
     float YDistance() const { return m_top - m_bottom; }
-    virtual float ZDistance() const { return m_zFar - m_zNear; }
-    virtual void Reset();
+    float ZDistance() const { return m_zFar - m_zNear; }
+    void Reset();
 
 protected:
     virtual void UpdateProjectionMatrix(NLMatrix4 *mat);

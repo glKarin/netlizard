@@ -14,6 +14,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QMenu>
 #include <QToolButton>
 #include <QButtonGroup>
@@ -21,13 +22,20 @@
 #include "engine/nldbg.h"
 #include "engine/nlfuncs.h"
 #include "engine/nlrenderable.h"
+#include "engine/nlscenecamera.h"
+#include "engine/nlscene.h"
 #include "nlvector3widget.h"
 #include "nlfilechooserwidget.h"
 #include "nlcolorchooserwidget.h"
 #include "nltexteditwidget.h"
 #include "nlbuttongroupwidget.h"
 #include "engine/nlobject.h"
+#include "engine/nlcomponent.h"
+#include "engine/nlactor.h"
+#include "engine/nlscript.h"
+#include "engine/nlforce.h"
 #include "utils/nlguiutility.h"
+#include "nllineeditwidget.h"
 
 #define DOUBLE_SPINBOX_SINGLE_STEP 1 //0.1
 #define DOUBLE_SPINBOX_DECIMAL 6
@@ -412,8 +420,8 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
         }
         else
         {
-            NLTextEditWidget *w = new NLTextEditWidget;
-            WIDGET_SET_TYPE(w, NLTextEditWidget);
+            NLLineEditWidget *w = new NLLineEditWidget;
+            WIDGET_SET_TYPE(w, NLLineEditWidget);
             w->SetText(item.value.toString());
             w->SetReadOnly(item.readonly);
             w->SetSyntax(item.prop.value("syntax").toString());
@@ -448,38 +456,73 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
         connect(w, SIGNAL(linkActivated(const QString &)), this, SLOT(OnLinkActivated(const QString &)));
         widget = w;
     }
-    else/* if(item.widget == "label")*/
+    else
     {
         int type = item.value.type();
-        QLineEdit *w = new QLineEdit;
-        WIDGET_SET_TYPE(w, QLineEdit);
-        if(type == QMetaType::QObjectStar || type == QMetaType::VoidStar)
+        //QLineEdit *w = new QLineEdit;
+        //WIDGET_SET_TYPE(w, QLineEdit);
+        NLTextBrowserWidget *w = new NLTextBrowserWidget;
+        WIDGET_SET_TYPE(w, NLTextBrowserWidget);
+        w->SetMaxHeight(0);
+        //w->setReadOnly(item.readonly);
+        w->setLineWrapMode(QTextBrowser::WidgetWidth);
+        w->setWordWrapMode(QTextOption::WrapAnywhere);
+//        w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+        if(type == QMetaType::QObjectStar)
         {
-            if(type == QMetaType::QObjectStar)
+            QObject *qo = item.value.value<QObject *>();
+            if(qo)
             {
-                QObject *qo = item.value.value<QObject *>();
-                if(qo && nlinstanceofv(qo, NLObject))
+                if(nlinstanceofv(qo, NLObject))
                 {
                     NLObject *nlo = static_cast<NLObject *>(qo);
-                    w->setText(nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")");
-                    w->setReadOnly(item.readonly);
+                    QString it(item.value.typeName());
+                    it.replace("*", " *");
+                    w->setPlainText(it + (nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : "") + QString().sprintf("(%p)", nlo));
                 }
+                else
+                    w->setPlainText("(QObject *)" + (qo ? qo->objectName() : "") + QString().sprintf("(%p)", qo));
             }
-            else if(type == QMetaType::VoidStar)
-            {
-                void *vo = item.value.value<void *>();
-                if(/*instanceofv(vo, NLRenderable)*/vo)
-                {
-                    NLRenderable *renderable = static_cast<NLRenderable *>(vo);
-                    w->setText(renderable->Name());
-                    w->setReadOnly(item.readonly);
-                }
-            }
+            else
+                w->setPlainText(QString().sprintf("(QObject *)(%p)", qo));
+        }
+        else if(type == QMetaType::VoidStar)
+        {
+            void *vo = item.value.value<void *>();
+            w->setPlainText(QString().sprintf("(void *)(%p)", vo));
         }
         else
         {
-            w->setText(item.value.toString());
-            w->setReadOnly(item.readonly);
+            if(item.type == "NLRenderable*")
+            {
+                NLRenderable *renderable = item.value.value<NLRenderable *>();
+                w->setPlainText("(NLRenderable *)" + (renderable ? renderable->Name() : "") + QString().sprintf("(%p)", renderable));
+            }
+            else if(item.type == "NLScene*")
+            {
+                NLScene *scene = item.value.value<NLScene *>();
+                w->setPlainText("(NLScene *)" + (scene ? scene->objectName() : "") + QString().sprintf("(%p)", scene));
+            }
+            else if(item.type == "NLSceneCamera*")
+            {
+                NLSceneCamera *camera = item.value.value<NLSceneCamera *>();
+                w->setPlainText(QString().sprintf("(NLSceneCamera *)(%p)", camera));
+            }
+#define NLOBJECT_SHOW(T) \
+            if(item.type == #T "*") { \
+                T *nlo = static_cast<T *>(item.value.value<T *>()); \
+    w->setPlainText(QString("(" + item.type + ")").replace("*", " *") + (nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : "") + QString().sprintf("(%p)", nlo)); \
+            }
+            else NLOBJECT_SHOW(NLObject)
+            else NLOBJECT_SHOW(NLActor)
+            else NLOBJECT_SHOW(NLComponent)
+            else NLOBJECT_SHOW(NLScript)
+            else NLOBJECT_SHOW(NLForce)
+#undef NLOBJECT_SHOW
+            else
+            {
+                w->setPlainText(item.value.toString());
+            }
         }
         connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
         widget = w;
@@ -539,9 +582,9 @@ void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const QVa
     {
         static_cast<NLFileChooserWidget *>(widget)->SetFile(value.toString());
     }
-    else if(WIDGETNAME_IS_TYPE(type, NLTextEditWidget))
+    else if(WIDGETNAME_IS_TYPE(type, NLLineEditWidget))
     {
-        static_cast<NLTextEditWidget *>(widget)->SetText(value.toString());
+        static_cast<NLLineEditWidget *>(widget)->SetText(value.toString());
     }
     else if(WIDGETNAME_IS_TYPE(type, NLColorChooserWidget))
     {
@@ -632,7 +675,7 @@ void NLPropFormGroupWidget::OnItemDestroy(QObject *obj)
 {
     QObject *o = obj ? obj : sender();
     if(o)
-        qDebug() << "Q ~" + objectName() + "::" + obj->objectName();
+        qDebug() << "Q ~" + objectName() + "::" + o->objectName();
 }
 
 void NLPropFormGroupWidget::Reset()

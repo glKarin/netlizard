@@ -14,7 +14,7 @@ class NLScript;
 class NLLIB_EXPORT NLActor : public NLObject
 {
     Q_OBJECT
-    Q_PROPERTY(void* renderable READ RenderablePtr FINAL)
+    Q_PROPERTY(NLRenderable* renderable READ Renderable FINAL)
     Q_PROPERTY(NLVector3 position READ Position WRITE SetPosition NOTIFY positionChanged FINAL)
     Q_PROPERTY(NLVector3 rotation READ Rotation WRITE SetRotation NOTIFY rotationChanged FINAL)
     Q_PROPERTY(NLVector3 scale READ Scale WRITE SetScale NOTIFY scaleChanged FINAL)
@@ -224,6 +224,7 @@ private:
 };
 
 typedef QList<NLActor *> NLActorList;
+Q_DECLARE_METATYPE(NLActor*)
 
 template <class T>
 T * NLActor::GetChild_T(const QString &name)

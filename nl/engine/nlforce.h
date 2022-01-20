@@ -75,6 +75,7 @@ private:
     Q_DISABLE_COPY(NLForce)
 };
 
+Q_DECLARE_METATYPE(NLForce*)
 typedef QList<NLForce *> NLForceList;
 
 class NLLIB_EXPORT NLForce_gravity : public NLForce

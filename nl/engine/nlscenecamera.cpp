@@ -5,55 +5,46 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include "nlscene.h"
+
 NLSceneCamera::NLSceneCamera(NLScene *scene)
-    : NLScenePerspectiveCamera(scene),
+    : NLSceneCameraBase(scene),
+      NLScenePerspectiveCamera(scene),
       NLSceneOrthoCamera(scene),
       m_type(NLSceneCamera::Type_Perspective)
 {
 }
 
 NLSceneCamera::NLSceneCamera(NLSceneCameraBase::SceneCamera_Type type, NLScene *scene)
-    : NLScenePerspectiveCamera(scene),
+    : NLSceneCameraBase(scene),
+      NLScenePerspectiveCamera(scene),
       NLSceneOrthoCamera(scene),
       m_type(type)
 {
-
 }
 
 NLSceneCamera::~NLSceneCamera()
 {
-
-}
-
-void NLSceneCamera::SetZNear(float near)
-{
-    if(m_type == NLSceneCamera::Type_Ortho)
-        NLSceneOrthoCamera::SetZNear(near);
-    else
-        NLScenePerspectiveCamera::SetZNear(near);
-}
-
-void NLSceneCamera::SetZFar(float far)
-{
-    if(m_type == NLSceneCamera::Type_Ortho)
-        NLSceneOrthoCamera::SetZFar(far);
-    else
-        NLScenePerspectiveCamera::SetZFar(far);
+    NLScene *scene = Scene();
+    if(scene && scene->CurrentCamera() == this)
+    {
+        scene->SetCurrentCamera(0);
+    }
 }
 
 void NLSceneCamera::SetType(SceneCamera_Type type)
 {
     if(m_type != type)
     {
-        float near = ZNear();
-        float far = ZFar();
+        float onear = ZNear();
+        float ofar = ZFar();
         m_type = type;
         Reset();
         float nnear = ZNear();
         float nfar = ZFar();
-        if(near != nnear)
+        if(onear != nnear)
             PropertyChanged("zNear", nnear);
-        if(far != nfar)
+        if(ofar != nfar)
             PropertyChanged("zFar", nfar);
     }
 }

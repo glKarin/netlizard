@@ -20,6 +20,7 @@ class NLLIB_EXPORT NLScene : public QGLWidget
     Q_PROPERTY(int updateInterval READ UpdateInterval WRITE SetUpdateInterval)
     Q_PROPERTY(QColor clearColor READ ClearColor WRITE SetClearColor)
     Q_PROPERTY(bool grabMouse READ IsGrabMouseCursor WRITE GrabMouseCursor)
+    Q_PROPERTY(NLSceneCamera* currenrCamera READ CurrentCamera WRITE SetCurrentCamera FINAL)
 
 public:
     explicit NLScene(QWidget *parent = 0);
@@ -143,6 +144,8 @@ private:
 
     Q_DISABLE_COPY(NLScene)
 };
+
+Q_DECLARE_METATYPE(NLScene*)
 
 template <class T>
 T * NLScene::GetActor_T(int index)

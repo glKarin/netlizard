@@ -158,3 +158,27 @@ int NLGUIUtility::TakeFormLayout(QFormLayout *layout, QVariantList *ret)
     }
     return c;
 }
+
+void NLGUIUtility::UnsetFixedSize(QWidget *widget)
+{
+    if(!widget)
+        return;
+    widget->setMinimumSize(QSize(0, 0));
+    widget->setMaximumSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+}
+
+void NLGUIUtility::UnsetFixedWidth(QWidget *widget)
+{
+    if(!widget)
+        return;
+    widget->setMinimumWidth(0);
+    widget->setMaximumWidth(QWIDGETSIZE_MAX);
+}
+
+void NLGUIUtility::UnsetFixedHeight(QWidget *widget)
+{
+    if(!widget)
+        return;
+    widget->setMinimumHeight(0);
+    widget->setMaximumHeight(QWIDGETSIZE_MAX);
+}

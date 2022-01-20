@@ -39,6 +39,9 @@ protected:
     virtual void Unmount();
     void SetContainer(NLScriptContainer *container);
     virtual void InitProperty();
+    lua_State * L() { return m_lua.L; }
+    virtual void AfterLuaInit(lua_State *L) { Q_UNUSED(L); }
+    virtual void BeforeLuaDeinit(lua_State *L) { Q_UNUSED(L); }
     
 signals:
     void mounted();
@@ -50,11 +53,11 @@ public slots:
 
 private:
     void Construct();
+    bool InitLua();
+    bool DeinitLua();
     bool ExecScript(float delta) { return m_lua.Exec(delta); }
     void SetGlobalVariant(const NLSequenceHash<QString, QVariant> &list);
     void ClearGlobalVariant();
-    bool InitLua();
-    bool DeinitLua();
     void LockGlobalDataUpdate() { m_globalDataUpdateLock = true; }
     void UnlockGlobalDataUpdate() { m_globalDataUpdateLock = false; }
     bool IsLockGlobalDataUpdate() const { return m_globalDataUpdateLock; }
@@ -113,6 +116,7 @@ private:
     Q_DISABLE_COPY(NLScript)
 };
 
+Q_DECLARE_METATYPE(NLScript*)
 typedef QList<NLScript *> NLScriptList;
 
 #endif // _KARIN_NLSCRIPTT_H

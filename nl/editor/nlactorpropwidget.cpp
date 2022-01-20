@@ -164,7 +164,7 @@ void NLActorPropWidget::SetActor(NLActor *actor)
         m_actor = actor;
         if(m_actor)
         {
-            connect(m_actor, SIGNAL(propertyChanged(const QString &, const QVariant &)), this, SLOT(OnPropertyChanged(const QString &, const QVariant &)));
+            connect(m_actor, SIGNAL(propertyChanged(const QString &, const QVariant &, int)), this, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
             connect(m_actor, SIGNAL(componentChanged(const NLComponent *)), this, SLOT(SetupComponent()));
             connect(m_actor, SIGNAL(scriptChanged(const NLScript *)), this, SLOT(SetupScript()));
             connect(m_actor, SIGNAL(destroying()), this, SLOT(Reset()));
@@ -224,7 +224,7 @@ void NLActorPropWidget::SetupComponentProperty(NLComponent *comp)
     groupBox->setTitle(comp->ClassName() + "(" + comp->Name() + ")");
     groupBox->SetObject(comp);
     m_propWidgetMap.insert(comp, groupBox);
-    connect(comp, SIGNAL(propertyChanged(const QString &, const QVariant &)), this, SLOT(OnPropertyChanged(const QString &, const QVariant &)));
+    connect(comp, SIGNAL(propertyChanged(const QString &, const QVariant &, int)), this, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
     QAction *action = new QAction(tr("Remove"), groupBox);
     groupBox->AddAction(action);
     action->setData(ACTION_REMOVE_COMPONENT);

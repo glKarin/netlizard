@@ -102,6 +102,8 @@ private:
     Q_DISABLE_COPY(NLRigidbody)
 };
 
+Q_DECLARE_METATYPE(NLRigidbody*)
+typedef QList<NLRigidbody *> NLRigidbodyList;
 template <class T>
 T * NLRigidbody::GetForce_T(const QString &name)
 {

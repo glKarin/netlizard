@@ -54,7 +54,8 @@ HEADERS += \
     engine/nlscriptcontainer.h \
     engine/nlmodelrenderer.h \
     engine/nldbg.h \
-    widget/nlbuttongroupwidget.h
+    widget/nlbuttongroupwidget.h \
+    widget/nltexteditwidget.h
 
 SOURCES += \
     engine/nldef.cpp \
@@ -83,14 +84,15 @@ SOURCES += \
     engine/nlscript.cpp \
     engine/nlscriptcontainer.cpp \
     engine/nlmodelrenderer.cpp \
-    widget/nlbuttongroupwidget.cpp
+    widget/nlbuttongroupwidget.cpp \
+    widget/nltexteditwidget.cpp
 
 HEADERS += \
     widget/syntaxhighlighter/nlluasyntaxhighlighter.h \
     widget/syntaxhighlighter/nlgeneralsyntaxhighlighter.h \
     widget/nlvector3widget.h \
     widget/nlfilechooserwidget.h \
-    widget/nltexteditwidget.h \
+    widget/nllineeditwidget.h \
     widget/nltexteditdialog.h \
     widget/nlpropformgroupwidget.h \
     widget/nlpropsectionwidget.h \
@@ -104,7 +106,7 @@ SOURCES += \
     widget/syntaxhighlighter/nlgeneralsyntaxhighlighter.cpp \
     widget/nlvector3widget.cpp \
     widget/nlfilechooserwidget.cpp \
-    widget/nltexteditwidget.cpp \
+    widget/nllineeditwidget.cpp \
     widget/nltexteditdialog.cpp \
     widget/nlpropformgroupwidget.cpp \
     widget/nlpropsectionwidget.cpp \

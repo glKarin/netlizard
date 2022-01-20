@@ -90,6 +90,7 @@ private:
     Q_DISABLE_COPY(NLObject)
 };
 
+Q_DECLARE_METATYPE(NLObject*)
 typedef QList<NLObject *> NLObjectList;
 
 template <class T> T NLObject::GetInitProperty_T(const QString &name, const T &def)

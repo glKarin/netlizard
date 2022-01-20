@@ -241,7 +241,7 @@
     </message>
 </context>
 <context>
-    <name>NLTextEditWidget</name>
+    <name>NLLineEditWidget</name>
     <message>
         <source>Edit</source>
         <translation type="unfinished">编辑</translation>

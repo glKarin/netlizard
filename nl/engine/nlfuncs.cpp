@@ -13,13 +13,9 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
 {
     QString type(typeName);
     QString widget;
-    if(type == "NLVector3" || type == "vector3_s" || type == "vector3_t")
-    {
-        if(type != "NLVector3")
-            type = "NLVector3";
-        widget = "vector3";
-    }
-    else if(type == "int")
+    bool readonly = false;
+
+    if(type == "int")
     {
         if(props.contains("enum"))
             widget = "combobox";
@@ -38,28 +34,39 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
         widget = "checkbox";
     else if(type == "QColor")
         widget = "colordialog";
+    else if(type == "QString")
+    {
+        if(props.value("multiline").toBool())
+            widget = "textedit";
+        else if(props.value("file").toBool())
+            widget = "filedialog";
+        else
+            widget = "lineedit";
+    }
     else
     {
         if(t == QMetaType::QObjectStar || t == QMetaType::QWidgetStar || t == QMetaType::VoidStar)
         {
             widget = "";
+            readonly = true;
         }
         else
         {
-            if(props.value("multiline").toBool())
-                widget = "textedit";
-            else if(props.value("file").toBool())
-                widget = "filedialog";
-            else
-                widget = "lineedit";
+            if(type == "NLVector3" || type == "vector3_s" || type == "vector3_t")
+            {
+                if(type != "NLVector3")
+                    type = "NLVector3";
+                widget = "vector3";
+            }
+            else if(type == "NLRenderable*" || type == "NLObject*" || type == "NLActor*" || type == "NLComponent*" || type == "NLScript*" || type == "NLScene*" || type == "NLSceneCamera*" || type == "NLForce*")
+            {
+                widget = "";
+                readonly = true;
+            }
         }
     }
 
-    bool readonly = (/*name == "objectName" || */name == "renderable")
-            || (t == QMetaType::QObjectStar || t == QMetaType::QWidgetStar || t == QMetaType::VoidStar)
-            ;
-
-    //qDebug() << name << t << value << QMetaType::QObjectStar << t << QMetaType::VoidStar;
+    //qDebug() << name << t << value << QMetaType::QObjectStar << t << QMetaType::VoidStar << value.typeName();
     return(NLPropertyInfo(name, value, type, widget, readonly, defValue, props));
 }
 

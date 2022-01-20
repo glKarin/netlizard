@@ -16,20 +16,30 @@ public:
         else
             NLScenePerspectiveCamera::Update(width, height);
     }
-    virtual void SetZNear(float near);
-    virtual void SetZFar(float far);
-    virtual float ZNear() const {
+    void SetZNear(float znear) {
+        if(m_type == NLSceneCamera::Type_Ortho)
+            NLSceneOrthoCamera::SetZNear(znear);
+        else
+            NLScenePerspectiveCamera::SetZNear(znear);
+    }
+    void SetZFar(float zfar) {
+        if(m_type == NLSceneCamera::Type_Ortho)
+            NLSceneOrthoCamera::SetZFar(zfar);
+        else
+            NLScenePerspectiveCamera::SetZFar(zfar);
+    }
+    float ZNear() const {
         return m_type == NLSceneCamera::Type_Ortho ? NLSceneOrthoCamera::ZNear() : NLScenePerspectiveCamera::ZNear();
     }
-    virtual float ZFar() const {
+    float ZFar() const {
         return m_type == NLSceneCamera::Type_Ortho ? NLSceneOrthoCamera::ZFar() : NLScenePerspectiveCamera::ZFar();
     }
-    virtual float ZDistance() const {
+    float ZDistance() const {
         return m_type == NLSceneCamera::Type_Ortho ? NLSceneOrthoCamera::ZDistance() : NLScenePerspectiveCamera::ZDistance();
     }
     void SetType(SceneCamera_Type type);
     SceneCamera_Type Type() const { return m_type; }
-    virtual void Reset() {
+    void Reset() {
         if(m_type == NLSceneCamera::Type_Ortho)
             NLSceneOrthoCamera::Reset();
         else
@@ -49,5 +59,7 @@ private:
 
     Q_DISABLE_COPY(NLSceneCamera)
 };
+
+Q_DECLARE_METATYPE(NLSceneCamera*)
 
 #endif // _KARIN_NLSCENECAMERA_H

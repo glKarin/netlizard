@@ -42,6 +42,8 @@ bool NLScript::Script_Lua::Init()
 
     qDebug() << "lua script engine initilized!";
 
+    script->AfterLuaInit(L);
+
     return true;
 }
 
@@ -50,6 +52,7 @@ bool NLScript::Script_Lua::Deinit()
     if(!L)
         return false;
 
+    script->BeforeLuaDeinit(L);
     if(func & Script_Lua_Func_Destroy)
     {
         lua_getglobal(L, "Destroy");
@@ -284,12 +287,12 @@ void NLScript::Script_Lua::RestoreGlobalVariant()
             }
             else if(type == LUA_TLIGHTUSERDATA)
             {
-                lua_pushlightuserdata(L, va.value<QObject *>());
+                lua_pushlightuserdata(L, va.value<void *>());
             }
             else if(type == LUA_TUSERDATA)
             {
                 void **p = (void **)(lua_newuserdata(L, sizeof(void *)));
-                *p = va.value<QObject *>();
+                *p = va.value<void *>();
             }
             else
             {
@@ -382,13 +385,7 @@ NLVariantSequenceHash NLScript::Script_Lua::GetGlobalVariant()
                 else if(type == LUA_TUSERDATA)
                 {
                     void **p = (void **)(lua_touserdata(L, -1));
-                    if(*p)
-                    {
-                        QObject *o = reinterpret_cast<QObject *>(*p);
-                        props.insert(key, QVariant::fromValue<QObject *>(o));
-                    }
-                    else
-                        props.insert(key, QVariant::fromValue<QObject *>(0));
+                    props.insert(key, QVariant::fromValue<void *>(*p));
                 }
                 else
                 {

@@ -14,6 +14,15 @@ extern "C" {
 #include "engine/nlobject.h"
 #include "lua_def.h"
 
+#include "engine/nlscenecamera.h"
+#include "engine/nlscene.h"
+#include "engine/nlactor.h"
+#include "engine/nlcomponent.h"
+#include "engine/nlrigidbody.h"
+#include "engine/nlrenderable.h"
+#include "engine/nlforce.h"
+#include "engine/nlscript.h"
+
 #define CALLER_OBJECT(L, name) GET_LUA_CALLER(L, NLObject, name)
 #define CALLER_OBJECT_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLObject, name)
 
@@ -66,13 +75,56 @@ static int Object_GetProperty(lua_State *L)
     CALLER_OBJECT(L, obj);
     const char *name = lua_tostring(L, 2);
     QVariant v = obj->GetProperty(name);
-    if(v.canConvert<QByteArray>())
-    {
-        QByteArray ba = v.toByteArray();
-        lua_pushstring(L, ba.constData());
-    }
+    int type = v.type();
+    if(type == QVariant::Int
+            || type == QVariant::Char
+            || type == QVariant::LongLong
+            || type == QVariant::UInt
+            || type == QVariant::ULongLong
+            )
+        lua_pushinteger(L, v.toInt());
+    else if(type == QVariant::Double
+            )
+        lua_pushnumber(L, v.toFloat());
+    else if(type == QVariant::Bool
+            )
+        lua_pushboolean(L, v.toBool() ? 1 : 0);
+    else if(type == QVariant::String
+            )
+        lua_pushstring(L, v.toByteArray());
     else
-        lua_pushnil(L);
+    {
+        if(lua_gettop(L) >= 3)
+        {
+            QString type(lua_tostring(L, 3));
+#define PUSH_NLOBJECT_TO_STACK_BY_NAME(name) \
+            if(type == #name) \
+            { \
+                 PUSH_NLOBJECT_TO_STACK(L, name, v.value<name *>()); \
+            }
+            PUSH_NLOBJECT_TO_STACK_BY_NAME(NLSceneCamera)
+            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLScene)
+            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLComponent)
+            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLScript)
+            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLActor)
+            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLRenderable)
+            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLForce)
+            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLRigidbody)
+            else
+                lua_pushnil(L);
+        }
+        else
+        {
+            if(type == QMetaType::QObjectStar)
+                *((void **)lua_newuserdata(L, sizeof(void *))) = v.value<QObject *>();
+            else if(type == QMetaType::QWidgetStar)
+                *((void **)lua_newuserdata(L, sizeof(void *))) = v.value<QWidget *>();
+            else if(type == QMetaType::VoidStar)
+                *((void **)lua_newuserdata(L, sizeof(void *))) = v.value<void *>();
+            else
+                lua_pushstring(L, v.toByteArray());
+        }
+    }
     return 1;
 }
 
@@ -84,7 +136,7 @@ static int Object_SetProperty(lua_State *L)
     if(lua_isinteger(L, 3))
     {
         int i = lua_tointeger(L, 3);
-        obj->SetProperty(name, i);
+        res = obj->SetProperty(name, i);
     }
     else
     {
@@ -92,49 +144,53 @@ static int Object_SetProperty(lua_State *L)
         if(type == LUA_TNUMBER)
         {
             float f = lua_tonumber(L, 3);
-            obj->SetProperty(name, f);
+            res = obj->SetProperty(name, f);
         }
         else if(type == LUA_TBOOLEAN)
         {
             bool b = lua_toboolean(L, 3);
-            obj->SetProperty(name, b ? true : false);
+            res = obj->SetProperty(name, b ? true : false);
         }
         else if(type == LUA_TSTRING)
         {
             const char *s = lua_tostring(L, 3);
-            obj->SetProperty(name, s);
+            res = obj->SetProperty(name, s);
         }
         else if(type == LUA_TLIGHTUSERDATA)
         {
             void *p = (void *)(lua_touserdata(L, 3));
-            if(p)
-            {
-                QObject *o = reinterpret_cast<QObject *>(p);
-                if(o)
-                    obj->SetProperty(name, QVariant::fromValue<QObject *>(o));
-                else
-                    res = 0;
-            }
-            else
-                obj->SetProperty(name, QVariant::fromValue<QObject *>(0));
+            res = obj->SetProperty(name, QVariant::fromValue<void *>(p));
         }
         else if(type == LUA_TUSERDATA)
         {
             void **p = (void **)(lua_touserdata(L, 3));
-            if(*p)
+            if(lua_gettop(L) >= 4)
             {
-                QObject *o = reinterpret_cast<QObject *>(*p);
-                if(o)
-                    obj->SetProperty(name, QVariant::fromValue<QObject *>(o));
+                QString type(lua_tostring(L, 4));
+#define GET_NLOBJECT_FROM_STACK_BY_NAME(cname) \
+            if(type == #cname) \
+            { \
+                res = obj->SetProperty(name, QVariant::fromValue<cname *>((cname *)*p)); \
+            }
+                GET_NLOBJECT_FROM_STACK_BY_NAME(NLSceneCamera)
+                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLScene)
+                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLComponent)
+                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLScript)
+                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLActor)
+                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLRenderable)
+                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLRigidbody)
+                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLForce)
+                else GET_NLOBJECT_FROM_STACK_BY_NAME(QObject)
+                else GET_NLOBJECT_FROM_STACK_BY_NAME(QWidget)
                 else
-                    res = 0;
+                    res = obj->SetProperty(name, QVariant::fromValue<void *>(*p));
             }
             else
-                obj->SetProperty(name, QVariant::fromValue<QObject *>(0));
+                res = obj->SetProperty(name, QVariant::fromValue<void *>(*p));
         }
         else
         {
-            obj->SetProperty(name, QVariant());
+            res = obj->SetProperty(name, QVariant());
         }
     }
     lua_pushboolean(L, res);
@@ -145,8 +201,8 @@ static int Object_RemoveProperty(lua_State *L)
 {
     CALLER_OBJECT(L, obj);
     const char *name = lua_tostring(L, 2);
-    obj->RemoveProperty(name);
-    lua_pushboolean(L, 1);
+    bool b = obj->RemoveProperty(name);
+    lua_pushboolean(L, b ? 1 : 0);
     return 1;
 }
 

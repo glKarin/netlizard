@@ -88,7 +88,7 @@ private:
     void SetupObjectProperty();
 
 private Q_SLOTS:
-    void OnItemDestroy(QObject *obj);
+    void OnItemDestroy(QObject *obj = 0);
     void OnIntChanged(int i);
     void OnBoolChanged(bool b);
     void OnDoubleChanged(double f);

@@ -1,63 +1,58 @@
 #ifndef _KARIN_NLTEXTEDITWIDGET_H
 #define _KARIN_NLTEXTEDITWIDGET_H
 
-#include <QWidget>
-#include <QLineEdit>
+#include <QTextEdit>
+#include <QPlainTextEdit>
+#include <QTextBrowser>
 
-class QPushButton;
+#include "engine/nldef.h"
 
-class NLTextEditWidgetLabel : public QLineEdit
+#define NLTEXTEDITWIDGET_DEF(X) \
+public: \
+    explicit X(QWidget *widget = 0); \
+    explicit X(const QString &text, QWidget *widget = 0); \
+    virtual ~X(); \
+    void SetMaxHeight(int height); \
+    int MaxHeight() const { return m_maxHeight; } \
+protected: \
+    virtual void showEvent(QShowEvent *event); \
+private: \
+    void Init(); \
+    int MinHeight() const; \
+    QSizeF ContentsHeight() const; \
+private: \
+    QSize m_size; \
+    int m_maxHeight; \
+    Q_DISABLE_COPY(X)
+
+class NLLIB_EXPORT NLTextEditWidget : public QTextEdit
 {
     Q_OBJECT
 
-public:
-    NLTextEditWidgetLabel(QWidget *parent = 0)
-        : QLineEdit(parent) { setObjectName("NLTextEditWidgetLabel"); }
-    NLTextEditWidgetLabel(const QString &contents, QWidget *parent = 0)
-        : QLineEdit(contents, parent) { setObjectName("NLTextEditWidgetLabel"); }
-    virtual ~NLTextEditWidgetLabel();
-
-Q_SIGNALS:
-    void dblClicked();
-
-protected:
-    virtual void mouseDoubleClickEvent(QMouseEvent *event);
-};
-
-class NLTextEditWidget : public QWidget
-{
-    Q_OBJECT
-
-public:
-    explicit NLTextEditWidget(QWidget *widget = 0);
-    virtual ~NLTextEditWidget();
-    QString Text() const { return m_text; }
-    QString Syntax() const { return m_syntax; }
-    void SetSyntax(const QString &type);
-
-public Q_SLOTS:
-    void SetText(const QString &t);
-    void SetReadOnly(bool b);
-
-Q_SIGNALS:
-    void textChanged(const QString &text);
-    void textEdited(const QString &text);
+    NLTEXTEDITWIDGET_DEF(NLTextEditWidget);
 
 private Q_SLOTS:
-    void OpenTextEditor();
-    void SetEditText(const QString &t);
+    void OnContentsChanged();
+};
 
-private:
-    void Init();
-    void UpdateWidget();
+class NLLIB_EXPORT NLPlainTextEditWidget : public QPlainTextEdit
+{
+    Q_OBJECT
 
-private:
-    QString m_text;
-    NLTextEditWidgetLabel *m_textLabel;
-    QPushButton *m_editButton;
-    QString m_syntax;
+    NLTEXTEDITWIDGET_DEF(NLPlainTextEditWidget);
 
-    Q_DISABLE_COPY(NLTextEditWidget)
+private Q_SLOTS:
+    void OnContentsChanged();
+};
+
+class NLLIB_EXPORT NLTextBrowserWidget : public QTextBrowser
+{
+    Q_OBJECT
+
+    NLTEXTEDITWIDGET_DEF(NLTextBrowserWidget);
+
+private Q_SLOTS:
+    void OnContentsChanged();
 };
 
 #endif // _KARIN_NLTEXTEDITWIDGET_H
