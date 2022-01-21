@@ -18,6 +18,7 @@
 #include <QMenu>
 #include <QToolButton>
 #include <QButtonGroup>
+#include <QApplication>
 
 #include "engine/nldbg.h"
 #include "engine/nlfuncs.h"
@@ -37,6 +38,9 @@
 #include "utils/nlguiutility.h"
 #include "nllineeditwidget.h"
 
+#define DRAG_DROP_MIME "application/nl-editor-variant"
+#define DRAG_DROP_DATA_KEY "_NL_property_variant"
+
 #define DOUBLE_SPINBOX_SINGLE_STEP 1 //0.1
 #define DOUBLE_SPINBOX_DECIMAL 6
 
@@ -49,6 +53,7 @@
 #define LAYOUT_COUNTER_NAME "_Count"
 #define WIDGET_DESC_KEY "_Description"
 #define WIDGET_LABEL_KEY "_Label"
+#define WIDGET_READONLY_KEY "_Readonly"
 #define WIDGET_ACTION_TYPE_KEY "_Type"
 #define WIDGET_ACTION_WIDGET_KEY "_Widget"
 
@@ -62,6 +67,8 @@
 #define WIDGET_SET_DESC(w, d) (w)->setProperty(WIDGET_DESC_KEY, d)
 #define WIDGET_LABEL(w) (w)->property(WIDGET_LABEL_KEY).toString()
 #define WIDGET_SET_LABEL(w, d) (w)->setProperty(WIDGET_LABEL_KEY, d)
+#define WIDGET_READONLY(w) (w)->property(WIDGET_READONLY_KEY).toBool()
+#define WIDGET_SET_READONLY(w, d) (w)->setProperty(WIDGET_READONLY_KEY, d)
 
 #define ACTION_SET_TYPE(w, d) (w)->setProperty(WIDGET_ACTION_TYPE_KEY, d)
 #define ACTION_SET_WIDGET(w, d) (w)->setProperty(WIDGET_ACTION_WIDGET_KEY, QVariant::fromValue<QWidget *>(static_cast<QWidget *>(d)))
@@ -71,12 +78,142 @@
 #define WIDGETNAME_IS_TYPE(w, T) (w) == #T
 #define WIDGET_IS_TYPE(w, T) (WIDGET_TYPE(w)) == #T
 
+class NLFormLabelWidget : public QLabel
+{
+public:
+    enum FormLabelAction_e
+    {
+        Action_Disable = 0,
+        Action_Drag = 1,
+        Action_Drop = 1 << 1,
+        Action_Drag_And_Drop = 1 | 2
+    };
+
+public:
+    explicit NLFormLabelWidget(const QString &text, const QString &name, NLFormGroupWidget *parent = 0);
+    explicit NLFormLabelWidget(const QString &name, NLFormGroupWidget *parent = 0);
+    virtual ~NLFormLabelWidget();
+    QString Name() const { return m_name; }
+    FormLabelAction_e AllowAction() const { return m_allowAction; }
+    void SetAllowAction(FormLabelAction_e a);
+    bool IsAllowAction(FormLabelAction_e a) { return m_allowAction & a ? true : false; }
+
+protected:
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+    //virtual void dragLeaveEvent(QDragLeaveEvent *event);
+    //virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void dropEvent(QDropEvent *event);
+    virtual void mousePressEvent(QMouseEvent *ev);
+    virtual void mouseMoveEvent(QMouseEvent *ev);
+
+private:
+    void Init();
+
+private:
+    QString m_name;
+    NLFormGroupWidget *m_form;
+    QPoint m_dragStartPosition;
+    FormLabelAction_e m_allowAction;
+
+    friend class NLFormGroupWidget;
+};
+
+NLFormLabelWidget::NLFormLabelWidget(const QString &text, const QString &name, NLFormGroupWidget *parent)
+    : QLabel(text, parent),
+      m_name(name),
+      m_form(parent),
+      m_allowAction(NLFormLabelWidget::Action_Drag_And_Drop)
+{
+    setObjectName("NLFormLabelWidget");
+    Init();
+}
+
+NLFormLabelWidget::NLFormLabelWidget(const QString &name, NLFormGroupWidget *parent)
+    : QLabel(parent),
+      m_name(name),
+      m_form(parent),
+      m_allowAction(NLFormLabelWidget::Action_Drag_And_Drop)
+{
+    setObjectName("NLFormLabelWidget");
+    Init();
+}
+
+NLFormLabelWidget::~NLFormLabelWidget()
+{
+    NLDEBUG_DESTROY_Q
+}
+
+void NLFormLabelWidget::Init()
+{
+    if(!m_form->AllowDragDrop())
+        SetAllowAction(Action_Disable);
+    else
+        setAcceptDrops(true);
+}
+
+void NLFormLabelWidget::SetAllowAction(FormLabelAction_e a)
+{
+    if(m_allowAction != a)
+    {
+        m_allowAction = a;
+        setAcceptDrops(IsAllowAction(Action_Drop));
+    }
+}
+
+void NLFormLabelWidget::mousePressEvent(QMouseEvent *event)
+{
+    QLabel::mousePressEvent(event);
+    if(!IsAllowAction(Action_Drag) || !m_form->AllowDragDrop())
+        return;
+    if (event->button() == Qt::LeftButton)
+        m_dragStartPosition = event->pos();
+}
+
+void NLFormLabelWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    QLabel::mouseMoveEvent(event);
+    if(!IsAllowAction(Action_Drag) || !m_form->AllowDragDrop())
+        return;
+
+    if (!(event->buttons() & Qt::LeftButton))
+        return;
+    if ((event->pos() - m_dragStartPosition).manhattanLength() < QApplication::startDragDistance())
+        return;
+
+    QDrag *drag = m_form->Drag(m_name, this);
+    if(!drag)
+        return;
+
+    Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
+    Q_UNUSED(dropAction);
+    delete drag;
+}
+
+void NLFormLabelWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    if(!IsAllowAction(Action_Drop) || !m_form->AllowDragDrop() || event->source() == this)
+        return;
+    if(m_form->CheckDragData(event->mimeData(), this))
+        event->acceptProposedAction();
+}
+
+void NLFormLabelWidget::dropEvent(QDropEvent *event)
+{
+    if(!IsAllowAction(Action_Drop) || !m_form->AllowDragDrop() || event->source() == this)
+        return;
+    if(m_form->Drop(event->mimeData(), this))
+        event->acceptProposedAction();
+}
+
+
+
 NLFormGroupWidget::NLFormGroupWidget(QWidget *widget)
     : QGroupBox(widget),
       m_layout(0),
       m_actionButton(0),
       m_expand(true),
-      m_canExpand(true)
+      m_canExpand(true),
+      m_dragDrop(true)
 {
     setObjectName("NLPropFormGroupWidget");
     Init();
@@ -87,7 +224,8 @@ NLFormGroupWidget::NLFormGroupWidget(const QString &title, QWidget *widget)
       m_layout(0),
       m_actionButton(0),
       m_expand(true),
-      m_canExpand(true)
+      m_canExpand(true),
+      m_dragDrop(true)
 {
     setObjectName("NLPropFormGroupWidget");
     Init();
@@ -104,6 +242,12 @@ void NLFormGroupWidget::Init()
     setCheckable(false);
     setChecked(true);
     connect(this, SIGNAL(toggled(bool)), this, SLOT(ToggleGroupBox(bool)));
+}
+
+void NLFormGroupWidget::SetAllowDragDrop(bool on)
+{
+    if(m_dragDrop != on)
+        m_dragDrop = on;
 }
 
 void NLFormGroupWidget::SetCanExpand(bool b)
@@ -141,7 +285,8 @@ void NLFormGroupWidget::ToggleGroupBox(bool on)
             widget->show();
             QString desc = WIDGET_DESC(widget);
             QString label = WIDGET_LABEL(widget);
-            PushLayout(name, widget, label, desc);
+            bool readonly = WIDGET_READONLY(widget);
+            PushLayout(name, widget, label, desc, readonly);
         }
     }
     else
@@ -195,30 +340,29 @@ void NLFormGroupWidget::CreateLayout()
     setLayout(m_layout);
 }
 
-void NLFormGroupWidget::PushLayout(const QString &name, QWidget *widget, const QString &label, const QString &desc)
+void NLFormGroupWidget::PushLayout(const QString &name, QWidget *widget, const QString &label, const QString &desc, bool readonly)
 {
     QString text(LABEL(label, name));
-    if(desc.isEmpty())
-        m_layout->addRow(text, widget);
-    else
-    {
-        QLabel *l = new QLabel(text);
+    NLFormLabelWidget *l = new NLFormLabelWidget(text, name, this);
+    if(readonly)
+        l->SetAllowAction(NLFormLabelWidget::Action_Drag);
+    if(!desc.isEmpty())
         l->setToolTip(desc);
-        m_layout->addRow(l, widget);
-    }
+    m_layout->addRow(l, widget);
 }
 
-void NLFormGroupWidget::AddRow(const QString &name, QWidget *widget, const QString &desc)
+void NLFormGroupWidget::AddRow(const QString &name, QWidget *widget, const QString &desc, bool readonly)
 {
-    AddRow(name, name, widget, desc);
+    AddRow(name, name, widget, desc, readonly);
 }
 
-void NLFormGroupWidget::AddRow(const QString &name, const QString &label, QWidget *widget, const QString &desc)
+void NLFormGroupWidget::AddRow(const QString &name, const QString &label, QWidget *widget, const QString &desc, bool readonly)
 {
     CreateLayout();
     WIDGET_SET_DESC(widget, desc);
     WIDGET_SET_LABEL(widget, label);
-    PushLayout(name, widget, label, desc);
+    WIDGET_SET_READONLY(widget, readonly);
+    PushLayout(name, widget, label, desc, readonly);
     LAYOUT_COUNTER_INCREMENT(m_layout);
     m_nameWidgetMap.insert(name, widget);
     if(m_canExpand)
@@ -301,7 +445,7 @@ void NLPropFormGroupWidget::SetupObjectProperty()
     Q_FOREACH(const NLPropertyInfo &item, list)
     {
         QWidget *widget = GenWidget(m_object, item);
-        AddRow(item.name, item.label, widget, item.description);
+        AddRow(item.name, item.label, widget, item.description, item.readonly &&  false);
     }
 }
 
@@ -687,3 +831,37 @@ void NLPropFormGroupWidget::Reset()
     NLFormGroupWidget::Reset();
 }
 
+
+QDrag * NLPropFormGroupWidget::Drag(const QString &name, QWidget *widget)
+{
+    QDrag *drag = new QDrag(widget);
+    QVariant value = GetObjectProperty(m_object, name);
+    QMimeData *mimeData = new QMimeData;
+    mimeData->setProperty(DRAG_DROP_DATA_KEY, value);
+    mimeData->setData(DRAG_DROP_MIME, name.toLocal8Bit());
+    drag->setMimeData(mimeData);
+    return drag;
+}
+
+bool NLPropFormGroupWidget::Drop(const QMimeData *d, QWidget *widget)
+{
+    QString nameSelf = static_cast<NLFormLabelWidget *>(widget)->Name();
+    QVariant v = d->property(DRAG_DROP_DATA_KEY);
+    SetObjectProperty(m_object, nameSelf, v);
+    return true;
+}
+
+bool NLPropFormGroupWidget::CheckDragData(const QMimeData *d, QWidget *widget)
+{
+    if (!d->hasFormat(DRAG_DROP_MIME))
+        return false;
+    QByteArray name = d->data(DRAG_DROP_MIME);
+    if(name.isEmpty())
+        return false;
+    QString nameSelf = static_cast<NLFormLabelWidget *>(widget)->Name();
+    QVariant v = d->property(DRAG_DROP_DATA_KEY);
+    QVariant vSelf = GetObjectProperty(m_object, nameSelf);
+    if(qstrcmp(v.typeName(), vSelf.typeName()) != 0) // not same type
+        return false;
+    return true;
+}

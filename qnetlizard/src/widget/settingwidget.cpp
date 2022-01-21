@@ -23,6 +23,7 @@ SettingsPropFormGroupWidget::SettingsPropFormGroupWidget(const Settings::Setting
       m_sc(c)
 {
     setObjectName("SettingsPropFormGroupWidget");
+    SetAllowDragDrop(false);
 }
 
 SettingsPropFormGroupWidget::SettingsPropFormGroupWidget(const Settings::SettingItemCategory *c, const QString &title, QWidget *widget)
@@ -30,6 +31,7 @@ SettingsPropFormGroupWidget::SettingsPropFormGroupWidget(const Settings::Setting
       m_sc(c)
 {
     setObjectName("SettingsPropFormGroupWidget");
+    SetAllowDragDrop(false);
 }
 
 SettingsPropFormGroupWidget::~SettingsPropFormGroupWidget()

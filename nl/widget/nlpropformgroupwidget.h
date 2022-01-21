@@ -10,6 +10,9 @@
 
 class QFormLayout;
 class QToolButton;
+class QDrag;
+class QMimeData;
+class NLFormLabelWidget;
 
 class NLLIB_EXPORT NLFormGroupWidget : public QGroupBox
 {
@@ -18,8 +21,8 @@ public:
     explicit NLFormGroupWidget(QWidget *widget = 0);
     explicit NLFormGroupWidget(const QString &title, QWidget *widget = 0);
     virtual ~NLFormGroupWidget();
-    void AddRow(const QString &name, QWidget *widget, const QString &desc = QString());
-    void AddRow(const QString &name, const QString &label, QWidget *widget, const QString &desc = QString());
+    void AddRow(const QString &name, QWidget *widget, const QString &desc = QString(), bool readonly = false);
+    void AddRow(const QString &name, const QString &label, QWidget *widget, const QString &desc = QString(), bool readonly = false);
     QFormLayout * Layout() { return m_layout; }
     void AddAction(QAction *action);
     QVariant Data() const { return m_data; }
@@ -28,6 +31,8 @@ public:
     void SetCanExpand(bool b);
     bool IsExpand() const { return m_expand; }
     bool CanExpand() const { return m_canExpand; }
+    bool AllowDragDrop() const { return m_dragDrop; }
+    void SetAllowDragDrop(bool on);
 
 Q_SIGNALS:
     void actionTriggered(QAction *action);
@@ -37,7 +42,10 @@ public Q_SLOTS:
 
 protected:
     virtual void resizeEvent(QResizeEvent *event);
-    void PushLayout(const QString &name, QWidget *widget, const QString &label = QString(), const QString &desc = QString());
+    void PushLayout(const QString &name, QWidget *widget, const QString &label = QString(), const QString &desc = QString(), bool readonly = false);
+    virtual QDrag * Drag(const QString &name, QWidget *widget) { Q_UNUSED(name); Q_UNUSED(widget); return 0; }
+    virtual bool Drop(const QMimeData *d, QWidget *widget) { Q_UNUSED(d); Q_UNUSED(widget); return false; }
+    virtual bool CheckDragData(const QMimeData *d, QWidget *widget) { Q_UNUSED(d); Q_UNUSED(widget); return false; }
 
 private Q_SLOTS:
     void ToggleGroupBox(bool on);
@@ -55,6 +63,9 @@ private:
     bool m_expand;
     bool m_canExpand;
     QVariant m_data;
+    bool m_dragDrop;
+
+    friend class NLFormLabelWidget;
 
     Q_DISABLE_COPY(NLFormGroupWidget)
 };
@@ -83,6 +94,9 @@ protected:
     virtual void SortProperties(NLPropertyInfoList &list) { Q_UNUSED(list); }
     virtual QWidget * GenUserWidget(QObject *obj, const NLPropertyInfo &prop) { Q_UNUSED(obj); Q_UNUSED(prop); return 0; }
     virtual bool HandleAction(QAction *action) { return false; }
+    virtual QDrag * Drag(const QString &name, QWidget *widget);
+    virtual bool Drop(const QMimeData *d, QWidget *widget);
+    virtual bool CheckDragData(const QMimeData *d, QWidget *widget);
 
 private:
     void SetupObjectProperty();
