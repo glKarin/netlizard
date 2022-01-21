@@ -21,6 +21,8 @@ extern "C" {
 #include "lua/lua_script.h"
 #include "lua/lua_scenecamera.h"
 #include "lua/lua_def.h"
+#include "lua/lua_variant.h"
+#include "lua/lua_vector3.h"
 
 #define m_L (m_lua.L)
 
@@ -39,6 +41,7 @@ bool NLScript::Script_Lua::Init()
     NL::rigidbody_register_metatable(L);
     NL::scenecamera_register_metatable(L);
     NL::script_register_metatable(L);
+    NL::vector3_register_metatable(L);
 
     qDebug() << "lua script engine initilized!";
 
@@ -265,40 +268,7 @@ void NLScript::Script_Lua::RestoreGlobalVariant()
         const char *keyName = ba.constData();
         int type = lua_getglobal(L, keyName);
         lua_pop(L, -1);
-        bool pushed = true;
-        if(lua_isinteger(L, -1))
-        {
-            lua_pushinteger(L, va.toInt());
-        }
-        else
-        {
-            if(type == LUA_TNUMBER)
-            {
-                lua_pushnumber(L, va.toDouble());
-            }
-            else if(type == LUA_TBOOLEAN)
-            {
-                lua_pushboolean(L, va.toBool() ? 1 : 0);
-            }
-            else if(type == LUA_TSTRING)
-            {
-                QByteArray str = va.toByteArray();
-                lua_pushstring(L, str.constData());
-            }
-            else if(type == LUA_TLIGHTUSERDATA)
-            {
-                lua_pushlightuserdata(L, va.value<void *>());
-            }
-            else if(type == LUA_TUSERDATA)
-            {
-                void **p = (void **)(lua_newuserdata(L, sizeof(void *)));
-                *p = va.value<void *>();
-            }
-            else
-            {
-                pushed = false;
-            }
-        }
+        bool pushed = NL::push_from_qvarianti(L, va, type);
 
         if(pushed)
             lua_setglobal(L, keyName);
@@ -354,42 +324,10 @@ NLVariantSequenceHash NLScript::Script_Lua::GetGlobalVariant()
                 && key != "enabled"
                 )
         {
-            if(lua_isinteger(L, -1))
+            QVariant v = NL::load_to_qvariant(L, -1);
+            if(v.isValid())
             {
-                int i = lua_tointeger(L, -1);
-                props.insert(key, i);
-            }
-            else
-            {
-                int type = lua_type(L, -1);
-                if(type == LUA_TNUMBER)
-                {
-                    float f = lua_tonumber(L, -1);
-                    props.insert(key, f);
-                }
-                else if(type == LUA_TBOOLEAN)
-                {
-                    bool b = lua_toboolean(L, -1) ? true : false;
-                    props.insert(key, b);
-                }
-                else if(type == LUA_TSTRING)
-                {
-                    const char *s = lua_tostring(L, -1);
-                    props.insert(key, QString(s));
-                }
-                else if(type == LUA_TLIGHTUSERDATA)
-                {
-                    void *p = (void *)(lua_touserdata(L, -1));
-                    props.insert(key, QVariant::fromValue<void *>(p));
-                }
-                else if(type == LUA_TUSERDATA)
-                {
-                    void **p = (void **)(lua_touserdata(L, -1));
-                    props.insert(key, QVariant::fromValue<void *>(*p));
-                }
-                else
-                {
-                }
+                props.insert(key, v);
             }
         }
 

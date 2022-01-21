@@ -12,6 +12,7 @@ extern "C" {
 #include "engine/nlrigidbody.h"
 #include "lua_def.h"
 #include "lua_object.h"
+#include "lua_variant.h"
 
 #define CALLER_ACTOR(L, name) GET_LUA_CALLER(L, NLActor, name)
 #define CALLER_ACTOR_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLActor, name)

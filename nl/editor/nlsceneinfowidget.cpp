@@ -16,6 +16,7 @@
 #include <QSpinBox>
 #include <QFormLayout>
 #include <QColorDialog>
+#include <QScrollArea>
 
 #include "engine/nlfuncs.h"
 #include "engine/nlscene.h"
@@ -120,6 +121,7 @@ void NLSceneInfoWidget::Init()
     m_matrixList = new QComboBox;
     QVBoxLayout *matrixLayout = new QVBoxLayout;
     m_settingGroupBox = new NLScenePropFormGroupWidget(tr("General"), this);
+    QScrollArea *scrollArea = new QScrollArea(this);
 
     m_baseInfo->setAcceptRichText(RICH_TEXT);
     m_cameraInfo->setAcceptRichText(RICH_TEXT);
@@ -149,9 +151,12 @@ void NLSceneInfoWidget::Init()
     cameraTab->addTab(m_cameraInfo, tr("Base"));
     cameraTab->addTab(matrixWidget, tr("Matrix"));
 
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidget(m_settingGroupBox);
+
     addTab(m_baseInfo, tr("Base"));
     addTab(cameraTab, tr("Camera"));
-    addTab(m_settingGroupBox, tr("Setting"));
+    addTab(scrollArea, tr("Setting"));
 
     setCurrentWidget(m_baseInfo);
 }

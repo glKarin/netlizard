@@ -11,6 +11,7 @@ extern "C" {
 #include "engine/nlcomponent.h"
 #include "lua_def.h"
 #include "lua_object.h"
+#include "lua_variant.h"
 
 #define CALLER_COMPONENT(L, name) GET_LUA_CALLER(L, NLComponent, name)
 #define CALLER_COMPONENT_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLComponent, name)

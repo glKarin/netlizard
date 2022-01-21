@@ -11,6 +11,7 @@ extern "C" {
 #include "engine/nlscript.h"
 #include "lua_def.h"
 #include "lua_object.h"
+#include "lua_variant.h"
 
 #define CALLER_SCRIPT(L, name) GET_LUA_CALLER(L, NLScript, name)
 #define CALLER_SCRIPT_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLScript, name)

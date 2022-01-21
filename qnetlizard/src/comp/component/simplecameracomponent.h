@@ -22,6 +22,7 @@ class SimpleCameraComponent : public NLComponent
     Q_PROPERTY(float top READ Top WRITE SetTop FINAL)
     Q_PROPERTY(int alignment READ Alignment WRITE SetAlignment FINAL)
     Q_PROPERTY(bool zIsUp READ ZIsUp WRITE SetZIsUp FINAL)
+    Q_PROPERTY(NLSceneCamera* camera READ Camera FINAL)
 public:
     explicit SimpleCameraComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleCameraComponent();

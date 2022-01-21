@@ -34,13 +34,13 @@ static bool NLPropertyInfoCmp(const NLPropertyInfo &a, const NLPropertyInfo &b)
     int ai = list.indexOf(a.name);
     int bi = list.indexOf(b.name);
     if(ai == -1 && bi == -1)
-        return QString::compare(a.name, b.name) < 0;
+        return true; //QString::compare(a.name, b.name) < 0;
 
     if(ai == -1)
         return false;
     if(bi == -1)
         return true;
-    return ai < bi;
+    return true; // ai < bi;
 }
 
 NLObjectPropFormGroupWidget::NLObjectPropFormGroupWidget(QWidget *widget)

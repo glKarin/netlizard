@@ -12,6 +12,7 @@ extern "C" {
 #include "engine/nlactor.h"
 #include "engine/nlscene.h"
 #include "lua_def.h"
+#include "lua_variant.h"
 
 #define CALLER_SCENECAMERA(L, name) GET_LUA_CALLER(L, NLSceneCamera, name)
 #define CALLER_SCENECAMERA_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLSceneCamera, name)

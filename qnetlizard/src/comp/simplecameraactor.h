@@ -13,6 +13,7 @@ class SimpleCameraActor : public NLRigidbody
 {
     Q_OBJECT
     Q_PROPERTY(NLComponent* control READ Control FINAL)
+    Q_PROPERTY(NLSceneCamera* camera READ Camera FINAL)
 public:
     explicit SimpleCameraActor(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
     virtual ~SimpleCameraActor();

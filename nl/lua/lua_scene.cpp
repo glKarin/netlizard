@@ -10,6 +10,7 @@ extern "C" {
 
 #include "engine/nlscene.h"
 #include "lua_def.h"
+#include "lua_variant.h"
 
 #define CALLER_SCENE(L, name) GET_LUA_CALLER(L, NLScene, name)
 

@@ -288,7 +288,6 @@ void NLPropFormGroupWidget::OnObjectChanged()
 {
     if(!m_object)
         return;
-    qDebug() << "OnObjectChanged";
     NLFormGroupWidget::Reset();
     SetupObjectProperty();
 }

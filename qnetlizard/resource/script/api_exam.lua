@@ -23,14 +23,19 @@ void delete_NLComponent(userdata<NLComponent>);
 userdata<NLScript> new_NLScript(table properties);
 void delete_NLScript(userdata<NLScript>);
 
+userdata<NLSceneCamera> new_NLSceneCamera(userdata<NLScene> = nil, integer type = 1);
+void delete_NLSceneCamera(userdata<NLSceneCamera>);
+
+userdata<NLVector3> new_NLVector3(number x = (), number y = (), number z = ());
+
 virtual metatable NLObject { -- NLObject is not a metatable
     string Name();
     string ClassName();
     boolean SetEnabled(boolean);
     boolean IsEnabled();
-    string GetProperty(string);
+    string|integer|number|boolean|userdata<T>|nil GetProperty(string, string typeName = "");
     boolean RemoveProperty(string);
-    boolean SetProperty(string, string|integer|number|boolean);
+    boolean SetProperty(string, string|integer|number|boolean|userdata<T>, string typeName = "");
     boolean is_success[, string|integer|number|boolean|userdata|nil return_value] Invoke(string method_sign, string return_type, ...arguments);
 };
 
@@ -132,13 +137,27 @@ metatable NLSceneCamera {
     number x, number y, number z Right_XPositive();
     boolean ZIsUp();
     boolean SetZIsUp(boolean);
+    boolean UpdateCamera(userdata<NLActor>);
+};
+
+metatable NLVector3 {
+    number X(number x = ()); // getter/setter
+    number Y(number y = ()); // getter/setter
+    number Z(number z = ()); // getter/setter
+    number, number, number XYZ(number x = (), number y = (), number z = ()); // getter/setter
+    __gc;
 };
 
 ]]
 
+-- Register global variant to NLScript parent object, it will show on editor.
+global_var_i = 123;
+
 -- If Init() function is declared, it will execute automatic when first running this script.
 -- return boolean: true - Init success. false - Init fail, the script will not continue running.
 function Init()
+-- Register global variant to NLScript parent object in Init() function, it also will show on editor.
+    global_var_s = "abc";
     print "Init()";
     return true;
 end

@@ -13,6 +13,7 @@ extern "C" {
 
 #include "engine/nlobject.h"
 #include "lua_def.h"
+#include "lua_variant.h"
 
 #include "engine/nlscenecamera.h"
 #include "engine/nlscene.h"
@@ -75,56 +76,9 @@ static int Object_GetProperty(lua_State *L)
     CALLER_OBJECT(L, obj);
     const char *name = lua_tostring(L, 2);
     QVariant v = obj->GetProperty(name);
-    int type = v.type();
-    if(type == QVariant::Int
-            || type == QVariant::Char
-            || type == QVariant::LongLong
-            || type == QVariant::UInt
-            || type == QVariant::ULongLong
-            )
-        lua_pushinteger(L, v.toInt());
-    else if(type == QVariant::Double
-            )
-        lua_pushnumber(L, v.toFloat());
-    else if(type == QVariant::Bool
-            )
-        lua_pushboolean(L, v.toBool() ? 1 : 0);
-    else if(type == QVariant::String
-            )
-        lua_pushstring(L, v.toByteArray());
-    else
-    {
-        if(lua_gettop(L) >= 3)
-        {
-            QString type(lua_tostring(L, 3));
-#define PUSH_NLOBJECT_TO_STACK_BY_NAME(name) \
-            if(type == #name) \
-            { \
-                 PUSH_NLOBJECT_TO_STACK(L, name, v.value<name *>()); \
-            }
-            PUSH_NLOBJECT_TO_STACK_BY_NAME(NLSceneCamera)
-            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLScene)
-            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLComponent)
-            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLScript)
-            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLActor)
-            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLRenderable)
-            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLForce)
-            else PUSH_NLOBJECT_TO_STACK_BY_NAME(NLRigidbody)
-            else
-                lua_pushnil(L);
-        }
-        else
-        {
-            if(type == QMetaType::QObjectStar)
-                *((void **)lua_newuserdata(L, sizeof(void *))) = v.value<QObject *>();
-            else if(type == QMetaType::QWidgetStar)
-                *((void **)lua_newuserdata(L, sizeof(void *))) = v.value<QWidget *>();
-            else if(type == QMetaType::VoidStar)
-                *((void **)lua_newuserdata(L, sizeof(void *))) = v.value<void *>();
-            else
-                lua_pushstring(L, v.toByteArray());
-        }
-    }
+    bool res = NL::push_from_qvariants(L, v, 3);
+    if(!res)
+        lua_pushnil(L);
     return 1;
 }
 
@@ -132,68 +86,11 @@ static int Object_SetProperty(lua_State *L)
 {
     CALLER_OBJECT(L, obj);
     const char *name = lua_tostring(L, 2);
-    int res = 1;
-    if(lua_isinteger(L, 3))
-    {
-        int i = lua_tointeger(L, 3);
-        res = obj->SetProperty(name, i);
-    }
-    else
-    {
-        int type = lua_type(L, 3);
-        if(type == LUA_TNUMBER)
-        {
-            float f = lua_tonumber(L, 3);
-            res = obj->SetProperty(name, f);
-        }
-        else if(type == LUA_TBOOLEAN)
-        {
-            bool b = lua_toboolean(L, 3);
-            res = obj->SetProperty(name, b ? true : false);
-        }
-        else if(type == LUA_TSTRING)
-        {
-            const char *s = lua_tostring(L, 3);
-            res = obj->SetProperty(name, s);
-        }
-        else if(type == LUA_TLIGHTUSERDATA)
-        {
-            void *p = (void *)(lua_touserdata(L, 3));
-            res = obj->SetProperty(name, QVariant::fromValue<void *>(p));
-        }
-        else if(type == LUA_TUSERDATA)
-        {
-            void **p = (void **)(lua_touserdata(L, 3));
-            if(lua_gettop(L) >= 4)
-            {
-                QString type(lua_tostring(L, 4));
-#define GET_NLOBJECT_FROM_STACK_BY_NAME(cname) \
-            if(type == #cname) \
-            { \
-                res = obj->SetProperty(name, QVariant::fromValue<cname *>((cname *)*p)); \
-            }
-                GET_NLOBJECT_FROM_STACK_BY_NAME(NLSceneCamera)
-                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLScene)
-                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLComponent)
-                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLScript)
-                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLActor)
-                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLRenderable)
-                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLRigidbody)
-                else GET_NLOBJECT_FROM_STACK_BY_NAME(NLForce)
-                else GET_NLOBJECT_FROM_STACK_BY_NAME(QObject)
-                else GET_NLOBJECT_FROM_STACK_BY_NAME(QWidget)
-                else
-                    res = obj->SetProperty(name, QVariant::fromValue<void *>(*p));
-            }
-            else
-                res = obj->SetProperty(name, QVariant::fromValue<void *>(*p));
-        }
-        else
-        {
-            res = obj->SetProperty(name, QVariant());
-        }
-    }
-    lua_pushboolean(L, res);
+    QVariant value = lua_gettop(L) >= 4 ? NL::load_to_qvariants(L, 3, 4) : NL::load_to_qvariant(L, 3);
+    int res = 0;
+    if(value.isValid())
+        res = obj->SetProperty(name, value);
+    lua_pushinteger(L, res);
     return 1;
 }
 
