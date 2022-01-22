@@ -6,14 +6,18 @@
 
 #include "nlobject.h"
 #include "nlscene.h"
+#include "nlactor.h"
+#include "nlcomponent.h"
+#include "nlforce.h"
+#include "nlscript.h"
 
 namespace NL
 {
-static NLPropertyInfo make_property_info(const QString &name, int t, const QString &typeName, const QVariant &value, const QVariant &defValue = QVariant(), const QVariantHash &props = QVariantHash())
+static NLPropertyInfo make_property_info(const QString &name, int t, const QString &typeName, const QVariant &value, const QVariant &defValue = QVariant(), const QVariantHash &props = QVariantHash(), bool readonly = false)
 {
     QString type(typeName);
     QString widget;
-    bool readonly = false;
+    bool editDirectly = true;
 
     if(type == "int")
     {
@@ -48,7 +52,7 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
         if(t == QMetaType::QObjectStar || t == QMetaType::QWidgetStar || t == QMetaType::VoidStar)
         {
             widget = "";
-            readonly = true;
+            editDirectly = false;
         }
         else
         {
@@ -61,7 +65,7 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
             else if(type == "NLRenderable*" || type == "NLObject*" || type == "NLActor*" || type == "NLComponent*" || type == "NLScript*" || type == "NLScene*" || type == "NLSceneCamera*" || type == "NLForce*")
             {
                 widget = "";
-                readonly = true;
+                editDirectly = false;
             }
         }
     }
@@ -80,9 +84,10 @@ NLPropertyInfoList object_propertics(const NLObject *obj)
     {
         QMetaProperty p = metaObj->property(i);
         QString name(p.name());
+        bool readonly = !p.isWritable() || p.isConstant();
 
         QVariantHash prop = config.value(name).toHash();
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p.read(obj), obj->GetInitProperty(name), prop);
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p.read(obj), obj->GetInitProperty(name), prop, readonly);
 
         ret.push_back(info);
     }
@@ -114,10 +119,11 @@ NLPropertyInfoList scene_propertics(const NLScene *obj)
     {
         QMetaProperty p = metaObj->property(i);
         QString name(p.name());
+        bool readonly = !p.isWritable() || p.isConstant();
 
         QVariantHash prop = config.value(name).toHash();
         QVariant v = p.read(obj);
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), v, v, prop);
+        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), v, v, prop, readonly);
 
         ret.push_back(info);
     }
@@ -159,4 +165,22 @@ bool property_equals(const QVariant &a, const QVariant &b)
     return a == b; // TODO
 }
 
+QVariant object_to_qvaraint(NLObject *nlo)
+{
+    switch(nlo->Type())
+    {
+#define CASE_EQUALS(type, T) \
+    case NLObject::type: \
+        return QVariant::fromValue<T *>(static_cast<T *>(nlo));
+
+    CASE_EQUALS(Type_Actor, NLActor)
+    CASE_EQUALS(Type_Component, NLComponent)
+    CASE_EQUALS(Type_Script, NLScript)
+    CASE_EQUALS(Type_Force, NLForce)
+
+#undef CASE_EQUALS
+    default:
+        return QVariant();
+    }
+}
 }

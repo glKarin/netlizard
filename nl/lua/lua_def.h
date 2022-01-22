@@ -14,7 +14,7 @@ class QString;
 #define GET_LUA_CALLER_USERDATA(L, T, name) GET_LUA_OBJECT_USERDATA(L, T, name, 1)
 
 #define PUSH_NLOBJECT_TO_STACK(L, T, data) {\
-    T **ptr = (T **)lua_newuserdata(L, sizeof(T **)); \
+    T **ptr = (T **)lua_newuserdata(L, sizeof(T *)); \
     *ptr = data; \
     luaL_getmetatable(L, #T); \
     lua_setmetatable(L, -2); \

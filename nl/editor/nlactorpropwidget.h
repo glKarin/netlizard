@@ -26,6 +26,11 @@ protected:
     virtual NLPropertyInfoList GetPropertyInfoList(QObject *obj);
     virtual void SortProperties(NLPropertyInfoList &list);
     virtual QVariant GetObjectProperty(QObject *obj, const QString &name);
+    virtual void mousePressEvent(QMouseEvent *ev);
+    virtual void mouseMoveEvent(QMouseEvent *ev);
+
+private:
+    QPoint m_dragStartPosition;
 };
 
 class NLLIB_EXPORT NLActorPropWidget : public QScrollArea

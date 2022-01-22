@@ -15,14 +15,9 @@ extern "C" {
 #include "nlactor.h"
 #include "template/nlsequencemap.h"
 #include "nlscriptcontainer.h"
-#include "lua/lua_actor.h"
-#include "lua/lua_component.h"
-#include "lua/lua_scene.h"
-#include "lua/lua_script.h"
-#include "lua/lua_scenecamera.h"
 #include "lua/lua_def.h"
+#include "lua/lua_globals.h"
 #include "lua/lua_variant.h"
-#include "lua/lua_vector3.h"
 
 #define m_L (m_lua.L)
 
@@ -35,13 +30,7 @@ bool NLScript::Script_Lua::Init()
         return false;
     luaL_openlibs(L);
 
-    NL::actor_register_metatable(L);
-    NL::component_register_metatable(L);
-    NL::scene_register_metatable(L);
-    NL::rigidbody_register_metatable(L);
-    NL::scenecamera_register_metatable(L);
-    NL::script_register_metatable(L);
-    NL::vector3_register_metatable(L);
+    NL::register_lua_metatable(L);
 
     qDebug() << "lua script engine initilized!";
 
@@ -281,6 +270,7 @@ void NLScript::Script_Lua::RegisterGlobalVariant()
         return;
     NLVariantSequenceHash props = GetGlobalVariant();
     script->connect(script, SIGNAL(propertyChanged(const QString &, const QVariant &, int)), script, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
+    qDebug() << props;
     script->SetGlobalVariant(props);
 }
 

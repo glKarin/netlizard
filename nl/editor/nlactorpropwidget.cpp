@@ -4,6 +4,8 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QAction>
+#include <QMouseEvent>
+#include <QApplication>
 
 #include "engine/nldbg.h"
 #include "engine/nlfuncs.h"
@@ -40,7 +42,7 @@ static bool NLPropertyInfoCmp(const NLPropertyInfo &a, const NLPropertyInfo &b)
         return false;
     if(bi == -1)
         return true;
-    return true; // ai < bi;
+    return ai < bi;
 }
 
 NLObjectPropFormGroupWidget::NLObjectPropFormGroupWidget(QWidget *widget)
@@ -93,6 +95,43 @@ void NLObjectPropFormGroupWidget::SortProperties(NLPropertyInfoList &list)
 {
     qSort(list.begin(), list.end(), NLPropertyInfoCmp);
 }
+
+void NLObjectPropFormGroupWidget::mousePressEvent(QMouseEvent *event)
+{
+    NLFormGroupWidget::mousePressEvent(event);
+    if(!AllowDragDrop())
+        return;
+    if (event->button() == Qt::LeftButton)
+        m_dragStartPosition = event->pos();
+}
+
+void NLObjectPropFormGroupWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    NLFormGroupWidget::mouseMoveEvent(event);
+    if(!AllowDragDrop())
+        return;
+
+    if (!(event->buttons() & Qt::LeftButton))
+        return;
+    if ((event->pos() - m_dragStartPosition).manhattanLength() < QApplication::startDragDistance())
+        return;
+
+    NLObject *nlo = static_cast<NLObject *>(Object());
+    QVariant value = NL::object_to_qvaraint(nlo);
+    if(!value.isValid())
+        return;
+
+    QDrag *drag = new QDrag(this);
+    QMimeData *mimeData = new QMimeData;
+    mimeData->setProperty(NL_FORM_WIDGET_DRAG_DROP_DATA_KEY, value);
+    mimeData->setData(NL_FORM_WIDGET_DRAG_DROP_MIME, QByteArray());
+    drag->setMimeData(mimeData);
+
+    Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
+    Q_UNUSED(dropAction);
+    //delete drag;
+}
+
 
 
 

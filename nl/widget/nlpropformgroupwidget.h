@@ -8,6 +8,9 @@
 #include "template/nlsequencemap.h"
 #include "engine/nlproperties.h"
 
+#define NL_FORM_WIDGET_DRAG_DROP_MIME "application/nl-property-variant"
+#define NL_FORM_WIDGET_DRAG_DROP_DATA_KEY "_NL_property_variant"
+
 class QFormLayout;
 class QToolButton;
 class QDrag;
@@ -100,6 +103,7 @@ protected:
 
 private:
     void SetupObjectProperty();
+    QString GenEditorFieldString(const QVariant &value);
 
 private Q_SLOTS:
     void OnItemDestroy(QObject *obj = 0);

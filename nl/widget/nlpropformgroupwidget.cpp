@@ -38,9 +38,6 @@
 #include "utils/nlguiutility.h"
 #include "nllineeditwidget.h"
 
-#define DRAG_DROP_MIME "application/nl-editor-variant"
-#define DRAG_DROP_DATA_KEY "_NL_property_variant"
-
 #define DOUBLE_SPINBOX_SINGLE_STEP 1 //0.1
 #define DOUBLE_SPINBOX_DECIMAL 6
 
@@ -100,11 +97,11 @@ public:
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent *event);
-    //virtual void dragLeaveEvent(QDragLeaveEvent *event);
-    //virtual void dragMoveEvent(QDragMoveEvent *event);
     virtual void dropEvent(QDropEvent *event);
     virtual void mousePressEvent(QMouseEvent *ev);
     virtual void mouseMoveEvent(QMouseEvent *ev);
+    //virtual void dragLeaveEvent(QDragLeaveEvent *event);
+    //virtual void dragMoveEvent(QDragMoveEvent *event);
 
 private:
     void Init();
@@ -186,7 +183,7 @@ void NLFormLabelWidget::mouseMoveEvent(QMouseEvent *event)
 
     Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
     Q_UNUSED(dropAction);
-    delete drag;
+    //delete drag;
 }
 
 void NLFormLabelWidget::dragEnterEvent(QDragEnterEvent *event)
@@ -445,7 +442,7 @@ void NLPropFormGroupWidget::SetupObjectProperty()
     Q_FOREACH(const NLPropertyInfo &item, list)
     {
         QWidget *widget = GenWidget(m_object, item);
-        AddRow(item.name, item.label, widget, item.description, item.readonly &&  false);
+        AddRow(item.name, item.label, widget, item.description, item.readonly);
     }
 }
 
@@ -601,72 +598,14 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
     }
     else
     {
-        int type = item.value.type();
-        //QLineEdit *w = new QLineEdit;
-        //WIDGET_SET_TYPE(w, QLineEdit);
         NLTextBrowserWidget *w = new NLTextBrowserWidget;
         WIDGET_SET_TYPE(w, NLTextBrowserWidget);
         w->SetMaxHeight(0);
-        //w->setReadOnly(item.readonly);
+        w->setReadOnly(true); // TODO: can not edit directly
         w->setLineWrapMode(QTextBrowser::WidgetWidth);
         w->setWordWrapMode(QTextOption::WrapAnywhere);
-//        w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-        if(type == QMetaType::QObjectStar)
-        {
-            QObject *qo = item.value.value<QObject *>();
-            if(qo)
-            {
-                if(nlinstanceofv(qo, NLObject))
-                {
-                    NLObject *nlo = static_cast<NLObject *>(qo);
-                    QString it(item.value.typeName());
-                    it.replace("*", " *");
-                    w->setPlainText(it + (nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : "") + QString().sprintf("(%p)", nlo));
-                }
-                else
-                    w->setPlainText("(QObject *)" + (qo ? qo->objectName() : "") + QString().sprintf("(%p)", qo));
-            }
-            else
-                w->setPlainText(QString().sprintf("(QObject *)(%p)", qo));
-        }
-        else if(type == QMetaType::VoidStar)
-        {
-            void *vo = item.value.value<void *>();
-            w->setPlainText(QString().sprintf("(void *)(%p)", vo));
-        }
-        else
-        {
-            if(item.type == "NLRenderable*")
-            {
-                NLRenderable *renderable = item.value.value<NLRenderable *>();
-                w->setPlainText("(NLRenderable *)" + (renderable ? renderable->Name() : "") + QString().sprintf("(%p)", renderable));
-            }
-            else if(item.type == "NLScene*")
-            {
-                NLScene *scene = item.value.value<NLScene *>();
-                w->setPlainText("(NLScene *)" + (scene ? scene->objectName() : "") + QString().sprintf("(%p)", scene));
-            }
-            else if(item.type == "NLSceneCamera*")
-            {
-                NLSceneCamera *camera = item.value.value<NLSceneCamera *>();
-                w->setPlainText(QString().sprintf("(NLSceneCamera *)(%p)", camera));
-            }
-#define NLOBJECT_SHOW(T) \
-            if(item.type == #T "*") { \
-                T *nlo = static_cast<T *>(item.value.value<T *>()); \
-    w->setPlainText(QString("(" + item.type + ")").replace("*", " *") + (nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : "") + QString().sprintf("(%p)", nlo)); \
-            }
-            else NLOBJECT_SHOW(NLObject)
-            else NLOBJECT_SHOW(NLActor)
-            else NLOBJECT_SHOW(NLComponent)
-            else NLOBJECT_SHOW(NLScript)
-            else NLOBJECT_SHOW(NLForce)
-#undef NLOBJECT_SHOW
-            else
-            {
-                w->setPlainText(item.value.toString());
-            }
-        }
+//      w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+        w->setPlainText(GenEditorFieldString(item.value));
         connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
         widget = w;
     }
@@ -736,6 +675,10 @@ void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const QVa
     else if(WIDGETNAME_IS_TYPE(type, NLButtonGroupWidget))
     {
         static_cast<NLButtonGroupWidget *>(widget)->SetBit(value.toUInt());
+    }
+    else if(WIDGETNAME_IS_TYPE(type, NLTextBrowserWidget))
+    {
+        static_cast<NLTextBrowserWidget *>(widget)->setPlainText(GenEditorFieldString(value));
     }
     else
         qWarning() << "Unsupported widget type -> " << type;
@@ -837,8 +780,8 @@ QDrag * NLPropFormGroupWidget::Drag(const QString &name, QWidget *widget)
     QDrag *drag = new QDrag(widget);
     QVariant value = GetObjectProperty(m_object, name);
     QMimeData *mimeData = new QMimeData;
-    mimeData->setProperty(DRAG_DROP_DATA_KEY, value);
-    mimeData->setData(DRAG_DROP_MIME, name.toLocal8Bit());
+    mimeData->setProperty(NL_FORM_WIDGET_DRAG_DROP_DATA_KEY, value);
+    mimeData->setData(NL_FORM_WIDGET_DRAG_DROP_MIME, name.toLocal8Bit());
     drag->setMimeData(mimeData);
     return drag;
 }
@@ -846,22 +789,100 @@ QDrag * NLPropFormGroupWidget::Drag(const QString &name, QWidget *widget)
 bool NLPropFormGroupWidget::Drop(const QMimeData *d, QWidget *widget)
 {
     QString nameSelf = static_cast<NLFormLabelWidget *>(widget)->Name();
-    QVariant v = d->property(DRAG_DROP_DATA_KEY);
+    QVariant v = d->property(NL_FORM_WIDGET_DRAG_DROP_DATA_KEY);
     SetObjectProperty(m_object, nameSelf, v);
     return true;
 }
 
 bool NLPropFormGroupWidget::CheckDragData(const QMimeData *d, QWidget *widget)
 {
-    if (!d->hasFormat(DRAG_DROP_MIME))
+    if (!d->hasFormat(NL_FORM_WIDGET_DRAG_DROP_MIME))
         return false;
-    QByteArray name = d->data(DRAG_DROP_MIME);
-    if(name.isEmpty())
-        return false;
+//    QByteArray name = d->data(NL_FORM_WIDGET_DRAG_DROP_MIME);
+//    if(name.isEmpty())
+//        return false;
     QString nameSelf = static_cast<NLFormLabelWidget *>(widget)->Name();
-    QVariant v = d->property(DRAG_DROP_DATA_KEY);
+    QVariant v = d->property(NL_FORM_WIDGET_DRAG_DROP_DATA_KEY);
     QVariant vSelf = GetObjectProperty(m_object, nameSelf);
     if(qstrcmp(v.typeName(), vSelf.typeName()) != 0) // not same type
         return false;
     return true;
+}
+
+QString NLPropFormGroupWidget::GenEditorFieldString(const QVariant &item_value)
+{
+    const QString item_type(item_value.typeName());
+    const int type = item_value.type();
+    QString ret;
+    if(type == QMetaType::QObjectStar)
+    {
+        QObject *qo = item_value.value<QObject *>();
+        if(qo)
+        {
+            if(nlinstanceofv(qo, NLObject))
+            {
+                NLObject *nlo = static_cast<NLObject *>(qo);
+                ret = ("(NLObject *)" + (nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : "") + QString().sprintf("(%p)", nlo));
+            }
+            else
+                ret = ("(QObject *)" + (qo ? qo->objectName() : "") + QString().sprintf("(%p)", qo));
+        }
+        else
+            ret = (QString().sprintf("(QObject *)(%p)", qo));
+    }
+    else if(type == QMetaType::QWidgetStar)
+    {
+        QWidget *qo = item_value.value<QWidget *>();
+        if(qo)
+        {
+            if(nlinstanceofv(qo, NLScene))
+            {
+                NLScene *nlo = static_cast<NLScene *>(qo);
+                ret = "(NLScene *)" + (nlo ? nlo->objectName() : "") + QString().sprintf("(%p)", nlo);
+            }
+            else
+                ret = "(QWidget *)" + (qo ? qo->objectName() : "") + QString().sprintf("(%p)", qo);
+        }
+        else
+            ret = (QString().sprintf("(QWidget *)(%p)", qo));
+    }
+    else if(type == QMetaType::VoidStar)
+    {
+        void *vo = item_value.value<void *>();
+        ret = (QString().sprintf("(void *)(%p)", vo));
+    }
+    else
+    {
+        if(item_type == "NLRenderable*")
+        {
+            NLRenderable *renderable = item_value.value<NLRenderable *>();
+            ret = "(NLRenderable *)" + (renderable ? renderable->Name() : "") + QString().sprintf("(%p)", renderable);
+        }
+        else if(item_type == "NLScene*")
+        {
+            NLScene *scene = item_value.value<NLScene *>();
+            ret = "(NLScene *)" + (scene ? scene->objectName() : "") + QString().sprintf("(%p)", scene);
+        }
+        else if(item_type == "NLSceneCamera*")
+        {
+            NLSceneCamera *camera = item_value.value<NLSceneCamera *>();
+            ret = QString().sprintf("(NLSceneCamera *)(%p)", camera);
+        }
+#define NLOBJECT_SHOW(T) \
+        if(item_type == #T "*") { \
+            T *nlo = static_cast<T *>(item_value.value<T *>()); \
+ret = QString("(" + item_type + ")").replace("*", " *") + (nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : "") + QString().sprintf("(%p)", nlo); \
+        }
+        else NLOBJECT_SHOW(NLObject)
+        else NLOBJECT_SHOW(NLActor)
+        else NLOBJECT_SHOW(NLComponent)
+        else NLOBJECT_SHOW(NLScript)
+        else NLOBJECT_SHOW(NLForce)
+#undef NLOBJECT_SHOW
+        else
+        {
+            ret = item_value.toString();
+        }
+    }
+    return ret;
 }
