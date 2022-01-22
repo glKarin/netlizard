@@ -11,11 +11,15 @@ NLSCENE(FontScene)
 class FontScene : public NLScene
 {
     Q_OBJECT
+    Q_PROPERTY(QString text READ Text WRITE SetText FINAL)
+    Q_PROPERTY(QVariant font READ FontPtr FINAL)
 public:
     explicit FontScene(QWidget *parent = 0);
     virtual ~FontScene();
     struct _GL_NETLizard_Font * Font() { return m_font; }
+    QVariant FontPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_Font, m_font)); }
     bool IsValid() const { return m_font != 0; }
+    QString Text() const { return m_text; }
 
 public Q_SLOTS:
     bool LoadFile(const QString &cfFile, const QString &fntFile);

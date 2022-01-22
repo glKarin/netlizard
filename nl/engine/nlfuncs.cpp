@@ -62,6 +62,12 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
                     type = "NLVector3";
                 widget = "vector3";
             }
+            if(type == "NLVariantGeneralPointer" || type == "NLVariantVoidPointer")
+            {
+                if(type != "NLVariantVoidPointer")
+                    type = "NLVariantGeneralPointer";
+                widget = "";
+            }
             else if(type == "NLRenderable*" || type == "NLObject*" || type == "NLActor*" || type == "NLComponent*" || type == "NLScript*" || type == "NLScene*" || type == "NLSceneCamera*" || type == "NLForce*")
             {
                 widget = "";

@@ -6,6 +6,8 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QDragEnterEvent>
+#include <QUrl>
 
 #include "engine/nldbg.h"
 
@@ -60,6 +62,7 @@ void NLFileChooserWidget::Init()
     connect(m_fileLabel, SIGNAL(dblClicked()), this, SLOT(EditOrChooseFile()));
 
     UpdateWidget();
+    setAcceptDrops(true);
 
     setLayout(mainLayout);
 }
@@ -121,4 +124,29 @@ void NLFileChooserWidget::EditOrChooseFile()
 {
     if(m_fileLabel->text().isEmpty())
         OpenFileDialog();
+}
+
+void NLFileChooserWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    if(!isEnabled())
+        return;
+    if(event->mimeData()->hasUrls())
+        event->acceptProposedAction();
+}
+
+void NLFileChooserWidget::dropEvent(QDropEvent *event)
+{
+    if(!isEnabled())
+        return;
+    const QMimeData *mimedata = event->mimeData();
+    QList<QUrl> urls = mimedata->urls();
+    if(!urls.isEmpty())
+    {
+        const QUrl &url = urls[0];
+        if(url.scheme() == "file")
+        {
+            SetFile(url.toLocalFile());
+            event->acceptProposedAction();
+        }
+    }
 }

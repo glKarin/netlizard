@@ -879,6 +879,11 @@ ret = QString("(" + item_type + ")").replace("*", " *") + (nlo ? nlo->ClassName(
         else NLOBJECT_SHOW(NLScript)
         else NLOBJECT_SHOW(NLForce)
 #undef NLOBJECT_SHOW
+        else if(item_type == "NLVariantGeneralPointer")
+        {
+            QString str = item_value.value<NLVariantGeneralPointer>();
+            ret = str;
+        }
         else
         {
             ret = item_value.toString();

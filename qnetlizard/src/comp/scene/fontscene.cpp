@@ -68,8 +68,10 @@ void FontScene::Reset()
         delete_GL_NETLizard_Font(m_font);
         free(m_font);
         m_font = 0;
+        emit propertyChanged("font", FontPtr());
     }
     m_text.clear();
+    emit propertyChanged("text", m_text);
     m_lineCount = 0;
     m_renderer->SetFont(0);
 
@@ -99,19 +101,18 @@ bool FontScene::LoadFile(const QString &file, const QString &texFile)
     const char *path = ba1.data();
     QByteArray ba2 = texFile.toLocal8Bit();
     const char *tex_path = ba2.data();
-    m_font = (GL_NETLizard_Font *)malloc(sizeof(GL_NETLizard_Font));
-    memset(m_font, 0, sizeof(GL_NETLizard_Font));
+    GL_NETLizard_Font font;
     qDebug() << "Load font: " << path << tex_path;
-    GLboolean b = NETLizard_ReadFont(m_font, path, tex_path);
+    GLboolean b = NETLizard_ReadFont(&font, path, tex_path);
     qDebug() << "Load font result: " << b;
     if(!b)
     {
-        free(m_font);
-        m_font = 0;
         return false;
     }
-
+    m_font = (GL_NETLizard_Font *)malloc(sizeof(GL_NETLizard_Font));
+    *m_font = font;
     m_renderer->SetFont(m_font);
+    emit propertyChanged("font", FontPtr());
 
     return true;
 }
@@ -122,6 +123,7 @@ void FontScene::SetText(const QString &str)
     {
         m_text = str;
         m_renderer->SetText(str);
+        emit propertyChanged("text", m_text);
     }
 }
 

@@ -65,6 +65,7 @@ bool init_engine()
     qRegisterMetaType<NLForce *>("NLForce *");
     qRegisterMetaType<NLObject *>("NLObject *");
     qRegisterMetaType<NLRigidbody *>("NLRigidbody *");
+    qRegisterMetaType<NLVariantGeneralPointer>("NLVariantGeneralPointer");
 
     load_translator();
 

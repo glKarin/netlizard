@@ -41,6 +41,10 @@ Q_SIGNALS:
     void fileChanged(const QString &file);
     void fileReload(const QString &file);
 
+protected:
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+    virtual void dropEvent(QDropEvent *event);
+
 private Q_SLOTS:
     void OpenFileDialog();
     void OpenFile();
