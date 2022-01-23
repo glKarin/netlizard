@@ -12,6 +12,14 @@ NLSCENE(AnimationScene)
 class AnimationScene : public NLScene
 {
     Q_OBJECT
+    Q_PROPERTY(int anim READ Anim WRITE SetAnim FINAL)
+    Q_PROPERTY(int frame READ Frame WRITE SetFrame FINAL)
+    Q_PROPERTY(bool playing READ IsPlaying WRITE SetPlaying FINAL)
+    Q_PROPERTY(bool playSequence READ PlaySequence WRITE SetPlaySequence FINAL)
+    Q_PROPERTY(int animFPS READ AnimFPS WRITE SetAnimFPS FINAL)
+    Q_PROPERTY(int currentAnimationFrames READ CurrentAnimationFrames WRITE SetAnim FINAL)
+    Q_PROPERTY(QVariant currentAnimation READ CurrentAnimationPtr FINAL)
+    Q_PROPERTY(QVariant model READ ModelPtr FINAL)
 public:
     explicit AnimationScene(QWidget *parent = 0);
     virtual ~AnimationScene();
@@ -19,6 +27,8 @@ public:
     const struct _GL_NETLizard_3D_Model * Model() const { return m_model; }
     const struct NETLizard_3D_Frame_Animation_s * Config() const { return m_frameAnim; }
     const struct NETLizard_3D_Frame_Animation_s * CurrentAnimation() const;
+    QVariant CurrentAnimationPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct NETLizard_3D_Frame_Animation_s, const_cast<struct NETLizard_3D_Frame_Animation_s *>(CurrentAnimation()))); }
+    QVariant ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }
     int CurrentAnimationFrames() const;
     int Anim() const { return m_anim; }
     int Frame() const { return m_frame; }

@@ -48,6 +48,18 @@ ImageScene::ImageScene(QWidget *parent)
     orthoCam->SetAlignment(m_align);
     SetCurrentCamera(orthoCam);
 
+    NLProperties props = PropertyConfig();
+
+    props.Insert("alignment",  NLProperties("enum", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
+                                                                                            << NLPropertyPair("Center", static_cast<int>(Qt::AlignCenter))
+                                                                                            << NLPropertyPair("Left-Top", static_cast<int>(Qt::AlignLeft | Qt::AlignTop))
+                                                                                            << NLPropertyPair("Left-Bottom", static_cast<int>(Qt::AlignLeft | Qt::AlignBottom))
+                                                                                            << NLPropertyPair("Left-Center", static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter))
+                                                                                            << NLPropertyPair("Center-Top", static_cast<int>(Qt::AlignHCenter | Qt::AlignTop))
+                                                                                            << NLPropertyPair("Center-Bottom", static_cast<int>(Qt::AlignHCenter | Qt::AlignBottom))
+                                                                                            )));
+    SetPropertyConfig(props);
+
     connect(settings, SIGNAL(settingChanged(const QString &, const QVariant &, const QVariant &)), this, SLOT(OnSettingChanged(const QString &, const QVariant &, const QVariant &)));
 }
 
@@ -91,6 +103,8 @@ void ImageScene::SetAlignment(Qt::Alignment align)
         bool invertY = align & Qt::AlignTop;
         m_imageControl->SetInvertY(invertY);
         m_control->SetInvertY(invertY);
+
+        emit propertyChanged("alignment", static_cast<int>(m_align));
     }
 }
 
@@ -114,9 +128,9 @@ bool ImageScene::GenTexture(const NETLizard_Texture *tex)
     if(make_OpenGL_texture_2d((char *)data, len, tex->width, tex->height, format, &gltex))
     {
         m_tex = (texture_s *)malloc(sizeof(texture_s));
-        memset(m_tex, 0, sizeof(texture_s));
-        memcpy(m_tex, &gltex, sizeof(texture_s));
+        *m_tex = gltex;
         res = true;
+        emit propertyChanged("texture", TexturePtr());
     }
     free(data);
     return res;
@@ -128,8 +142,8 @@ bool ImageScene::GenTexture(const char *data, int length)
     if(!new_OpenGL_texture_2d_from_memory((const unsigned char *)data, length, &tex))
         return false;
     m_tex = (texture_s *)malloc(sizeof(texture_s));
-    memset(m_tex, 0, sizeof(texture_s));
-    memcpy(m_tex, &tex, sizeof(texture_s));
+    *m_tex = tex;
+    emit propertyChanged("texture", TexturePtr());
     return true;
 }
 
@@ -270,6 +284,7 @@ void ImageScene::Reset()
             glDeleteTextures(1, &m_tex->texid);
         free(m_tex);
         m_tex = 0;
+        emit propertyChanged("texture", TexturePtr());
     }
     UnsetData();
 

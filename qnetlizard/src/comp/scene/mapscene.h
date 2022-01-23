@@ -21,15 +21,27 @@ NLSCENE(MapScene)
 class MapScene : public NLScene
 {
     Q_OBJECT
+    Q_PROPERTY(int currentScene READ CurrentScene FINAL)
+    Q_PROPERTY(int currentViewItem READ CurrentViewItem FINAL)
+    Q_PROPERTY(int currentCollisionItem READ CurrentCollisionItem FINAL)
+    Q_PROPERTY(int currentViewScene READ CurrentViewScene FINAL)
+    Q_PROPERTY(int noclip READ Noclip WRITE SetNoclip FINAL)
+    Q_PROPERTY(bool fog READ Fog WRITE SetFog FINAL)
+    Q_PROPERTY(int singleScene READ SingleScene WRITE SetSingleScene FINAL)
+    Q_PROPERTY(QVariant model READ ModelPtr FINAL)
 public:
     explicit MapScene(QWidget *parent = 0);
     virtual ~MapScene();
     bool IsValid() const { return m_model != 0; }
     const struct _GL_NETLizard_3D_Model * Model() const { return m_model; }
+    QVariant ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }
     int CurrentScene() const { return m_currentScene; }
     int CurrentViewItem() const { return m_currentViewItem; }
     int CurrentCollisionItem() const { return m_currentCollisionItem; }
     int CurrentViewScene() const { return m_currentViewScene; }
+    int Noclip() const { return m_noclip; }
+    bool Fog() const { return m_fog; }
+    int SingleScene() const { return m_singleScene; }
 
     Q_SIGNALS:
     void currentSceneChanged(int scene);
@@ -93,6 +105,10 @@ private:
     int m_currentViewItem;
     int m_currentViewScene;
     QHash<int, int> m_skyboxs;
+    int m_shadowMethod;
+    int m_shadowObject;
+    int m_renderDebug;
+    bool m_cull;
 
     Q_DISABLE_COPY(MapScene)
 };

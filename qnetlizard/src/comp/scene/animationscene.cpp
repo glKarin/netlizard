@@ -101,17 +101,16 @@ bool AnimationScene::LoadFile(const QString &file, const QString &resourcePath, 
     const char *path = ba1.data();
     QByteArray ba2 = resourcePath.toLocal8Bit();
     const char *resc_path = ba2.data();
-    m_model = (GL_NETLizard_3D_Model *)malloc(sizeof(GL_NETLizard_3D_Model));
-    memset(m_model, 0, sizeof(GL_NETLizard_3D_Model));
+    GL_NETLizard_3D_Model model;
     GLboolean b = GL_FALSE;
     qDebug() << "Load game: " << path << resc_path;
     switch(game)
     {
     case NL_SHADOW_OF_EGYPT_3D:
-        b = NETLizard_ReadGLEgypt3DRoleModelFile(path, index, resc_path, m_model);
+        b = NETLizard_ReadGLEgypt3DRoleModelFile(path, index, resc_path, &model);
         break;
     case NL_CLONE_3D:
-        b = NETLizard_ReadGLClone3DRoleModelFile(path, index, resc_path, m_model);
+        b = NETLizard_ReadGLClone3DRoleModelFile(path, index, resc_path, &model);
         break;
     default:
         qDebug() << "Unsupport game";
@@ -120,10 +119,11 @@ bool AnimationScene::LoadFile(const QString &file, const QString &resourcePath, 
     qDebug() << "Load animation model result: " << b;
     if(!b)
     {
-        free(m_model);
-        m_model = 0;
         return false;
     }
+    m_model = (GL_NETLizard_3D_Model *)malloc(sizeof(GL_NETLizard_3D_Model));
+    *m_model = model;
+    emit propertyChanged("model", ModelPtr());
 
     LoadAnimFrame(index);
 
@@ -144,6 +144,8 @@ void AnimationScene::Reset()
 {
     Stop();
     m_frameAnim = 0;
+    emit propertyChanged("currentAnimation", CurrentAnimationPtr());
+    emit propertyChanged("currentAnimationFrames", CurrentAnimationFrames());
     m_renderer->SetModel(0, 0);
     /*m_renderer->*/SetAnim(-1);
     /*m_renderer->*/SetFrame(-1);
@@ -152,6 +154,7 @@ void AnimationScene::Reset()
         delete_GL_NETLizard_3D_Model(m_model);
         free(m_model);
         m_model = 0;
+        emit propertyChanged("model", ModelPtr());
     }
 
     NLScene::Reset();
@@ -171,7 +174,10 @@ void AnimationScene::SetAnim(int anim)
         m_anim = anim;
         SetFrame(m_anim < 0 ? -1 : 0);
         m_renderer->SetAnim(anim);
-        emit animChanged(anim);
+        emit propertyChanged("anim", m_anim);
+        emit animChanged(m_anim);
+        emit propertyChanged("currentAnimation", CurrentAnimationPtr());
+        emit propertyChanged("currentAnimationFrames", CurrentAnimationFrames());
     }
 }
 
@@ -183,6 +189,7 @@ void AnimationScene::SetFrame(int frame)
     {
         m_frame = frame;
         m_renderer->SetFrame(frame);
+        emit propertyChanged("frame", m_frame);
         emit frameChanged(m_frame);
     }
 }
@@ -194,6 +201,8 @@ void AnimationScene::LoadAnimFrame(int index)
         return;
     int game = m_model->game;
     m_frameAnim = nlGet3DModelFrameAnimationConfig(static_cast<NETLizard_Game>(game), index);
+    emit propertyChanged("currentAnimation", CurrentAnimationPtr());
+    emit propertyChanged("currentAnimationFrames", CurrentAnimationFrames());
 }
 
 const NETLizard_3D_Frame_Animation * AnimationScene::CurrentAnimation() const
@@ -252,6 +261,7 @@ void AnimationScene::Play()
         return;
     m_playing = true;
     m_lastFrameTime = UpdateTime();
+    emit propertyChanged("playing", m_playing);
     emit playing();
 }
 
@@ -262,6 +272,7 @@ void AnimationScene::Stop()
     if(!m_playing)
         return;
     m_playing = false;
+    emit propertyChanged("playing", m_playing);
     emit stopped();
 }
 
@@ -296,13 +307,17 @@ void AnimationScene::SetAnimFPS(int fps)
         {
             m_frameInterval = qRound(1000.0 / (float)m_animFPS);
         }
+        emit propertyChanged("animFPS", m_animFPS);
     }
 }
 
 void AnimationScene::SetPlaySequence(bool invert)
 {
     if(m_playSequence != invert)
+    {
         m_playSequence = invert;
+        emit propertyChanged("playSequence", m_playSequence);
+    }
 }
 
 void AnimationScene::OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue)

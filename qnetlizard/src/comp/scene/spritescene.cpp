@@ -72,10 +72,12 @@ void SpriteScene::Reset()
         delete_GL_NETLizard_Sprite(m_sprite);
         free(m_sprite);
         m_sprite = 0;
+        emit propertyChanged("sprite", SpritePtr());
     }
     m_index = -1;
     m_renderer->SetSprite(0);
     m_renderer->SetIndex(-1);
+    emit propertyChanged("index", m_index);
 
     NLScene::Reset();
 }
@@ -101,19 +103,20 @@ bool SpriteScene::LoadFile(const QString &file, const QString &texFile)
     const char *path = ba1.data();
     QByteArray ba2 = texFile.toLocal8Bit();
     const char *tex_path = ba2.data();
-    m_sprite = (GL_NETLizard_Sprite *)malloc(sizeof(GL_NETLizard_Sprite));
-    memset(m_sprite, 0, sizeof(GL_NETLizard_Sprite));
+    GL_NETLizard_Sprite sprite;
     qDebug() << "Load sprite: " << path << tex_path;
-    GLboolean b = NETLizard_ReadSpirit(m_sprite, path, tex_path);
+    GLboolean b = NETLizard_ReadSpirit(&sprite, path, tex_path);
     qDebug() << "Load sprite result: " << b;
     if(!b)
     {
-        free(m_sprite);
-        m_sprite = 0;
         return false;
     }
 
+    m_sprite = (GL_NETLizard_Sprite *)malloc(sizeof(GL_NETLizard_Sprite));
+    *m_sprite = sprite;
     m_renderer->SetSprite(m_sprite);
+    emit propertyChanged("sprite", SpritePtr());
+    emit propertyChanged("count", Count());
 
     return true;
 }
@@ -132,6 +135,7 @@ void SpriteScene::SetIndex(int i)
         m_index = i;
         NLScene::Reset();
         m_renderer->SetIndex(i);
+        emit propertyChanged("index", m_index);
     }
 }
 

@@ -23,7 +23,7 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
     {
         if(props.contains("enum"))
             widget = "combobox";
-        if(props.contains("option"))
+        else if(props.contains("option"))
             widget = "checkbox";
         else
             widget = "spinbox";
@@ -76,7 +76,7 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
         }
     }
 
-    //qDebug() << name << t << value << QMetaType::QObjectStar << t << QMetaType::VoidStar << value.typeName();
+    //qDebug() << name << t << value << QMetaType::QObjectStar << t << QMetaType::VoidStar << value.typeName() << widget;
     return(NLPropertyInfo(name, value, type, widget, readonly, defValue, props));
 }
 

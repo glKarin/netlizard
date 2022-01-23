@@ -79,29 +79,28 @@ bool ItemScene::LoadFile(const QString &file, const QString &resourcePath, int g
     const char *path = ba1.data();
     QByteArray ba2 = resourcePath.toLocal8Bit();
     const char *resc_path = ba2.data();
-    m_model = (GL_NETLizard_3D_Model *)malloc(sizeof(GL_NETLizard_3D_Model));
-    memset(m_model, 0, sizeof(GL_NETLizard_3D_Model));
+    GL_NETLizard_3D_Model model;
     GLboolean b = GL_FALSE;
     qDebug() << "Load game: " << path << resc_path;
     switch(game)
     {
     case NL_CONTR_TERRORISM_3D:
-        b = NETLizard_ReadGLCT3DItemModelFile(path, index, resc_path, m_model);
+        b = NETLizard_ReadGLCT3DItemModelFile(path, index, resc_path, &model);
         break;
     case NL_CONTR_TERRORISM_3D_EPISODE_2:
-        b = NETLizard_ReadGLCT3DEp2ItemModelFile(path, index, resc_path, m_model);
+        b = NETLizard_ReadGLCT3DEp2ItemModelFile(path, index, resc_path, &model);
         break;
     case NL_ARMY_RANGER_3D:
-        b = NETLizard_ReadGLSpecnaz3DItemModelFile(path, index, resc_path, m_model);
+        b = NETLizard_ReadGLSpecnaz3DItemModelFile(path, index, resc_path, &model);
         break;
     case NL_SHADOW_OF_EGYPT_3D:
-        b = NETLizard_ReadGLEgypt3DItemModelFile(path, index, resc_path, m_model);
+        b = NETLizard_ReadGLEgypt3DItemModelFile(path, index, resc_path, &model);
         break;
     case NL_CLONE_3D:
-        b = NETLizard_ReadGLClone3DItemModelFile(path, index, resc_path, m_model);
+        b = NETLizard_ReadGLClone3DItemModelFile(path, index, resc_path, &model);
         break;
     case NL_CONTR_TERRORISM_3D_EPISODE_3:
-        b = NETLizard_ReadGLCT3DEp3ItemModelFile(path, index, resc_path, m_model);
+        b = NETLizard_ReadGLCT3DEp3ItemModelFile(path, index, resc_path, &model);
         break;
     case NL_RACING_EVOLUTION_3D:
     {
@@ -120,7 +119,7 @@ bool ItemScene::LoadFile(const QString &file, const QString &resourcePath, int g
         qDebug() << "Car tex: " << texPath;
         QByteArray ba3 = texPath.toLocal8Bit();
         const char *tex_path = ba3.data();
-        b = NETLizard_ReadGLRE3DCarModelFile(path, tex_path, resc_path, m_model);
+        b = NETLizard_ReadGLRE3DCarModelFile(path, tex_path, resc_path, &model);
     }
         break;
     default:
@@ -130,12 +129,13 @@ bool ItemScene::LoadFile(const QString &file, const QString &resourcePath, int g
     qDebug() << "Load item model result: " << b;
     if(!b)
     {
-        free(m_model);
-        m_model = 0;
         return false;
     }
 
+    m_model = (GL_NETLizard_3D_Model *)malloc(sizeof(GL_NETLizard_3D_Model));
+    *m_model = model;
     m_renderer->SetModel(m_model);
+    emit propertyChanged("model", ModelPtr());
 
     if(game == NL_RACING_EVOLUTION_3D)
     {
@@ -169,6 +169,7 @@ void ItemScene::Reset()
         delete_GL_NETLizard_3D_Model(m_model);
         free(m_model);
         m_model = 0;
+        emit propertyChanged("model", ModelPtr());
     }
 
     NLScene::Reset();

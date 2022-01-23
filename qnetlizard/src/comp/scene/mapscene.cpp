@@ -142,6 +142,19 @@ MapScene::MapScene(QWidget *parent)
 
     m_shadowRenderer->SetLightSourceType(lightSource->LightSource()->IsDirectionLighting());
 
+    NLProperties props = PropertyConfig();
+    props.Insert("noclip",  NLProperties("enum", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
+                                                                                            << NLPropertyPair("No clip", 0)
+                                                                                            << NLPropertyPair("Collision testing with scene", 1)
+                                                                                            << NLPropertyPair("Collision testing with scene and item", 2)
+                                                                                            )));
+    props.Insert("singleScene",  NLProperties("enum", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
+                                                                                            << NLPropertyPair("No single scene", 0)
+                                                                                            << NLPropertyPair("Only render current single scene", 1)
+                                                                                            << NLPropertyPair("Render current scene and neighboring scene", 2)
+                                                                                            )));
+    SetPropertyConfig(props);
+
     SetNoclip(settings->GetSetting<int>("DEBUG/noclip"));
     SetFog(settings->GetSetting<int>("RENDER/fog") > 0);
     SetSingleScene(settings->GetSetting<int>("DEBUG/single_scene"));
@@ -251,32 +264,31 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     const char *path = ba1.data();
     QByteArray ba2 = resourcePath.toLocal8Bit();
     const char *resc_path = ba2.data();
-    m_model = (GL_NETLizard_3D_Model *)malloc(sizeof(GL_NETLizard_3D_Model));
-    memset(m_model, 0, sizeof(GL_NETLizard_3D_Model));
+    GL_NETLizard_3D_Model model;
     GLboolean b = GL_FALSE;
     qDebug() << "Load game: " << path << resc_path;
     switch(game)
     {
     case NL_CONTR_TERRORISM_3D:
-        b = NETLizard_ReadGLCT3DMapModelFile(path, level, resc_path, m_model);
+        b = NETLizard_ReadGLCT3DMapModelFile(path, level, resc_path, &model);
         break;
     case NL_CONTR_TERRORISM_3D_EPISODE_2:
-        b = NETLizard_ReadGLCT3DEp2MapModelFile(path, level, resc_path, m_model);
+        b = NETLizard_ReadGLCT3DEp2MapModelFile(path, level, resc_path, &model);
         break;
     case NL_ARMY_RANGER_3D:
-        b = NETLizard_ReadGLSpecnaz3DMapModelFile(path, level, resc_path, m_model);
+        b = NETLizard_ReadGLSpecnaz3DMapModelFile(path, level, resc_path, &model);
         break;
     case NL_SHADOW_OF_EGYPT_3D:
-        b = NETLizard_ReadGLEgypt3DMapModelFile(path, resc_path, m_model);
+        b = NETLizard_ReadGLEgypt3DMapModelFile(path, resc_path, &model);
         break;
     case NL_CLONE_3D:
-        b = NETLizard_ReadGLClone3DMapModelFile(path, resc_path, m_model);
+        b = NETLizard_ReadGLClone3DMapModelFile(path, resc_path, &model);
         break;
     case NL_CONTR_TERRORISM_3D_EPISODE_3:
-        b = NETLizard_ReadGLCT3DEp3MapModelFile(path, level, resc_path, m_model);
+        b = NETLizard_ReadGLCT3DEp3MapModelFile(path, level, resc_path, &model);
         break;
     case NL_RACING_EVOLUTION_3D:
-        b = NETLizard_ReadGLRE3DMapModelFile(path, resc_path, m_model);
+        b = NETLizard_ReadGLRE3DMapModelFile(path, resc_path, &model);
         break;
     default:
         qDebug() << "Unsupport game";
@@ -285,11 +297,11 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     qDebug() << "Load result: " << b;
     if(!b)
     {
-        free(m_model);
-        m_model = 0;
         return false;
     }
 
+    m_model = (GL_NETLizard_3D_Model *)malloc(sizeof(GL_NETLizard_3D_Model));
+    *m_model = model;
     m_renderer->SetModel(m_model);
     m_shadowRenderer->SetModel(m_model);
     m_debugRenderer->SetModel(m_model);
@@ -297,6 +309,7 @@ bool MapScene::LoadFile(const QString &file, const QString &resourcePath, int ga
     bool hasSky = m_model->bg_tex && glIsTexture(m_model->bg_tex->texid);
     if(hasSky)
         m_skyRenderer->SetTexture(m_model->bg_tex);
+    emit propertyChanged("model", ModelPtr());
 
     bound_t bound = BOUND(0, 0, 0, 0, 0, 0);
     NETLizard_GetNETLizard3DMapBound(m_model, 0, 0, &bound);
@@ -461,6 +474,7 @@ void MapScene::Reset()
         delete_GL_NETLizard_3D_Model(m_model);
         free(m_model);
         m_model = 0;
+        emit propertyChanged("model", ModelPtr());
     }
 
     NLScene::Reset();
@@ -558,6 +572,7 @@ void MapScene::SetNoclip(int b)
         {
             control->SetUpAndDownEnabled(m_noclip == 0);
         }
+        emit propertyChanged("noclip", m_noclip);
     }
 }
 
@@ -566,6 +581,7 @@ void MapScene::SetFog(bool b)
     if(m_fog != b)
     {
         m_fog = b;
+        emit propertyChanged("fog", m_fog);
     }
 }
 
@@ -575,6 +591,7 @@ void MapScene::SetSingleScene(int b)
     {
         m_singleScene = b;
         m_renderer->SetRenderItemMode(m_singleScene > 0 ? NETLizardMapModelRenderer::RenderItem_Scene : NETLizardMapModelRenderer::RenderItem_Cull);
+        emit propertyChanged("singleScene", m_singleScene);
     }
 }
 
@@ -636,6 +653,7 @@ void MapScene::SetCurrentScene(int scene)
         m_currentScene = scene;
         UpdateSkybox();
         emit currentSceneChanged(m_currentScene);
+        emit propertyChanged("currentScene", m_currentScene);
     }
 }
 
@@ -645,6 +663,7 @@ void MapScene::SetCurrentViewItem(int item)
     {
         m_currentViewItem = item;
         emit currentViewItemChanged(m_currentViewItem);
+        emit propertyChanged("currentViewItem", m_currentViewItem);
     }
 }
 
@@ -654,6 +673,7 @@ void MapScene::SetCurrentCollisionItem(int item)
     {
         m_currentCollisionItem = item;
         emit currentCollisionItemChanged(m_currentCollisionItem);
+        emit propertyChanged("currentCollisionItem", m_currentCollisionItem);
     }
 }
 
@@ -663,6 +683,7 @@ void MapScene::SetCurrentViewScene(int scene)
     {
         m_currentViewScene = scene;
         emit currentViewSceneChanged(m_currentViewScene);
+        emit propertyChanged("currentViewScene", m_currentViewScene);
     }
 }
 
