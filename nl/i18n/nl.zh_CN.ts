@@ -40,6 +40,17 @@
     </message>
 </context>
 <context>
+    <name>NLLineEditWidget</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished">编辑</translation>
+    </message>
+    <message>
+        <source>Click button or double click input to edit</source>
+        <translation type="unfinished">点击按钮或双击输入框编辑</translation>
+    </message>
+</context>
+<context>
     <name>NLSceneInfoWidget</name>
     <message>
         <source>Base</source>
@@ -238,17 +249,6 @@
     <message>
         <source>Color scheme</source>
         <translation type="unfinished">配色方案</translation>
-    </message>
-</context>
-<context>
-    <name>NLLineEditWidget</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished">编辑</translation>
-    </message>
-    <message>
-        <source>Click button or double click input to edit</source>
-        <translation type="unfinished">点击按钮或双击输入框编辑</translation>
     </message>
 </context>
 </TS>

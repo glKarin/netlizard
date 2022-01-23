@@ -86,6 +86,7 @@ struct NLLIB_EXPORT NLVariantPointer
         if(!name)
             name = "void";
     }
+    operator bool() const { return ptr != 0; }
     operator T*() { return ptr; }
     operator const T*() const { return ptr; }
     T operator*() { return *ptr; }

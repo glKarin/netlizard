@@ -22,6 +22,7 @@
 #include "nl_shadow_render.h"
 #include "stencil_shadow.h"
 #include "nl_algo.h"
+#include "nl_gl_debug.h"
 #include "engine/nlforce.h"
 
 #define OBJ_RADIUS 50
@@ -58,7 +59,11 @@ MapScene::MapScene(QWidget *parent)
       m_currentScene(-1),
       m_currentCollisionItem(-1),
       m_currentViewItem(-1),
-      m_currentViewScene(-1)
+      m_currentViewScene(-1),
+      m_shadowMethod(0),
+      m_shadowObject(0),
+      m_renderDebug(0),
+      m_cull(false)
 {
     setObjectName("MapScene");
     Settings *settings = SINGLE_INSTANCE_OBJ(Settings);
@@ -118,12 +123,8 @@ MapScene::MapScene(QWidget *parent)
     AddActor(m_shadowActor);
     m_shadowRenderer = new NETLizardShadowModelRenderer;
     m_shadowActor->SetRenderable(m_shadowRenderer);
-    //m_shadowRenderer->SetCull(settings->GetSetting<bool>("RENDER/scene_cull"));
-    int method = settings->GetSetting<int>("RENDER/shadow", SHADOW_Z_FAIL);
-    m_shadowActor->SetEnabled(method > 0);
-    m_shadowRenderer->SetStencilShadowMethod(method);
-    int shadowObj = settings->GetSetting<int>("RENDER/shadow_object", NETLIZARD_SHADOW_RENDER_ITEM);
-    m_shadowRenderer->SetShadowObject(shadowObj);
+    SetShadowMethod(settings->GetSetting<int>("RENDER/shadow", SHADOW_Z_FAIL));
+    SetShadowObject(settings->GetSetting<int>("RENDER/shadow_object", NETLIZARD_SHADOW_RENDER_ITEM));
 
     // light source
     SimpleLightSourceActor *lightSource = new SimpleLightSourceActor(NLProperties("type", static_cast<int>(SimpleLightSourceComponent::LightSourceType_Point)));
@@ -136,22 +137,46 @@ MapScene::MapScene(QWidget *parent)
     AddActor(m_debugActor);
     m_debugRenderer = new NETLizardMapModelDebugRenderer;
     m_debugActor->SetRenderable(m_debugRenderer);
-    m_debugRenderer->SetCull(settings->GetSetting<bool>("RENDER/scene_cull"));
-    m_debugRenderer->SetDebug(settings->GetSetting<int>("DEBUG/render"));
+    SetCull(settings->GetSetting<bool>("RENDER/scene_cull"));
+    SetRenderDebug(settings->GetSetting<int>("DEBUG/render"));
     m_debugRenderer->SetCamera(CurrentCamera());
 
     m_shadowRenderer->SetLightSourceType(lightSource->LightSource()->IsDirectionLighting());
 
     NLProperties props = PropertyConfig();
     props.Insert("noclip",  NLProperties("enum", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
-                                                                                            << NLPropertyPair("No clip", 0)
-                                                                                            << NLPropertyPair("Collision testing with scene", 1)
-                                                                                            << NLPropertyPair("Collision testing with scene and item", 2)
+                                                                                            << NLPropertyPair(tr("No clip"), 0)
+                                                                                            << NLPropertyPair(tr("Collision testing with scene"), 1)
+                                                                                            << NLPropertyPair(tr("Collision testing with scene and item"), 2)
                                                                                             )));
     props.Insert("singleScene",  NLProperties("enum", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
-                                                                                            << NLPropertyPair("No single scene", 0)
-                                                                                            << NLPropertyPair("Only render current single scene", 1)
-                                                                                            << NLPropertyPair("Render current scene and neighboring scene", 2)
+                                                                                            << NLPropertyPair(tr("No single scene"), 0)
+                                                                                            << NLPropertyPair(tr("Only render current single scene"), 1)
+                                                                                            << NLPropertyPair(tr("Render current scene and neighboring scene"), 2)
+                                                                                            )));
+    props.Insert("shadowObject",  NLProperties("enum", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
+                                                                                            << NLPropertyPair(tr("Only render item shadow"), NETLIZARD_SHADOW_RENDER_ITEM)
+                                                                                            << NLPropertyPair(tr("Only render scene wall shadow"), NETLIZARD_SHADOW_RENDER_SCENE_WALL)
+                                                                                            << NLPropertyPair(tr("Only render scene shadow"), NETLIZARD_SHADOW_RENDER_SCENE)
+                                                                                               << NLPropertyPair(tr("Render item and scene wall shadow"), NETLIZARD_SHADOW_RENDER_ITEM | NETLIZARD_SHADOW_RENDER_SCENE_WALL)
+                                                                                               << NLPropertyPair(tr("Render all shadow"), NETLIZARD_SHADOW_RENDER_ALL)
+                                                                                            )));
+    props.Insert("shadowMethod",  NLProperties("enum", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
+                                                                                            << NLPropertyPair(tr("No shadow"), 0)
+                                                                                            << NLPropertyPair(tr("Stencil shadow(Z-FAIL)"), SHADOW_Z_FAIL)
+                                                                                            << NLPropertyPair(tr("Stencil shadow(Z-PASS)"), SHADOW_Z_PASS)
+                                                                                            )));
+    props.Insert("renderDebug",  NLProperties("option", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
+                                                                                            << NLPropertyPair(tr("Render map bound"), NETLIZARD_DEBUG_RENDER_MAP_BOUND)
+                                                                                            << NLPropertyPair(tr("Render item vertex and normal"), NETLIZARD_DEBUG_RENDER_ITEM_VERTEX_NORMAL)
+                                                                                            << NLPropertyPair(tr("Render scene vertex and normal"), NETLIZARD_DEBUG_RENDER_SCENE_VERTEX_NORMAL)
+                                                                                                 << NLPropertyPair(tr("Render item bound"), NETLIZARD_DEBUG_RENDER_ITEM_BOUND)
+                                                                                                 << NLPropertyPair(tr("Render scene bound"), NETLIZARD_DEBUG_RENDER_SCENE_BOUND)
+                                                                                                 << NLPropertyPair(tr("Render item plane"), NETLIZARD_DEBUG_RENDER_ITEM_PLANE)
+                                                                                                 << NLPropertyPair(tr("Render scene plane"), NETLIZARD_DEBUG_RENDER_SCENE_PLANE)
+                                                                                                 << NLPropertyPair(tr("Render scene BSP"), NETLIZARD_DEBUG_RENDER_MAP_BSP)
+                                                                                                 << NLPropertyPair(tr("Render highlight view scene plane"), NETLIZARD_DEBUG_RENDER_HIGHLIGHT_VIEW_SCENE_PLANE)
+                                                                                                 << NLPropertyPair(tr("Render highlight view item"), NETLIZARD_DEBUG_RENDER_HIGHLIGHT_VIEW_ITEM)
                                                                                             )));
     SetPropertyConfig(props);
 
@@ -487,11 +512,7 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
     else if(name == "ENGINE/update_interval")
         SetUpdateInterval(value.toInt());
     else if(name == "RENDER/scene_cull")
-    {
-        m_renderer->SetCull(value.toBool());
-        //m_shadowRenderer->SetCull(m_renderer->Cull());
-        m_debugRenderer->SetCull(m_renderer->Cull());
-    }
+        SetCull(value.toBool());
     else if(name == "CONTROL_3D/move_sens")
         m_control->SetMoveSens(value.toInt());
     else if(name == "CONTROL_3D/turn_sens")
@@ -501,18 +522,11 @@ void MapScene::OnSettingChanged(const QString &name, const QVariant &value, cons
     else if(name == "CONTROL_3D/fovy_sens")
         m_control->SetFovySens(value.toFloat());
     else if(name == "RENDER/shadow")
-    {
-        int m = value.toInt();
-        m_shadowActor->SetEnabled(m > 0);
-        m_shadowRenderer->SetStencilShadowMethod(m);
-    }
+        SetShadowMethod(value.toInt());
     else if(name == "RENDER/shadow_object")
-    {
-        int shadowObj = value.toInt();
-        m_shadowRenderer->SetShadowObject(shadowObj);
-    }
+        SetShadowObject(value.toInt());
     else if(name == "DEBUG/render")
-        m_debugRenderer->SetDebug(value.toInt());
+        SetRenderDebug(value.toInt());
     else if(name == "DEBUG/noclip")
         SetNoclip(value.toInt());
     else if(name == "RENDER/fog")
@@ -592,6 +606,49 @@ void MapScene::SetSingleScene(int b)
         m_singleScene = b;
         m_renderer->SetRenderItemMode(m_singleScene > 0 ? NETLizardMapModelRenderer::RenderItem_Scene : NETLizardMapModelRenderer::RenderItem_Cull);
         emit propertyChanged("singleScene", m_singleScene);
+    }
+}
+
+void MapScene::SetShadowMethod(int i)
+{
+    if(m_shadowMethod != i)
+    {
+        m_shadowMethod = i;;
+        m_shadowActor->SetEnabled(m_shadowMethod > 0);
+        m_shadowRenderer->SetStencilShadowMethod(m_shadowMethod);
+        emit propertyChanged("shadowMethod", m_shadowMethod);
+    }
+}
+
+void MapScene::SetCull(bool b)
+{
+    if(m_cull != b)
+    {
+        m_cull = b;
+        m_renderer->SetCull(m_cull);
+        //m_shadowRenderer->SetCull(m_cull);
+        m_debugRenderer->SetCull(m_cull);
+        emit propertyChanged("cull", m_cull);
+    }
+}
+
+void MapScene::SetShadowObject(int i)
+{
+    if(m_shadowObject != i)
+    {
+        m_shadowObject = i;
+        m_shadowRenderer->SetShadowObject(m_shadowObject);
+        emit propertyChanged("shadowObject", m_shadowObject);
+    }
+}
+
+void MapScene::SetRenderDebug(int i)
+{
+    if(m_renderDebug != i)
+    {
+        m_renderDebug = i;
+        m_debugRenderer->SetDebug(m_renderDebug);
+        emit propertyChanged("renderDebug", m_renderDebug);
     }
 }
 

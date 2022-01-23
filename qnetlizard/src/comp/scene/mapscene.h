@@ -21,13 +21,17 @@ NLSCENE(MapScene)
 class MapScene : public NLScene
 {
     Q_OBJECT
+    Q_PROPERTY(int noclip READ Noclip WRITE SetNoclip FINAL)
+    Q_PROPERTY(bool fog READ Fog WRITE SetFog FINAL)
+    Q_PROPERTY(int singleScene READ SingleScene WRITE SetSingleScene FINAL)
+    Q_PROPERTY(bool cull READ Cull WRITE SetCull FINAL)
+    Q_PROPERTY(int shadowMethod READ ShadowMethod WRITE SetShadowMethod FINAL)
+    Q_PROPERTY(int shadowObject READ ShadowObject WRITE SetShadowObject FINAL)
+    Q_PROPERTY(int renderDebug READ RenderDebug WRITE SetRenderDebug FINAL)
     Q_PROPERTY(int currentScene READ CurrentScene FINAL)
     Q_PROPERTY(int currentViewItem READ CurrentViewItem FINAL)
     Q_PROPERTY(int currentCollisionItem READ CurrentCollisionItem FINAL)
     Q_PROPERTY(int currentViewScene READ CurrentViewScene FINAL)
-    Q_PROPERTY(int noclip READ Noclip WRITE SetNoclip FINAL)
-    Q_PROPERTY(bool fog READ Fog WRITE SetFog FINAL)
-    Q_PROPERTY(int singleScene READ SingleScene WRITE SetSingleScene FINAL)
     Q_PROPERTY(QVariant model READ ModelPtr FINAL)
 public:
     explicit MapScene(QWidget *parent = 0);
@@ -42,6 +46,10 @@ public:
     int Noclip() const { return m_noclip; }
     bool Fog() const { return m_fog; }
     int SingleScene() const { return m_singleScene; }
+    int ShadowMethod() const { return m_shadowMethod; }
+    bool Cull() const { return m_cull; }
+    int ShadowObject() const { return m_shadowObject; }
+    int RenderDebug() const { return m_renderDebug; }
 
     Q_SIGNALS:
     void currentSceneChanged(int scene);
@@ -52,6 +60,13 @@ public:
 public Q_SLOTS:
     bool LoadFile(const QString &file, const QString &resourcePath, int game, int level);
     void Reset();
+    void SetNoclip(int b);
+    void SetFog(bool b);
+    void SetSingleScene(int b);
+    void SetShadowMethod(int i);
+    void SetCull(bool b);
+    void SetShadowObject(int i);
+    void SetRenderDebug(int i);
 
 protected:
     virtual void Init();
@@ -63,9 +78,6 @@ protected:
 
     private Q_SLOTS:
     void OnSettingChanged(const QString &name, const QVariant &value, const QVariant &oldValue);
-    void SetNoclip(int b);
-    void SetFog(bool b);
-    void SetSingleScene(int b);
 
     private:
     void ConvToAlgoVector3(vector3_t &v);

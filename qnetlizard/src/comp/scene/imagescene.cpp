@@ -51,12 +51,12 @@ ImageScene::ImageScene(QWidget *parent)
     NLProperties props = PropertyConfig();
 
     props.Insert("alignment",  NLProperties("enum", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
-                                                                                            << NLPropertyPair("Center", static_cast<int>(Qt::AlignCenter))
-                                                                                            << NLPropertyPair("Left-Top", static_cast<int>(Qt::AlignLeft | Qt::AlignTop))
-                                                                                            << NLPropertyPair("Left-Bottom", static_cast<int>(Qt::AlignLeft | Qt::AlignBottom))
-                                                                                            << NLPropertyPair("Left-Center", static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter))
-                                                                                            << NLPropertyPair("Center-Top", static_cast<int>(Qt::AlignHCenter | Qt::AlignTop))
-                                                                                            << NLPropertyPair("Center-Bottom", static_cast<int>(Qt::AlignHCenter | Qt::AlignBottom))
+                                                                                            << NLPropertyPair(tr("Center"), static_cast<int>(Qt::AlignCenter))
+                                                                                            << NLPropertyPair(tr("Left-Top"), static_cast<int>(Qt::AlignLeft | Qt::AlignTop))
+                                                                                            << NLPropertyPair(tr("Left-Bottom"), static_cast<int>(Qt::AlignLeft | Qt::AlignBottom))
+                                                                                            << NLPropertyPair(tr("Left-Center"), static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter))
+                                                                                            << NLPropertyPair(tr("Center-Top"), static_cast<int>(Qt::AlignHCenter | Qt::AlignTop))
+                                                                                            << NLPropertyPair(tr("Center-Bottom"), static_cast<int>(Qt::AlignHCenter | Qt::AlignBottom))
                                                                                             )));
     SetPropertyConfig(props);
 

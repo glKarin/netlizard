@@ -188,6 +188,33 @@
     </message>
 </context>
 <context>
+    <name>ImageScene</name>
+    <message>
+        <source>Center</source>
+        <translation type="unfinished">中心</translation>
+    </message>
+    <message>
+        <source>Left-Top</source>
+        <translation type="unfinished">左上</translation>
+    </message>
+    <message>
+        <source>Left-Bottom</source>
+        <translation type="unfinished">左下</translation>
+    </message>
+    <message>
+        <source>Left-Center</source>
+        <translation type="unfinished">左中</translation>
+    </message>
+    <message>
+        <source>Center-Top</source>
+        <translation type="unfinished">中上</translation>
+    </message>
+    <message>
+        <source>Center-Bottom</source>
+        <translation type="unfinished">中下</translation>
+    </message>
+</context>
+<context>
     <name>ImageViewer</name>
     <message>
         <source>Type: </source>
@@ -387,6 +414,105 @@
     </message>
 </context>
 <context>
+    <name>MapScene</name>
+    <message>
+        <source>No clip</source>
+        <translation type="unfinished">不碰撞测试</translation>
+    </message>
+    <message>
+        <source>Collision testing with scene</source>
+        <translation type="unfinished">仅对场景进行碰撞测试</translation>
+    </message>
+    <message>
+        <source>Collision testing with scene and item</source>
+        <translation type="unfinished">对场景和物品进行碰撞测试</translation>
+    </message>
+    <message>
+        <source>No single scene</source>
+        <translation type="unfinished">不限制</translation>
+    </message>
+    <message>
+        <source>Only render current single scene</source>
+        <translation type="unfinished">仅渲染所在场景</translation>
+    </message>
+    <message>
+        <source>Render current scene and neighboring scene</source>
+        <translation type="unfinished">仅渲染所在场景和相邻场景</translation>
+    </message>
+    <message>
+        <source>Only render item shadow</source>
+        <translation type="unfinished">仅渲染物品阴影</translation>
+    </message>
+    <message>
+        <source>Only render scene wall shadow</source>
+        <translation type="unfinished">仅渲染场景墙壁阴影</translation>
+    </message>
+    <message>
+        <source>Only render scene shadow</source>
+        <translation type="unfinished">仅渲染场景阴影</translation>
+    </message>
+    <message>
+        <source>Render item and scene wall shadow</source>
+        <translation type="unfinished">渲染物品和场景墙壁阴影</translation>
+    </message>
+    <message>
+        <source>Render all shadow</source>
+        <translation type="unfinished">渲染所有阴影</translation>
+    </message>
+    <message>
+        <source>No shadow</source>
+        <translation type="unfinished">无阴影</translation>
+    </message>
+    <message>
+        <source>Stencil shadow(Z-FAIL)</source>
+        <translation type="unfinished">模板缓冲区阴影(Z-FAIL)</translation>
+    </message>
+    <message>
+        <source>Stencil shadow(Z-PASS)</source>
+        <translation type="unfinished">模板缓冲区阴影(Z-PASS)</translation>
+    </message>
+    <message>
+        <source>Render map bound</source>
+        <translation type="unfinished">渲染地图包围盒</translation>
+    </message>
+    <message>
+        <source>Render item vertex and normal</source>
+        <translation type="unfinished">渲染物品顶点和法线</translation>
+    </message>
+    <message>
+        <source>Render scene vertex and normal</source>
+        <translation type="unfinished">渲染场景顶点和法线</translation>
+    </message>
+    <message>
+        <source>Render item bound</source>
+        <translation type="unfinished">渲染物品包围盒</translation>
+    </message>
+    <message>
+        <source>Render scene bound</source>
+        <translation type="unfinished">渲染场景包围盒</translation>
+    </message>
+    <message>
+        <source>Render item plane</source>
+        <translation type="unfinished">渲染物品碰撞面</translation>
+    </message>
+    <message>
+        <source>Render scene plane</source>
+        <translation type="unfinished">渲染场景碰撞面</translation>
+    </message>
+    <message>
+        <source>Render scene BSP</source>
+        <translation type="unfinished">渲染场景BSP</translation>
+    </message>
+    <message>
+        <source>Render highlight view scene plane</source>
+        <translation type="unfinished">渲染高亮指向的场景碰撞面</translation>
+    </message>
+    <message>
+        <source>Render highlight view item</source>
+        <translation type="unfinished">渲染高亮指向的物品轮廓线</translation>
+    </message>
+</context>
+<context>
     <name>MapViewer</name>
     <message>
         <source>Load</source>
@@ -464,6 +590,41 @@
     <message>
         <source>Settings</source>
         <translation type="unfinished">设置</translation>
+    </message>
+</context>
+<context>
+    <name>SimpleCameraComponent</name>
+    <message>
+        <source>Perspective</source>
+        <translation type="unfinished">透视投影</translation>
+    </message>
+    <message>
+        <source>Ortho</source>
+        <translation type="unfinished">正交投影</translation>
+    </message>
+    <message>
+        <source>Center</source>
+        <translation type="unfinished">中心</translation>
+    </message>
+    <message>
+        <source>Left-Top</source>
+        <translation type="unfinished">左上</translation>
+    </message>
+    <message>
+        <source>Left-Bottom</source>
+        <translation type="unfinished">左下</translation>
+    </message>
+    <message>
+        <source>Left-Center</source>
+        <translation type="unfinished">左中</translation>
+    </message>
+    <message>
+        <source>Center-Top</source>
+        <translation type="unfinished">中上</translation>
+    </message>
+    <message>
+        <source>Center-Bottom</source>
+        <translation type="unfinished">中下</translation>
     </message>
 </context>
 <context>
