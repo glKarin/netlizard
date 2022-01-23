@@ -180,6 +180,7 @@ void AnimationViewer::Init()
     connect(m_animationScene, SIGNAL(playing()), this, SLOT(OnPlaying()));
     connect(m_animationScene, SIGNAL(stopped()), this, SLOT(OnStopped()));
 
+    m_animationScene->setMinimumWidth(128);
     CentralWidget()->setLayout(layout);
     SetTitle(tr("NETLizard 3D animation model viewer"));
 }

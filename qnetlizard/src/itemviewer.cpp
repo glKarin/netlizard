@@ -103,6 +103,7 @@ void ItemViewer::Init()
 
     connect(m_gameComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));
 
+    m_itemScene->setMinimumSize(128, 128);
     SetCentralWidget(m_itemScene);
     SetTitle(tr("NETLizard 3D item model viewer"));
 }

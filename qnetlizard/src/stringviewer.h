@@ -4,7 +4,7 @@
 #include "baseviewer.h"
 
 class QLabel;
-class QTextEdit;
+class QPlainTextEdit;
 class QPushButton;
 
 class StringViewer : public BaseViewer
@@ -31,8 +31,8 @@ private Q_SLOTS:
 private:
     QLabel *m_encodeLabel;
     QLabel *m_decodeLabel;
-    QTextEdit *m_encodeInput;
-    QTextEdit *m_decodeInput;
+    QPlainTextEdit *m_encodeInput;
+    QPlainTextEdit *m_decodeInput;
     QPushButton *m_encodeClearButton;
     QPushButton *m_decodeClearButton;
     QPushButton *m_encodeButton;

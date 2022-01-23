@@ -21,8 +21,6 @@ public slots:
 private:
     void Init();
     void Reset();
-    void SetData(char *data, int len);
-    void UnsetData();
 
 private Q_SLOTS:
     void OpenFileChooser();
@@ -35,10 +33,7 @@ private:
     QFileDialog *m_fileChooser;
     QPushButton *m_saveButton;
     QFileDialog *m_saveChooser;
-    struct {
-        char *data;
-        int len;
-    } m_data;
+    QByteArray m_data;
     
     Q_DISABLE_COPY(TextViewer)
 };

@@ -70,6 +70,7 @@ void SpriteViewer::Init()
     AddTool(button);
     connect(m_indexList, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(RenderIndex(QListWidgetItem *)));
 
+    m_spriteScene->setMinimumWidth(72);
     CentralWidget()->setLayout(layout);
     SetTitle(tr("NETLizard sprite resource viewer"));
 }

@@ -60,6 +60,7 @@ void NETLizardFontRenderer::UpdateLayout()
         GLint c = NETLizard_FontGetCharCountOfWidth(m_font, width - 2 * m_paddingWidth, p);
         if(c == -1)
             break;
+        if(c == 0) c = 1;
         GLint i;
         for(i = 0; i < c; i++)
         {

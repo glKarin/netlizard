@@ -35,8 +35,10 @@
 #include "engine/nlactor.h"
 #include "engine/nlscript.h"
 #include "engine/nlforce.h"
+#include "engine/nlrigidbody.h"
 #include "utils/nlguiutility.h"
 #include "nllineeditwidget.h"
+#include "nlmemorypointerwidget.h"
 
 #define DOUBLE_SPINBOX_SINGLE_STEP 1 //0.1
 #define DOUBLE_SPINBOX_DECIMAL 6
@@ -598,16 +600,25 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
     }
     else
     {
-        NLTextBrowserWidget *w = new NLTextBrowserWidget;
-        WIDGET_SET_TYPE(w, NLTextBrowserWidget);
-        w->SetMaxHeight(0);
-        w->setReadOnly(true); // TODO: can not edit directly
-        w->setLineWrapMode(QTextBrowser::WidgetWidth);
-        w->setWordWrapMode(QTextOption::WrapAnywhere);
-//      w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-        w->setPlainText(GenEditorFieldString(item.value));
-        connect(w, SIGNAL(destroyed(QObject *)), this, SLOT(OnItemDestroy(QObject *)));
-        widget = w;
+        const QString item_type(item.value.typeName());
+        if(item_type.contains("*"))
+        {
+            QWidget *w = GenMemoryPointerField(item.value);
+            WIDGET_SET_TYPE(w, NLTextBrowserWidget);
+            widget = w;
+        }
+        else
+        {
+            NLTextBrowserWidget *w = new NLTextBrowserWidget;
+            WIDGET_SET_TYPE(w, NLTextBrowserWidget);
+            w->SetMaxHeight(0);
+            w->setReadOnly(true); // TODO: can not edit directly
+            w->setLineWrapMode(QTextBrowser::WidgetWidth);
+            w->setWordWrapMode(QTextOption::WrapAnywhere);
+    //      w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+            w->setPlainText(item.value.toString());
+            widget = w;
+        }
     }
 
     if(widget)
@@ -678,7 +689,11 @@ void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const QVa
     }
     else if(WIDGETNAME_IS_TYPE(type, NLTextBrowserWidget))
     {
-        static_cast<NLTextBrowserWidget *>(widget)->setPlainText(GenEditorFieldString(value));
+        static_cast<NLTextBrowserWidget *>(widget)->setPlainText(value.toString());
+    }
+    else if(WIDGETNAME_IS_TYPE(type, NLMemoryPointerWidget))
+    {
+        //static_cast<NLMemoryPointerWidget *>(widget)->SetPointer(GenEditorFieldString(value));
     }
     else
         qWarning() << "Unsupported widget type -> " << type;
@@ -809,85 +824,107 @@ bool NLPropFormGroupWidget::CheckDragData(const QMimeData *d, QWidget *widget)
     return true;
 }
 
-QString NLPropFormGroupWidget::GenEditorFieldString(const QVariant &item_value)
+QWidget * NLPropFormGroupWidget::GenMemoryPointerField(const QVariant &item_value)
 {
+    NLMemoryPointerWidget *widget = new NLMemoryPointerWidget;
     const QString item_type(item_value.typeName());
+    void *ptr = 0;
+    QString name;
+    QString typeName(item_type);
     const int type = item_value.type();
-    QString ret;
+
     if(type == QMetaType::QObjectStar)
     {
         QObject *qo = item_value.value<QObject *>();
+        typeName = "QObject*";
         if(qo)
         {
             if(nlinstanceofv(qo, NLObject))
             {
                 NLObject *nlo = static_cast<NLObject *>(qo);
-                ret = ("(NLObject *)" + (nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : "") + QString().sprintf("(%p)", nlo));
+                name = nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" + "(" + QString::number(static_cast<int>(nlo->Type())) +")" : "";
+                typeName = "NLObject*";
             }
             else
-                ret = ("(QObject *)" + (qo ? qo->objectName() : "") + QString().sprintf("(%p)", qo));
+                name = qo ? qo->objectName() : "";
         }
-        else
-            ret = (QString().sprintf("(QObject *)(%p)", qo));
+        ptr = qo;
     }
     else if(type == QMetaType::QWidgetStar)
     {
         QWidget *qo = item_value.value<QWidget *>();
+        typeName = "QWidget*";
         if(qo)
         {
             if(nlinstanceofv(qo, NLScene))
             {
                 NLScene *nlo = static_cast<NLScene *>(qo);
-                ret = "(NLScene *)" + (nlo ? nlo->objectName() : "") + QString().sprintf("(%p)", nlo);
+                name = nlo ? nlo->objectName() : "";
+                typeName = "NLScene*";
             }
             else
-                ret = "(QWidget *)" + (qo ? qo->objectName() : "") + QString().sprintf("(%p)", qo);
+                name = qo ? qo->objectName() : "";
         }
-        else
-            ret = (QString().sprintf("(QWidget *)(%p)", qo));
+        ptr = qo;
     }
     else if(type == QMetaType::VoidStar)
     {
         void *vo = item_value.value<void *>();
-        ret = (QString().sprintf("(void *)(%p)", vo));
+        ptr = vo;
+        typeName = "void*";
     }
     else
     {
         if(item_type == "NLRenderable*")
         {
             NLRenderable *renderable = item_value.value<NLRenderable *>();
-            ret = "(NLRenderable *)" + (renderable ? renderable->Name() : "") + QString().sprintf("(%p)", renderable);
+            name = renderable ? renderable->Name() : "";
+            typeName = "NLRenderable*";
+            ptr = renderable;
         }
         else if(item_type == "NLScene*")
         {
             NLScene *scene = item_value.value<NLScene *>();
-            ret = "(NLScene *)" + (scene ? scene->objectName() : "") + QString().sprintf("(%p)", scene);
+            name = scene ? scene->objectName() : "";
+            typeName = "NLScene*";
+            ptr = scene;
         }
         else if(item_type == "NLSceneCamera*")
         {
             NLSceneCamera *camera = item_value.value<NLSceneCamera *>();
-            ret = QString().sprintf("(NLSceneCamera *)(%p)", camera);
+            typeName = "NLSceneCamera*";
+            ptr = camera;
         }
 #define NLOBJECT_SHOW(T) \
         if(item_type == #T "*") { \
-            T *nlo = static_cast<T *>(item_value.value<T *>()); \
-ret = QString("(" + item_type + ")").replace("*", " *") + (nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : "") + QString().sprintf("(%p)", nlo); \
+            T *nlo = item_value.value<T *>(); \
+            name = nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : ""; \
+            typeName = #T "*"; \
+            ptr = nlo; \
         }
         else NLOBJECT_SHOW(NLObject)
         else NLOBJECT_SHOW(NLActor)
+        else NLOBJECT_SHOW(NLRigidbody)
         else NLOBJECT_SHOW(NLComponent)
         else NLOBJECT_SHOW(NLScript)
         else NLOBJECT_SHOW(NLForce)
 #undef NLOBJECT_SHOW
         else if(item_type == "NLVariantGeneralPointer")
         {
-            QString str = item_value.value<NLVariantGeneralPointer>();
-            ret = str;
+            NLVariantGeneralPointer p = item_value.value<NLVariantGeneralPointer>();
+            typeName = QString(p.name) + "*";
+            ptr = p.ptr;
         }
         else
         {
-            ret = item_value.toString();
         }
     }
-    return ret;
+
+    int i = typeName.lastIndexOf("*");
+    if(i >= 0)
+    {
+        typeName.remove(i, 1);
+    }
+    widget->SetMemoryPointer(typeName, ptr);
+    return widget;
 }

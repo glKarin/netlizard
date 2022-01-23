@@ -101,6 +101,7 @@ void MapViewer::Init()
     connect(m_mapScene, SIGNAL(currentViewItemChanged(int)), this, SLOT(UpdateSceneInfo()));
     connect(m_mapScene, SIGNAL(currentViewSceneChanged(int)), this, SLOT(UpdateSceneInfo()));
 
+    m_mapScene->setMinimumSize(128, 128);
     SetCentralWidget(m_mapScene);
     SetTitle(tr("NETLizard 3D map model viewer"));
 }

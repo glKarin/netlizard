@@ -102,6 +102,7 @@ void ImageViewer::Init()
     connect(m_typeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnTypeCurrentIndexChanged(int)));
     connect(m_alignComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnAlignCurrentIndexChanged(int)));
 
+    m_imageScene->setMinimumSize(128, 128);
     SetCentralWidget(m_imageScene);
     SetTitle(tr("NETLizard image/texture resource viewer"));
 }

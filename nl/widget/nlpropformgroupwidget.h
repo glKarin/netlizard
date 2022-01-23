@@ -103,7 +103,7 @@ protected:
 
 private:
     void SetupObjectProperty();
-    QString GenEditorFieldString(const QVariant &value);
+    QWidget * GenMemoryPointerField(const QVariant &value);
 
 private Q_SLOTS:
     void OnItemDestroy(QObject *obj = 0);

@@ -3,7 +3,7 @@
 
 #include "baseviewer.h"
 
-class QTextEdit;
+class QPlainTextEdit;
 class FontScene;
 class QPushButton;
 class QFileDialog;
@@ -18,8 +18,6 @@ public:
     virtual NLScene * Scene();
     
 signals:
-    
-public slots:
 
 private Q_SLOTS:
     bool RenderString();
@@ -35,8 +33,11 @@ private:
     void Init();
     virtual void Reset();
 
+public Q_SLOTS:
+    void OnPropertyChanged(const QString &name, const QVariant &value, int type = 0);
+
 private:
-    QTextEdit *m_textInput;
+    QPlainTextEdit *m_textInput;
     FontScene *m_fontScene;
     QPushButton *m_renderButton;
     QFileDialog *m_cfFileChooser;

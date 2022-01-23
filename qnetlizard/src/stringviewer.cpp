@@ -4,7 +4,7 @@
 
 #include <QLabel>
 #include <QPushButton>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
@@ -33,8 +33,8 @@ StringViewer::~StringViewer()
 void StringViewer::Init()
 {
     QHBoxLayout *layout = new QHBoxLayout;
-    m_encodeInput = new QTextEdit;
-    m_decodeInput = new QTextEdit;
+    m_encodeInput = new QPlainTextEdit;
+    m_decodeInput = new QPlainTextEdit;
     QVBoxLayout *toolLayout = new QVBoxLayout;
     m_encodeLabel = new QLabel;
     m_decodeLabel = new QLabel;
@@ -97,6 +97,9 @@ void StringViewer::Init()
     TitleLabel()->setVisible(false);
     CentralWidget()->setLayout(layout);
     SetTitle(tr("NETLizard string source viewer"));
+
+    m_decodeInput->setPlainText("lvl");
+    EncodeString();
 }
 
 bool StringViewer::DecodeString()
@@ -125,8 +128,8 @@ bool StringViewer::DecodeString()
     char *str = nlDecodeStringi(arr, res.size());
     if(!str)
         return false;
-    m_decodeInput->setText(str);
-    m_decodeLabel->setText(QString("Decode text - length: %1").arg(strlen(str)));
+    m_decodeInput->setPlainText(str);
+    m_decodeLabel->setText(QString("Decode string - length: %1").arg(strlen(str)));
     free(str);
     delete[] arr;
     return true;
@@ -147,8 +150,8 @@ bool StringViewer::EncodeString()
     for(int i = 0; i < len; i++)
         list << QString::number(arr[i]);
 
-    m_encodeInput->setText(list.join(", "));
-    m_encodeLabel->setText(QString("Encode text - length: %1").arg(len));
+    m_encodeInput->setPlainText(list.join(", "));
+    m_encodeLabel->setText(QString("Encode int array - length: %1").arg(len));
     free(arr);
     return true;
 }
@@ -156,8 +159,8 @@ bool StringViewer::EncodeString()
 void StringViewer::Reset(int mask)
 {
     BaseViewer::Reset();
-    m_encodeLabel->setText("Encode text");
-    m_decodeLabel->setText("Decode text");
+    m_encodeLabel->setText("Encode int array");
+    m_decodeLabel->setText("Decode string");
     if(mask & 1)
         m_encodeInput->clear();
     if(mask & 2)

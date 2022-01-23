@@ -20,14 +20,12 @@ TextViewer::TextViewer(QWidget *parent) :
     m_saveButton(0),
     m_saveChooser(0)
 {
-    memset(&m_data, 0, sizeof(m_data));
     setObjectName("TextViewer");
     Init();
 }
 
 TextViewer::~TextViewer()
 {
-    UnsetData();
 }
 
 void TextViewer::Init()
@@ -51,6 +49,7 @@ void TextViewer::Init()
 
     connect(button, SIGNAL(clicked()), this, SLOT(OpenFileChooser()));
 
+    m_textBrowser->setAcceptRichText(false);
     SetCentralWidget(m_textBrowser);
 
     SetTitle(tr("NETLizard text resource viewer"));
@@ -81,8 +80,8 @@ bool TextViewer::OpenFile(const QString &file)
     }
 
     SetTitleLabel(QString(tr("%1 - Length: %2")).arg(file).arg(len));
-    m_textBrowser->setText(QString::fromLocal8Bit(data));
-    SetData(data, len);
+    m_textBrowser->setPlainText(QString::fromLocal8Bit(data));
+    m_data = QByteArray(data, len);
     m_saveButton->setEnabled(true);
 
     return true;
@@ -90,7 +89,7 @@ bool TextViewer::OpenFile(const QString &file)
 
 void TextViewer::OpenSaveChooser()
 {
-    if(!m_data.data)
+    if(m_data.isEmpty())
         return;
 
     if(!m_saveChooser)
@@ -113,34 +112,18 @@ void TextViewer::Reset()
 {
     BaseViewer::Reset();
     m_saveButton->setEnabled(false);
-    m_textBrowser->setText("");
-    UnsetData();
-}
-
-void TextViewer::UnsetData()
-{
-    free(m_data.data);
-    memset(&m_data, 0, sizeof(m_data));
-}
-
-void TextViewer::SetData(char *data, int len)
-{
-    UnsetData();
-    if(data)
-    {
-        m_data.data = data;
-        m_data.len = len;
-    }
+    m_textBrowser->clear();
+    m_data.clear();
 }
 
 bool TextViewer::SaveData(const QString &file)
 {
-    if(!m_data.data)
+    if(m_data.isEmpty())
     {
         QMessageBox::warning(this, tr("Error"), tr("No data!"));
         return false;
     }
-    bool res = NLIOUtility::file_put_contents(file, m_data.data, (quint64)m_data.len);
+    bool res = NLIOUtility::file_put_contents(file, m_data.constData(), (uint)m_data.length());
     if(res)
         QMessageBox::information(this, tr("Success"), tr("File path is ") + file);
     else

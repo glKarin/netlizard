@@ -8,7 +8,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QMessageBox>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QColorDialog>
 
 #include "gl/nl_gl.h"
@@ -54,9 +54,8 @@ void FontViewer::Init()
     vLayout->addWidget(m_renderButton);
     vLayout->addStretch();
 
-    m_textInput = new QTextEdit;
+    m_textInput = new QPlainTextEdit;
     m_textInput->setEnabled(false);
-    m_textInput->setAcceptRichText(false);
     layout->addWidget(m_textInput);
     layout->addLayout(vLayout);
     m_fontScene = new FontScene;
@@ -84,6 +83,8 @@ void FontViewer::Init()
     connect(button, SIGNAL(clicked()), this, SLOT(LoadFont()));
     AddTool(button);
 
+    m_fontScene->setMinimumWidth(72);
+    connect(m_fontScene, SIGNAL(propertyChanged(const QString &, const QVariant &, int)), this, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
     CentralWidget()->setLayout(layout);
     SetTitle(tr("NETLizard font resource viewer"));
 }
@@ -197,4 +198,15 @@ void FontViewer::Reset()
 NLScene * FontViewer::Scene()
 {
     return m_fontScene;
+}
+
+void FontViewer::OnPropertyChanged(const QString &name, const QVariant &value, int type)
+{
+    if(name == "text" && type == 0 && m_textInput->isEnabled())
+    {
+        QString old = m_textInput->toPlainText();
+        QString n = value.toString();
+        if(old != n)
+            m_textInput->setPlainText(n);
+    }
 }
