@@ -4,17 +4,20 @@
 #include <QWidget>
 
 class QLabel;
-class NLMemoryPointerWidgetLabel;
+class NLLineEditWidget;
 
 class NLMemoryPointerWidget : public QWidget
 {
     Q_OBJECT
+public:
+    typedef QString (*GetPtrName_f)(const QString &typeName, void *ptr);
 
 public:
     explicit NLMemoryPointerWidget(QWidget *widget = 0);
     virtual ~NLMemoryPointerWidget();
     void * Pointer() const { return m_ptr; }
     QString TypeName() const { return m_typeName; }
+    void SetGetPtrNameFunc(GetPtrName_f f) { m_getPtrNameFunc = f; }
 
 public Q_SLOTS:
     void SetMemoryPointer(const QString &type, void *ptr);
@@ -39,9 +42,9 @@ private:
     QString m_typeName;
     void *m_ptr;
     QLabel *m_typeLabel;
-    NLMemoryPointerWidgetLabel *m_fileLabel;
-
-    friend class NLMemoryPointerWidgetLabel;
+    NLLineEditWidget *m_fileLabel;
+    GetPtrName_f m_getPtrNameFunc;
+    QLabel *m_nameLabel;
 
     Q_DISABLE_COPY(NLMemoryPointerWidget)
 };

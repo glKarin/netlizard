@@ -2,7 +2,6 @@
 
 #include <QDebug>
 #include <QHBoxLayout>
-#include <QLineEdit>
 #include <QPushButton>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -10,29 +9,7 @@
 #include <QUrl>
 
 #include "engine/nldbg.h"
-
-class NLFileChooserWidgetLabel : public QLineEdit
-{
-public:
-    explicit  NLFileChooserWidgetLabel(NLFileChooserWidget *widget, QWidget *parent = 0)
-        : QLineEdit(parent),
-          m_fileChooser(widget)
-    {
-        setObjectName("NLFileChooserWidgetLabel");
-    }
-    virtual ~NLFileChooserWidgetLabel() { NLDEBUG_DESTROY_Q; }
-
-protected:
-    virtual void mouseDoubleClickEvent(QMouseEvent *event) {
-        QLineEdit::mouseDoubleClickEvent(event);
-        m_fileChooser->EditOrChooseFile();
-    }
-
-private:
-    NLFileChooserWidget *m_fileChooser;
-
-    friend class NLFileChooserWidget;
-};
+#include "nllineeditwidget.h"
 
 NLFileChooserWidget::NLFileChooserWidget(QWidget *widget)
     : QWidget(widget),
@@ -52,7 +29,7 @@ NLFileChooserWidget::~NLFileChooserWidget()
 void NLFileChooserWidget::Init()
 {
     QHBoxLayout *mainLayout = new QHBoxLayout;
-    m_fileLabel = new NLFileChooserWidgetLabel(this);
+    m_fileLabel = new NLLineEditWidget;
     m_openButton = new QPushButton(tr("Open"));
     //m_reloadButton = new QPushButton(tr("Reload"));
 
@@ -70,7 +47,7 @@ void NLFileChooserWidget::Init()
     //connect(m_fileLabel, SIGNAL(textEdited(const QString &)), this, SLOT(SetFile(const QString &)));
     connect(m_openButton, SIGNAL(clicked()), this, SLOT(OpenFileDialog()));
     connect(m_fileLabel, SIGNAL(editingFinished()), this, SLOT(OpenFile()));
-    //connect(m_reloadButton, SIGNAL(clicked()), this, SLOT(ReloadFile()));
+    connect(m_fileLabel, SIGNAL(dblClicked()), this, SLOT(EditOrChooseFile()));
 
     UpdateWidget();
     setAcceptDrops(true);

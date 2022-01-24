@@ -1,126 +1,150 @@
 #include "nllineeditwidget.h"
 
+#include <QFontMetrics>
 #include <QDebug>
-#include <QHBoxLayout>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QFileDialog>
-#include <QFileInfo>
-#include <QTextEdit>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QAction>
 
 #include "engine/nldbg.h"
-#include "nltexteditdialog.h"
+#include "utils/nlguiutility.h"
 
-class NLLineEditWidgetLabel : public QLineEdit
-{
-public:
-    NLLineEditWidgetLabel(NLLineEditWidget *widget, QWidget *parent = 0)
-        : QLineEdit(parent),
-          m_editWidget(widget)
-    {
-        setObjectName("NLLineEditWidgetLabel");
-    }
-    virtual ~NLLineEditWidgetLabel() {
-        NLDEBUG_DESTROY_Q;
-    }
+#define SINGLE_CHAR "C"
 
-protected:
-    virtual void mouseDoubleClickEvent(QMouseEvent *event) {
-        //QLineEdit::mouseDoubleClickEvent(event);
-        m_editWidget->OpenTextEditor();
-    }
-
-private:
-    NLLineEditWidget *m_editWidget;
-
-    friend class NLLineEditWidget;
-};
-
-
-
-NLLineEditWidget::NLLineEditWidget(QWidget *widget)
-    : QWidget(widget),
-      m_textLabel(0),
-      m_editButton(0)
+NLLineEditWidget::NLLineEditWidget(QWidget *parent)
+    : QLineEdit(parent),
+      m_autoSize(false),
+      m_dblEdit(false),
+      m_horizontalPaddings(4)
 {
     setObjectName("NLLineEditWidget");
-    Init();
+}
+
+NLLineEditWidget::NLLineEditWidget(const QString &content, QWidget *parent)
+    : QLineEdit(content, parent),
+      m_autoSize(false),
+      m_dblEdit(false),
+      m_horizontalPaddings(4)
+{
+    setObjectName("NLLineEditWidget");
 }
 
 NLLineEditWidget::~NLLineEditWidget()
 {
-    NLDEBUG_DESTROY_Q
+    NLDEBUG_DESTROY_Q;
 }
 
-void NLLineEditWidget::Init()
+void NLLineEditWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    QHBoxLayout *mainLayout = new QHBoxLayout;
-    m_textLabel = new NLLineEditWidgetLabel(this);
-    m_editButton = new QPushButton(tr("Edit"));
-
-    QMargins margins = mainLayout->contentsMargins();
-    margins.setLeft(0);
-    margins.setRight(0);
-    mainLayout->setContentsMargins(margins);
-    m_textLabel->setPlaceholderText(tr("Click button or double click input to edit"));
-
-    mainLayout->addWidget(m_textLabel, 1);
-    mainLayout->addWidget(m_editButton);
-
-    m_textLabel->setReadOnly(true);
-    connect(m_editButton, SIGNAL(clicked()), this, SLOT(OpenTextEditor()));
-
-    UpdateWidget();
-
-    setLayout(mainLayout);
-}
-
-void NLLineEditWidget::UpdateWidget()
-{
-    m_textLabel->setText(m_text);
-    m_editButton->setToolTip(m_text);
-    m_textLabel->setToolTip(m_text);
-}
-
-void NLLineEditWidget::SetText(const QString &t)
-{
-    if(m_text != t)
+    if(m_dblEdit && isReadOnly())
     {
-        m_text = t;
-        UpdateWidget();
-        emit textChanged(m_text);
+        setReadOnly(false);
+    }
+    else
+        QLineEdit::mouseDoubleClickEvent(event);
+    emit dblClicked();
+}
+
+void NLLineEditWidget::SetAutoSize(bool b)
+{
+    if(m_autoSize != b)
+    {
+        m_autoSize = b;
+        if(m_autoSize)
+        {
+            connect(this, SIGNAL(textChanged(const QString &)), this, SLOT(OnTextChanged(const QString &)));
+            setFixedSize(sizeHint());
+        }
+        else
+        {
+            disconnect(this, SLOT(OnTextChanged(const QString &)));
+            NLGUIUtility::UnsetFixedSize(this);
+        }
     }
 }
 
-void NLLineEditWidget::SetEditText(const QString &t)
+void NLLineEditWidget::SetDoubleClickEdit(bool b)
 {
-    if(m_text != t)
+    if(m_dblEdit != b)
     {
-        m_text = t;
-        UpdateWidget();
-        emit textChanged(m_text);
-        emit textEdited(m_text);
+        m_dblEdit = b;
+        setReadOnly(m_dblEdit);
+        if(m_dblEdit)
+        {
+            connect(this, SIGNAL(editingFinished()), this, SLOT(FinishEdit()));
+            connect(this, SIGNAL(returnPressed()), this, SLOT(FinishEdit()));
+        }
+        else
+        {
+            disconnect(this, SLOT(FinishEdit()));
+            disconnect(this, SLOT(FinishEdit()));
+        }
     }
 }
 
-void NLLineEditWidget::SetReadOnly(bool b)
+void NLLineEditWidget::FinishEdit()
 {
-    setEnabled(!b);
+    if(m_dblEdit)
+        setReadOnly(true);
 }
 
-void NLLineEditWidget::OpenTextEditor()
+void NLLineEditWidget::FixSize(QSize &size) const
 {
-    QString text = NLTextEditDialog::Edit(m_text, m_syntax, this);
-    if(text.isNull())
-        return;
-    SetEditText(text);
+    QMargins margins = contentsMargins();
+    size.rwidth() += margins.left() + margins.right();
+    size.rheight() += margins.top() + margins.bottom();
+    margins = textMargins();
+    size.rwidth() += margins.left() + margins.right();
+    size.rheight() += margins.top() + margins.bottom();
 }
 
-void NLLineEditWidget::SetSyntax(const QString &type)
+void NLLineEditWidget::OnTextChanged(const QString &text)
 {
-    if(m_syntax != type)
-        m_syntax = type;
+    if(m_autoSize)
+    {
+        QSize size = CaleTextSize(text.isEmpty() ? SINGLE_CHAR : text);
+        FixSize(size);
+        setFixedSize(size);
+    }
+}
+
+QSize NLLineEditWidget::CaleTextSize(const QString &str) const
+{
+    QFontMetrics fm(fontMetrics());
+    QSize size = fm.size(Qt::TextSingleLine, str);
+    size.rheight() += fm.leading() * 4;
+    size.rwidth() += fm.leading() * m_horizontalPaddings;
+    return size;
+}
+
+void NLLineEditWidget::SetHorizontalPaddings(int padding)
+{
+    if(m_horizontalPaddings != padding)
+    {
+        m_horizontalPaddings = padding;
+        if(m_autoSize)
+        {
+            setFixedSize(sizeHint());
+        }
+    }
+}
+
+QSize NLLineEditWidget::sizeHint() const
+{
+    if(m_autoSize)
+    {
+        QString str(text());
+        QSize size = CaleTextSize(str.isEmpty() ? SINGLE_CHAR : str);
+        FixSize(size);
+        return size;
+    }
+    return QLineEdit::sizeHint();
+}
+
+QSize NLLineEditWidget::minimumSizeHint() const
+{
+    if(m_autoSize)
+    {
+        QSize size = CaleTextSize("C");
+        FixSize(size);
+        return size;
+    }
+    return QLineEdit::minimumSizeHint();
 }

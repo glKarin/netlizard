@@ -103,7 +103,7 @@ protected:
 
 private:
     void SetupObjectProperty();
-    bool GenMemoryPointerField(const QVariant &value, void *&ptr, QString &typeName, QString &name);
+    bool GenMemoryPointerField(const QVariant &value, void *&ptr, QString &typeName);
 
 private Q_SLOTS:
     void OnItemDestroy(QObject *obj = 0);

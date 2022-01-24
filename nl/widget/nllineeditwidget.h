@@ -1,45 +1,39 @@
 #ifndef _KARIN_NLLINEEDITWIDGET_H
 #define _KARIN_NLLINEEDITWIDGET_H
 
-#include <QWidget>
+#include <QLineEdit>
 
-class QPushButton;
-class NLLineEditWidgetLabel;
-
-class NLLineEditWidget : public QWidget
+class NLLineEditWidget : public QLineEdit
 {
     Q_OBJECT
-
 public:
-    explicit NLLineEditWidget(QWidget *widget = 0);
+    explicit NLLineEditWidget(QWidget *parent = 0);
+    explicit NLLineEditWidget(const QString &content, QWidget *parent = 0);
     virtual ~NLLineEditWidget();
-    QString Text() const { return m_text; }
-    QString Syntax() const { return m_syntax; }
-    void SetSyntax(const QString &type);
-
-public Q_SLOTS:
-    void SetText(const QString &t);
-    void SetReadOnly(bool b);
+    bool IsAutoSize() const { return m_autoSize; }
+    void SetAutoSize(bool b);
+    bool IsDoubleClickEdit() const { return m_dblEdit; }
+    void SetDoubleClickEdit(bool b);
+    virtual QSize sizeHint() const;
+    virtual QSize minimumSizeHint() const;
+    void SetHorizontalPaddings(int padding);
 
 Q_SIGNALS:
-    void textChanged(const QString &text);
-    void textEdited(const QString &text);
+    void dblClicked();
+
+protected:
+    virtual void mouseDoubleClickEvent(QMouseEvent *event);
+    void FixSize(QSize &size) const;
+    QSize CaleTextSize(const QString &str) const;
 
 private Q_SLOTS:
-    void OpenTextEditor();
-    void SetEditText(const QString &t);
+    void OnTextChanged(const QString &text);
+    void FinishEdit();
 
 private:
-    void Init();
-    void UpdateWidget();
-
-private:
-    QString m_text;
-    NLLineEditWidgetLabel *m_textLabel;
-    QPushButton *m_editButton;
-    QString m_syntax;
-
-    friend class NLLineEditWidgetLabel;
+    bool m_autoSize;
+    bool m_dblEdit;
+    int m_horizontalPaddings;
 
     Q_DISABLE_COPY(NLLineEditWidget)
 };

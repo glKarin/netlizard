@@ -5,7 +5,7 @@
 #include <QLineEdit>
 
 class QPushButton;
-class NLFileChooserWidgetLabel;
+class NLLineEditWidget;
 
 class NLFileChooserWidget : public QWidget
 {
@@ -39,11 +39,9 @@ private:
 
 private:
     QString m_file;
-    NLFileChooserWidgetLabel *m_fileLabel;
+    NLLineEditWidget *m_fileLabel;
     QPushButton *m_openButton;
     //QPushButton *m_reloadButton;
-
-    friend class NLFileChooserWidgetLabel;
 
     Q_DISABLE_COPY(NLFileChooserWidget)
 };

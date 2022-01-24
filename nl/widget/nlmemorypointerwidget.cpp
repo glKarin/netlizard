@@ -7,44 +7,17 @@
 #include <QDragEnterEvent>
 #include <QUrl>
 
+#include "nllineeditwidget.h"
 #include "engine/nldbg.h"
-
-class NLMemoryPointerWidgetLabel : public QLineEdit
-{
-public:
-   explicit  NLMemoryPointerWidgetLabel(NLMemoryPointerWidget *widget, QWidget *parent = 0)
-        : QLineEdit(parent),
-          m_pointerWidget(widget)
-    {
-        setObjectName("NLMemoryPointerWidgetLabel");
-    }
-    virtual ~NLMemoryPointerWidgetLabel() {
-        NLDEBUG_DESTROY_Q
-    }
-
-Q_SIGNALS:
-    void dblClicked();
-
-protected:
-    virtual void mouseDoubleClickEvent(QMouseEvent *event) {
-        QLineEdit::mouseDoubleClickEvent(event);
-        //emit dblClicked();
-    }
-
-private:
-    NLMemoryPointerWidget *m_pointerWidget;
-
-    friend class NLMemoryPointerWidget;
-};
-
-
 
 NLMemoryPointerWidget::NLMemoryPointerWidget(QWidget *widget)
     : QWidget(widget),
       m_typeName("void"),
       m_ptr(0),
       m_typeLabel(0),
-      m_fileLabel(0)
+      m_fileLabel(0),
+      m_getPtrNameFunc(0),
+      m_nameLabel(0)
 {
     setObjectName("NLMemoryPointerWidget");
     Init();
@@ -59,10 +32,16 @@ void NLMemoryPointerWidget::Init()
 {
     QHBoxLayout *mainLayout = new QHBoxLayout;
     m_typeLabel = new QLabel;
-    m_fileLabel = new NLMemoryPointerWidgetLabel(this);
+    m_nameLabel = new QLabel;
+    m_fileLabel = new NLLineEditWidget(this);
     QLabel *label = new QLabel("0x");
 
+    m_fileLabel->SetDoubleClickEdit(true);
+    m_fileLabel->SetAutoSize(true);
+    m_fileLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_typeLabel->setScaledContents(true);
+    m_nameLabel->setWordWrap(true);
+    m_nameLabel->setMaximumWidth(240);
     QMargins margins = mainLayout->contentsMargins();
     margins.setLeft(0);
     margins.setRight(0);
@@ -71,11 +50,16 @@ void NLMemoryPointerWidget::Init()
     margins.setRight(0);
     margins.setLeft(8);
     label->setContentsMargins(margins);
+    margins = m_fileLabel->textMargins();
+    margins.setLeft(0);
+    m_fileLabel->setTextMargins(margins);
 
     mainLayout->setSpacing(0);
     mainLayout->addWidget(m_typeLabel);
     mainLayout->addWidget(label);
-    mainLayout->addWidget(m_fileLabel, 1);
+    mainLayout->addWidget(m_fileLabel);
+    mainLayout->addWidget(m_nameLabel);
+    mainLayout->addStretch(1);
 
     //connect(m_fileLabel, SIGNAL(editingFinished()), this, SLOT(OpenFile()));
 
@@ -87,12 +71,15 @@ void NLMemoryPointerWidget::Init()
 
 void NLMemoryPointerWidget::UpdateWidget()
 {
-    QString typeName = m_typeName + " *";
+    QString typeName = m_typeName + "*";
     m_typeLabel->setText(typeName);
     m_typeLabel->setToolTip(typeName);
-    QString ptrName(QString::number(reinterpret_cast<uintptr_t>(m_ptr), 16));
+    QString ptrName = QString().sprintf("%p", m_ptr);
+    ptrName = ptrName.right(ptrName.length() - 2);
     m_fileLabel->setText(ptrName);
     m_fileLabel->setToolTip("0x" + ptrName);
+    m_nameLabel->setText(m_getPtrNameFunc ? m_getPtrNameFunc(m_typeName, m_ptr) : "");
+    m_fileLabel->adjustSize();
 }
 
 void NLMemoryPointerWidget::SetMemoryPointer(const QString &type, void *ptr)

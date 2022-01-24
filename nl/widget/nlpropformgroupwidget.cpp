@@ -37,7 +37,7 @@
 #include "engine/nlforce.h"
 #include "engine/nlrigidbody.h"
 #include "utils/nlguiutility.h"
-#include "nllineeditwidget.h"
+#include "nleditwidget.h"
 #include "nlmemorypointerwidget.h"
 
 #define DOUBLE_SPINBOX_SINGLE_STEP 1 //0.1
@@ -76,6 +76,79 @@
 #define WIDGET_TYPE(w) (w)->property(WIDGET_TYPE_KEY).toString()
 #define WIDGETNAME_IS_TYPE(w, T) (w) == #T
 #define WIDGET_IS_TYPE(w, T) (WIDGET_TYPE(w)) == #T
+
+static QString get_ptr_name(const QString &typeName, void *ptr)
+{
+    QString name;
+    if(!ptr)
+        return name;
+
+    if(typeName == "QObject")
+    {
+        QObject *qo = reinterpret_cast<QObject *>(ptr);
+        if(qo)
+        {
+            if(nlinstanceofv(qo, NLObject))
+            {
+                NLObject *nlo = static_cast<NLObject *>(qo);
+                name = nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" + "(" + QString::number(static_cast<int>(nlo->Type())) +")" : "";
+            }
+            else
+                name = qo ? qo->objectName() : "";
+        }
+    }
+    else if(typeName == "QWidget")
+    {
+        QWidget *qo = reinterpret_cast<QWidget *>(ptr);
+        if(qo)
+        {
+            if(nlinstanceofv(qo, NLScene))
+            {
+                NLScene *nlo = static_cast<NLScene *>(qo);
+                name = nlo ? nlo->objectName() : "";
+            }
+            else
+                name = qo ? qo->objectName() : "";
+        }
+    }
+    else if(typeName == "void")
+    {
+    }
+    else
+    {
+        if(typeName == "NLRenderable")
+        {
+            NLRenderable *renderable = reinterpret_cast<NLRenderable *>(ptr);
+            name = renderable ? renderable->Name() : "";
+        }
+        else if(typeName == "NLScene")
+        {
+            NLScene *scene = reinterpret_cast<NLScene *>(ptr);
+            name = scene ? scene->objectName() : "";
+        }
+        else if(typeName == "NLSceneCamera")
+        {
+        }
+#define NLOBJECT_SHOW(T) \
+        if(typeName == #T) { \
+            T *nlo = reinterpret_cast<T *>(ptr); \
+            name = nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : ""; \
+        }
+        else NLOBJECT_SHOW(NLObject)
+        else NLOBJECT_SHOW(NLActor)
+        else NLOBJECT_SHOW(NLRigidbody)
+        else NLOBJECT_SHOW(NLComponent)
+        else NLOBJECT_SHOW(NLScript)
+        else NLOBJECT_SHOW(NLForce)
+#undef NLOBJECT_SHOW
+        else
+        {
+        }
+    }
+
+    return name;
+}
+
 
 class NLFormLabelWidget : public QLabel
 {
@@ -562,8 +635,8 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
         }
         else
         {
-            NLLineEditWidget *w = new NLLineEditWidget;
-            WIDGET_SET_TYPE(w, NLLineEditWidget);
+            NLEditWidget *w = new NLEditWidget;
+            WIDGET_SET_TYPE(w, NLEditWidget);
             w->SetText(item.value.toString());
             w->SetReadOnly(item.readonly);
             w->SetSyntax(item.prop.value("syntax").toString());
@@ -600,12 +673,13 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
     }
     else
     {
-        QString ptypeName, pname;
+        QString ptypeName;
         void *pptr = 0;
-        if(GenMemoryPointerField(item.value, pptr, ptypeName, pname))
+        if(GenMemoryPointerField(item.value, pptr, ptypeName))
         {
             NLMemoryPointerWidget *w = new NLMemoryPointerWidget;
             WIDGET_SET_TYPE(w, NLMemoryPointerWidget);
+            w->SetGetPtrNameFunc(get_ptr_name);
             widget = w;
             w->SetMemoryPointer(ptypeName, pptr);
         }
@@ -677,9 +751,9 @@ void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const QVa
     {
         static_cast<NLFileChooserWidget *>(widget)->SetFile(value.toString());
     }
-    else if(WIDGETNAME_IS_TYPE(type, NLLineEditWidget))
+    else if(WIDGETNAME_IS_TYPE(type, NLEditWidget))
     {
-        static_cast<NLLineEditWidget *>(widget)->SetText(value.toString());
+        static_cast<NLEditWidget *>(widget)->SetText(value.toString());
     }
     else if(WIDGETNAME_IS_TYPE(type, NLColorChooserWidget))
     {
@@ -695,9 +769,9 @@ void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const QVa
     }
     else if(WIDGETNAME_IS_TYPE(type, NLMemoryPointerWidget))
     {
-        QString ptypeName, pname;
+        QString ptypeName;
         void *pptr = 0;
-        if(GenMemoryPointerField(value, pptr, ptypeName, pname))
+        if(GenMemoryPointerField(value, pptr, ptypeName))
         {
             static_cast<NLMemoryPointerWidget *>(widget)->SetMemoryPointer(ptypeName, pptr);
         }
@@ -831,11 +905,10 @@ bool NLPropFormGroupWidget::CheckDragData(const QMimeData *d, QWidget *widget)
     return true;
 }
 
-bool NLPropFormGroupWidget::GenMemoryPointerField(const QVariant &item_value, void *&rptr, QString &rtypeName, QString &rname)
+bool NLPropFormGroupWidget::GenMemoryPointerField(const QVariant &item_value, void *&rptr, QString &rtypeName)
 {
     const QString item_type(item_value.typeName());
     void *ptr = 0;
-    QString name;
     QString typeName(item_type);
     const int type = item_value.type();
 
@@ -847,12 +920,8 @@ bool NLPropFormGroupWidget::GenMemoryPointerField(const QVariant &item_value, vo
         {
             if(nlinstanceofv(qo, NLObject))
             {
-                NLObject *nlo = static_cast<NLObject *>(qo);
-                name = nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" + "(" + QString::number(static_cast<int>(nlo->Type())) +")" : "";
                 typeName = "NLObject*";
             }
-            else
-                name = qo ? qo->objectName() : "";
         }
         ptr = qo;
     }
@@ -864,12 +933,8 @@ bool NLPropFormGroupWidget::GenMemoryPointerField(const QVariant &item_value, vo
         {
             if(nlinstanceofv(qo, NLScene))
             {
-                NLScene *nlo = static_cast<NLScene *>(qo);
-                name = nlo ? nlo->objectName() : "";
                 typeName = "NLScene*";
             }
-            else
-                name = qo ? qo->objectName() : "";
         }
         ptr = qo;
     }
@@ -884,14 +949,12 @@ bool NLPropFormGroupWidget::GenMemoryPointerField(const QVariant &item_value, vo
         if(item_type == "NLRenderable*")
         {
             NLRenderable *renderable = item_value.value<NLRenderable *>();
-            name = renderable ? renderable->Name() : "";
             typeName = "NLRenderable*";
             ptr = renderable;
         }
         else if(item_type == "NLScene*")
         {
             NLScene *scene = item_value.value<NLScene *>();
-            name = scene ? scene->objectName() : "";
             typeName = "NLScene*";
             ptr = scene;
         }
@@ -904,7 +967,6 @@ bool NLPropFormGroupWidget::GenMemoryPointerField(const QVariant &item_value, vo
 #define NLOBJECT_SHOW(T) \
         if(item_type == #T "*") { \
             T *nlo = item_value.value<T *>(); \
-            name = nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : ""; \
             typeName = #T "*"; \
             ptr = nlo; \
         }
@@ -934,6 +996,5 @@ bool NLPropFormGroupWidget::GenMemoryPointerField(const QVariant &item_value, vo
     }
     rtypeName = typeName;
     rptr = ptr;
-    rname = name;
     return true;
 }
