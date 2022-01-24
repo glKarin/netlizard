@@ -600,12 +600,14 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
     }
     else
     {
-        const QString item_type(item.value.typeName());
-        if(item_type.contains("*"))
+        QString ptypeName, pname;
+        void *pptr = 0;
+        if(GenMemoryPointerField(item.value, pptr, ptypeName, pname))
         {
-            QWidget *w = GenMemoryPointerField(item.value);
-            WIDGET_SET_TYPE(w, NLTextBrowserWidget);
+            NLMemoryPointerWidget *w = new NLMemoryPointerWidget;
+            WIDGET_SET_TYPE(w, NLMemoryPointerWidget);
             widget = w;
+            w->SetMemoryPointer(ptypeName, pptr);
         }
         else
         {
@@ -693,7 +695,12 @@ void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const QVa
     }
     else if(WIDGETNAME_IS_TYPE(type, NLMemoryPointerWidget))
     {
-        //static_cast<NLMemoryPointerWidget *>(widget)->SetPointer(GenEditorFieldString(value));
+        QString ptypeName, pname;
+        void *pptr = 0;
+        if(GenMemoryPointerField(value, pptr, ptypeName, pname))
+        {
+            static_cast<NLMemoryPointerWidget *>(widget)->SetMemoryPointer(ptypeName, pptr);
+        }
     }
     else
         qWarning() << "Unsupported widget type -> " << type;
@@ -824,9 +831,8 @@ bool NLPropFormGroupWidget::CheckDragData(const QMimeData *d, QWidget *widget)
     return true;
 }
 
-QWidget * NLPropFormGroupWidget::GenMemoryPointerField(const QVariant &item_value)
+bool NLPropFormGroupWidget::GenMemoryPointerField(const QVariant &item_value, void *&rptr, QString &rtypeName, QString &rname)
 {
-    NLMemoryPointerWidget *widget = new NLMemoryPointerWidget;
     const QString item_type(item_value.typeName());
     void *ptr = 0;
     QString name;
@@ -917,6 +923,7 @@ QWidget * NLPropFormGroupWidget::GenMemoryPointerField(const QVariant &item_valu
         }
         else
         {
+            return false;
         }
     }
 
@@ -925,6 +932,8 @@ QWidget * NLPropFormGroupWidget::GenMemoryPointerField(const QVariant &item_valu
     {
         typeName.remove(i, 1);
     }
-    widget->SetMemoryPointer(typeName, ptr);
-    return widget;
+    rtypeName = typeName;
+    rptr = ptr;
+    rname = name;
+    return true;
 }

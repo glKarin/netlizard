@@ -9,16 +9,35 @@
 
 #include "engine/nldbg.h"
 
-NLMemoryPointerWidgetLabel::~NLMemoryPointerWidgetLabel()
+class NLMemoryPointerWidgetLabel : public QLineEdit
 {
-    NLDEBUG_DESTROY_Q;
-}
+public:
+   explicit  NLMemoryPointerWidgetLabel(NLMemoryPointerWidget *widget, QWidget *parent = 0)
+        : QLineEdit(parent),
+          m_pointerWidget(widget)
+    {
+        setObjectName("NLMemoryPointerWidgetLabel");
+    }
+    virtual ~NLMemoryPointerWidgetLabel() {
+        NLDEBUG_DESTROY_Q
+    }
 
-void NLMemoryPointerWidgetLabel::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    QLineEdit::mouseDoubleClickEvent(event);
-    emit dblClicked();
-}
+Q_SIGNALS:
+    void dblClicked();
+
+protected:
+    virtual void mouseDoubleClickEvent(QMouseEvent *event) {
+        QLineEdit::mouseDoubleClickEvent(event);
+        //emit dblClicked();
+    }
+
+private:
+    NLMemoryPointerWidget *m_pointerWidget;
+
+    friend class NLMemoryPointerWidget;
+};
+
+
 
 NLMemoryPointerWidget::NLMemoryPointerWidget(QWidget *widget)
     : QWidget(widget),
@@ -40,19 +59,25 @@ void NLMemoryPointerWidget::Init()
 {
     QHBoxLayout *mainLayout = new QHBoxLayout;
     m_typeLabel = new QLabel;
-    m_fileLabel = new NLMemoryPointerWidgetLabel;
+    m_fileLabel = new NLMemoryPointerWidgetLabel(this);
+    QLabel *label = new QLabel("0x");
 
     m_typeLabel->setScaledContents(true);
     QMargins margins = mainLayout->contentsMargins();
     margins.setLeft(0);
     margins.setRight(0);
     mainLayout->setContentsMargins(margins);
+    margins = label->contentsMargins();
+    margins.setRight(0);
+    margins.setLeft(8);
+    label->setContentsMargins(margins);
 
+    mainLayout->setSpacing(0);
     mainLayout->addWidget(m_typeLabel);
+    mainLayout->addWidget(label);
     mainLayout->addWidget(m_fileLabel, 1);
 
     //connect(m_fileLabel, SIGNAL(editingFinished()), this, SLOT(OpenFile()));
-    //connect(m_fileLabel, SIGNAL(dblClicked()), this, SLOT(EditOrChooseFile()));
 
     UpdateWidget();
     setAcceptDrops(true);
@@ -62,7 +87,7 @@ void NLMemoryPointerWidget::Init()
 
 void NLMemoryPointerWidget::UpdateWidget()
 {
-    QString typeName = m_typeName + "*";
+    QString typeName = m_typeName + " *";
     m_typeLabel->setText(typeName);
     m_typeLabel->setToolTip(typeName);
     QString ptrName(QString::number(reinterpret_cast<uintptr_t>(m_ptr), 16));

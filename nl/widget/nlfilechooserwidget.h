@@ -5,24 +5,7 @@
 #include <QLineEdit>
 
 class QPushButton;
-
-class NLFileChooserWidgetLabel : public QLineEdit
-{
-    Q_OBJECT
-
-public:
-    explicit NLFileChooserWidgetLabel(QWidget *parent = 0)
-        : QLineEdit(parent) { setObjectName("NLFileChooserWidgetLabel"); }
-   explicit  NLFileChooserWidgetLabel(const QString &contents, QWidget *parent = 0)
-        : QLineEdit(contents, parent) { setObjectName("NLFileChooserWidgetLabel"); }
-    virtual ~NLFileChooserWidgetLabel();
-
-Q_SIGNALS:
-    void dblClicked();
-
-protected:
-    virtual void mouseDoubleClickEvent(QMouseEvent *event);
-};
+class NLFileChooserWidgetLabel;
 
 class NLFileChooserWidget : public QWidget
 {
@@ -59,6 +42,8 @@ private:
     NLFileChooserWidgetLabel *m_fileLabel;
     QPushButton *m_openButton;
     //QPushButton *m_reloadButton;
+
+    friend class NLFileChooserWidgetLabel;
 
     Q_DISABLE_COPY(NLFileChooserWidget)
 };

@@ -2,27 +2,9 @@
 #define _KARIN_NLMEMORYPOINTERWIDGET_H
 
 #include <QWidget>
-#include <QLineEdit>
 
 class QLabel;
-
-class NLMemoryPointerWidgetLabel : public QLineEdit
-{
-    Q_OBJECT
-
-public:
-    explicit NLMemoryPointerWidgetLabel(QWidget *parent = 0)
-        : QLineEdit(parent) { setObjectName("NLMemoryPointerWidgetLabel"); }
-   explicit  NLMemoryPointerWidgetLabel(const QString &contents, QWidget *parent = 0)
-        : QLineEdit(contents, parent) { setObjectName("NLMemoryPointerWidgetLabel"); }
-    virtual ~NLMemoryPointerWidgetLabel();
-
-Q_SIGNALS:
-    void dblClicked();
-
-protected:
-    virtual void mouseDoubleClickEvent(QMouseEvent *event);
-};
+class NLMemoryPointerWidgetLabel;
 
 class NLMemoryPointerWidget : public QWidget
 {
@@ -58,6 +40,8 @@ private:
     void *m_ptr;
     QLabel *m_typeLabel;
     NLMemoryPointerWidgetLabel *m_fileLabel;
+
+    friend class NLMemoryPointerWidgetLabel;
 
     Q_DISABLE_COPY(NLMemoryPointerWidget)
 };

@@ -14,16 +14,32 @@
 #include "engine/nldbg.h"
 #include "nltexteditdialog.h"
 
-NLLineEditWidgetLabel::~NLLineEditWidgetLabel()
+class NLLineEditWidgetLabel : public QLineEdit
 {
-    NLDEBUG_DESTROY_Q;
-}
+public:
+    NLLineEditWidgetLabel(NLLineEditWidget *widget, QWidget *parent = 0)
+        : QLineEdit(parent),
+          m_editWidget(widget)
+    {
+        setObjectName("NLLineEditWidgetLabel");
+    }
+    virtual ~NLLineEditWidgetLabel() {
+        NLDEBUG_DESTROY_Q;
+    }
 
-void NLLineEditWidgetLabel::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    //QLineEdit::mouseDoubleClickEvent(event);
-    emit dblClicked();
-}
+protected:
+    virtual void mouseDoubleClickEvent(QMouseEvent *event) {
+        //QLineEdit::mouseDoubleClickEvent(event);
+        m_editWidget->OpenTextEditor();
+    }
+
+private:
+    NLLineEditWidget *m_editWidget;
+
+    friend class NLLineEditWidget;
+};
+
+
 
 NLLineEditWidget::NLLineEditWidget(QWidget *widget)
     : QWidget(widget),
@@ -42,7 +58,7 @@ NLLineEditWidget::~NLLineEditWidget()
 void NLLineEditWidget::Init()
 {
     QHBoxLayout *mainLayout = new QHBoxLayout;
-    m_textLabel = new NLLineEditWidgetLabel;
+    m_textLabel = new NLLineEditWidgetLabel(this);
     m_editButton = new QPushButton(tr("Edit"));
 
     QMargins margins = mainLayout->contentsMargins();
@@ -56,7 +72,6 @@ void NLLineEditWidget::Init()
 
     m_textLabel->setReadOnly(true);
     connect(m_editButton, SIGNAL(clicked()), this, SLOT(OpenTextEditor()));
-    connect(m_textLabel, SIGNAL(dblClicked()), this, SLOT(OpenTextEditor()));
 
     UpdateWidget();
 

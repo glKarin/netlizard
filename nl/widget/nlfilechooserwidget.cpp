@@ -11,16 +11,28 @@
 
 #include "engine/nldbg.h"
 
-NLFileChooserWidgetLabel::~NLFileChooserWidgetLabel()
+class NLFileChooserWidgetLabel : public QLineEdit
 {
-    NLDEBUG_DESTROY_Q;
-}
+public:
+    explicit  NLFileChooserWidgetLabel(NLFileChooserWidget *widget, QWidget *parent = 0)
+        : QLineEdit(parent),
+          m_fileChooser(widget)
+    {
+        setObjectName("NLFileChooserWidgetLabel");
+    }
+    virtual ~NLFileChooserWidgetLabel() { NLDEBUG_DESTROY_Q; }
 
-void NLFileChooserWidgetLabel::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    QLineEdit::mouseDoubleClickEvent(event);
-    emit dblClicked();
-}
+protected:
+    virtual void mouseDoubleClickEvent(QMouseEvent *event) {
+        QLineEdit::mouseDoubleClickEvent(event);
+        m_fileChooser->EditOrChooseFile();
+    }
+
+private:
+    NLFileChooserWidget *m_fileChooser;
+
+    friend class NLFileChooserWidget;
+};
 
 NLFileChooserWidget::NLFileChooserWidget(QWidget *widget)
     : QWidget(widget),
@@ -40,7 +52,7 @@ NLFileChooserWidget::~NLFileChooserWidget()
 void NLFileChooserWidget::Init()
 {
     QHBoxLayout *mainLayout = new QHBoxLayout;
-    m_fileLabel = new NLFileChooserWidgetLabel;
+    m_fileLabel = new NLFileChooserWidgetLabel(this);
     m_openButton = new QPushButton(tr("Open"));
     //m_reloadButton = new QPushButton(tr("Reload"));
 
@@ -59,7 +71,6 @@ void NLFileChooserWidget::Init()
     connect(m_openButton, SIGNAL(clicked()), this, SLOT(OpenFileDialog()));
     connect(m_fileLabel, SIGNAL(editingFinished()), this, SLOT(OpenFile()));
     //connect(m_reloadButton, SIGNAL(clicked()), this, SLOT(ReloadFile()));
-    connect(m_fileLabel, SIGNAL(dblClicked()), this, SLOT(EditOrChooseFile()));
 
     UpdateWidget();
     setAcceptDrops(true);

@@ -2,27 +2,9 @@
 #define _KARIN_NLLINEEDITWIDGET_H
 
 #include <QWidget>
-#include <QLineEdit>
 
 class QPushButton;
-
-class NLLineEditWidgetLabel : public QLineEdit
-{
-    Q_OBJECT
-
-public:
-    NLLineEditWidgetLabel(QWidget *parent = 0)
-        : QLineEdit(parent) { setObjectName("NLLineEditWidgetLabel"); }
-    NLLineEditWidgetLabel(const QString &contents, QWidget *parent = 0)
-        : QLineEdit(contents, parent) { setObjectName("NLLineEditWidgetLabel"); }
-    virtual ~NLLineEditWidgetLabel();
-
-Q_SIGNALS:
-    void dblClicked();
-
-protected:
-    virtual void mouseDoubleClickEvent(QMouseEvent *event);
-};
+class NLLineEditWidgetLabel;
 
 class NLLineEditWidget : public QWidget
 {
@@ -56,6 +38,8 @@ private:
     NLLineEditWidgetLabel *m_textLabel;
     QPushButton *m_editButton;
     QString m_syntax;
+
+    friend class NLLineEditWidgetLabel;
 
     Q_DISABLE_COPY(NLLineEditWidget)
 };

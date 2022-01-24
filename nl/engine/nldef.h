@@ -74,6 +74,19 @@ typedef struct vector3_s NLVector3;
 typedef GLmatrix NLMatrix4;
 typedef QPair<QString, QVariant> QVariantPair;
 
+namespace NL
+{
+extern const NLVector3 Init_Up_z;
+extern const NLVector3 Init_Up_y;
+extern const NLVector3 Init_Direction_z;
+extern const NLVector3 Init_Direction_y;
+extern const NLVector3 Init_Right;
+extern const NLVector3 Init_Position;
+extern const NLVector3 Init_Rotation;
+extern const NLVector3 Init_Scale;
+extern const void *Init_void_ptr;
+}
+
 template <class T>
 struct NLLIB_EXPORT NLVariantPointer
 {
@@ -100,8 +113,9 @@ struct NLLIB_EXPORT NLVariantPointer
 typedef NLVariantPointer<void> NLVariantGeneralPointer;
 typedef NLVariantGeneralPointer NLVariantVoidPointer;
 #define NLMAKE_VARIANT_POINTER(X, p) (NL::make_variant_pointer<X>(p, #X))
-#define NLMAKE_VARIANT_NULL_POINTER(X) NLMAKE_VARIANT_POINTER(X, 0)
+#define NLMAKE_VARIANT_NULL_POINTER(X) (NL::make_variant_pointer<X>(0, #X))
 #define NLMAKE_VARIANT_VOID_POINTER(X, p) (NL::make_variant_pointer<void>(p, #X))
+
 namespace NL
 {
 template <class T>
@@ -174,17 +188,5 @@ if(x) { \
 }
 
 Q_DECLARE_METATYPE(NLVector3)
-
-namespace NL
-{
-extern const NLVector3 Init_Up_z;
-extern const NLVector3 Init_Up_y;
-extern const NLVector3 Init_Direction_z;
-extern const NLVector3 Init_Direction_y;
-extern const NLVector3 Init_Right;
-extern const NLVector3 Init_Position;
-extern const NLVector3 Init_Rotation;
-extern const NLVector3 Init_Scale;
-}
 
 #endif // _KARIN_NLDEF_H

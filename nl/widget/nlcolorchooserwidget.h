@@ -2,26 +2,8 @@
 #define _KARIN_NLCOLORCHOOSERWIDGET_H
 
 #include <QWidget>
-#include <QPushButton>
 
-class NLColorChooserWidgetLabel : public QPushButton
-{
-    Q_OBJECT
-
-public:
-    explicit NLColorChooserWidgetLabel(QWidget *parent = 0);
-    virtual ~NLColorChooserWidgetLabel();
-    QColor Color() const { return m_color; }
-
-public Q_SLOTS:
-    void SetColor(const QColor &color);
-
-private:
-    void Init();
-
-private:
-    QColor m_color;
-};
+class NLColorChooserWidgetLabel;
 
 class NLColorChooserWidget : public QWidget
 {

@@ -3,10 +3,28 @@
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QColorDialog>
+#include <QPushButton>
 
 #include "engine/nldbg.h"
 
 #define DEFAULT_COLOR QColor::fromRgbF(0, 0, 0, 1)
+
+class NLColorChooserWidgetLabel : public QPushButton
+{
+public:
+    explicit NLColorChooserWidgetLabel(QWidget *parent = 0);
+    virtual ~NLColorChooserWidgetLabel() {
+        NLDEBUG_DESTROY_Q;
+    }
+    QColor Color() const { return m_color; }
+    void SetColor(const QColor &color);
+
+private:
+    void Init();
+
+private:
+    QColor m_color;
+};
 
 NLColorChooserWidgetLabel::NLColorChooserWidgetLabel(QWidget *parent)
     : QPushButton(parent),
@@ -33,10 +51,7 @@ void NLColorChooserWidgetLabel::SetColor(const QColor &color)
     }
 }
 
-NLColorChooserWidgetLabel::~NLColorChooserWidgetLabel()
-{
-    NLDEBUG_DESTROY_Q;
-}
+
 
 NLColorChooserWidget::NLColorChooserWidget(QWidget *widget)
     : QWidget(widget),
