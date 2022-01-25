@@ -77,7 +77,14 @@
 #define WIDGETNAME_IS_TYPE(w, T) (w) == #T
 #define WIDGET_IS_TYPE(w, T) (WIDGET_TYPE(w)) == #T
 
-static QString get_ptr_name(const QString &typeName, void *ptr)
+class NLEditorMemoryPointerWidget : public NLMemoryPointerWidget
+{
+protected:
+    virtual QString GetPtrName(const QString &typeName, void *ptr);
+    virtual bool FromVariant(const QVariant &item_value, QString &rtypeName, void *&rptr);
+};
+
+QString NLEditorMemoryPointerWidget::GetPtrName(const QString &typeName, void *ptr)
 {
     QString name;
     if(!ptr)
@@ -91,7 +98,30 @@ static QString get_ptr_name(const QString &typeName, void *ptr)
             if(nlinstanceofv(qo, NLObject))
             {
                 NLObject *nlo = static_cast<NLObject *>(qo);
-                name = nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" + "(" + QString::number(static_cast<int>(nlo->Type())) +")" : "";
+                QString nltype;
+                switch(nlo->Type())
+                {
+                case NLObject::Type_Actor:
+                    if(nlinstanceofv(qo, NLRigidbody))
+                        nltype = "NLRigidbody";
+                    else
+                        nltype = "NLActor";
+                    break;
+                case NLObject::Type_Component:
+                    nltype = "NLComponent";
+                    break;
+                case NLObject::Type_Script:
+                    nltype = "NLScript";
+                    break;
+                case NLObject::Type_Force:
+                    nltype = "NLForce";
+                    break;
+                case NLObject::Type_General:
+                default:
+                    nltype = "NLObject";
+                    break;
+                }
+                name = nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" + "(" + nltype +")" : "";
             }
             else
                 name = qo ? qo->objectName() : "";
@@ -148,6 +178,124 @@ static QString get_ptr_name(const QString &typeName, void *ptr)
 
     return name;
 }
+
+bool NLEditorMemoryPointerWidget::FromVariant(const QVariant &item_value, QString &rtypeName, void *&rptr)
+{
+    if(!item_value.isValid())
+        return false;
+    const QString item_type(item_value.typeName());
+    void *ptr = 0;
+    QString typeName(item_type);
+    const int type = item_value.type();
+
+    if(type == QMetaType::QObjectStar)
+    {
+        QObject *qo = item_value.value<QObject *>();
+        typeName = "QObject*";
+        if(qo)
+        {
+            if(nlinstanceofv(qo, NLObject))
+            {
+                switch(static_cast<NLObject *>(qo)->Type())
+                {
+                case NLObject::Type_Actor:
+                    if(nlinstanceofv(qo, NLRigidbody))
+                        typeName = "NLRigidbody*";
+                    else
+                        typeName = "NLActor*";
+                    break;
+                case NLObject::Type_Component:
+                    typeName = "NLComponent*";
+                    break;
+                case NLObject::Type_Script:
+                    typeName = "NLScript*";
+                    break;
+                case NLObject::Type_Force:
+                    typeName = "NLForce*";
+                    break;
+                case NLObject::Type_General:
+                default:
+                    typeName = "NLObject*";
+                    break;
+                }
+            }
+        }
+        ptr = qo;
+    }
+    else if(type == QMetaType::QWidgetStar)
+    {
+        QWidget *qo = item_value.value<QWidget *>();
+        typeName = "QWidget*";
+        if(qo)
+        {
+            if(nlinstanceofv(qo, NLScene))
+            {
+                typeName = "NLScene*";
+            }
+        }
+        ptr = qo;
+    }
+    else if(type == QMetaType::VoidStar)
+    {
+        void *vo = item_value.value<void *>();
+        ptr = vo;
+        typeName = "void*";
+    }
+    else
+    {
+        if(item_type == "NLRenderable*")
+        {
+            NLRenderable *renderable = item_value.value<NLRenderable *>();
+            typeName = "NLRenderable*";
+            ptr = renderable;
+        }
+        else if(item_type == "NLScene*")
+        {
+            NLScene *scene = item_value.value<NLScene *>();
+            typeName = "NLScene*";
+            ptr = scene;
+        }
+        else if(item_type == "NLSceneCamera*")
+        {
+            NLSceneCamera *camera = item_value.value<NLSceneCamera *>();
+            typeName = "NLSceneCamera*";
+            ptr = camera;
+        }
+#define NLOBJECT_SHOW(T) \
+        if(item_type == #T "*") { \
+            T *nlo = item_value.value<T *>(); \
+            typeName = #T "*"; \
+            ptr = nlo; \
+        }
+        else NLOBJECT_SHOW(NLObject)
+        else NLOBJECT_SHOW(NLActor)
+        else NLOBJECT_SHOW(NLRigidbody)
+        else NLOBJECT_SHOW(NLComponent)
+        else NLOBJECT_SHOW(NLScript)
+        else NLOBJECT_SHOW(NLForce)
+#undef NLOBJECT_SHOW
+        else if(item_type == "NLVariantGeneralPointer")
+        {
+            NLVariantGeneralPointer p = item_value.value<NLVariantGeneralPointer>();
+            typeName = QString(p.name) + "*";
+            ptr = p.ptr;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    int i = typeName.lastIndexOf("*");
+    if(i >= 0)
+    {
+        typeName.remove(i, 1);
+    }
+    rtypeName = typeName;
+    rptr = ptr;
+    return true;
+}
+
 
 
 class NLFormLabelWidget : public QLabel
@@ -671,30 +819,24 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
         connect(w, SIGNAL(linkActivated(const QString &)), this, SLOT(OnLinkActivated(const QString &)));
         widget = w;
     }
+    else if(item.widget == "memory")
+    {
+        NLEditorMemoryPointerWidget *w = new NLEditorMemoryPointerWidget;
+        WIDGET_SET_TYPE(w, NLEditorMemoryPointerWidget);
+        w->SetMemoryPointer(item.value);
+        widget = w;
+    }
     else
     {
-        QString ptypeName;
-        void *pptr = 0;
-        if(GenMemoryPointerField(item.value, pptr, ptypeName))
-        {
-            NLMemoryPointerWidget *w = new NLMemoryPointerWidget;
-            WIDGET_SET_TYPE(w, NLMemoryPointerWidget);
-            w->SetGetPtrNameFunc(get_ptr_name);
-            widget = w;
-            w->SetMemoryPointer(ptypeName, pptr);
-        }
-        else
-        {
-            NLTextBrowserWidget *w = new NLTextBrowserWidget;
-            WIDGET_SET_TYPE(w, NLTextBrowserWidget);
-            w->SetMaxHeight(0);
-            w->setReadOnly(true); // TODO: can not edit directly
-            w->setLineWrapMode(QTextBrowser::WidgetWidth);
-            w->setWordWrapMode(QTextOption::WrapAnywhere);
-    //      w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-            w->setPlainText(item.value.toString());
-            widget = w;
-        }
+        NLTextBrowserWidget *w = new NLTextBrowserWidget;
+        WIDGET_SET_TYPE(w, NLTextBrowserWidget);
+        w->SetMaxHeight(0);
+        w->setReadOnly(true); // TODO: can not edit directly
+        w->setLineWrapMode(QTextBrowser::WidgetWidth);
+        w->setWordWrapMode(QTextOption::WrapAnywhere);
+//      w->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+        w->setPlainText(item.value.toString());
+        widget = w;
     }
 
     if(widget)
@@ -767,14 +909,9 @@ void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const QVa
     {
         static_cast<NLTextBrowserWidget *>(widget)->setPlainText(value.toString());
     }
-    else if(WIDGETNAME_IS_TYPE(type, NLMemoryPointerWidget))
+    else if(WIDGETNAME_IS_TYPE(type, NLEditorMemoryPointerWidget))
     {
-        QString ptypeName;
-        void *pptr = 0;
-        if(GenMemoryPointerField(value, pptr, ptypeName))
-        {
-            static_cast<NLMemoryPointerWidget *>(widget)->SetMemoryPointer(ptypeName, pptr);
-        }
+        static_cast<NLEditorMemoryPointerWidget *>(widget)->SetMemoryPointer(value);
     }
     else
         qWarning() << "Unsupported widget type -> " << type;
@@ -902,99 +1039,5 @@ bool NLPropFormGroupWidget::CheckDragData(const QMimeData *d, QWidget *widget)
     QVariant vSelf = GetObjectProperty(m_object, nameSelf);
     if(qstrcmp(v.typeName(), vSelf.typeName()) != 0) // not same type
         return false;
-    return true;
-}
-
-bool NLPropFormGroupWidget::GenMemoryPointerField(const QVariant &item_value, void *&rptr, QString &rtypeName)
-{
-    const QString item_type(item_value.typeName());
-    void *ptr = 0;
-    QString typeName(item_type);
-    const int type = item_value.type();
-
-    if(type == QMetaType::QObjectStar)
-    {
-        QObject *qo = item_value.value<QObject *>();
-        typeName = "QObject*";
-        if(qo)
-        {
-            if(nlinstanceofv(qo, NLObject))
-            {
-                typeName = "NLObject*";
-            }
-        }
-        ptr = qo;
-    }
-    else if(type == QMetaType::QWidgetStar)
-    {
-        QWidget *qo = item_value.value<QWidget *>();
-        typeName = "QWidget*";
-        if(qo)
-        {
-            if(nlinstanceofv(qo, NLScene))
-            {
-                typeName = "NLScene*";
-            }
-        }
-        ptr = qo;
-    }
-    else if(type == QMetaType::VoidStar)
-    {
-        void *vo = item_value.value<void *>();
-        ptr = vo;
-        typeName = "void*";
-    }
-    else
-    {
-        if(item_type == "NLRenderable*")
-        {
-            NLRenderable *renderable = item_value.value<NLRenderable *>();
-            typeName = "NLRenderable*";
-            ptr = renderable;
-        }
-        else if(item_type == "NLScene*")
-        {
-            NLScene *scene = item_value.value<NLScene *>();
-            typeName = "NLScene*";
-            ptr = scene;
-        }
-        else if(item_type == "NLSceneCamera*")
-        {
-            NLSceneCamera *camera = item_value.value<NLSceneCamera *>();
-            typeName = "NLSceneCamera*";
-            ptr = camera;
-        }
-#define NLOBJECT_SHOW(T) \
-        if(item_type == #T "*") { \
-            T *nlo = item_value.value<T *>(); \
-            typeName = #T "*"; \
-            ptr = nlo; \
-        }
-        else NLOBJECT_SHOW(NLObject)
-        else NLOBJECT_SHOW(NLActor)
-        else NLOBJECT_SHOW(NLRigidbody)
-        else NLOBJECT_SHOW(NLComponent)
-        else NLOBJECT_SHOW(NLScript)
-        else NLOBJECT_SHOW(NLForce)
-#undef NLOBJECT_SHOW
-        else if(item_type == "NLVariantGeneralPointer")
-        {
-            NLVariantGeneralPointer p = item_value.value<NLVariantGeneralPointer>();
-            typeName = QString(p.name) + "*";
-            ptr = p.ptr;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    int i = typeName.lastIndexOf("*");
-    if(i >= 0)
-    {
-        typeName.remove(i, 1);
-    }
-    rtypeName = typeName;
-    rptr = ptr;
     return true;
 }

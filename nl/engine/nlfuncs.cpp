@@ -15,6 +15,11 @@ namespace NL
 {
 static NLPropertyInfo make_property_info(const QString &name, int t, const QString &typeName, const QVariant &value, const QVariant &defValue = QVariant(), const QVariantHash &props = QVariantHash(), bool readonly = false)
 {
+    if(typeName == "QVariant")
+    {
+        return make_property_info(name, value.type(), value.typeName(), value, defValue, props, readonly);
+    }
+
     QString type(typeName);
     QString widget;
     bool editDirectly = true;
@@ -47,36 +52,39 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
         else
             widget = "lineedit";
     }
+    else if(t == QMetaType::QObjectStar || t == QMetaType::QWidgetStar || t == QMetaType::VoidStar)
+    {
+        widget = "memory";
+        editDirectly = false;
+    }
     else
     {
-        if(t == QMetaType::QObjectStar || t == QMetaType::QWidgetStar || t == QMetaType::VoidStar)
+        if(type == "NLVector3" || type == "vector3_s" || type == "vector3_t")
         {
-            widget = "";
+            if(type != "NLVector3")
+                type = "NLVector3";
+            widget = "vector3";
+        }
+        else if(type == "NLVariantGeneralPointer" || type == "NLVariantVoidPointer")
+        {
+            if(type != "NLVariantVoidPointer")
+                type = "NLVariantGeneralPointer";
+            widget = "memory";
             editDirectly = false;
         }
-        else
+        else if(type == "NLRenderable*" || type == "NLObject*" || type == "NLActor*" || type == "NLComponent*" || type == "NLScript*" || type == "NLScene*" || type == "NLSceneCamera*" || type == "NLForce*")
         {
-            if(type == "NLVector3" || type == "vector3_s" || type == "vector3_t")
-            {
-                if(type != "NLVector3")
-                    type = "NLVector3";
-                widget = "vector3";
-            }
-            if(type == "NLVariantGeneralPointer" || type == "NLVariantVoidPointer")
-            {
-                if(type != "NLVariantVoidPointer")
-                    type = "NLVariantGeneralPointer";
-                widget = "";
-            }
-            else if(type == "NLRenderable*" || type == "NLObject*" || type == "NLActor*" || type == "NLComponent*" || type == "NLScript*" || type == "NLScene*" || type == "NLSceneCamera*" || type == "NLForce*")
-            {
-                widget = "";
-                editDirectly = false;
-            }
+            widget = "memory";
+            editDirectly = false;
+        }
+        else if(type.contains("*"))
+        {
+            widget = "memory";
+            editDirectly = false;
         }
     }
 
-    //qDebug() << name << t << value << QMetaType::QObjectStar << t << QMetaType::VoidStar << value.typeName() << widget;
+    //qDebug() << name << t << value << QMetaType::QObjectStar << type << QMetaType::VoidStar << value.typeName() << widget;
     return(NLPropertyInfo(name, value, type, widget, readonly, defValue, props));
 }
 

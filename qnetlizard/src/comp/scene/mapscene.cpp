@@ -141,7 +141,7 @@ MapScene::MapScene(QWidget *parent)
     SetRenderDebug(settings->GetSetting<int>("DEBUG/render"));
     m_debugRenderer->SetCamera(CurrentCamera());
 
-    m_shadowRenderer->SetLightSourceType(lightSource->LightSource()->IsDirectionLighting());
+    m_shadowRenderer->SetLightSourceType(lightSource->IsDirectionLighting());
 
     NLProperties props = PropertyConfig();
     props.Insert("noclip",  NLProperties("enum", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()

@@ -57,7 +57,7 @@ void SimpleCameraActor::Init()
 
 NLSceneCamera * SimpleCameraActor::Camera()
 {
-    return m_camera ? m_camera->Camera() : 0;
+    return m_camera ? static_cast<SimpleCameraComponent *>(m_camera)->Camera() : 0;
 }
 
 void SimpleCameraActor::SetEnableControl(bool b)
@@ -81,12 +81,12 @@ void SimpleCameraActor::UpdateCamera()
 {
     if(!m_camera)
         return;
-    m_camera->UpdateCamera();
+    static_cast<SimpleCameraComponent *>(m_camera)->UpdateCamera();
 }
 
 void SimpleCameraActor::SetEnabled(bool enabled)
 {
     NLActor::SetEnabled(enabled);
     if(m_camera)
-        m_camera->SetRender(enabled);
+        static_cast<SimpleCameraComponent *>(m_camera)->SetRender(enabled);
 }

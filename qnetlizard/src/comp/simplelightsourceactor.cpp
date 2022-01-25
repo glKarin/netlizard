@@ -35,12 +35,19 @@ NLVector3 SimpleLightSourceActor::LightSourceDirection() const
 {
     if(!m_lightSource)
         return Direction();
-    return m_lightSource->Direction();
+    return static_cast<SimpleLightSourceComponent *>(m_lightSource)->Direction();
 }
 
 NLVector3 SimpleLightSourceActor::LightSourcePosition() const
 {
     if(!m_lightSource)
         return Position();
-    return m_lightSource->Position();
+    return static_cast<SimpleLightSourceComponent *>(m_lightSource)->Position();
+}
+
+bool SimpleLightSourceActor::IsDirectionLighting() const
+{
+    if(!m_lightSource)
+        return false;
+    return static_cast<SimpleLightSourceComponent *>(m_lightSource)->IsDirectionLighting();
 }

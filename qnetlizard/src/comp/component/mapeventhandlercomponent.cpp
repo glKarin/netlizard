@@ -514,11 +514,6 @@ void MapEventHandlerComponent::SetTeleportActor(NLRigidbody *actor)
         m_teleportActor = actor;
 }
 
-QObject * MapEventHandlerComponent::TeleportActorObject()
-{
-    return m_teleportActor;
-}
-
 void MapEventHandlerComponent::Update(float delta)
 {
     if(!IsActived())
@@ -537,6 +532,7 @@ void MapEventHandlerComponent::Reset()
     m_teleport.clear();
     m_elevator.clear();
     m_door.clear();
+    emit propertyChanged("model", ModelPtr());
 }
 
 void MapEventHandlerComponent::SetModel(GL_NETLizard_3D_Model *model, int level)
@@ -581,6 +577,7 @@ void MapEventHandlerComponent::SetModel(GL_NETLizard_3D_Model *model, int level)
                 }
             }
         }
+        emit propertyChanged("model", ModelPtr());
     }
 }
 

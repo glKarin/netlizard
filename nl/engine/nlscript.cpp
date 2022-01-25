@@ -270,7 +270,6 @@ void NLScript::Script_Lua::RegisterGlobalVariant()
         return;
     NLVariantSequenceHash props = GetGlobalVariant();
     script->connect(script, SIGNAL(propertyChanged(const QString &, const QVariant &, int)), script, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
-    qDebug() << props;
     script->SetGlobalVariant(props);
 }
 

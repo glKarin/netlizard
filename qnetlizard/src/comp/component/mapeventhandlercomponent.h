@@ -189,7 +189,8 @@ NLCOMPONENT(MapEventHandlerComponent)
 class MapEventHandlerComponent : public NLComponent
 {
     Q_OBJECT
-    Q_PROPERTY(QObject* teleportActor READ TeleportActorObject FINAL)
+    Q_PROPERTY(NLRigidbody* teleportActor READ TeleportActor FINAL)
+    Q_PROPERTY(QVariant model READ ModelPtr FINAL)
 
 public:
     explicit MapEventHandlerComponent(const NLProperties &prop = NLProperties(), NLActor *parent = 0);
@@ -201,9 +202,9 @@ public:
     bool Collision(int item);
     void SetTeleportActor(NLRigidbody *actor);
     NLRigidbody * TeleportActor() { return m_teleportActor; }
-    QObject * TeleportActorObject();
     template <class T>
     bool HasEventHandler();
+    QVariant ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }
     
 public slots:
 

@@ -60,7 +60,8 @@ HEADERS += \
     lua/lua_vector3.h \
     lua/lua_globals.h \
     widget/nlmemorypointerwidget.h \
-    widget/nleditwidget.h
+    widget/nleditwidget.h \
+    widget/nllabelwidget.h
 
 SOURCES += \
     engine/nldef.cpp \
@@ -95,7 +96,8 @@ SOURCES += \
     lua/lua_vector3.cpp \
     lua/lua_globals.cpp \
     widget/nlmemorypointerwidget.cpp \
-    widget/nleditwidget.cpp
+    widget/nleditwidget.cpp \
+    widget/nllabelwidget.cpp
 
 HEADERS += \
     widget/syntaxhighlighter/nlluasyntaxhighlighter.h \
