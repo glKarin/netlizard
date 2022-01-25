@@ -10,22 +10,19 @@ NETLizardTextureRenderer::NETLizardTextureRenderer(NLActor *actor) :
     NLRenderable(actor),
     m_tex(0)
 {
-    SetName("NETLizardTextureRenderer");
+    CLASS_NAME(NETLizardTextureRenderer);
+    setObjectName("NETLizardTextureRenderer");
 }
 
 NETLizardTextureRenderer::~NETLizardTextureRenderer()
 {
     m_tex = 0;
-    DEBUG_DESTROY(NETLizardTextureRenderer)
-}
-
-void NETLizardTextureRenderer::InitRender()
-{
-
 }
 
 void NETLizardTextureRenderer::Render()
 {
+    if(!IsActived())
+        return;
     if(!m_tex)
         return;
     glPushMatrix();
@@ -88,9 +85,10 @@ void NETLizardTextureRenderer::Render()
     glPopMatrix();
 }
 
-void NETLizardTextureRenderer::DeinitRender()
+void NETLizardTextureRenderer::Destroy()
 {
     m_tex = 0;
+    NLRenderable::Destroy();
 }
 
 void NETLizardTextureRenderer::SetTexture(texture_s *tex)

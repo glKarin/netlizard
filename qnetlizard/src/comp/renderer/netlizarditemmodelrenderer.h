@@ -17,9 +17,8 @@ public:
     void SetIndex(int index);
 
 protected:
-    virtual void InitRender();
     virtual void Render();
-    virtual void DeinitRender();
+    virtual void Destroy();
 
 private:
     struct _GL_NETLizard_3D_Mesh *m_itemMesh;

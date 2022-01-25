@@ -15,23 +15,20 @@ NETLizardMapModelRenderer::NETLizardMapModelRenderer(NLActor *actor) :
     m_itemCount(0),
     m_itemRenderMode(NETLizardMapModelRenderer::RenderItem_Cull)
 {
-    SetName("NETLizardMapModelRenderer");
+    CLASS_NAME(NETLizardMapModelRenderer);
+    setObjectName("NETLizardMapModelRenderer");
 }
 
 NETLizardMapModelRenderer::~NETLizardMapModelRenderer()
 {
     m_model = 0;
     SetupCull(false);
-    DEBUG_DESTROY(NETLizardMapModelRenderer)
-}
-
-void NETLizardMapModelRenderer::InitRender()
-{
-
 }
 
 void NETLizardMapModelRenderer::Render()
 {
+    if(!IsActived())
+        return;
     if(!m_model)
         return;
     glPushMatrix();
@@ -78,10 +75,11 @@ void NETLizardMapModelRenderer::Render()
     glPopMatrix();
 }
 
-void NETLizardMapModelRenderer::DeinitRender()
+void NETLizardMapModelRenderer::Destroy()
 {
     m_model = 0;
     SetupCull(false);
+    NLRenderable::Destroy();
 }
 
 void NETLizardMapModelRenderer::SetModel(GL_NETLizard_3D_Model *model)

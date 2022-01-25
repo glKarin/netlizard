@@ -24,7 +24,8 @@ public:
         Type_Actor,
         Type_Component,
         Type_Script,
-        Type_Force
+        Type_Force,
+        Type_Renderer
     };
 
 public:

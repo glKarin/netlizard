@@ -88,7 +88,7 @@ void NLActor::Init()
     if(IsInited())
         return;
     if(m_renderable)
-        m_renderable->InitRender();
+        m_renderable->Init();
     if(m_scripts)
         m_scripts->Init();
     if(m_components)
@@ -108,6 +108,9 @@ void NLActor::Update(float delta)
         m_components->Update(delta);
     if(m_children)
         m_children->Update(delta);
+
+    if(m_renderable)
+        m_renderable->Update(delta);
     //NLObject::Update(delta);
 }
 
@@ -139,7 +142,7 @@ void NLActor::Destroy()
         actor->TellChildRemoved();
     if(m_renderable)
     {
-        m_renderable->DeinitRender();
+        m_renderable->Destroy();
         delete m_renderable;
         m_renderable = 0;
     }
@@ -370,9 +373,13 @@ void NLActor::SetRenderable(NLRenderable *renderable)
         if(m_renderable)
             m_renderable->SetActor(0);
         m_renderable = renderable;
-        SetProperty("renderable", QVariant::fromValue<void *>(m_renderable)/*m_renderable ? m_renderable->Name() : QVariant()*/);
+        emit propertyChanged("renderable", QVariant::fromValue<NLRenderable *>(m_renderable));
         if(m_renderable)
+        {
+            if(!m_renderable->IsInited())
+                m_renderable->Init();
             m_renderable->SetActor(this);
+        }
     }
 }
 

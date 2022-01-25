@@ -24,7 +24,7 @@ TestScene::TestScene(QWidget *parent)
     NLActor *actor = new NLActor;
     actor->setObjectName("Test_CoordinateRenderActor");
     AddActor(actor);
-    actor->SetRenderable(new NLModelRenderer_coordinate(9999));
+    actor->SetRenderable(new NLModelRenderer_coordinate(NLProperties("length", 9999)));
     SetCurrentCamera(camera->Camera());
     actor = new NLActor;
     actor->setObjectName("Test_ObjectRenderActor");
@@ -43,14 +43,14 @@ void TestScene::Init()
 
     NLActor *plane = new NLActor;
     plane->setObjectName("Test_PlaneRender");
-    NLModelRenderer *r = new NLModelRenderer_plane(5000);
-    r->Model()->Primitive(0).SetColor(QColor::fromRgbF(0.5, 0.5, 0.5));
+    NLModelRenderer *r = new NLModelRenderer_plane(NLProperties("length", 5000));
     plane->SetRenderable(r);
+    r->Model()->Primitive(0).SetColor(QColor::fromRgbF(0.5, 0.5, 0.5));
     objectActor->AddChild(plane);
 
     NLActor *cube = new NLActor;
     cube->setObjectName("Test_CubeRender");
-    r = new NLModelRenderer_cube(200);
+    r = new NLModelRenderer_cube(NLProperties("length", 200));
     cube->SetRenderable(r);
     objectActor->AddChild(cube);
     NLVector3 v = VECTOR3(-800, 600, -200);
@@ -60,9 +60,9 @@ void TestScene::Init()
 
     NLActor *line = new NLActor;
     line->setObjectName("Test_LineRender");
-    r = new NLModelRenderer_line(3000);
-    r->Model()->Primitive(0).SetColor(QColor::fromRgbF(0.1, 0.5, 0.9));
+    r = new NLModelRenderer_line(NLProperties("length", 3000));
     line->SetRenderable(r);
+    r->Model()->Primitive(0).SetColor(QColor::fromRgbF(0.1, 0.5, 0.9));
     objectActor->AddChild(line);
     NLVector3 v2 = VECTOR3(600, 800, -200);
     line->SetPosition(v2);

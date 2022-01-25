@@ -17,9 +17,8 @@ public:
     Qt::Alignment Alignment() const { return m_align; }
 
 protected:
-    virtual void InitRender();
     virtual void Render();
-    virtual void DeinitRender();
+    virtual void Destroy();
 
 private:
     Qt::Alignment m_align;

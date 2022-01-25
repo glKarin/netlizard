@@ -17,7 +17,8 @@ NETLizardShadowModelRenderer::NETLizardShadowModelRenderer(int method, NLActor *
     m_stencilShadowMethod(method),
     m_shadowObject(NETLIZARD_SHADOW_RENDER_ITEM)
 {
-    SetName("NETLizardShadowModelRenderer");
+    CLASS_NAME(NETLizardShadowModelRenderer);
+    setObjectName("NETLizardShadowModelRenderer");
     SetLightSource();
 }
 
@@ -25,16 +26,12 @@ NETLizardShadowModelRenderer::~NETLizardShadowModelRenderer()
 {
     m_model = 0;
     SetupScenes(false);
-    DEBUG_DESTROY(NETLizardShadowModelRenderer)
-}
-
-void NETLizardShadowModelRenderer::InitRender()
-{
-
 }
 
 void NETLizardShadowModelRenderer::Render()
 {
+    if(!IsActived())
+        return;
     if(!m_model)
         return;
     if(m_stencilShadowMethod == 0)
@@ -58,10 +55,11 @@ void NETLizardShadowModelRenderer::Render()
     glPopMatrix();
 }
 
-void NETLizardShadowModelRenderer::DeinitRender()
+void NETLizardShadowModelRenderer::Destroy()
 {
     m_model = 0;
     SetupScenes(false);
+    NLRenderable::Destroy();
 }
 
 void NETLizardShadowModelRenderer::SetModel(GL_NETLizard_3D_Model *model)

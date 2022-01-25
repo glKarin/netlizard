@@ -14,14 +14,13 @@ public:
     explicit NETLizardFontRenderer(NLActor *actor = 0);
     virtual ~NETLizardFontRenderer();
     struct _GL_NETLizard_Font * Font() { return m_font; }
-    void SetFont(struct _GL_NETLizard_Font *tex);
+    void SetFont(struct _GL_NETLizard_Font *font);
     void SetText(const QString &str);
     void UpdateLayout();
 
 protected:
-    virtual void InitRender();
     virtual void Render();
-    virtual void DeinitRender();
+    virtual void Destroy();
 
 private:
     void RenderText();

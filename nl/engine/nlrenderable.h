@@ -1,28 +1,32 @@
 #ifndef _KARIN_RENDERABLE_H
 #define _KARIN_RENDERABLE_H
 
+#include "nlobject.h"
 #include "nldef.h"
 
 class NLActor;
 
-class NLLIB_EXPORT NLRenderable
+class NLLIB_EXPORT NLRenderable : public NLObject
 {
+    Q_OBJECT
 public:
     explicit NLRenderable(NLActor *actor = 0);
+    explicit NLRenderable(const NLProperties &prop, NLActor *parent = 0);
+    explicit NLRenderable(NLScene *scene, NLActor *parent = 0);
+    explicit NLRenderable(NLScene *scene, const NLProperties &prop, NLActor *parent = 0);
     virtual ~NLRenderable();
-    NLActor * Actor() { return m_actor; }
-    QString Name() const { return m_name; }
+    NLActor * Actor();
 
 protected:
     void SetActor(NLActor *actor);
-    void SetName(const QString &name);
-    virtual void InitRender() {}
     virtual void Render() = 0;
-    virtual void DeinitRender() {}
+    virtual void Update(float delta);
+    virtual void Destroy();
 
 private:
-    NLActor *m_actor;
-    QString m_name;
+    void Construct();
+
+private:
     friend class NLActor;
     Q_DISABLE_COPY(NLRenderable)
 };

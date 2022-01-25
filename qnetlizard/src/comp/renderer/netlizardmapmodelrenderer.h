@@ -38,9 +38,8 @@ public:
     RenderItemMode_e RenderItemMode() const { return m_itemRenderMode; }
 
 protected:
-    virtual void InitRender();
     virtual void Render();
-    virtual void DeinitRender();
+    virtual void Destroy();
 
 private:
     struct _GL_NETLizard_3D_Model *m_model;

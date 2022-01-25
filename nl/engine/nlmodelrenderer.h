@@ -56,10 +56,12 @@ private:
     void Init(GLfloat length = 2000);
 };
 
+
+
 class NLLIB_EXPORT NLModelRenderer : public NLRenderable
 {
 public:
-    explicit NLModelRenderer(NLActor *actor = 0);
+    explicit NLModelRenderer(const NLProperties &prop = NLProperties(), NLActor *actor = 0);
     explicit NLModelRenderer(NLRenderModelGLGeneral *model, NLActor *actor = 0);
     virtual ~NLModelRenderer();
     NLRenderModelGLGeneral * Model() { return m_model; }
@@ -67,9 +69,8 @@ public:
     void SetModel(NLRenderModelGLGeneral *model);
 
 protected:
-    virtual void InitRender();
     virtual void Render();
-    virtual void DeinitRender();
+    virtual void Destroy();
 
 private:
     NLRenderModelGLGeneral *m_model;
@@ -80,45 +81,73 @@ private:
 class NLLIB_EXPORT NLModelRenderer_coordinate : public NLModelRenderer
 {
 public:
-    explicit NLModelRenderer_coordinate(NLActor *actor = 0)
-        : NLModelRenderer(new NLRenderModelGLGeneral_coordinate, actor)
-    {}
-    explicit NLModelRenderer_coordinate(float length, NLActor *actor = 0)
-        : NLModelRenderer(new NLRenderModelGLGeneral_coordinate(length), actor)
-    {}
+    explicit NLModelRenderer_coordinate(const NLProperties &prop = NLProperties(), NLActor *actor = 0)
+        : NLModelRenderer(prop, actor)
+    {
+        CLASS_NAME(NLModelRenderer_coordinate);
+        setObjectName("NLModelRenderer_coordinate");
+    }
+
+protected:
+    virtual void InitProperty() {
+        NLRenderable::InitProperty();
+        int length = GetInitProperty_T<float>("length", 9999);
+        SetModel(new NLRenderModelGLGeneral_coordinate(length));
+    }
 };
 
 class NLLIB_EXPORT NLModelRenderer_cube : public NLModelRenderer
 {
 public:
-    explicit NLModelRenderer_cube(NLActor *actor = 0)
-        : NLModelRenderer(new NLRenderModelGLGeneral_cube, actor)
-    {}
-    explicit NLModelRenderer_cube(float length, NLActor *actor = 0)
-        : NLModelRenderer(new NLRenderModelGLGeneral_cube(length), actor)
-    {}
+    explicit NLModelRenderer_cube(const NLProperties &prop = NLProperties(), NLActor *actor = 0)
+        : NLModelRenderer(prop, actor)
+    {
+        CLASS_NAME(NLModelRenderer_cube);
+        setObjectName("NLModelRenderer_cube");
+    }
+
+protected:
+    virtual void InitProperty() {
+        NLRenderable::InitProperty();
+        int length = GetInitProperty_T<float>("length", 200);
+        SetModel(new NLRenderModelGLGeneral_cube(length));
+    }
 };
 
 class NLLIB_EXPORT NLModelRenderer_plane : public NLModelRenderer
 {
 public:
-    explicit NLModelRenderer_plane(NLActor *actor = 0)
-        : NLModelRenderer(new NLRenderModelGLGeneral_plane, actor)
-    {}
-    explicit NLModelRenderer_plane(float length, NLActor *actor = 0)
-        : NLModelRenderer(new NLRenderModelGLGeneral_plane(length), actor)
-    {}
+    explicit NLModelRenderer_plane(const NLProperties &prop = NLProperties(), NLActor *actor = 0)
+        : NLModelRenderer(prop, actor)
+    {
+        CLASS_NAME(NLModelRenderer_plane);
+        setObjectName("NLModelRenderer_plane");
+    }
+
+protected:
+    virtual void InitProperty() {
+        NLRenderable::InitProperty();
+        int length = GetInitProperty_T<float>("length", 2000);
+        SetModel(new NLRenderModelGLGeneral_plane(length));
+    }
 };
 
 class NLLIB_EXPORT NLModelRenderer_line : public NLModelRenderer
 {
 public:
-    explicit NLModelRenderer_line(NLActor *actor = 0)
-        : NLModelRenderer(new NLRenderModelGLGeneral_line, actor)
-    {}
-    explicit NLModelRenderer_line(float length, NLActor *actor = 0)
-        : NLModelRenderer(new NLRenderModelGLGeneral_line(length), actor)
-    {}
+    explicit NLModelRenderer_line(const NLProperties &prop = NLProperties(), NLActor *actor = 0)
+        : NLModelRenderer(prop, actor)
+    {
+        CLASS_NAME(NLRenderModelGLGeneral_line);
+        setObjectName("NLRenderModelGLGeneral_line");
+    }
+
+protected:
+    virtual void InitProperty() {
+        NLRenderable::InitProperty();
+        int length = GetInitProperty_T<float>("length", 2000);
+        SetModel(new NLRenderModelGLGeneral_line(length));
+    }
 };
 
 #endif // _KARIN_NLMODELRENDERER_H

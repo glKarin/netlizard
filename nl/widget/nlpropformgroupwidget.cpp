@@ -116,6 +116,9 @@ QString NLEditorMemoryPointerWidget::GetPtrName(const QString &typeName, void *p
                 case NLObject::Type_Force:
                     nltype = "NLForce";
                     break;
+                case NLObject::Type_Renderer:
+                    nltype = "NLRenderable";
+                    break;
                 case NLObject::Type_General:
                 default:
                     nltype = "NLObject";
@@ -146,12 +149,7 @@ QString NLEditorMemoryPointerWidget::GetPtrName(const QString &typeName, void *p
     }
     else
     {
-        if(typeName == "NLRenderable")
-        {
-            NLRenderable *renderable = reinterpret_cast<NLRenderable *>(ptr);
-            name = renderable ? renderable->Name() : "";
-        }
-        else if(typeName == "NLScene")
+        if(typeName == "NLScene")
         {
             NLScene *scene = reinterpret_cast<NLScene *>(ptr);
             name = scene ? scene->objectName() : "";
@@ -170,6 +168,7 @@ QString NLEditorMemoryPointerWidget::GetPtrName(const QString &typeName, void *p
         else NLOBJECT_SHOW(NLComponent)
         else NLOBJECT_SHOW(NLScript)
         else NLOBJECT_SHOW(NLForce)
+        else NLOBJECT_SHOW(NLRenderable)
 #undef NLOBJECT_SHOW
         else
         {
@@ -213,6 +212,9 @@ bool NLEditorMemoryPointerWidget::FromVariant(const QVariant &item_value, QStrin
                 case NLObject::Type_Force:
                     typeName = "NLForce*";
                     break;
+                case NLObject::Type_Renderer:
+                    typeName = "NLRenderable*";
+                    break;
                 case NLObject::Type_General:
                 default:
                     typeName = "NLObject*";
@@ -243,36 +245,21 @@ bool NLEditorMemoryPointerWidget::FromVariant(const QVariant &item_value, QStrin
     }
     else
     {
-        if(item_type == "NLRenderable*")
-        {
-            NLRenderable *renderable = item_value.value<NLRenderable *>();
-            typeName = "NLRenderable*";
-            ptr = renderable;
-        }
-        else if(item_type == "NLScene*")
-        {
-            NLScene *scene = item_value.value<NLScene *>();
-            typeName = "NLScene*";
-            ptr = scene;
-        }
-        else if(item_type == "NLSceneCamera*")
-        {
-            NLSceneCamera *camera = item_value.value<NLSceneCamera *>();
-            typeName = "NLSceneCamera*";
-            ptr = camera;
-        }
 #define NLOBJECT_SHOW(T) \
         if(item_type == #T "*") { \
             T *nlo = item_value.value<T *>(); \
             typeName = #T "*"; \
             ptr = nlo; \
         }
-        else NLOBJECT_SHOW(NLObject)
+        NLOBJECT_SHOW(NLObject)
         else NLOBJECT_SHOW(NLActor)
         else NLOBJECT_SHOW(NLRigidbody)
         else NLOBJECT_SHOW(NLComponent)
         else NLOBJECT_SHOW(NLScript)
         else NLOBJECT_SHOW(NLForce)
+        else NLOBJECT_SHOW(NLRenderable)
+        else NLOBJECT_SHOW(NLScene)
+        else NLOBJECT_SHOW(NLSceneCamera)
 #undef NLOBJECT_SHOW
         else if(item_type == "NLVariantGeneralPointer")
         {

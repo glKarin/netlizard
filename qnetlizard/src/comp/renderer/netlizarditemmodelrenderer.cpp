@@ -11,23 +11,20 @@ NETLizardItemModelRenderer::NETLizardItemModelRenderer(NLActor *actor) :
     m_tex(0),
     m_index(0)
 {
-    SetName("NETLizardItemModelRenderer");
+    CLASS_NAME(NETLizardItemModelRenderer);
+    setObjectName("NETLizardItemModelRenderer");
 }
 
 NETLizardItemModelRenderer::~NETLizardItemModelRenderer()
 {
     m_itemMesh = 0;
     m_tex = 0;
-    DEBUG_DESTROY(NETLizardItemModelRenderer)
-}
-
-void NETLizardItemModelRenderer::InitRender()
-{
-
 }
 
 void NETLizardItemModelRenderer::Render()
 {
+    if(!IsActived())
+        return;
     if(!m_index < 0)
         return;
     if(!m_itemMesh || !m_tex)
@@ -41,11 +38,12 @@ void NETLizardItemModelRenderer::Render()
     glPopMatrix();
 }
 
-void NETLizardItemModelRenderer::DeinitRender()
+void NETLizardItemModelRenderer::Destroy()
 {
     m_itemMesh = 0;
     m_tex = 0;
     m_index = 0;
+    NLRenderable::Destroy();
 }
 
 void NETLizardItemModelRenderer::SetModel(GL_NETLizard_3D_Mesh *model, texture_s **tex)

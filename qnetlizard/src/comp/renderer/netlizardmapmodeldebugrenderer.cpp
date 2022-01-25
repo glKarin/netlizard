@@ -20,23 +20,20 @@ NETLizardMapModelDebugRenderer::NETLizardMapModelDebugRenderer(NLActor *actor) :
     m_debug(NETLIZARD_DEBUG_RENDER_NONE),
     m_camera(0)
 {
-    SetName("NETLizardMapModelDebugRenderer");
+    CLASS_NAME(NETLizardMapModelDebugRenderer);
+    setObjectName("NETLizardMapModelDebugRenderer");
 }
 
 NETLizardMapModelDebugRenderer::~NETLizardMapModelDebugRenderer()
 {
     m_model = 0;
     SetupScenes(false);
-    DEBUG_DESTROY(NETLizardMapModelDebugRenderer)
-}
-
-void NETLizardMapModelDebugRenderer::InitRender()
-{
-
 }
 
 void NETLizardMapModelDebugRenderer::Render()
 {
+    if(!IsActived())
+        return;
     if(!m_model)
         return;
     if(!m_debug)
@@ -129,10 +126,11 @@ void NETLizardMapModelDebugRenderer::Render()
     glPopMatrix();
 }
 
-void NETLizardMapModelDebugRenderer::DeinitRender()
+void NETLizardMapModelDebugRenderer::Destroy()
 {
     m_model = 0;
     SetupScenes(false);
+    NLRenderable::Destroy();
 }
 
 void NETLizardMapModelDebugRenderer::SetModel(GL_NETLizard_3D_Model *model)

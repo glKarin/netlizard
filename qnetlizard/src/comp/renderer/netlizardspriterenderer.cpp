@@ -12,18 +12,13 @@ NETLizardSpriteRenderer::NETLizardSpriteRenderer(NLActor *actor) :
     m_sprite(0),
     m_index(-1)
 {
-    SetName("NETLizardSpriteRenderer");
+    CLASS_NAME(NETLizardSpriteRenderer);
+    setObjectName("NETLizardSpriteRenderer");
 }
 
 NETLizardSpriteRenderer::~NETLizardSpriteRenderer()
 {
     m_sprite = 0;
-    DEBUG_DESTROY(NETLizardSpriteRenderer)
-}
-
-void NETLizardSpriteRenderer::InitRender()
-{
-
 }
 
 void NETLizardSpriteRenderer::SetIndex(int i)
@@ -35,6 +30,8 @@ void NETLizardSpriteRenderer::SetIndex(int i)
 }
 void NETLizardSpriteRenderer::Render()
 {
+    if(!IsActived())
+        return;
     if(!m_sprite)
         return;
     if(m_index < 0)
@@ -42,9 +39,10 @@ void NETLizardSpriteRenderer::Render()
     RenderSprite();
 }
 
-void NETLizardSpriteRenderer::DeinitRender()
+void NETLizardSpriteRenderer::Destroy()
 {
     m_sprite = 0;
+    NLRenderable::Destroy();
 }
 
 void NETLizardSpriteRenderer::SetSprite(GL_NETLizard_Sprite *f)

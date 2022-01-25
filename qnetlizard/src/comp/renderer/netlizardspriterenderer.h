@@ -16,9 +16,8 @@ public:
     void SetIndex(int i);
 
 protected:
-    virtual void InitRender();
     virtual void Render();
-    virtual void DeinitRender();
+    virtual void Destroy();
 
 private:
     void RenderSprite();

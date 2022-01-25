@@ -21,9 +21,8 @@ public:
     int Frame() const { return m_frame; }
 
 protected:
-    virtual void InitRender();
     virtual void Render();
-    virtual void DeinitRender();
+    virtual void Destroy();
 
 private:
     struct _GL_NETLizard_3D_Model *m_model;

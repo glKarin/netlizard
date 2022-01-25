@@ -174,40 +174,38 @@ void NLRenderModelGLGeneral_line::Init(GLfloat length)
 
 
 
-NLModelRenderer::NLModelRenderer(NLActor *actor) :
-    NLRenderable(actor),
+NLModelRenderer::NLModelRenderer(const NLProperties &prop, NLActor *actor) :
+    NLRenderable(prop, actor),
     m_model(new NLRenderModelGLGeneral)
 {
-    SetName("NLModelRenderer");
+    CLASS_NAME(NLModelRenderer);
+    setObjectName("NLModelRenderer");
 }
 
 NLModelRenderer::NLModelRenderer(NLRenderModelGLGeneral *model, NLActor *actor) :
     NLRenderable(actor),
     m_model(model)
 {
-    SetName("NLModelRenderer");
+    CLASS_NAME(NLModelRenderer);
+    setObjectName("NLModelRenderer");
 }
 
 NLModelRenderer::~NLModelRenderer()
 {
     if(m_model)
         delete m_model;
-    NLDEBUG_DESTROY(NLModelRenderer)
-}
-
-void NLModelRenderer::InitRender()
-{
-
 }
 
 void NLModelRenderer::Render()
 {
+    if(!IsActived())
+        return;
     if(!m_model)
         return;
     m_model->Render();
 }
 
-void NLModelRenderer::DeinitRender()
+void NLModelRenderer::Destroy()
 {
     if(m_model)
     {

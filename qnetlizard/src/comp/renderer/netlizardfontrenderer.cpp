@@ -14,18 +14,13 @@ NETLizardFontRenderer::NETLizardFontRenderer(NLActor *actor) :
       m_paddingWidth(2),
       m_lineSpacing(1)
 {
-    SetName("NETLizardFontRenderer");
+    CLASS_NAME(NETLizardFontRenderer);
+    setObjectName("NETLizardFontRenderer");
 }
 
 NETLizardFontRenderer::~NETLizardFontRenderer()
 {
     m_font = 0;
-    DEBUG_DESTROY(NETLizardFontRenderer)
-}
-
-void NETLizardFontRenderer::InitRender()
-{
-
 }
 
 void NETLizardFontRenderer::SetText(const QString &str)
@@ -84,6 +79,8 @@ void NETLizardFontRenderer::UpdateLayout()
 
 void NETLizardFontRenderer::Render()
 {
+    if(!IsActived())
+        return;
     if(!m_font)
         return;
     if(m_text.isEmpty())
@@ -95,9 +92,10 @@ void NETLizardFontRenderer::Render()
     glPopMatrix();
 }
 
-void NETLizardFontRenderer::DeinitRender()
+void NETLizardFontRenderer::Destroy()
 {
     m_font = 0;
+    NLRenderable::Destroy();
 }
 
 void NETLizardFontRenderer::SetFont(GL_NETLizard_Font *f)
