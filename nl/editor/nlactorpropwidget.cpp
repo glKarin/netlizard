@@ -67,6 +67,8 @@ void NLObjectPropFormGroupWidget::SetObject(QObject *obj)
     NLPropFormGroupWidget::SetObject(obj);
     if(obj)
     {
+        NLObject *nlo = static_cast<NLObject *>(obj);
+        connect(nlo, SIGNAL(propertyChanged(const QString &, const QVariant &, int)), this, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
         connect(obj, SIGNAL(destroying()), this, SLOT(Reset()));
     }
 }
@@ -94,6 +96,25 @@ NLPropertyInfoList NLObjectPropFormGroupWidget::GetPropertyInfoList(QObject *obj
 void NLObjectPropFormGroupWidget::SortProperties(NLPropertyInfoList &list)
 {
     qSort(list.begin(), list.end(), NLPropertyInfoCmp);
+}
+
+NLPropFormGroupWidget * NLObjectPropFormGroupWidget::GenFormGroup(QObject *obj)
+{
+    NLObject *nlo = static_cast<NLObject *>(obj);
+    NLObjectPropFormGroupWidget *groupBox = new NLObjectPropFormGroupWidget;
+    groupBox->SetObject(nlo);
+    return groupBox;
+}
+
+void NLObjectPropFormGroupWidget::OnPropertyChanged(const QString &name, const QVariant &value, int action)
+{
+    NLObject *obj = static_cast<NLObject *>(Object());
+    if(!obj)
+        return;
+    if(action == 0)
+        NotifyPropertyChanged(name, value);
+    else
+        OnObjectChanged();
 }
 
 void NLObjectPropFormGroupWidget::mousePressEvent(QMouseEvent *event)
@@ -203,7 +224,6 @@ void NLActorPropWidget::SetActor(NLActor *actor)
         m_actor = actor;
         if(m_actor)
         {
-            connect(m_actor, SIGNAL(propertyChanged(const QString &, const QVariant &, int)), this, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
             connect(m_actor, SIGNAL(componentChanged(const NLComponent *)), this, SLOT(SetupComponent()));
             connect(m_actor, SIGNAL(scriptChanged(const NLScript *)), this, SLOT(SetupScript()));
             connect(m_actor, SIGNAL(destroying()), this, SLOT(Reset()));
@@ -263,7 +283,6 @@ void NLActorPropWidget::SetupComponentProperty(NLComponent *comp)
     groupBox->setTitle(comp->ClassName() + "(" + comp->Name() + ")");
     groupBox->SetObject(comp);
     m_propWidgetMap.insert(comp, groupBox);
-    connect(comp, SIGNAL(propertyChanged(const QString &, const QVariant &, int)), this, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
     QAction *action = new QAction(tr("Remove"), groupBox);
     groupBox->AddAction(action);
     action->setData(ACTION_REMOVE_COMPONENT);
@@ -286,23 +305,6 @@ void NLActorPropWidget::SetupComponentProperties()
     }
 }
 
-void NLActorPropWidget::OnPropertyChanged(const QString &name, const QVariant &value, int action)
-{
-    QObject *s = sender();
-    if(!s)
-        return;
-    NLObject *obj = static_cast<NLObject *>(s);
-    if(!m_propWidgetMap.contains(obj))
-        return;
-    NLPropFormGroupWidget *widget = m_propWidgetMap[obj];
-    if(!widget)
-        return;
-    if(action == 0)
-        widget->NotifyPropertyChanged(name, value);
-    else
-        widget->OnObjectChanged();
-}
-
 void NLActorPropWidget::SetupScriptProperty(NLScript *script)
 {
     NLObjectPropFormGroupWidget *groupBox = new NLObjectPropFormGroupWidget;
@@ -310,7 +312,6 @@ void NLActorPropWidget::SetupScriptProperty(NLScript *script)
     groupBox->setTitle(script->ClassName() + "(" + script->Name() + ")");
     groupBox->SetObject(script);
     m_propWidgetMap.insert(script, groupBox);
-    connect(script, SIGNAL(propertyChanged(const QString &, const QVariant &, int)), this, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
     QAction *action = new QAction(tr("Remove"), groupBox);
     action->setData(ACTION_REMOVE_SCRIPT);
     action->setProperty("NLObject", QVariant::fromValue<QObject *>(script));

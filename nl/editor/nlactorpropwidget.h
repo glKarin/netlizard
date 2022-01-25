@@ -26,8 +26,12 @@ protected:
     virtual NLPropertyInfoList GetPropertyInfoList(QObject *obj);
     virtual void SortProperties(NLPropertyInfoList &list);
     virtual QVariant GetObjectProperty(QObject *obj, const QString &name);
+    virtual NLPropFormGroupWidget * GenFormGroup(QObject *obj);
     virtual void mousePressEvent(QMouseEvent *ev);
     virtual void mouseMoveEvent(QMouseEvent *ev);
+
+private Q_SLOTS:
+    void OnPropertyChanged(const QString &name, const QVariant &value, int action);
 
 private:
     QPoint m_dragStartPosition;
@@ -64,7 +68,6 @@ private Q_SLOTS:
     void OnActorChanged();
     void SetupComponent();
     void SetupScript();
-    void OnPropertyChanged(const QString &name, const QVariant &value, int action = 0);
     void OnActionTriggered(QAction *action);
 
 private:

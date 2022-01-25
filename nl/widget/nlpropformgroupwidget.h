@@ -42,6 +42,8 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     virtual void Reset();
+    void Expand() { setChecked(true); ToggleGroupBox(true); }
+    void UnExpand() { setChecked(false); ToggleGroupBox(false); }
 
 protected:
     virtual void resizeEvent(QResizeEvent *event);
@@ -100,6 +102,7 @@ protected:
     virtual QDrag * Drag(const QString &name, QWidget *widget);
     virtual bool Drop(const QMimeData *d, QWidget *widget);
     virtual bool CheckDragData(const QMimeData *d, QWidget *widget);
+    virtual NLPropFormGroupWidget * GenFormGroup(QObject *obj) { Q_UNUSED(obj); return 0; }
 
 private:
     void SetupObjectProperty();

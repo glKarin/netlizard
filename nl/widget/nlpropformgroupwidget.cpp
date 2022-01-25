@@ -806,6 +806,16 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
         connect(w, SIGNAL(linkActivated(const QString &)), this, SLOT(OnLinkActivated(const QString &)));
         widget = w;
     }
+    else if(item.widget == "formgroup")
+    {
+        NLRenderable *nlo = item.value.value<NLRenderable *>();
+        NLPropFormGroupWidget *w = GenFormGroup(nlo);
+        WIDGET_SET_TYPE(w, NLPropFormGroupWidget);
+        QString name = nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : "(NLRenderable*)0x0";
+        w->setTitle(name);
+        w->UnExpand();
+        widget = w;
+    }
     else if(item.widget == "memory")
     {
         NLEditorMemoryPointerWidget *w = new NLEditorMemoryPointerWidget;

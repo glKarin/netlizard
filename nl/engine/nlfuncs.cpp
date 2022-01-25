@@ -74,8 +74,16 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
         }
         else if(type == "NLRenderable*" || type == "NLObject*" || type == "NLActor*" || type == "NLComponent*" || type == "NLScript*" || type == "NLScene*" || type == "NLSceneCamera*" || type == "NLForce*")
         {
-            widget = "memory";
-            editDirectly = false;
+            if(type == "NLRenderable*" && name == "renderable")
+            {
+                widget = "formgroup";
+                editDirectly = false;
+            }
+            else
+            {
+                widget = "memory";
+                editDirectly = false;
+            }
         }
         else if(type.contains("*"))
         {
