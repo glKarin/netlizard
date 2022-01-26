@@ -33,6 +33,7 @@ NLScene::NLScene(QWidget *parent) :
     m_pressed(false),
     m_loop(false),
     m_delta(0.0f),
+    m_renderDelta(0.0f),
     m_currentCamera(0),
     m_cursorVisible(true),
     m_grabMouse(false),
@@ -265,6 +266,7 @@ void NLScene::RunLoop(bool b)
     if(m_loop == b)
         return;
     m_delta = 0.0f;
+    m_renderDelta = 0.0f;
     m_loop = b;
     if(b)
     {
@@ -294,6 +296,7 @@ void NLScene::IdleTimer_slot()
         if(fd >= m_updateGLInterval)
         {
             m_updateGLLastTime = m_lastTime;
+            m_renderDelta = fd / 1000.0f;
             updateGL();
             UpdateCurrentFPS(fd);
             emit rendered(m_currentFps);

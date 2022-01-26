@@ -185,6 +185,8 @@ void NLSceneInfoWidget::UpdateSceneInfo()
          << tr("Actor count: ") + tr("root") + "(" + QString::number(m_scene->ActorCount()) + ") / " + tr("total") + "(" + QString::number(m_scene->ActorTotalCount()) + ")"
                << tr("Update delta: ") + QString::number(m_scene->CurrendDelta())
                << tr("Update time: ") + QDateTime::fromMSecsSinceEpoch(m_scene->UpdateTime()).toString("yyyy-MM-dd HH:mm:ss zzz")
+               << tr("Update render delta: ") + QString::number(m_scene->CurrendRenderDelta())
+               << tr("Update render time: ") + QDateTime::fromMSecsSinceEpoch(m_scene->UpdateRenderTime()).toString("yyyy-MM-dd HH:mm:ss zzz")
                ;
     m_baseInfo->SETTEXT(list.join(_ENDL));
 

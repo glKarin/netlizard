@@ -8,6 +8,10 @@ struct _GL_NETLizard_3D_Model;
 NLRENDERER(NETLizardShadowModelRenderer)
 class NETLizardShadowModelRenderer : public NLRenderable
 {
+    Q_OBJECT
+    Q_PROPERTY(int shadowMethod READ StencilShadowMethod WRITE SetStencilShadowMethod FINAL)
+    Q_PROPERTY(int shadowObject READ ShadowObject WRITE SetShadowObject FINAL)
+    Q_PROPERTY(QVariant model READ ModelPtr FINAL)
 public:
     explicit NETLizardShadowModelRenderer(int method = 2, NLActor *actor = 0);
     virtual ~NETLizardShadowModelRenderer();
@@ -27,6 +31,7 @@ public:
     int ShadowObject() const { return m_shadowObject; }
     void SetShadowObject(int obj);
     void SetAllScenes();
+    QVariant ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }
 
 protected:
     virtual void Render();

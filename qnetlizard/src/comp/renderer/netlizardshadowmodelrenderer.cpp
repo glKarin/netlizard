@@ -20,6 +20,20 @@ NETLizardShadowModelRenderer::NETLizardShadowModelRenderer(int method, NLActor *
     CLASS_NAME(NETLizardShadowModelRenderer);
     setObjectName("NETLizardShadowModelRenderer");
     SetLightSource();
+    NLProperties props = PropertyConfig();
+    props.Insert("shadowObject",  NLProperties("enum", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
+                                                                                            << NLPropertyPair(tr("Only render item shadow"), NETLIZARD_SHADOW_RENDER_ITEM)
+                                                                                            << NLPropertyPair(tr("Only render scene wall shadow"), NETLIZARD_SHADOW_RENDER_SCENE_WALL)
+                                                                                            << NLPropertyPair(tr("Only render scene shadow"), NETLIZARD_SHADOW_RENDER_SCENE)
+                                                                                               << NLPropertyPair(tr("Render item and scene wall shadow"), NETLIZARD_SHADOW_RENDER_ITEM | NETLIZARD_SHADOW_RENDER_SCENE_WALL)
+                                                                                               << NLPropertyPair(tr("Render all shadow"), NETLIZARD_SHADOW_RENDER_ALL)
+                                                                                            )));
+    props.Insert("shadowMethod",  NLProperties("enum", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
+                                                                                            << NLPropertyPair(tr("No shadow"), 0)
+                                                                                            << NLPropertyPair(tr("Stencil shadow(Z-FAIL)"), SHADOW_Z_FAIL)
+                                                                                            << NLPropertyPair(tr("Stencil shadow(Z-PASS)"), SHADOW_Z_PASS)
+                                                                                            )));
+    SetPropertyConfig(props);
 }
 
 NETLizardShadowModelRenderer::~NETLizardShadowModelRenderer()
@@ -57,17 +71,20 @@ void NETLizardShadowModelRenderer::Render()
 
 void NETLizardShadowModelRenderer::Destroy()
 {
-    m_model = 0;
-    SetupScenes(false);
+    SetModel(0);
     NLRenderable::Destroy();
 }
 
 void NETLizardShadowModelRenderer::SetModel(GL_NETLizard_3D_Model *model)
 {
-    m_model = model;
-    SetupScenes(false);
-    if(m_model)
-        SetupScenes(m_cull);
+    if(m_model != model)
+    {
+        m_model = model;
+        SetupScenes(false);
+        if(m_model)
+            SetupScenes(m_cull);
+        emit propertyChanged("model", ModelPtr());
+    }
 }
 
 void NETLizardShadowModelRenderer::SetCull(bool b)
@@ -166,13 +183,19 @@ void NETLizardShadowModelRenderer::SetRenderScenes(const int scenes[], int count
 void NETLizardShadowModelRenderer::SetStencilShadowMethod(int method)
 {
     if(m_stencilShadowMethod != method)
+    {
         m_stencilShadowMethod = method;
+        emit propertyChanged("shadowMethod", m_stencilShadowMethod);
+    }
 }
 
 void NETLizardShadowModelRenderer::SetShadowObject(int obj)
 {
     if(m_shadowObject != obj)
+    {
         m_shadowObject = obj;
+        emit propertyChanged("shadowObject", m_shadowObject);
+    }
 }
 
 void NETLizardShadowModelRenderer::SetAllScenes()

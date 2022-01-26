@@ -8,6 +8,11 @@ struct _GL_NETLizard_3D_Model;
 NLRENDERER(NETLizardMapModelRenderer)
 class NETLizardMapModelRenderer : public NLRenderable
 {
+    Q_OBJECT
+    Q_PROPERTY(bool cull READ Cull WRITE SetCull FINAL)
+    Q_PROPERTY(int sceneCount READ SceneCount FINAL)
+    Q_PROPERTY(int itemCount READ ItemCount FINAL)
+    Q_PROPERTY(QVariant model READ ModelPtr FINAL)
     public:
     enum RenderItemMode_e
     {
@@ -36,6 +41,7 @@ public:
     void SetAllScene();
     void SetRenderItemMode(RenderItemMode_e mode);
     RenderItemMode_e RenderItemMode() const { return m_itemRenderMode; }
+    QVariant ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }
 
 protected:
     virtual void Render();

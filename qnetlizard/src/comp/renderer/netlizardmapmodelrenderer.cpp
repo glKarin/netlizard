@@ -77,17 +77,20 @@ void NETLizardMapModelRenderer::Render()
 
 void NETLizardMapModelRenderer::Destroy()
 {
-    m_model = 0;
-    SetupCull(false);
+    SetModel(0);
     NLRenderable::Destroy();
 }
 
 void NETLizardMapModelRenderer::SetModel(GL_NETLizard_3D_Model *model)
 {
-    m_model = model;
-    SetupCull(false);
-    if(m_model)
-        SetupCull(m_cull);
+    if(m_model != model)
+    {
+        m_model = model;
+        SetupCull(false);
+        if(m_model)
+            SetupCull(m_cull);
+        emit propertyChanged("model", ModelPtr());
+    }
 }
 
 void NETLizardMapModelRenderer::SetCull(bool b)
@@ -96,6 +99,7 @@ void NETLizardMapModelRenderer::SetCull(bool b)
     {
         m_cull = b;
         SetupCull(m_cull);
+        emit propertyChanged("cull", m_cull);
     }
 }
 
@@ -109,6 +113,8 @@ void NETLizardMapModelRenderer::SetupCull(bool b)
             m_itemCount = 0;
             m_scenes = (int *)calloc(m_model->count, sizeof(int));
             m_items = (int *)calloc(m_model->item_count, sizeof(int));
+            emit propertyChanged("sceneCount", m_sceneCount);
+            emit propertyChanged("itemCount", m_itemCount);
         }
     }
     else
@@ -119,6 +125,8 @@ void NETLizardMapModelRenderer::SetupCull(bool b)
         free(m_items);
         m_items = 0;
         m_itemCount = 0;
+        emit propertyChanged("sceneCount", m_sceneCount);
+        emit propertyChanged("itemCount", m_itemCount);
     }
 }
 
@@ -127,16 +135,19 @@ void NETLizardMapModelRenderer::SetSceneCount(int i)
     if(!m_cull && i > 0)
         return;
     if(m_sceneCount != i)
+    {
         m_sceneCount = i;
+        emit propertyChanged("sceneCount", m_sceneCount);
+    }
 }
 
 void NETLizardMapModelRenderer::SetRenderScenes(const int scenes[], int count)
 {
     if(!m_scenes)
         return;
-    m_sceneCount = count;
     if(count > 0)
         memcpy(m_scenes, scenes, count * sizeof(int));
+    SetSceneCount(count);
 }
 
 void NETLizardMapModelRenderer::SetAllScene()
@@ -145,16 +156,16 @@ void NETLizardMapModelRenderer::SetAllScene()
         return;
     for(GLuint i = 0; i < m_model->count; i++)
         m_scenes[i] = i;
-    m_sceneCount = m_model->count;
+    SetSceneCount(m_model->count);
 }
 
 void NETLizardMapModelRenderer::SetRenderItems(const int items[], int count)
 {
     if(!m_items)
         return;
-    m_itemCount = count;
     if(count > 0)
         memcpy(m_items, items, count * sizeof(int));
+    SetItemCount(count);
 }
 
 void NETLizardMapModelRenderer::SetAllItems()
@@ -163,7 +174,7 @@ void NETLizardMapModelRenderer::SetAllItems()
         return;
     for(GLuint i = 0; i < m_model->item_count; i++)
         m_items[i] = i;
-    m_itemCount = m_model->item_count;
+    SetItemCount(m_model->item_count);
 }
 
 void NETLizardMapModelRenderer::SetItemCount(int i)
@@ -171,7 +182,10 @@ void NETLizardMapModelRenderer::SetItemCount(int i)
     if(!m_cull && i > 0)
         return;
     if(m_itemCount != i)
+    {
         m_itemCount = i;
+        emit propertyChanged("itemCount", m_itemCount);
+    }
 }
 
 void NETLizardMapModelRenderer::SetRenderItemMode(NETLizardMapModelRenderer::RenderItemMode_e mode)

@@ -171,6 +171,14 @@
         <source>Setting</source>
         <translation type="unfinished">设置</translation>
     </message>
+    <message>
+        <source>Update render delta: </source>
+        <translation type="unfinished">渲染间隔： </translation>
+    </message>
+    <message>
+        <source>Update render time: </source>
+        <translation type="unfinished">渲染时间： </translation>
+    </message>
 </context>
 <context>
     <name>NLSceneTreeWidget</name>

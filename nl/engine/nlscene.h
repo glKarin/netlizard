@@ -35,7 +35,9 @@ public:
     bool IsLoop() const { return m_loop; }
     QPoint MousePointerPosition() const { return m_lastPos; }
     float CurrendDelta() const { return m_delta; }
+    float CurrendRenderDelta() const { return m_renderDelta; }
     qint64 UpdateTime() const { return m_lastTime; }
+    qint64 UpdateRenderTime() const { return m_updateGLLastTime; }
     float FPS() const { return m_fps; }
     float CurrentFPS() const { return m_currentFps; }
     int ActorCount() const { return m_actors.Count(); }
@@ -125,6 +127,7 @@ private:
     bool m_pressed;
     bool m_loop;
     float m_delta;
+    float m_renderDelta;
     QPoint m_lastPos;
     qint64 m_lastTime;
     NLActorContainer m_actors;

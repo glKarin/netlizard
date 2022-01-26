@@ -22,6 +22,20 @@ NETLizardMapModelDebugRenderer::NETLizardMapModelDebugRenderer(NLActor *actor) :
 {
     CLASS_NAME(NETLizardMapModelDebugRenderer);
     setObjectName("NETLizardMapModelDebugRenderer");
+    NLProperties props = PropertyConfig();
+    props.Insert("renderDebug",  NLProperties("option", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
+                                                                                            << NLPropertyPair(tr("Render map bound"), NETLIZARD_DEBUG_RENDER_MAP_BOUND)
+                                                                                            << NLPropertyPair(tr("Render item vertex and normal"), NETLIZARD_DEBUG_RENDER_ITEM_VERTEX_NORMAL)
+                                                                                            << NLPropertyPair(tr("Render scene vertex and normal"), NETLIZARD_DEBUG_RENDER_SCENE_VERTEX_NORMAL)
+                                                                                                 << NLPropertyPair(tr("Render item bound"), NETLIZARD_DEBUG_RENDER_ITEM_BOUND)
+                                                                                                 << NLPropertyPair(tr("Render scene bound"), NETLIZARD_DEBUG_RENDER_SCENE_BOUND)
+                                                                                                 << NLPropertyPair(tr("Render item plane"), NETLIZARD_DEBUG_RENDER_ITEM_PLANE)
+                                                                                                 << NLPropertyPair(tr("Render scene plane"), NETLIZARD_DEBUG_RENDER_SCENE_PLANE)
+                                                                                                 << NLPropertyPair(tr("Render scene BSP"), NETLIZARD_DEBUG_RENDER_MAP_BSP)
+                                                                                                 << NLPropertyPair(tr("Render highlight view scene plane"), NETLIZARD_DEBUG_RENDER_HIGHLIGHT_VIEW_SCENE_PLANE)
+                                                                                                 << NLPropertyPair(tr("Render highlight view item"), NETLIZARD_DEBUG_RENDER_HIGHLIGHT_VIEW_ITEM)
+                                                                                            )));
+    SetPropertyConfig(props);
 }
 
 NETLizardMapModelDebugRenderer::~NETLizardMapModelDebugRenderer()
@@ -128,17 +142,21 @@ void NETLizardMapModelDebugRenderer::Render()
 
 void NETLizardMapModelDebugRenderer::Destroy()
 {
-    m_model = 0;
-    SetupScenes(false);
+    SetModel(0);
     NLRenderable::Destroy();
 }
 
 void NETLizardMapModelDebugRenderer::SetModel(GL_NETLizard_3D_Model *model)
 {
-    m_model = model;
-    SetupScenes(false);
-    if(m_model)
-        SetupScenes(m_cull);
+    if(m_model != model)
+    {
+
+        m_model = model;
+        SetupScenes(false);
+        if(m_model)
+            SetupScenes(m_cull);
+        emit propertyChanged("model", ModelPtr());
+    }
 }
 
 void NETLizardMapModelDebugRenderer::SetCull(bool b)
@@ -179,7 +197,10 @@ void NETLizardMapModelDebugRenderer::SetSceneCount(int i)
 void NETLizardMapModelDebugRenderer::SetDebug(int i)
 {
     if(m_debug != i)
+    {
         m_debug = i;
+        emit propertyChanged("renderDebug", m_debug);
+    }
 }
 
 void NETLizardMapModelDebugRenderer::SetRenderScenes(const int scenes[], int count)

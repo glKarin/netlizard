@@ -9,6 +9,9 @@ struct _GL_NETLizard_3D_Model;
 NLRENDERER(NETLizardMapModelDebugRenderer)
 class NETLizardMapModelDebugRenderer : public NLRenderable
 {
+    Q_OBJECT
+    Q_PROPERTY(int renderDebug READ Debug WRITE SetDebug FINAL)
+    Q_PROPERTY(QVariant model READ ModelPtr FINAL)
 public:
     explicit NETLizardMapModelDebugRenderer(NLActor *actor = 0);
     virtual ~NETLizardMapModelDebugRenderer();
@@ -25,6 +28,7 @@ public:
     void SetRenderScenes(const int scenes[], int count);
     void SetCamera(NLSceneCamera *camera);
     void SetAllScenes();
+    QVariant ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }
 
 protected:
     virtual void Render();

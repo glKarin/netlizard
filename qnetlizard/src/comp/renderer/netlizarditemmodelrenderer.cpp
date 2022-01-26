@@ -40,20 +40,30 @@ void NETLizardItemModelRenderer::Render()
 
 void NETLizardItemModelRenderer::Destroy()
 {
-    m_itemMesh = 0;
-    m_tex = 0;
-    m_index = 0;
+    SetModel(0, 0);
+    SetIndex(0);
     NLRenderable::Destroy();
 }
 
 void NETLizardItemModelRenderer::SetModel(GL_NETLizard_3D_Mesh *model, texture_s **tex)
 {
-    m_itemMesh = model;
-    m_tex = tex;
+    if(m_itemMesh != model)
+    {
+        m_itemMesh = model;
+        emit propertyChanged("meshes", MeshesPtr());
+    }
+    if(m_tex != tex)
+    {
+        m_tex = tex;
+        emit propertyChanged("textures", TexturesPtr());
+    }
 }
 
 void NETLizardItemModelRenderer::SetIndex(int index)
 {
     if(m_index != index)
+    {
         m_index = index;
+        emit propertyChanged("index", m_index);
+    }
 }

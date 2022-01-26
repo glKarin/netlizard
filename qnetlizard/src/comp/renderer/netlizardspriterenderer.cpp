@@ -26,6 +26,7 @@ void NETLizardSpriteRenderer::SetIndex(int i)
     if(m_index != i)
     {
         m_index = i;
+        emit propertyChanged("index", m_index);
     }
 }
 void NETLizardSpriteRenderer::Render()
@@ -41,14 +42,17 @@ void NETLizardSpriteRenderer::Render()
 
 void NETLizardSpriteRenderer::Destroy()
 {
-    m_sprite = 0;
+    SetSprite(0);
     NLRenderable::Destroy();
 }
 
 void NETLizardSpriteRenderer::SetSprite(GL_NETLizard_Sprite *f)
 {
     if(m_sprite != f)
+    {
         m_sprite = f;
+        emit propertyChanged("sprite", SpritePtr());
+    }
 }
 
 void NETLizardSpriteRenderer::RenderSprite()
