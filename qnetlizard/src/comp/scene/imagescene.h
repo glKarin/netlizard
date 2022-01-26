@@ -14,7 +14,6 @@ NLSCENE(ImageScene)
 class ImageScene : public NLScene
 {
     Q_OBJECT
-    Q_ENUMS(Qt::Alignment)
     Q_PROPERTY(int alignment READ Alignmenti WRITE SetAlignmenti FINAL)
     Q_PROPERTY(QVariant texture READ TexturePtr FINAL)
 public:

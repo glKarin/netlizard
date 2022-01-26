@@ -10,14 +10,15 @@
 #include "nlcomponent.h"
 #include "nlforce.h"
 #include "nlscript.h"
+#include "nlrenderable.h"
 
 namespace NL
 {
-static NLPropertyInfo make_property_info(const QString &name, int t, const QString &typeName, const QVariant &value, const QVariant &defValue = QVariant(), const QVariantHash &props = QVariantHash(), bool readonly = false)
+static NLPropertyInfo make_property_info(const QObject *object, const QString &name, int t, const QString &typeName, const QVariant &value, const QVariant &defValue = QVariant(), const QVariantHash &props = QVariantHash(), bool readonly = false)
 {
     if(typeName == "QVariant")
     {
-        return make_property_info(name, value.type(), value.typeName(), value, defValue, props, readonly);
+        return make_property_info(object, name, value.type(), value.typeName(), value, defValue, props, readonly);
     }
 
     QString type(typeName);
@@ -74,7 +75,7 @@ static NLPropertyInfo make_property_info(const QString &name, int t, const QStri
         }
         else if(type == "NLRenderable*" || type == "NLObject*" || type == "NLActor*" || type == "NLComponent*" || type == "NLScript*" || type == "NLScene*" || type == "NLSceneCamera*" || type == "NLForce*")
         {
-            if(type == "NLRenderable*" && name == "renderable")
+            if(type == "NLRenderable*" && name == "renderable" && nlinstanceofv(object, const NLActor))
             {
                 widget = "formgroup";
                 editDirectly = false;
@@ -109,7 +110,8 @@ NLPropertyInfoList object_propertics(const NLObject *obj)
         bool readonly = !p.isWritable() || p.isConstant();
 
         QVariantHash prop = config.value(name).toHash();
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p.read(obj), obj->GetInitProperty(name), prop, readonly);
+        NLPropertyInfo info = make_property_info(obj, name, p.type(), p.typeName(), p.read(obj), obj->GetInitProperty(name), prop, readonly);
+        info.user = false;
 
         ret.push_back(info);
     }
@@ -122,7 +124,8 @@ NLPropertyInfoList object_propertics(const NLObject *obj)
         QString name(ba);
 
         QVariantHash prop = config.value(name).toHash();
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p, obj->GetInitProperty(name), prop);
+        NLPropertyInfo info = make_property_info(obj, name, p.type(), p.typeName(), p, obj->GetInitProperty(name), prop);
+        info.user = true;
 
         ret.push_back(info);
     }
@@ -145,7 +148,8 @@ NLPropertyInfoList scene_propertics(const NLScene *obj)
 
         QVariantHash prop = config.value(name).toHash();
         QVariant v = p.read(obj);
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), v, v, prop, readonly);
+        NLPropertyInfo info = make_property_info(obj, name, p.type(), p.typeName(), v, v, prop, readonly);
+        info.user = false;
 
         ret.push_back(info);
     }
@@ -158,7 +162,8 @@ NLPropertyInfoList scene_propertics(const NLScene *obj)
         QString name(ba);
 
         QVariantHash prop = config.value(name).toHash();
-        NLPropertyInfo info = make_property_info(name, p.type(), p.typeName(), p, p, prop);
+        NLPropertyInfo info = make_property_info(obj, name, p.type(), p.typeName(), p, p, prop);
+        info.user = true;
 
         ret.push_back(info);
     }

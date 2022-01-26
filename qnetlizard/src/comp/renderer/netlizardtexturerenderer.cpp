@@ -12,6 +12,18 @@ NETLizardTextureRenderer::NETLizardTextureRenderer(NLActor *actor) :
 {
     CLASS_NAME(NETLizardTextureRenderer);
     setObjectName("NETLizardTextureRenderer");
+
+    NLProperties props = PropertyConfig();
+
+    props.Insert("alignment",  NLProperties("enum", QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()
+                                                                                            << NLPropertyPair(tr("Center"), static_cast<int>(Qt::AlignCenter))
+                                                                                            << NLPropertyPair(tr("Left-Top"), static_cast<int>(Qt::AlignLeft | Qt::AlignTop))
+                                                                                            << NLPropertyPair(tr("Left-Bottom"), static_cast<int>(Qt::AlignLeft | Qt::AlignBottom))
+                                                                                            << NLPropertyPair(tr("Left-Center"), static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter))
+                                                                                            << NLPropertyPair(tr("Center-Top"), static_cast<int>(Qt::AlignHCenter | Qt::AlignTop))
+                                                                                            << NLPropertyPair(tr("Center-Bottom"), static_cast<int>(Qt::AlignHCenter | Qt::AlignBottom))
+                                                                                            )));
+    SetPropertyConfig(props);
 }
 
 NETLizardTextureRenderer::~NETLizardTextureRenderer()
@@ -87,14 +99,17 @@ void NETLizardTextureRenderer::Render()
 
 void NETLizardTextureRenderer::Destroy()
 {
-    m_tex = 0;
+    SetTexture(0);
     NLRenderable::Destroy();
 }
 
 void NETLizardTextureRenderer::SetTexture(texture_s *tex)
 {
     if(m_tex != tex)
+    {
         m_tex = tex;
+        emit propertyChanged("texture", TexturePtr());
+    }
 }
 
 void NETLizardTextureRenderer::SetAlignment(Qt::Alignment align)
@@ -104,5 +119,6 @@ void NETLizardTextureRenderer::SetAlignment(Qt::Alignment align)
     if(m_align != a)
     {
         m_align = (Qt::Alignment)a;
+        emit propertyChanged("alignment", static_cast<int>(m_align));
     }
 }

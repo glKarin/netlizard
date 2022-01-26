@@ -72,8 +72,9 @@ struct NLLIB_EXPORT NLPropertyInfo
     QVariantHash prop;
     QString label;
     QString description;
+    bool user;
 
-    NLPropertyInfo(const QString &name, const QVariant &value, const QString &type, const QString &widget, bool readonly = true, const QVariant &def_value = QVariant(), const QVariantHash &config = QVariantHash(), const QString &label = QString(), const QString &description = QString())
+    NLPropertyInfo(const QString &name, const QVariant &value, const QString &type, const QString &widget, bool readonly = true, const QVariant &def_value = QVariant(), const QVariantHash &config = QVariantHash(), const QString &label = QString(), const QString &description = QString(), bool user = false)
         : name(name),
           value(value),
           type(type),
@@ -82,7 +83,8 @@ struct NLLIB_EXPORT NLPropertyInfo
           default_value(def_value),
           prop(config),
           label(label),
-          description(description)
+          description(description),
+          user(user)
     {
         if(this->label.isEmpty())
             this->label = name;

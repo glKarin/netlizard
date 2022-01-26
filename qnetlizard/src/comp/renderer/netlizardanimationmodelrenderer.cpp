@@ -40,23 +40,28 @@ void NETLizardAnimationModelRenderer::Render()
 
 void NETLizardAnimationModelRenderer::Destroy()
 {
-    m_model = 0;
-    m_config = 0;
-    m_anim = -1;
-    m_frame = -1;
+    SetAnim(-1, -1);
+    SetModel(0, 0);
     NLRenderable::Destroy();
 }
 
 void NETLizardAnimationModelRenderer::SetModel(GL_NETLizard_3D_Model *model, const NETLizard_3D_Frame_Animation *config)
 {
-    m_model = model;
+    if(m_model != model)
+    {
+        m_model = model;
+        emit propertyChanged("model", ModelPtr());
+    }
     m_config = config;
 }
 
 void NETLizardAnimationModelRenderer::SetFrame(int frame)
 {
     if(m_frame != frame)
+    {
         m_frame = frame;
+        emit propertyChanged("frame", m_frame);
+    }
 }
 
 void NETLizardAnimationModelRenderer::SetAnim(int anim, int frame)
@@ -65,5 +70,6 @@ void NETLizardAnimationModelRenderer::SetAnim(int anim, int frame)
     {
         m_anim = anim;
         SetFrame(frame);
+        emit propertyChanged("anim", m_anim);
     }
 }

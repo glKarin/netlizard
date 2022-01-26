@@ -14,10 +14,10 @@ class NLScript;
 class NLLIB_EXPORT NLActor : public NLObject
 {
     Q_OBJECT
-    Q_PROPERTY(NLRenderable* renderable READ Renderable FINAL)
     Q_PROPERTY(NLVector3 position READ Position WRITE SetPosition NOTIFY positionChanged FINAL)
     Q_PROPERTY(NLVector3 rotation READ Rotation WRITE SetRotation NOTIFY rotationChanged FINAL)
     Q_PROPERTY(NLVector3 scale READ Scale WRITE SetScale NOTIFY scaleChanged FINAL)
+    Q_PROPERTY(NLRenderable* renderable READ Renderable WRITE SetRenderable FINAL)
 
 public:
     explicit NLActor(NLActor *parent = 0);

@@ -53,6 +53,7 @@
 #define WIDGET_DESC_KEY "_Description"
 #define WIDGET_LABEL_KEY "_Label"
 #define WIDGET_READONLY_KEY "_Readonly"
+#define WIDGET_USER_KEY "_User"
 #define WIDGET_ACTION_TYPE_KEY "_Type"
 #define WIDGET_ACTION_WIDGET_KEY "_Widget"
 
@@ -68,6 +69,8 @@
 #define WIDGET_SET_LABEL(w, d) (w)->setProperty(WIDGET_LABEL_KEY, d)
 #define WIDGET_READONLY(w) (w)->property(WIDGET_READONLY_KEY).toBool()
 #define WIDGET_SET_READONLY(w, d) (w)->setProperty(WIDGET_READONLY_KEY, d)
+#define WIDGET_USER(w) (w)->property(WIDGET_USER_KEY).toBool()
+#define WIDGET_SET_USER(w, d) (w)->setProperty(WIDGET_USER_KEY, d)
 
 #define ACTION_SET_TYPE(w, d) (w)->setProperty(WIDGET_ACTION_TYPE_KEY, d)
 #define ACTION_SET_WIDGET(w, d) (w)->setProperty(WIDGET_ACTION_WIDGET_KEY, QVariant::fromValue<QWidget *>(static_cast<QWidget *>(d)))
@@ -493,7 +496,8 @@ void NLFormGroupWidget::ToggleGroupBox(bool on)
             QString desc = WIDGET_DESC(widget);
             QString label = WIDGET_LABEL(widget);
             bool readonly = WIDGET_READONLY(widget);
-            PushLayout(name, widget, label, desc, readonly);
+            bool user = WIDGET_USER(widget);
+            PushLayout(name, widget, label, desc, readonly, user);
         }
     }
     else
@@ -547,9 +551,11 @@ void NLFormGroupWidget::CreateLayout()
     setLayout(m_layout);
 }
 
-void NLFormGroupWidget::PushLayout(const QString &name, QWidget *widget, const QString &label, const QString &desc, bool readonly)
+void NLFormGroupWidget::PushLayout(const QString &name, QWidget *widget, const QString &label, const QString &desc, bool readonly, bool user)
 {
     QString text(LABEL(label, name));
+    if(user)
+        text.insert(0, "*");
     NLFormLabelWidget *l = new NLFormLabelWidget(text, name, this);
     if(readonly)
         l->SetAllowAction(NLFormLabelWidget::Action_Drag);
@@ -558,18 +564,19 @@ void NLFormGroupWidget::PushLayout(const QString &name, QWidget *widget, const Q
     m_layout->addRow(l, widget);
 }
 
-void NLFormGroupWidget::AddRow(const QString &name, QWidget *widget, const QString &desc, bool readonly)
+void NLFormGroupWidget::AddRow(const QString &name, QWidget *widget, const QString &desc, bool readonly, bool user)
 {
-    AddRow(name, name, widget, desc, readonly);
+    AddRow(name, name, widget, desc, readonly, user);
 }
 
-void NLFormGroupWidget::AddRow(const QString &name, const QString &label, QWidget *widget, const QString &desc, bool readonly)
+void NLFormGroupWidget::AddRow(const QString &name, const QString &label, QWidget *widget, const QString &desc, bool readonly, bool user)
 {
     CreateLayout();
     WIDGET_SET_DESC(widget, desc);
     WIDGET_SET_LABEL(widget, label);
     WIDGET_SET_READONLY(widget, readonly);
-    PushLayout(name, widget, label, desc, readonly);
+    WIDGET_SET_USER(widget, user);
+    PushLayout(name, widget, label, desc, readonly, user);
     LAYOUT_COUNTER_INCREMENT(m_layout);
     m_nameWidgetMap.insert(name, widget);
     if(m_canExpand)
@@ -648,11 +655,11 @@ void NLPropFormGroupWidget::SetupObjectProperty()
     if(!m_object)
         return;
     NLPropertyInfoList list = GetPropertyInfoList(m_object);
-    SortProperties(list);
+    SortProperties(m_object, list);
     Q_FOREACH(const NLPropertyInfo &item, list)
     {
         QWidget *widget = GenWidget(m_object, item);
-        AddRow(item.name, item.label, widget, item.description, item.readonly);
+        AddRow(item.name, item.label, widget, item.description, item.readonly, item.user);
     }
 }
 
@@ -813,7 +820,8 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
         WIDGET_SET_TYPE(w, NLPropFormGroupWidget);
         QString name = nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : "(NLRenderable*)0x0";
         w->setTitle(name);
-        w->UnExpand();
+        w->Collapse();
+        w->SetCanExpand(nlo != 0);
         widget = w;
     }
     else if(item.widget == "memory")
@@ -909,6 +917,10 @@ void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const QVa
     else if(WIDGETNAME_IS_TYPE(type, NLEditorMemoryPointerWidget))
     {
         static_cast<NLEditorMemoryPointerWidget *>(widget)->SetMemoryPointer(value);
+    }
+    else if(WIDGETNAME_IS_TYPE(type, NLPropFormGroupWidget))
+    {
+        static_cast<NLPropFormGroupWidget *>(widget)->SetObject(value.value<NLRenderable *>());
     }
     else
         qWarning() << "Unsupported widget type -> " << type;

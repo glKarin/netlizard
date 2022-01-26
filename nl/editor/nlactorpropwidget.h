@@ -24,7 +24,7 @@ protected:
     virtual void SetObjectProperty(QObject *obj, const QString &name, const QVariant &value);
     virtual void CoverObjectProperty(QObject *obj, const QString &name, const QVariant &value);
     virtual NLPropertyInfoList GetPropertyInfoList(QObject *obj);
-    virtual void SortProperties(NLPropertyInfoList &list);
+    virtual void SortProperties(QObject *obj, NLPropertyInfoList &list);
     virtual QVariant GetObjectProperty(QObject *obj, const QString &name);
     virtual NLPropFormGroupWidget * GenFormGroup(QObject *obj);
     virtual void mousePressEvent(QMouseEvent *ev);

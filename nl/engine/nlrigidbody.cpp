@@ -64,7 +64,7 @@ void NLRigidbody::Construct()
     vector3_identityv(&m_moveRotation);
     m_moveDirection = Direction();
 
-    NLProperties props;
+    NLProperties props = PropertyConfig();
     props.Insert("mass", NLProperties("range", NLProperties("min", 0)));
     SetPropertyConfig(props);
 }

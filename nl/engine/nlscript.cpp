@@ -381,7 +381,7 @@ void NLScript::Construct()
     setObjectName("NLScript");
     SetType(NLObject::Type_Script);
 
-    NLProperties props;
+    NLProperties props = PropertyConfig();
 
     props.Insert("scriptFile", NLProperties("file", true));
     props.Insert("scriptSource", NLProperties("multiline", true)

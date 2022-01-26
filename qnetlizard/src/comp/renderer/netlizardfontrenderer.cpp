@@ -29,6 +29,26 @@ void NETLizardFontRenderer::SetText(const QString &str)
     {
         m_text = str;
         UpdateLayout();
+        emit propertyChanged("text", m_text);
+    }
+}
+
+void NETLizardFontRenderer::SetPaddingWidth(int i)
+{
+    if(m_paddingWidth != i)
+    {
+        m_paddingWidth = i;
+        UpdateLayout();
+        emit propertyChanged("paddingWidth", m_paddingWidth);
+    }
+}
+
+void NETLizardFontRenderer::SetLineSpacing(int i)
+{
+    if(m_lineSpacing != i)
+    {
+        m_lineSpacing = i;
+        emit propertyChanged("lineSpacing", m_lineSpacing);
     }
 }
 
@@ -43,7 +63,7 @@ void NETLizardFontRenderer::UpdateLayout()
     NLScene *scene = actor->Scene();
     if(!scene)
         return;
-    int width = scene->width();
+    int width = qMax(scene->width() - 2 * m_paddingWidth, (int)m_font->width);
     QByteArray ba = m_text.toLocal8Bit();
 
     const char *p = ba.constData();
@@ -52,7 +72,7 @@ void NETLizardFontRenderer::UpdateLayout()
     GLint line_count = 0;
     while(count < (GLint)len)
     {
-        GLint c = NETLizard_FontGetCharCountOfWidth(m_font, width - 2 * m_paddingWidth, p);
+        GLint c = NETLizard_FontGetCharCountOfWidth(m_font, width, p);
         if(c == -1)
             break;
         if(c == 0) c = 1;
@@ -95,13 +115,17 @@ void NETLizardFontRenderer::Render()
 void NETLizardFontRenderer::Destroy()
 {
     m_font = 0;
+    emit propertyChanged("font", FontPtr());
     NLRenderable::Destroy();
 }
 
 void NETLizardFontRenderer::SetFont(GL_NETLizard_Font *f)
 {
     if(m_font != f)
+    {
         m_font = f;
+        emit propertyChanged("font", FontPtr());
+    }
 }
 
 void NETLizardFontRenderer::RenderText()

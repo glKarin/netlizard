@@ -373,13 +373,13 @@ void NLActor::SetRenderable(NLRenderable *renderable)
         if(m_renderable)
             m_renderable->SetActor(0);
         m_renderable = renderable;
-        emit propertyChanged("renderable", QVariant::fromValue<NLRenderable *>(m_renderable));
         if(m_renderable)
         {
             if(!m_renderable->IsInited())
                 m_renderable->Init();
             m_renderable->SetActor(this);
         }
+        emit propertyChanged("renderable", QVariant::fromValue<NLRenderable *>(m_renderable));
     }
 }
 

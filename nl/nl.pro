@@ -26,6 +26,7 @@ DEFINES += _NL_LIBRARY
 DEPENDPATH += .
 INCLUDEPATH += .
 
+# engine
 HEADERS += \
     engine/nldef.h \
     engine/nlscene.h \
@@ -53,15 +54,7 @@ HEADERS += \
     engine/nlscript.h \
     engine/nlscriptcontainer.h \
     engine/nlmodelrenderer.h \
-    engine/nldbg.h \
-    widget/nlbuttongroupwidget.h \
-    widget/nltexteditwidget.h \
-    lua/lua_variant.h \
-    lua/lua_vector3.h \
-    lua/lua_globals.h \
-    widget/nlmemorypointerwidget.h \
-    widget/nleditwidget.h \
-    widget/nllabelwidget.h
+    engine/nldbg.h
 
 SOURCES += \
     engine/nldef.cpp \
@@ -89,16 +82,9 @@ SOURCES += \
     engine/nlrendermodel.cpp \
     engine/nlscript.cpp \
     engine/nlscriptcontainer.cpp \
-    engine/nlmodelrenderer.cpp \
-    widget/nlbuttongroupwidget.cpp \
-    widget/nltexteditwidget.cpp \
-    lua/lua_variant.cpp \
-    lua/lua_vector3.cpp \
-    lua/lua_globals.cpp \
-    widget/nlmemorypointerwidget.cpp \
-    widget/nleditwidget.cpp \
-    widget/nllabelwidget.cpp
+    engine/nlmodelrenderer.cpp
 
+# widget
 HEADERS += \
     widget/syntaxhighlighter/nlluasyntaxhighlighter.h \
     widget/syntaxhighlighter/nlgeneralsyntaxhighlighter.h \
@@ -109,9 +95,11 @@ HEADERS += \
     widget/nlpropformgroupwidget.h \
     widget/nlpropsectionwidget.h \
     widget/nlcolorchooserwidget.h \
-    editor/nlscenetreewidget.h \
-    editor/nlsceneinfowidget.h \
-    editor/nlactorpropwidget.h
+    widget/nlmemorypointerwidget.h \
+    widget/nleditwidget.h \
+    widget/nllabelwidget.h \
+    widget/nlbuttongroupwidget.h \
+    widget/nltexteditwidget.h \
 
 SOURCES += \
     widget/syntaxhighlighter/nlluasyntaxhighlighter.cpp \
@@ -123,10 +111,13 @@ SOURCES += \
     widget/nlpropformgroupwidget.cpp \
     widget/nlpropsectionwidget.cpp \
     widget/nlcolorchooserwidget.cpp \
-    editor/nlscenetreewidget.cpp \
-    editor/nlsceneinfowidget.cpp \
-    editor/nlactorpropwidget.cpp
+    widget/nlbuttongroupwidget.cpp \
+    widget/nltexteditwidget.cpp \
+    widget/nlmemorypointerwidget.cpp \
+    widget/nleditwidget.cpp \
+    widget/nllabelwidget.cpp
 
+# lua script
 HEADERS += \
     lua/lua_actor.h \
     lua/lua_component.h \
@@ -134,7 +125,10 @@ HEADERS += \
     lua/lua_def.h \
     lua/lua_scenecamera.h \
     lua/lua_object.h \
-    lua/lua_script.h
+    lua/lua_script.h \
+    lua/lua_variant.h \
+    lua/lua_vector3.h \
+    lua/lua_globals.h
 
 SOURCES += \
     lua/lua_actor.cpp \
@@ -143,8 +137,23 @@ SOURCES += \
     lua/lua_def.cpp \
     lua/lua_scenecamera.cpp \
     lua/lua_object.cpp \
-    lua/lua_script.cpp
+    lua/lua_script.cpp \
+    lua/lua_variant.cpp \
+    lua/lua_vector3.cpp \
+    lua/lua_globals.cpp
 
+# editor
+HEADERS += \
+    editor/nlscenetreewidget.h \
+    editor/nlsceneinfowidget.h \
+    editor/nlactorpropwidget.h
+
+SOURCES += \
+    editor/nlscenetreewidget.cpp \
+    editor/nlsceneinfowidget.cpp \
+    editor/nlactorpropwidget.cpp
+
+# misc
 HEADERS += \
     template/nlsequencemap.h \
     trait/nlpropertytrait.h \
@@ -155,7 +164,7 @@ SOURCES += \
     utils/nlioutility.cpp \
     utils/nlguiutility.cpp
 
-# Lib
+# lib
 HEADERS += \
     math/mesa_gl_math.h \
     math/vector3.h \
@@ -213,7 +222,7 @@ SOURCES += \
            math/mesa_math/m_xform.c \
            math/mesa_math/main/imports.c
 
-# Test
+# test
 CONFIG(debug, debug|release) {
 
 } else {

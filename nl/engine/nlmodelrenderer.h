@@ -12,8 +12,6 @@ public:
     {
         Init(length);
     }
-
-private:
     void Init(GLfloat length = 9999);
 };
 
@@ -25,8 +23,6 @@ public:
     {
         Init(length);
     }
-
-private:
     void Init(GLfloat length = 200);
 };
 
@@ -38,9 +34,7 @@ public:
     {
         Init(length);
     }
-
-private:
-    void Init(GLfloat length = 2000);
+    void Init(GLfloat length = 2000, const QColor &color = QColor());
 };
 
 class NLLIB_EXPORT NLRenderModelGLGeneral_line : public NLRenderModelGLGeneral
@@ -51,9 +45,7 @@ public:
     {
         Init(length);
     }
-
-private:
-    void Init(GLfloat length = 2000);
+    void Init(GLfloat length = 2000, const QColor &color = QColor());
 };
 
 
@@ -80,74 +72,74 @@ private:
 
 class NLLIB_EXPORT NLModelRenderer_coordinate : public NLModelRenderer
 {
+    Q_OBJECT
+    Q_PROPERTY(float length READ Length WRITE SetLength FINAL)
 public:
-    explicit NLModelRenderer_coordinate(const NLProperties &prop = NLProperties(), NLActor *actor = 0)
-        : NLModelRenderer(prop, actor)
-    {
-        CLASS_NAME(NLModelRenderer_coordinate);
-        setObjectName("NLModelRenderer_coordinate");
-    }
+    explicit NLModelRenderer_coordinate(const NLProperties &prop = NLProperties(), NLActor *actor = 0);
+    float Length() const { return m_length; }
+    void SetLength(float length);
 
 protected:
-    virtual void InitProperty() {
-        NLRenderable::InitProperty();
-        int length = GetInitProperty_T<float>("length", 9999);
-        SetModel(new NLRenderModelGLGeneral_coordinate(length));
-    }
+    virtual void InitProperty();
+
+private:
+    float m_length;
 };
 
 class NLLIB_EXPORT NLModelRenderer_cube : public NLModelRenderer
 {
+    Q_OBJECT
+    Q_PROPERTY(float length READ Length WRITE SetLength FINAL)
 public:
-    explicit NLModelRenderer_cube(const NLProperties &prop = NLProperties(), NLActor *actor = 0)
-        : NLModelRenderer(prop, actor)
-    {
-        CLASS_NAME(NLModelRenderer_cube);
-        setObjectName("NLModelRenderer_cube");
-    }
+    explicit NLModelRenderer_cube(const NLProperties &prop = NLProperties(), NLActor *actor = 0);
+    float Length() const { return m_length; }
+    void SetLength(float length);
 
 protected:
-    virtual void InitProperty() {
-        NLRenderable::InitProperty();
-        int length = GetInitProperty_T<float>("length", 200);
-        SetModel(new NLRenderModelGLGeneral_cube(length));
-    }
+    virtual void InitProperty();
+
+private:
+    float m_length;
 };
 
 class NLLIB_EXPORT NLModelRenderer_plane : public NLModelRenderer
 {
+    Q_OBJECT
+    Q_PROPERTY(float length READ Length WRITE SetLength FINAL)
+    Q_PROPERTY(QColor color READ Color WRITE SetColor FINAL)
 public:
-    explicit NLModelRenderer_plane(const NLProperties &prop = NLProperties(), NLActor *actor = 0)
-        : NLModelRenderer(prop, actor)
-    {
-        CLASS_NAME(NLModelRenderer_plane);
-        setObjectName("NLModelRenderer_plane");
-    }
+    explicit NLModelRenderer_plane(const NLProperties &prop = NLProperties(), NLActor *actor = 0);
+    float Length() const { return m_length; }
+    void SetLength(float length);
+    QColor Color() const { return m_color; }
+    void SetColor(const QColor &color);
 
 protected:
-    virtual void InitProperty() {
-        NLRenderable::InitProperty();
-        int length = GetInitProperty_T<float>("length", 2000);
-        SetModel(new NLRenderModelGLGeneral_plane(length));
-    }
+    virtual void InitProperty();
+
+private:
+    float m_length;
+    QColor m_color;
 };
 
 class NLLIB_EXPORT NLModelRenderer_line : public NLModelRenderer
 {
+    Q_OBJECT
+    Q_PROPERTY(float length READ Length WRITE SetLength FINAL)
+    Q_PROPERTY(QColor color READ Color WRITE SetColor FINAL)
 public:
-    explicit NLModelRenderer_line(const NLProperties &prop = NLProperties(), NLActor *actor = 0)
-        : NLModelRenderer(prop, actor)
-    {
-        CLASS_NAME(NLRenderModelGLGeneral_line);
-        setObjectName("NLRenderModelGLGeneral_line");
-    }
+    explicit NLModelRenderer_line(const NLProperties &prop = NLProperties(), NLActor *actor = 0);
+    float Length() const { return m_length; }
+    void SetLength(float length);
+    QColor Color() const { return m_color; }
+    void SetColor(const QColor &color);
 
 protected:
-    virtual void InitProperty() {
-        NLRenderable::InitProperty();
-        int length = GetInitProperty_T<float>("length", 2000);
-        SetModel(new NLRenderModelGLGeneral_line(length));
-    }
+    virtual void InitProperty();
+
+private:
+    float m_length;
+    QColor m_color;
 };
 
 #endif // _KARIN_NLMODELRENDERER_H

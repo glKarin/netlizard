@@ -9,6 +9,10 @@ struct NETLizard_3D_Frame_Animation_s;
 NLRENDERER(NETLizardAnimationModelRenderer)
 class NETLizardAnimationModelRenderer : public NLRenderable
 {
+    Q_OBJECT
+    Q_PROPERTY(int anim READ Anim WRITE SetAnim FINAL)
+    Q_PROPERTY(int frame READ Frame WRITE SetFrame FINAL)
+    Q_PROPERTY(QVariant model READ ModelPtr FINAL)
 public:
     explicit NETLizardAnimationModelRenderer(NLActor *actor = 0);
     virtual ~NETLizardAnimationModelRenderer();
@@ -19,6 +23,7 @@ public:
     void SetAnim(int anim, int frame = 0);
     int Anim() const { return m_anim; }
     int Frame() const { return m_frame; }
+    QVariant ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }
 
 protected:
     virtual void Render();

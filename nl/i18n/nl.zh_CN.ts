@@ -29,6 +29,17 @@
     </message>
 </context>
 <context>
+    <name>NLEditWidget</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished">编辑</translation>
+    </message>
+    <message>
+        <source>Click button or double click input to edit</source>
+        <translation type="unfinished">点击按钮或双击输入框编辑</translation>
+    </message>
+</context>
+<context>
     <name>NLFileChooserWidget</name>
     <message>
         <source>Open</source>
@@ -40,14 +51,14 @@
     </message>
 </context>
 <context>
-    <name>NLLineEditWidget</name>
+    <name>NLMemoryPointerWidget</name>
     <message>
-        <source>Edit</source>
-        <translation type="unfinished">编辑</translation>
+        <source>Reset null</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Click button or double click input to edit</source>
-        <translation type="unfinished">点击按钮或双击输入框编辑</translation>
+        <source>Free</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

@@ -17,6 +17,8 @@
 
 void NLRenderModelGLGeneral_coordinate::Init(GLfloat length)
 {
+    Clear();
+
     GLfloat vertex[6 * 4];
     GLfloat color[6 * 4];
 
@@ -52,6 +54,8 @@ void NLRenderModelGLGeneral_coordinate::Init(GLfloat length)
 
 void NLRenderModelGLGeneral_cube::Init(GLfloat length)
 {
+    Clear();
+
     GLfloat _vertex[32];
     const GLfloat min = -length / 2;
     const GLfloat max = length / 2;
@@ -122,8 +126,10 @@ void NLRenderModelGLGeneral_cube::Init(GLfloat length)
     Primitives().push_back(primitive);
 }
 
-void NLRenderModelGLGeneral_plane::Init(GLfloat length)
+void NLRenderModelGLGeneral_plane::Init(GLfloat length, const QColor &color)
 {
+    Clear();
+
     GLfloat vertex[4 * 4];
     const GLfloat min = -length / 2;
     const GLfloat max = length / 2;
@@ -140,6 +146,7 @@ void NLRenderModelGLGeneral_plane::Init(GLfloat length)
 
     NLRenderModelGLGeneral::NLRenderModelPrimitiveData primitive;
     primitive.SetMode(GL_TRIANGLE_STRIP);
+    primitive.SetColor(color);
     for(int i = 0; i < 4; i++)
     {
         primitive.Index().Add(i);
@@ -147,8 +154,10 @@ void NLRenderModelGLGeneral_plane::Init(GLfloat length)
     Primitives().push_back(primitive);
 }
 
-void NLRenderModelGLGeneral_line::Init(GLfloat length)
+void NLRenderModelGLGeneral_line::Init(GLfloat length, const QColor &color)
 {
+    Clear();
+
     GLfloat vertex[4 * 2];
     const GLfloat min = -length / 2;
     const GLfloat max = length / 2;
@@ -163,6 +172,7 @@ void NLRenderModelGLGeneral_line::Init(GLfloat length)
 
     NLRenderModelGLGeneral::NLRenderModelPrimitiveData primitive;
     primitive.SetMode(GL_LINES);
+    primitive.SetColor(color);
     for(int i = 0; i < 2; i++)
     {
         primitive.Index().Add(i);
@@ -236,4 +246,134 @@ NLRenderModelGLGeneral * NLModelRenderer::Take()
         return m;
     }
     return 0;
+}
+
+NLModelRenderer_coordinate::NLModelRenderer_coordinate(const NLProperties &prop, NLActor *actor)
+    : NLModelRenderer(prop, actor),
+      m_length(9999)
+{
+    CLASS_NAME(NLModelRenderer_coordinate);
+    setObjectName("NLModelRenderer_coordinate");
+    SetModel(new NLRenderModelGLGeneral_coordinate(m_length));
+}
+
+void NLModelRenderer_coordinate::InitProperty()
+{
+    NLRenderable::InitProperty();
+    float length = GetInitProperty_T<float>("length", 9999);
+    SetLength(length);
+}
+
+void NLModelRenderer_coordinate::SetLength(float length)
+{
+    if(m_length != length)
+    {
+        m_length = length;
+        static_cast<NLRenderModelGLGeneral_coordinate *>(Model())->Init(m_length);
+        emit propertyChanged("length", m_length);
+    }
+}
+
+NLModelRenderer_cube::NLModelRenderer_cube(const NLProperties &prop, NLActor *actor)
+    : NLModelRenderer(prop, actor),
+      m_length(200)
+{
+    CLASS_NAME(NLModelRenderer_cube);
+    setObjectName("NLModelRenderer_cube");
+    SetModel(new NLRenderModelGLGeneral_cube(m_length));
+}
+
+void NLModelRenderer_cube::InitProperty()
+{
+    NLRenderable::InitProperty();
+    float length = GetInitProperty_T<float>("length", 200);
+    SetLength(length);
+}
+
+void NLModelRenderer_cube::SetLength(float length)
+{
+    if(m_length != length)
+    {
+        m_length = length;
+        static_cast<NLRenderModelGLGeneral_cube *>(Model())->Init(m_length);
+        emit propertyChanged("length", m_length);
+    }
+}
+
+NLModelRenderer_plane::NLModelRenderer_plane(const NLProperties &prop, NLActor *actor)
+    : NLModelRenderer(prop, actor),
+      m_length(2000)
+{
+    CLASS_NAME(NLModelRenderer_plane);
+    setObjectName("NLModelRenderer_plane");
+    SetModel(new NLRenderModelGLGeneral_plane(m_length));
+}
+
+void NLModelRenderer_plane::InitProperty()
+{
+    NLRenderable::InitProperty();
+    float length = GetInitProperty_T<float>("length", 2000);
+    SetLength(length);
+    QColor color = GetInitProperty_T<QColor>("color");
+    if(color.isValid())
+        SetColor(color);
+}
+
+void NLModelRenderer_plane::SetLength(float length)
+{
+    if(m_length != length)
+    {
+        m_length = length;
+        static_cast<NLRenderModelGLGeneral_plane *>(Model())->Init(m_length, m_color);
+        emit propertyChanged("length", m_length);
+    }
+}
+
+void NLModelRenderer_plane::SetColor(const QColor &color)
+{
+    if(m_color != color)
+    {
+        m_color = color;
+        static_cast<NLRenderModelGLGeneral_plane *>(Model())->Primitive(0).SetColor(m_color);
+        emit propertyChanged("color", m_color);
+    }
+}
+
+NLModelRenderer_line::NLModelRenderer_line(const NLProperties &prop, NLActor *actor)
+    : NLModelRenderer(prop, actor),
+      m_length(2000)
+{
+    CLASS_NAME(NLRenderModelGLGeneral_line);
+    setObjectName("NLRenderModelGLGeneral_line");
+    SetModel(new NLRenderModelGLGeneral_line(m_length));
+}
+
+void NLModelRenderer_line::InitProperty()
+{
+    NLRenderable::InitProperty();
+    float length = GetInitProperty_T<float>("length", 2000);
+    SetLength(length);
+    QColor color = GetInitProperty_T<QColor>("color");
+    if(color.isValid())
+        SetColor(color);
+}
+
+void NLModelRenderer_line::SetLength(float length)
+{
+    if(m_length != length)
+    {
+        m_length = length;
+        static_cast<NLRenderModelGLGeneral_line *>(Model())->Init(m_length, m_color);
+        emit propertyChanged("length", m_length);
+    }
+}
+
+void NLModelRenderer_line::SetColor(const QColor &color)
+{
+    if(m_color != color)
+    {
+        m_color = color;
+        static_cast<NLRenderModelGLGeneral_line *>(Model())->Primitive(0).SetColor(m_color);
+        emit propertyChanged("color", m_color);
+    }
 }

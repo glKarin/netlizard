@@ -18,7 +18,6 @@ protected:
     virtual void SetObjectProperty(QObject *obj, const QString &name, const QVariant &value);
     virtual void CoverObjectProperty(QObject *obj, const QString &name, const QVariant &value);
     virtual NLPropertyInfoList GetPropertyInfoList(QObject *obj);
-    virtual void SortProperties(NLPropertyInfoList &list);
     virtual QVariant GetObjectProperty(QObject *obj, const QString &name);
     virtual bool HandleAction(QAction *action);
 

@@ -196,6 +196,7 @@ public:
     NLRenderModelPrimitiveData & Primitive(int i);
     const NLRenderModelPrimitiveData & Primitive(int i) const;
     int PrimitiveCount() const;
+    void Clear();
 
 private:
     NLRenderModelVertexData m_vertex;
@@ -667,6 +668,13 @@ template <class VertexT, class IndexT, class TextureT, class ModeT>
 inline int NLRenderModel<VertexT, IndexT, TextureT, ModeT>::PrimitiveCount() const
 {
     return m_primitive.count();
+}
+
+template <class VertexT, class IndexT, class TextureT, class ModeT>
+inline void NLRenderModel<VertexT, IndexT, TextureT, ModeT>::Clear()
+{
+    m_vertex.Clear();
+    m_primitive.clear();
 }
 
 template <class VertexT, class IndexT, class TextureT, class ModeT>

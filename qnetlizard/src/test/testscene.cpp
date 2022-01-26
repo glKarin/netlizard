@@ -43,9 +43,8 @@ void TestScene::Init()
 
     NLActor *plane = new NLActor;
     plane->setObjectName("Test_PlaneRender");
-    NLModelRenderer *r = new NLModelRenderer_plane(NLProperties("length", 5000));
+    NLModelRenderer *r = new NLModelRenderer_plane(NLProperties("length", 5000)("color", QColor::fromRgbF(0.5, 0.5, 0.5)));
     plane->SetRenderable(r);
-    r->Model()->Primitive(0).SetColor(QColor::fromRgbF(0.5, 0.5, 0.5));
     objectActor->AddChild(plane);
 
     NLActor *cube = new NLActor;
@@ -60,9 +59,8 @@ void TestScene::Init()
 
     NLActor *line = new NLActor;
     line->setObjectName("Test_LineRender");
-    r = new NLModelRenderer_line(NLProperties("length", 3000));
+    r = new NLModelRenderer_line(NLProperties("length", 3000)("color", QColor::fromRgbF(0.1, 0.5, 0.9)));
     line->SetRenderable(r);
-    r->Model()->Primitive(0).SetColor(QColor::fromRgbF(0.1, 0.5, 0.9));
     objectActor->AddChild(line);
     NLVector3 v2 = VECTOR3(600, 800, -200);
     line->SetPosition(v2);

@@ -133,11 +133,6 @@ NLPropertyInfoList SettingsPropFormGroupWidget::GetPropertyInfoList(QObject *obj
     return list;
 }
 
-void SettingsPropFormGroupWidget::SortProperties(NLPropertyInfoList &list)
-{
-    //qSort(list.begin(), list.end(), NLPropertyInfoCmp);
-}
-
 
 SettingGroup::SettingGroup(QWidget *parent)
     : QGroupBox(parent)

@@ -24,8 +24,8 @@ public:
     explicit NLFormGroupWidget(QWidget *widget = 0);
     explicit NLFormGroupWidget(const QString &title, QWidget *widget = 0);
     virtual ~NLFormGroupWidget();
-    void AddRow(const QString &name, QWidget *widget, const QString &desc = QString(), bool readonly = false);
-    void AddRow(const QString &name, const QString &label, QWidget *widget, const QString &desc = QString(), bool readonly = false);
+    void AddRow(const QString &name, QWidget *widget, const QString &desc = QString(), bool readonly = false, bool user = true);
+    void AddRow(const QString &name, const QString &label, QWidget *widget, const QString &desc = QString(), bool readonly = false, bool user = true);
     QFormLayout * Layout() { return m_layout; }
     void AddAction(QAction *action);
     QVariant Data() const { return m_data; }
@@ -43,11 +43,11 @@ Q_SIGNALS:
 public Q_SLOTS:
     virtual void Reset();
     void Expand() { setChecked(true); ToggleGroupBox(true); }
-    void UnExpand() { setChecked(false); ToggleGroupBox(false); }
+    void Collapse() { setChecked(false); ToggleGroupBox(false); }
 
 protected:
     virtual void resizeEvent(QResizeEvent *event);
-    void PushLayout(const QString &name, QWidget *widget, const QString &label = QString(), const QString &desc = QString(), bool readonly = false);
+    void PushLayout(const QString &name, QWidget *widget, const QString &label = QString(), const QString &desc = QString(), bool readonly = false, bool user = true);
     virtual QDrag * Drag(const QString &name, QWidget *widget) { Q_UNUSED(name); Q_UNUSED(widget); return 0; }
     virtual bool Drop(const QMimeData *d, QWidget *widget) { Q_UNUSED(d); Q_UNUSED(widget); return false; }
     virtual bool CheckDragData(const QMimeData *d, QWidget *widget) { Q_UNUSED(d); Q_UNUSED(widget); return false; }
@@ -96,7 +96,7 @@ protected:
     virtual void CoverObjectProperty(QObject *obj, const QString &name, const QVariant &value) = 0;
     virtual NLPropertyInfoList GetPropertyInfoList(QObject *obj) = 0;
     virtual QVariant GetObjectProperty(QObject *obj, const QString &name) = 0;
-    virtual void SortProperties(NLPropertyInfoList &list) { Q_UNUSED(list); }
+    virtual void SortProperties(QObject *obj, NLPropertyInfoList &list) { Q_UNUSED(obj); Q_UNUSED(list); }
     virtual QWidget * GenUserWidget(QObject *obj, const NLPropertyInfo &prop) { Q_UNUSED(obj); Q_UNUSED(prop); return 0; }
     virtual bool HandleAction(QAction *action) { return false; }
     virtual QDrag * Drag(const QString &name, QWidget *widget);

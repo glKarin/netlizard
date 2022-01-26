@@ -54,7 +54,7 @@ SimpleCameraComponent::SimpleCameraComponent(const NLProperties &prop, NLActor *
     setObjectName("SimpleCameraComponent");
     m_camera->SetChangedNotifyFunc(static_cast<CameraNotifyFunc *>(m_cameraNotifyFunc));
 
-    NLProperties props;
+    NLProperties props = PropertyConfig();
 
     props.Insert("type", NLProperties("enum",
                                       QVariant::fromValue<NLPropertyPairList>(NLPropertyPairList()

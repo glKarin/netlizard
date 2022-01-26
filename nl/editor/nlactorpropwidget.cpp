@@ -19,31 +19,46 @@
 #define ACTION_REMOVE_COMPONENT 3
 #define ACTION_REMOVE_SCRIPT 4
 
-static bool NLPropertyInfoCmp(const NLPropertyInfo &a, const NLPropertyInfo &b)
+class NLPropertyInfoCmp
 {
-    if(a.name == b.name)
-        return false;
+public:
+    explicit NLPropertyInfoCmp(NLObject *obj)
+        : m_obj(obj) {}
+    virtual ~NLPropertyInfoCmp() { m_obj = 0; }
+    bool operator()(const NLPropertyInfo &a, const NLPropertyInfo &b)
+    {
+        if(a.name == b.name)
+            return false;
+        if(a.user != b.user)
+            return a.user < b.user;
 
-    QStringList list;
-    list << "objectName"
-         << "enabled"
-         << "position"
-         << "rotation"
-         << "scale"
-         << "renderable"
-        ;
+        QStringList list;
+        list << "objectName"
+             << "enabled"
+            ;
+        if(m_obj && m_obj->Type() == NLObject::Type_Actor)
+        {
+            list << "position"
+                 << "rotation"
+                 << "scale"
+                 << "renderable"
+                ;
+        }
 
-    int ai = list.indexOf(a.name);
-    int bi = list.indexOf(b.name);
-    if(ai == -1 && bi == -1)
-        return true; //QString::compare(a.name, b.name) < 0;
+        int ai = list.indexOf(a.name);
+        int bi = list.indexOf(b.name);
+        if(ai == -1 && bi == -1)
+            return true; //QString::compare(a.name, b.name) < 0;
 
-    if(ai == -1)
-        return false;
-    if(bi == -1)
-        return true;
-    return ai < bi;
-}
+        if(ai == -1)
+            return false;
+        if(bi == -1)
+            return true;
+        return ai < bi;
+    }
+private:
+    NLObject *m_obj;
+};
 
 NLObjectPropFormGroupWidget::NLObjectPropFormGroupWidget(QWidget *widget)
     : NLPropFormGroupWidget(widget)
@@ -93,9 +108,9 @@ NLPropertyInfoList NLObjectPropFormGroupWidget::GetPropertyInfoList(QObject *obj
     return NL::object_propertics(static_cast<NLObject *>(obj));
 }
 
-void NLObjectPropFormGroupWidget::SortProperties(NLPropertyInfoList &list)
+void NLObjectPropFormGroupWidget::SortProperties(QObject *obj, NLPropertyInfoList &list)
 {
-    qSort(list.begin(), list.end(), NLPropertyInfoCmp);
+    qSort(list.begin(), list.end(), NLPropertyInfoCmp(static_cast<NLObject *>(obj)));
 }
 
 NLPropFormGroupWidget * NLObjectPropFormGroupWidget::GenFormGroup(QObject *obj)

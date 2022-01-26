@@ -86,11 +86,6 @@ NLPropertyInfoList NLScenePropFormGroupWidget::GetPropertyInfoList(QObject *obj)
     return NL::scene_propertics(static_cast<NLScene *>(obj));
 }
 
-void NLScenePropFormGroupWidget::SortProperties(NLPropertyInfoList &list)
-{
-    //qSort(list.begin(), list.end(), NLPropertyInfoCmp);
-}
-
 
 
 NLSceneInfoWidget::NLSceneInfoWidget(QWidget *parent) :
