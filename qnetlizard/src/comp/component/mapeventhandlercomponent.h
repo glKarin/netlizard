@@ -189,7 +189,7 @@ NLCOMPONENT(MapEventHandlerComponent)
 class MapEventHandlerComponent : public NLComponent
 {
     Q_OBJECT
-    Q_PROPERTY(NLRigidbody* teleportActor READ TeleportActor FINAL)
+    Q_PROPERTY(NLRigidbody* teleportActor READ TeleportActor WRITE SetTeleportActor FINAL)
     Q_PROPERTY(QVariant model READ ModelPtr FINAL)
 
 public:

@@ -159,8 +159,8 @@ void NLObjectPropFormGroupWidget::mouseMoveEvent(QMouseEvent *event)
 
     QDrag *drag = new QDrag(this);
     QMimeData *mimeData = new QMimeData;
-    mimeData->setProperty(NL_FORM_WIDGET_DRAG_DROP_DATA_KEY, value);
-    mimeData->setData(NL_FORM_WIDGET_DRAG_DROP_MIME, QByteArray());
+    mimeData->setProperty(NLFormGroupWidget::FormFieldDragDropDataKey, value);
+    mimeData->setData(NLFormGroupWidget::FormFieldDragDropMIME, QByteArray());
     drag->setMimeData(mimeData);
 
     Qt::DropAction dropAction = drag->exec(Qt::CopyAction);

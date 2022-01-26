@@ -4,6 +4,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QContextMenuEvent>
+#include <QApplication>
 
 #include "engine/nldbg.h"
 #include "engine/nlscene.h"
@@ -11,6 +12,8 @@
 #include "engine/nlcomponent.h"
 #include "engine/nlscript.h"
 #include "engine/nlactorcontainer.h"
+#include "engine/nlrigidbody.h"
+#include "widget/nlpropformgroupwidget.h"
 
 NLSceneTreeWidget::NLSceneTreeWidget(QWidget *widget)
     : QTreeWidget(widget),
@@ -89,7 +92,7 @@ void NLSceneTreeWidget::AddActorNode(NLActor *actor, QTreeWidgetItem *parent)
 {
     QTreeWidgetItem *subItem = new QTreeWidgetItem;
     subItem->setText(0, actor->objectName() + "(" + actor->ClassName() + ")");
-    subItem->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<QObject *>(actor)));
+    subItem->setData(0, Qt::UserRole, QVariant::fromValue<NLActor *>(actor));
     if(parent)
         parent->addChild(subItem);
     else
@@ -111,9 +114,9 @@ void NLSceneTreeWidget::AddActorNode(NLActor *actor, QTreeWidgetItem *parent)
 void NLSceneTreeWidget::OnItemClicked(QTreeWidgetItem *item, int col)
 {
     Q_UNUSED(col);
-    QObject *obj = item->data(0, Qt::UserRole).value<QObject *>();
+    NLActor *obj = item->data(0, Qt::UserRole).value<NLActor *>();
     if(obj)
-        emit actorSelected(static_cast<NLActor *>(obj));
+        emit actorSelected(obj);
 }
 
 #define ACTION_INVALID -1
@@ -152,8 +155,7 @@ void NLSceneTreeWidget::contextMenuEvent(QContextMenuEvent *event)
         QTreeWidget::contextMenuEvent(event);
         return;
     }
-    QObject *data = item->data(0, Qt::UserRole).value<QObject *>();
-    NLActor *actor = static_cast<NLActor *>(data);
+    NLActor *actor = item->data(0, Qt::UserRole).value<NLActor *>();
     if(action == ACTION_ADD)
     {
         actor->CreateChild()->setObjectName("new_NLActor");
@@ -174,4 +176,42 @@ void NLSceneTreeWidget::contextMenuEvent(QContextMenuEvent *event)
     {
         QTreeWidget::contextMenuEvent(event);
     }
+}
+
+void NLSceneTreeWidget::mousePressEvent(QMouseEvent *event)
+{
+    QTreeWidget::mousePressEvent(event);
+    if (event->button() == Qt::LeftButton)
+    {
+        QTreeWidgetItem *item = itemAt(event->pos());
+        if(!item)
+            return;
+        m_dragStartPosition = event->pos();
+    }
+}
+
+void NLSceneTreeWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    QTreeWidget::mouseMoveEvent(event);
+
+    if (!(event->buttons() & Qt::LeftButton))
+        return;
+    if ((event->pos() - m_dragStartPosition).manhattanLength() < QApplication::startDragDistance())
+        return;
+
+    QTreeWidgetItem *item = itemAt(m_dragStartPosition);
+    if(!item)
+        return;
+    NLActor *actor = item->data(0, Qt::UserRole).value<NLActor *>();
+    QVariant value = nlinstanceofv(actor, NLRigidbody) ? QVariant::fromValue<NLRigidbody *>(static_cast<NLRigidbody *>(actor)) : QVariant::fromValue<NLActor *>(actor);
+
+    QDrag *drag = new QDrag(this);
+    QMimeData *mimeData = new QMimeData;
+    mimeData->setProperty(NLFormGroupWidget::FormFieldDragDropDataKey, value);
+    mimeData->setData(NLFormGroupWidget::FormFieldDragDropMIME, QByteArray());
+    drag->setMimeData(mimeData);
+
+    Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
+    Q_UNUSED(dropAction);
+    //delete drag;
 }

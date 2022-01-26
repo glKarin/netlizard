@@ -511,7 +511,10 @@ MapEventHandlerComponent::~MapEventHandlerComponent()
 void MapEventHandlerComponent::SetTeleportActor(NLRigidbody *actor)
 {
     if(m_teleportActor != actor)
+    {
         m_teleportActor = actor;
+        emit propertyChanged("teleportActor", QVariant::fromValue<NLRigidbody *>(m_teleportActor));
+    }
 }
 
 void MapEventHandlerComponent::Update(float delta)

@@ -26,6 +26,8 @@ Q_SIGNALS:
 
 protected:
     virtual void contextMenuEvent(QContextMenuEvent *event);
+    virtual void mousePressEvent(QMouseEvent *ev);
+    virtual void mouseMoveEvent(QMouseEvent *ev);
 
 private Q_SLOTS:
     void OnItemClicked(QTreeWidgetItem *item, int i);
@@ -41,6 +43,7 @@ private:
 private:
     NLScene *m_scene;
     QMenu *m_menu;
+    QPoint m_dragStartPosition;
 
     Q_DISABLE_COPY(NLSceneTreeWidget)
 };

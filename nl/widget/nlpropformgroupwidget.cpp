@@ -48,6 +48,9 @@
 #define ACTION_REMOVE_COMPONENT 3
 #define ACTION_REMOVE_SCRIPT 4
 
+#define NL_FORM_WIDGET_DRAG_DROP_MIME "application/nl-property-variant"
+#define NL_FORM_WIDGET_DRAG_DROP_DATA_KEY "_NL_property_variant"
+
 #define WIDGET_TYPE_KEY "_QWidget"
 #define LAYOUT_COUNTER_NAME "_Count"
 #define WIDGET_DESC_KEY "_Description"
@@ -352,6 +355,9 @@ NLFormLabelWidget::~NLFormLabelWidget()
 {
     NLDEBUG_DESTROY_Q
 }
+
+const QString NLFormGroupWidget::FormFieldDragDropMIME = NL_FORM_WIDGET_DRAG_DROP_MIME;
+const char * NLFormGroupWidget::FormFieldDragDropDataKey = NL_FORM_WIDGET_DRAG_DROP_DATA_KEY;
 
 void NLFormLabelWidget::Init()
 {
@@ -1022,8 +1028,8 @@ QDrag * NLPropFormGroupWidget::Drag(const QString &name, QWidget *widget)
     QDrag *drag = new QDrag(widget);
     QVariant value = GetObjectProperty(m_object, name);
     QMimeData *mimeData = new QMimeData;
-    mimeData->setProperty(NL_FORM_WIDGET_DRAG_DROP_DATA_KEY, value);
-    mimeData->setData(NL_FORM_WIDGET_DRAG_DROP_MIME, name.toLocal8Bit());
+    mimeData->setProperty(NLFormGroupWidget::FormFieldDragDropDataKey, value);
+    mimeData->setData(NLFormGroupWidget::FormFieldDragDropMIME, name.toLocal8Bit());
     drag->setMimeData(mimeData);
     return drag;
 }
@@ -1031,20 +1037,20 @@ QDrag * NLPropFormGroupWidget::Drag(const QString &name, QWidget *widget)
 bool NLPropFormGroupWidget::Drop(const QMimeData *d, QWidget *widget)
 {
     QString nameSelf = static_cast<NLFormLabelWidget *>(widget)->Name();
-    QVariant v = d->property(NL_FORM_WIDGET_DRAG_DROP_DATA_KEY);
+    QVariant v = d->property(NLFormGroupWidget::FormFieldDragDropDataKey);
     SetObjectProperty(m_object, nameSelf, v);
     return true;
 }
 
 bool NLPropFormGroupWidget::CheckDragData(const QMimeData *d, QWidget *widget)
 {
-    if (!d->hasFormat(NL_FORM_WIDGET_DRAG_DROP_MIME))
+    if (!d->hasFormat(NLFormGroupWidget::FormFieldDragDropMIME))
         return false;
-//    QByteArray name = d->data(NL_FORM_WIDGET_DRAG_DROP_MIME);
+//    QByteArray name = d->data(NLFormGroupWidget::FormFieldDragDropMIME);
 //    if(name.isEmpty())
 //        return false;
     QString nameSelf = static_cast<NLFormLabelWidget *>(widget)->Name();
-    QVariant v = d->property(NL_FORM_WIDGET_DRAG_DROP_DATA_KEY);
+    QVariant v = d->property(NLFormGroupWidget::FormFieldDragDropDataKey);
     QVariant vSelf = GetObjectProperty(m_object, nameSelf);
     if(qstrcmp(v.typeName(), vSelf.typeName()) != 0) // not same type
         return false;

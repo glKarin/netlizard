@@ -8,9 +8,6 @@
 #include "template/nlsequencemap.h"
 #include "engine/nlproperties.h"
 
-#define NL_FORM_WIDGET_DRAG_DROP_MIME "application/nl-property-variant"
-#define NL_FORM_WIDGET_DRAG_DROP_DATA_KEY "_NL_property_variant"
-
 class QFormLayout;
 class QToolButton;
 class QDrag;
@@ -36,6 +33,8 @@ public:
     bool CanExpand() const { return m_canExpand; }
     bool AllowDragDrop() const { return m_dragDrop; }
     void SetAllowDragDrop(bool on);
+    static const QString FormFieldDragDropMIME;
+    static const char * FormFieldDragDropDataKey;
 
 Q_SIGNALS:
     void actionTriggered(QAction *action);
