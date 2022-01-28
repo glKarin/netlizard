@@ -11,6 +11,7 @@
 #include "nlforce.h"
 #include "nlscript.h"
 #include "nlrenderable.h"
+#include "nlrigidbody.h"
 
 namespace NL
 {
@@ -93,7 +94,8 @@ static NLPropertyInfo make_property_info(const QObject *object, const QString &n
         }
     }
 
-    //qDebug() << name << t << value << QMetaType::QObjectStar << type << QMetaType::VoidStar << value.typeName() << widget;
+    QByteArray ba = typeName.toLocal8Bit();
+    qDebug() << name << t << value << QMetaType::QObjectStar << type << QMetaType::VoidStar << value.typeName() << widget << QMetaType::type(ba.constData()) << QVariant(QMetaType::type(ba.constData()), (void *)0);
     return(NLPropertyInfo(name, value, type, widget, readonly, defValue, props));
 }
 
@@ -194,20 +196,74 @@ bool property_equals(const QVariant &a, const QVariant &b)
 
 QVariant object_to_qvaraint(NLObject *nlo)
 {
+    if(!nlo)
+        return QVariant();
+    QByteArray className = nlo->ClassName().toLocal8Bit();
+    int type = QMetaType::type(className + "*");
+    if(type != 0)
+        return QVariant(type, (void *)&nlo);
+
     switch(nlo->Type())
     {
 #define CASE_EQUALS(type, T) \
     case NLObject::type: \
         return QVariant::fromValue<T *>(static_cast<T *>(nlo));
 
-    CASE_EQUALS(Type_Actor, NLActor)
+    case NLObject::Type_Actor:
+        if(nlinstanceofv(nlo, NLRigidbody))
+            return QVariant::fromValue<NLRigidbody *>(static_cast<NLRigidbody *>(nlo));
+        else
+            return QVariant::fromValue<NLActor *>(static_cast<NLActor *>(nlo));
     CASE_EQUALS(Type_Component, NLComponent)
     CASE_EQUALS(Type_Script, NLScript)
     CASE_EQUALS(Type_Force, NLForce)
+    CASE_EQUALS(Type_Renderer, NLRenderable)
 
 #undef CASE_EQUALS
     default:
         return QVariant();
     }
+}
+
+int qvaraint_to_pointer(const QVariant &v, void *&ptr, QString &typeName)
+{
+    if(!v.isValid())
+        return QVariant::Invalid;
+    int type = v.userType();
+    QString name(QMetaType::typeName(type));
+    if(type == QMetaType::VoidStar)
+    {
+        ptr = v.value<void *>();
+    }
+    else if(type == QMetaType::QObjectStar)
+    {
+        ptr = v.value<QObject *>();
+    }
+    else if(type == QMetaType::QWidgetStar)
+    {
+        ptr = v.value<QWidget *>();
+    }
+    else
+    {
+        if(name.endsWith("*"))
+        {
+            ptr = *(void **)(v.data());
+        }
+        else
+            type = QVariant::Invalid;
+    }
+    if(type != QVariant::Invalid)
+        typeName = name;
+    return type;
+}
+
+void * qvaraint_to_void_pointer(const QVariant &v, QString *typeName)
+{
+    QString name;
+    void *ptr = 0;
+    int type = qvaraint_to_pointer(v, ptr, name);
+    if(typeName)
+        *typeName = name;
+    return ptr;
 }
 }

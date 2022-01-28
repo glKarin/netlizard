@@ -20,6 +20,7 @@ class NLObject;
 class NLRigidbody;
 
 static bool _engine_inited = false;
+static QHash<QString, NLEngineRegisterObject *> _engine_register_names;
 
 namespace NL
 {
@@ -42,7 +43,7 @@ static bool load_translator()
     }
 }
 
-bool init_engine()
+bool init_engine(NLEngineRegisterObject *obj)
 {
     if(_engine_inited)
         return true;
@@ -69,8 +70,47 @@ bool init_engine()
 
     load_translator();
 
+    if(obj)
+        register_engine(obj);
+
     _engine_inited = true;
     return _engine_inited;
+}
+
+void deinit_engine()
+{
+    if(!_engine_inited)
+        return;
+    Q_FOREACH(const QString &name, _engine_register_names.keys())
+    {
+        _engine_register_names[name]->UnregisterMetaType();
+        delete _engine_register_names[name];
+    }
+    _engine_register_names.clear();
+    _engine_inited = false;
+}
+
+bool engine_is_register(const char *name)
+{
+    return(_engine_register_names.contains(name));
+}
+
+bool unregister_engine(const char *name)
+{
+    if(!engine_is_register(name))
+        return false;
+    _engine_register_names[name]->UnregisterMetaType();
+    _engine_register_names.remove(name);
+    return true;
+}
+
+void register_engine(NLEngineRegisterObject *obj)
+{
+    const char *name = obj->Name();
+    if(engine_is_register(name))
+        return;
+    obj->RegisterMetaType();
+    _engine_register_names.insert(name, obj);
 }
 
 bool engine_is_inited()

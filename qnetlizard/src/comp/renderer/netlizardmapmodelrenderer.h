@@ -60,4 +60,5 @@ private:
     
 };
 
+Q_DECLARE_METATYPE(NETLizardMapModelRenderer*)
 #endif // _KARIN_NETLIZARDMAPMODELRENDERER_H

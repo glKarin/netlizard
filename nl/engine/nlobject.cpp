@@ -56,7 +56,22 @@ NLObject::NLObject(NLScene *scene, const NLProperties &prop, QObject *parent) :
 NLObject::~NLObject()
 {
     NLObjectPool::Instance()->Detach(this);
-    Destroy(); // !! vitrual
+    //Destroy(); // !! vitrual
+    if(IsInited())
+    {
+        emit destroying();
+        m_inited = false;
+    }
+#ifdef _DEV_TEST
+    qDebug() << objectName() + "(" + m_name + ") -> DESTROYED";
+#endif
+    if(m_container)
+    {
+        m_container->Take(this);
+        SetContainer(0);
+    }
+    SetScene(0);
+    setParent(0);
     NLDEBUG_DESTROY_Q;
 }
 
@@ -151,8 +166,10 @@ void NLObject::Destroy()
     qDebug() << objectName() + "(" + m_name + ") -> DESTROYED";
 #endif
     if(m_container)
+    {
         m_container->Take(this);
-    SetContainer(0);
+        SetContainer(0);
+    }
     SetScene(0);
     setParent(0);
     m_inited = false;

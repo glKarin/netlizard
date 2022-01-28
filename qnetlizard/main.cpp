@@ -8,6 +8,7 @@
 #include "qdef.h"
 #include "engine/nlglobals.h"
 #include "lang.h"
+#include "engineregisterobject.h"
 #include "engine/nldef.h"
 
 static int Test(int argc, char **argv);
@@ -42,6 +43,7 @@ int main(int argc, char *argv[])
     SINGLE_INSTANCE_OBJ(Lang)->Load();
 
     NL::init_engine();
+    NL::register_engine(new EngineRegisterObject);
 
 #ifdef _DEV_TEST
     int test = Test(argc, argv);
@@ -61,7 +63,10 @@ int main(int argc, char *argv[])
     QWidget *win = &viewer;
     win->show();
 
-    return app.exec();
+    int res = app.exec();
+    NL::deinit_engine();
+
+    return res;
 }
 
 int nl_log_func(int type, const char *str)

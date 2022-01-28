@@ -30,14 +30,16 @@ HEADERS += \
     src/qdef.h \
     src/misc/logoutput.h \
     src/misc/settings.h \
-    src/misc/lang.h
+    src/misc/lang.h \
+    src/comp/engineregisterobject.h
 
 SOURCES += \
     main.cpp \
     src/qdef.cpp \
     src/misc/logoutput.cpp \
     src/misc/settings.cpp \
-    src/misc/lang.cpp
+    src/misc/lang.cpp \
+    src/comp/engineregisterobject.cpp
 
 # Widget
 HEADERS += \
