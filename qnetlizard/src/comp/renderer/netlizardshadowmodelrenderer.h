@@ -31,7 +31,7 @@ public:
     int ShadowObject() const { return m_shadowObject; }
     void SetShadowObject(int obj);
     void SetAllScenes();
-    QVariant ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }
+    QVariant ModelPtr() const;
 
 protected:
     virtual void Render();

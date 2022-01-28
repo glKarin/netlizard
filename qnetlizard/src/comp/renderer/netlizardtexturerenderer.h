@@ -18,7 +18,7 @@ public:
     void SetTexture(struct _texture_s *tex);
     void SetAlignment(Qt::Alignment align);
     Qt::Alignment Alignment() const { return m_align; }
-    QVariant TexturePtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _texture_s, m_tex)); }
+    QVariant TexturePtr() const;
     void SetAlignmenti(int align) { SetAlignment(static_cast<Qt::Alignment>(align)); }
     int Alignmenti() const { return static_cast<int>(m_align); }
 

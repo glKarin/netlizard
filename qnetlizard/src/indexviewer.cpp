@@ -26,7 +26,7 @@
 #include "netlizard.h"
 #include "flowlayout.h"
 #include "qdef.h"
-#include "engine/nlmath.h"
+#include "utils/nlmath.h"
 #include "lang.h"
 
 #define CELL_SIZE 128

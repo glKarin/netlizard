@@ -1,7 +1,7 @@
 #ifndef _KARIN_NLFUNCS_H
 #define _KARIN_NLFUNCS_H
 
-#include "nlproperties.h"
+#include "engine/nlproperties.h"
 
 class NLObject;
 class NLScene;

@@ -9,7 +9,7 @@
 #include "nlactorcontainer.h"
 #include "nlcomponentcontainer.h"
 #include "nlcomponent.h"
-#include "nlmath.h"
+#include "utils/nlmath.h"
 #include "nlscript.h"
 
 NLActor::NLActor(NLActor *parent) :

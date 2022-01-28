@@ -17,7 +17,7 @@ public:
     explicit FontScene(QWidget *parent = 0);
     virtual ~FontScene();
     struct _GL_NETLizard_Font * Font() { return m_font; }
-    QVariant FontPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_Font, m_font)); }
+    QVariant FontPtr() const;
     bool IsValid() const { return m_font != 0; }
     QString Text() const { return m_text; }
 

@@ -14,7 +14,8 @@
 #include "math/matrix.h"
 #include "math/bound.h"
 #include "nl_util.h"
-#include "engine/nlmath.h"
+#include "utils/nlmath.h"
+#include "template/nlvariantpointer.h"
 
 MapEventHandlerContainer::MapEventHandlerContainer()
 {
@@ -778,3 +779,5 @@ void MapEventHandlerComponent::ConvToRenderVector3(vector3_t &v)
     const NLMatrix4 *mat = camera->InitialFixedViewMatrix();
     matrix_transformv_self(mat, &v);
 }
+
+QVariant MapEventHandlerComponent::ModelPtr() const{ return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }

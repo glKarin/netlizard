@@ -20,8 +20,8 @@ public:
     void SetModel(struct _GL_NETLizard_3D_Mesh *model, struct _texture_s **tex);
     void SetIndex(int index);
     int Index() const { return m_index; }
-    QVariant TexturesPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _texture_s *, m_tex)); }
-    QVariant MeshesPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Mesh *, m_itemMesh)); }
+    QVariant TexturesPtr() const;
+    QVariant MeshesPtr() const;
 
 protected:
     virtual void Render();

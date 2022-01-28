@@ -8,6 +8,7 @@
 
 #include "nldef.h"
 #include "nlphysics.h"
+#include "template/nlvariantpointer.h"
 
 class NLRenderable;
 class NLComponent;
@@ -28,12 +29,12 @@ static bool load_translator()
 {
     const QString locale = QLocale::system().name();
     const QString qmFile("nl." + locale);
-    static QTranslator translator;
+    QTranslator *translator = new QTranslator(qApp);
 
-    if(translator.load(qmFile, "i18n"))
+    if(translator->load(qmFile, "i18n"))
     {
         qDebug() << "Load nl i18n -> " + qmFile + ".qm ......done!";
-        qApp->installTranslator(&translator);
+        qApp->installTranslator(translator);
         return true;
     }
     else

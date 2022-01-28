@@ -38,7 +38,7 @@ public:
     virtual ~MapScene();
     bool IsValid() const { return m_model != 0; }
     const struct _GL_NETLizard_3D_Model * Model() const { return m_model; }
-    QVariant ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }
+    QVariant ModelPtr() const;
     int CurrentScene() const { return m_currentScene; }
     int CurrentViewItem() const { return m_currentViewItem; }
     int CurrentCollisionItem() const { return m_currentCollisionItem; }

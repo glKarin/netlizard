@@ -5,7 +5,7 @@
 #include <QMetaObject>
 
 #include "nldbg.h"
-#include "nlfuncs.h"
+#include "utils/nlfuncs.h"
 #include "nlobjectpool.h"
 #include "nlobjectcontainer.h"
 

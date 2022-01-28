@@ -204,7 +204,7 @@ public:
     NLRigidbody * TeleportActor() { return m_teleportActor; }
     template <class T>
     bool HasEventHandler();
-    QVariant ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }
+    QVariant ModelPtr() const;
     
 public slots:
 

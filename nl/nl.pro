@@ -41,8 +41,6 @@ HEADERS += \
     engine/nlscenecamera.h \
     engine/nlsceneorthocamera.h \
     engine/nlsceneperspectivecamera.h \
-    engine/nlfuncs.h \
-    engine/nlmath.h \
     engine/nlrigidbody.h \
     engine/nlphysics.h \
     engine/nlforce.h \
@@ -54,7 +52,8 @@ HEADERS += \
     engine/nlscript.h \
     engine/nlscriptcontainer.h \
     engine/nlmodelrenderer.h \
-    engine/nldbg.h
+    engine/nldbg.h \
+    template/nlvariantpointer.h
 
 SOURCES += \
     engine/nldef.cpp \
@@ -70,8 +69,6 @@ SOURCES += \
     engine/nlscenecamera.cpp \
     engine/nlsceneorthocamera.cpp \
     engine/nlsceneperspectivecamera.cpp \
-    engine/nlfuncs.cpp \
-    engine/nlmath.cpp \
     engine/nlrigidbody.cpp \
     engine/nlphysics.cpp \
     engine/nlforce.cpp \
@@ -157,10 +154,14 @@ SOURCES += \
 HEADERS += \
     template/nlsequencemap.h \
     trait/nlpropertytrait.h \
+    utils/nlfuncs.h \
+    utils/nlmath.h \
     utils/nlioutility.h \
     utils/nlguiutility.h
 
 SOURCES += \
+    utils/nlfuncs.cpp \
+    utils/nlmath.cpp \
     utils/nlioutility.cpp \
     utils/nlguiutility.cpp
 

@@ -27,8 +27,8 @@ public:
     const struct _GL_NETLizard_3D_Model * Model() const { return m_model; }
     const struct NETLizard_3D_Frame_Animation_s * Config() const { return m_frameAnim; }
     const struct NETLizard_3D_Frame_Animation_s * CurrentAnimation() const;
-    QVariant CurrentAnimationPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct NETLizard_3D_Frame_Animation_s, const_cast<struct NETLizard_3D_Frame_Animation_s *>(CurrentAnimation()))); }
-    QVariant ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }
+    QVariant CurrentAnimationPtr() const;
+    QVariant ModelPtr() const;
     int CurrentAnimationFrames() const;
     int Anim() const { return m_anim; }
     int Frame() const { return m_frame; }

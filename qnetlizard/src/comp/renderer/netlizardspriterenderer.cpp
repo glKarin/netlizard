@@ -6,6 +6,7 @@
 #include "engine/nlactor.h"
 #include "engine/nlscene.h"
 #include "qdef.h"
+#include "template/nlvariantpointer.h"
 
 NETLizardSpriteRenderer::NETLizardSpriteRenderer(NLActor *actor) :
     NLRenderable(actor),
@@ -65,3 +66,4 @@ void NETLizardSpriteRenderer::RenderSprite()
     glPopMatrix();
 }
 
+QVariant NETLizardSpriteRenderer::SpritePtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_Sprite, m_sprite)); }

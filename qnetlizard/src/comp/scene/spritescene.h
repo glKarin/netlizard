@@ -20,7 +20,7 @@ public:
     virtual ~SpriteScene();
     bool IsValid() const { return m_sprite != 0; }
     struct _GL_NETLizard_Sprite * Sprite() { return m_sprite; }
-    QVariant SpritePtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_Sprite, m_sprite)); }
+    QVariant SpritePtr() const;
     int Count() const;
     int Index() const { return m_index; }
 

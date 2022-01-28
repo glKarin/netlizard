@@ -4,6 +4,7 @@
 
 #include "gl/nl_gl.h"
 #include "qdef.h"
+#include "template/nlvariantpointer.h"
 
 NETLizardItemModelRenderer::NETLizardItemModelRenderer(NLActor *actor) :
     NLRenderable(actor),
@@ -67,3 +68,7 @@ void NETLizardItemModelRenderer::SetIndex(int index)
         emit propertyChanged("index", m_index);
     }
 }
+
+QVariant NETLizardItemModelRenderer::TexturesPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _texture_s *, m_tex)); }
+
+QVariant NETLizardItemModelRenderer::MeshesPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Mesh *, m_itemMesh)); }

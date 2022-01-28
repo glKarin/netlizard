@@ -14,6 +14,7 @@
 #include "simplecontrol2dcomponent.h"
 #include "netlizardtexturerenderer.h"
 #include "settings.h"
+#include "template/nlvariantpointer.h"
 
 ImageScene::ImageScene(QWidget *parent)
     : NLScene(parent),
@@ -389,3 +390,5 @@ void ImageScene::OnSettingChanged(const QString &name, const QVariant &value, co
     else if(name == "RENDER/clear_color")
         SetClearColor(QColor(value.toString()));
 }
+
+QVariant ImageScene::TexturePtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _texture_s, m_tex)); }

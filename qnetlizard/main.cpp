@@ -13,34 +13,20 @@
 
 static int Test(int argc, char **argv);
 static int nl_log_func(int type, const char *str);
+static bool load_i18n(const QLocale &locale = QLocale());
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
-    QLocale::setDefault(QLocale::system());
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+    QScopedPointer<QApplication> app(new QApplication(argc, argv));
 
-    app.setApplicationName(APP_NAME);
-    app.setApplicationVersion(APP_VER);
-    app.setOrganizationName(APP_DEV);
+    app->setApplicationName(APP_NAME);
+    app->setApplicationVersion(APP_VER);
+    app->setOrganizationName(APP_DEV);
 
     Q_INIT_RESOURCE(qnetlizard);
 
-    QTranslator translator;
-    const QString locale = QLocale::system().name();
-    const QString qmFile(APP_PKG "." + locale);
-
-    qDebug() << "Load i18n -> " << qmFile << ".qm";
-
-    if(translator.load(qmFile, "i18n"))
-    {
-        qDebug() << "Done";
-        app.installTranslator(&translator);
-    }
-    else
-        qDebug() << "Fail";
-
-    SINGLE_INSTANCE_OBJ(Lang)->Load();
+    load_i18n();
+    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
     NL::init_engine();
     NL::register_engine(new EngineRegisterObject);
@@ -49,9 +35,6 @@ int main(int argc, char *argv[])
     int test = Test(argc, argv);
     if(test != 0)
         return test;
-
-    //TestWidget w;
-    //w.show();
 #endif
 
     LogOutput::Instance();
@@ -59,12 +42,36 @@ int main(int argc, char *argv[])
     nlLogFunc(NL_LOG_OUT, NL_LOG_USER, (void *)nl_log_func);
     nlLogFunc(NL_LOG_ERR, NL_LOG_USER, (void *)nl_log_func);
 
-    MainWindow viewer;
-    QWidget *win = &viewer;
+    QScopedPointer<MainWindow> win(new MainWindow);
     win->show();
 
-    int res = app.exec();
+    int res = app->exec();
     NL::deinit_engine();
+
+    return res;
+}
+
+bool load_i18n(const QLocale &l)
+{
+    QTranslator *translator = new QTranslator(qApp);
+    const QString locale = l.name();
+    const QString qmFile(APP_PKG "." + locale);
+
+    QLocale::setDefault(l);
+
+    qDebug() << "Load i18n -> " << qmFile << ".qm";
+
+    bool res = translator->load(qmFile, "i18n");
+
+    if(res)
+    {
+        qDebug() << "Done";
+        qApp->installTranslator(translator);
+    }
+    else
+        qDebug() << "Fail";
+
+    SINGLE_INSTANCE_OBJ(Lang)->Load();
 
     return res;
 }

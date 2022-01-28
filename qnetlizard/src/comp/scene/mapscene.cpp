@@ -24,6 +24,7 @@
 #include "nl_algo.h"
 #include "nl_gl_debug.h"
 #include "engine/nlforce.h"
+#include "template/nlvariantpointer.h"
 
 #define OBJ_RADIUS 50
 #define OBJ_HEIGHT 180
@@ -977,3 +978,5 @@ bool MapScene::CollisionTesting(const vector3_t &op)
 
     return item >= 0;
 }
+
+QVariant MapScene::ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }

@@ -41,7 +41,7 @@ public:
     void SetAllScene();
     void SetRenderItemMode(RenderItemMode_e mode);
     RenderItemMode_e RenderItemMode() const { return m_itemRenderMode; }
-    QVariant ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }
+    QVariant ModelPtr() const;
 
 protected:
     virtual void Render();
@@ -60,5 +60,4 @@ private:
     
 };
 
-Q_DECLARE_METATYPE(NETLizardMapModelRenderer*)
 #endif // _KARIN_NETLIZARDMAPMODELRENDERER_H

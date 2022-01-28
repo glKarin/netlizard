@@ -21,7 +21,7 @@
 #include <QApplication>
 
 #include "engine/nldbg.h"
-#include "engine/nlfuncs.h"
+#include "utils/nlfuncs.h"
 #include "engine/nlrenderable.h"
 #include "engine/nlscenecamera.h"
 #include "engine/nlscene.h"
@@ -39,6 +39,7 @@
 #include "utils/nlguiutility.h"
 #include "nleditwidget.h"
 #include "nlmemorypointerwidget.h"
+#include "template/nlvariantpointer.h"
 
 #define DOUBLE_SPINBOX_SINGLE_STEP 1 //0.1
 #define DOUBLE_SPINBOX_DECIMAL 6
@@ -193,9 +194,9 @@ bool NLEditorMemoryPointerWidget::FromVariant(const QVariant &item_value, QStrin
         NLVariantGeneralPointer p = item_value.value<NLVariantGeneralPointer>();
         rtypeName = QString(p.name) + "*";
         rptr = p.ptr;
-        if(p.name == "QObject")
+        if(qstrcmp(p.name, "QObject") == 0)
             item_type = QMetaType::QObjectStar;
-        else if(p.name == "QWidget")
+        if(qstrcmp(p.name, "QWidget") == 0)
             item_type = QMetaType::QWidgetStar;
     }
     else

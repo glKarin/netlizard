@@ -8,7 +8,7 @@
 #include "nlscene.h"
 #include "nlactor.h"
 #include "nlactorcontainer.h"
-#include "nlmath.h"
+#include "utils/nlmath.h"
 #include "nldbg.h"
 
 NLSceneCameraBase::NLSceneCameraChangedNotify::NLSceneCameraChangedNotify(int type)

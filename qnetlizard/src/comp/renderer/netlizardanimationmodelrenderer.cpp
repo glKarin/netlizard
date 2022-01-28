@@ -5,6 +5,7 @@
 #include "netlizard.h"
 #include "gl/nl_gl.h"
 #include "qdef.h"
+#include "template/nlvariantpointer.h"
 
 NETLizardAnimationModelRenderer::NETLizardAnimationModelRenderer(NLActor *actor) :
     NLRenderable(actor),
@@ -73,3 +74,5 @@ void NETLizardAnimationModelRenderer::SetAnim(int anim, int frame)
         emit propertyChanged("anim", m_anim);
     }
 }
+
+QVariant NETLizardAnimationModelRenderer::ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }

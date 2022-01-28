@@ -4,14 +4,14 @@
 #include <QMetaObject>
 #include <QMetaProperty>
 
-#include "nlobject.h"
-#include "nlscene.h"
-#include "nlactor.h"
-#include "nlcomponent.h"
-#include "nlforce.h"
-#include "nlscript.h"
-#include "nlrenderable.h"
-#include "nlrigidbody.h"
+#include "engine/nlobject.h"
+#include "engine/nlscene.h"
+#include "engine/nlactor.h"
+#include "engine/nlcomponent.h"
+#include "engine/nlforce.h"
+#include "engine/nlscript.h"
+#include "engine/nlrenderable.h"
+#include "engine/nlrigidbody.h"
 
 namespace NL
 {
@@ -95,7 +95,7 @@ static NLPropertyInfo make_property_info(const QObject *object, const QString &n
     }
 
     QByteArray ba = typeName.toLocal8Bit();
-    qDebug() << name << t << value << QMetaType::QObjectStar << type << QMetaType::VoidStar << value.typeName() << widget << QMetaType::type(ba.constData()) << QVariant(QMetaType::type(ba.constData()), (void *)0);
+    //qDebug() << name << t << value << QMetaType::QObjectStar << type << QMetaType::VoidStar << value.typeName() << widget << QMetaType::type(ba.constData()) << QVariant(QMetaType::type(ba.constData()), (void *)0);
     return(NLPropertyInfo(name, value, type, widget, readonly, defValue, props));
 }
 
@@ -261,7 +261,7 @@ void * qvaraint_to_void_pointer(const QVariant &v, QString *typeName)
 {
     QString name;
     void *ptr = 0;
-    int type = qvaraint_to_pointer(v, ptr, name);
+    /*int type = */qvaraint_to_pointer(v, ptr, name);
     if(typeName)
         *typeName = name;
     return ptr;

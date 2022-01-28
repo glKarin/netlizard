@@ -4,6 +4,7 @@
 
 #include "gl/nl_gl.h"
 #include "qdef.h"
+#include "template/nlvariantpointer.h"
 
 NETLizardMapModelRenderer::NETLizardMapModelRenderer(NLActor *actor) :
     NLRenderable(actor),
@@ -193,3 +194,5 @@ void NETLizardMapModelRenderer::SetRenderItemMode(NETLizardMapModelRenderer::Ren
     if(m_itemRenderMode != mode)
         m_itemRenderMode = mode;
 }
+
+QVariant NETLizardMapModelRenderer::ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }

@@ -12,6 +12,7 @@
 #include "simplecontrolcomponent.h"
 #include "engine/nlsceneorthocamera.h"
 #include "settings.h"
+#include "template/nlvariantpointer.h"
 
 AnimationScene::AnimationScene(QWidget *parent)
     : NLScene(parent),
@@ -337,3 +338,7 @@ void AnimationScene::OnSettingChanged(const QString &name, const QVariant &value
     else if(name == "RENDER/clear_color")
         SetClearColor(QColor(value.toString()));
 }
+
+QVariant AnimationScene::CurrentAnimationPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct NETLizard_3D_Frame_Animation_s, const_cast<struct NETLizard_3D_Frame_Animation_s *>(CurrentAnimation()))); }
+
+QVariant AnimationScene::ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }

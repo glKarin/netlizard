@@ -6,6 +6,7 @@
 #include "nl_shadow_render.h"
 #include "gl/nl_gl.h"
 #include "qdef.h"
+#include "template/nlvariantpointer.h"
 
 NETLizardShadowModelRenderer::NETLizardShadowModelRenderer(int method, NLActor *actor) :
     NLRenderable(actor),
@@ -206,3 +207,5 @@ void NETLizardShadowModelRenderer::SetAllScenes()
         m_scenes[i] = i;
     m_sceneCount = m_model->count;
 }
+
+QVariant NETLizardShadowModelRenderer::ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }

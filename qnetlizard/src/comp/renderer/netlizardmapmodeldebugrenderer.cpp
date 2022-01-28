@@ -10,6 +10,7 @@
 #include "engine/nlscenecamera.h"
 #include "math/matrix.h"
 #include "qdef.h"
+#include "template/nlvariantpointer.h"
 
 NETLizardMapModelDebugRenderer::NETLizardMapModelDebugRenderer(NLActor *actor) :
     NLRenderable(actor),
@@ -262,3 +263,5 @@ void NETLizardMapModelDebugRenderer::SetAllScenes()
         m_scenes[i] = i;
     m_sceneCount = m_model->count;
 }
+
+QVariant NETLizardMapModelDebugRenderer::ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }

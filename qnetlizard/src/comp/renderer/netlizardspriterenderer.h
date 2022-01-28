@@ -18,7 +18,7 @@ public:
     void SetSprite(struct _GL_NETLizard_Sprite *sprite);
     void SetIndex(int i);
     int Index() const { return m_index; }
-    QVariant SpritePtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_Sprite, m_sprite)); }
+    QVariant SpritePtr() const;
 
 protected:
     virtual void Render();

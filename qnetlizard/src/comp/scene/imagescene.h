@@ -21,7 +21,7 @@ public:
     virtual ~ImageScene();
     bool IsValid() const;
     const struct _texture_s * Texture() const { return m_tex; }
-    QVariant TexturePtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _texture_s, m_tex)); }
+    QVariant TexturePtr() const;
     QString GetSaveTextureSuffix() const;
     void SetAlignment(Qt::Alignment align);
     Qt::Alignment Alignment() const { return m_align; }

@@ -22,7 +22,7 @@ public:
     void SetFont(struct _GL_NETLizard_Font *font);
     void SetText(const QString &str);
     void UpdateLayout();
-    QVariant FontPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_Font, m_font)); }
+    QVariant FontPtr() const;
     int PaddingWidth() const { return m_paddingWidth; }
     int LineSpacing() const { return m_lineSpacing; }
     void SetPaddingWidth(int i);

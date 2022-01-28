@@ -11,6 +11,7 @@
 #include "simplecontrolcomponent.h"
 #include "engine/nlscenecamera.h"
 #include "settings.h"
+#include "template/nlvariantpointer.h"
 
 ItemScene::ItemScene(QWidget *parent)
     : NLScene(parent),
@@ -192,3 +193,5 @@ void ItemScene::OnSettingChanged(const QString &name, const QVariant &value, con
     else if(name == "RENDER/clear_color")
         SetClearColor(QColor(value.toString()));
 }
+
+QVariant ItemScene::ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }

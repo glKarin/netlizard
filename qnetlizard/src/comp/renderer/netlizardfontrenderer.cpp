@@ -7,6 +7,7 @@
 #include "engine/nlactor.h"
 #include "engine/nlscene.h"
 #include "qdef.h"
+#include "template/nlvariantpointer.h"
 
 NETLizardFontRenderer::NETLizardFontRenderer(NLActor *actor) :
     NLRenderable(actor),
@@ -152,3 +153,4 @@ void NETLizardFontRenderer::RenderText()
     //glEnable(GL_CULL_FACE);
 }
 
+QVariant NETLizardFontRenderer::FontPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_Font, m_font)); }

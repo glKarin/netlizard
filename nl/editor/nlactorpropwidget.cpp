@@ -8,7 +8,7 @@
 #include <QApplication>
 
 #include "engine/nldbg.h"
-#include "engine/nlfuncs.h"
+#include "utils/nlfuncs.h"
 #include "engine/nlcomponent.h"
 #include "engine/nlactor.h"
 #include "engine/nlscript.h"

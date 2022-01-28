@@ -18,7 +18,7 @@
 #include <QColorDialog>
 #include <QScrollArea>
 
-#include "engine/nlfuncs.h"
+#include "utils/nlfuncs.h"
 #include "engine/nlscene.h"
 #include "engine/nlscenecamera.h"
 #include "engine/nldbg.h"

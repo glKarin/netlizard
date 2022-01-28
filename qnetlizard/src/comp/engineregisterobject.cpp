@@ -25,6 +25,7 @@
 
 void EngineRegisterObject::RegisterMetaType()
 {
+#if 0
     REG_METATYPE(MapEventHandlerComponent);
     REG_METATYPE(SimpleCameraComponent);
     REG_METATYPE(SimpleControl2DComponent);
@@ -41,5 +42,6 @@ void EngineRegisterObject::RegisterMetaType()
     REG_METATYPE(NETLizardSpriteRenderer);
     REG_METATYPE(SimpleCameraActor);
     REG_METATYPE(SimpleLightSourceActor);
+#endif
     qDebug() << "NETLizard register";
 }

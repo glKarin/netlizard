@@ -12,6 +12,7 @@
 #include "netlizardspriterenderer.h"
 #include "simpleimagecontrolcomponent.h"
 #include "settings.h"
+#include "template/nlvariantpointer.h"
 
 SpriteScene::SpriteScene(QWidget *parent) :
     NLScene(parent),
@@ -152,3 +153,5 @@ void SpriteScene::OnSettingChanged(const QString &name, const QVariant &value, c
     else if(name == "RENDER/clear_color")
         SetClearColor(QColor(value.toString()));
 }
+
+QVariant SpriteScene::SpritePtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_Sprite, m_sprite)); }

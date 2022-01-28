@@ -11,6 +11,7 @@
 #include "simplecameraactor.h"
 #include "netlizardfontrenderer.h"
 #include "settings.h"
+#include "template/nlvariantpointer.h"
 
 FontScene::FontScene(QWidget *parent) :
     NLScene(parent),
@@ -142,3 +143,5 @@ void FontScene::OnSettingChanged(const QString &name, const QVariant &value, con
     else if(name == "RENDER/clear_color")
         SetClearColor(QColor(value.toString()));
 }
+
+QVariant FontScene::FontPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_Font, m_font)); }

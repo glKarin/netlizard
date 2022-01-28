@@ -7,7 +7,7 @@
 #include "engine/nlactor.h"
 #include "engine/nlscene.h"
 #include "engine/nlscenecamera.h"
-#include "engine/nlfuncs.h"
+#include "utils/nlfuncs.h"
 #include "qdef.h"
 
 class CameraNotifyFunc : public NLSceneCamera::NLSceneCameraChangedNotify

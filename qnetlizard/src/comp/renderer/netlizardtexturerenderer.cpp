@@ -5,6 +5,7 @@
 #include "GL/gl_texture.h"
 
 #include "qdef.h"
+#include "template/nlvariantpointer.h"
 
 NETLizardTextureRenderer::NETLizardTextureRenderer(NLActor *actor) :
     NLRenderable(actor),
@@ -122,3 +123,5 @@ void NETLizardTextureRenderer::SetAlignment(Qt::Alignment align)
         emit propertyChanged("alignment", static_cast<int>(m_align));
     }
 }
+
+QVariant NETLizardTextureRenderer::TexturePtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _texture_s, m_tex)); }

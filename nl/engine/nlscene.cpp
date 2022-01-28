@@ -12,7 +12,7 @@
 
 #include "nlscenecamera.h"
 #include "nlactor.h"
-#include "nlfuncs.h"
+#include "utils/nlfuncs.h"
 #include "nldbg.h"
 
 #define LOOP_INTERVAL 10 // 0

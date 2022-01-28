@@ -28,7 +28,7 @@ public:
     void SetRenderScenes(const int scenes[], int count);
     void SetCamera(NLSceneCamera *camera);
     void SetAllScenes();
-    QVariant ModelPtr() const { return QVariant::fromValue<NLVariantGeneralPointer>(NLMAKE_VARIANT_VOID_POINTER(struct _GL_NETLizard_3D_Model, m_model)); }
+    QVariant ModelPtr() const;
 
 protected:
     virtual void Render();

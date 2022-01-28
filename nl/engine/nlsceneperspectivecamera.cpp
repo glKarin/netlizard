@@ -5,7 +5,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "nlfuncs.h"
+#include "utils/nlfuncs.h"
 
 #define NLSCENEPERSPECTIVECAMERA_DEFAULT_FOVY 45
 #define NLSCENEPERSPECTIVECAMERA_DEFAULT_ASPECT 1

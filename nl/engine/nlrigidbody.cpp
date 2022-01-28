@@ -4,7 +4,7 @@
 
 #include "nlforce.h"
 #include "nlforcecontainer.h"
-#include "nlmath.h"
+#include "utils/nlmath.h"
 
 NLRigidbody::NLRigidbody(NLActor *parent) :
     NLActor(NLPROPERTIY_NAME(NLRigidbody), parent),
