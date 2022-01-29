@@ -202,6 +202,18 @@
         <source>Add script</source>
         <translation type="unfinished">添加脚本</translation>
     </message>
+    <message>
+        <source>Add actor</source>
+        <translation type="unfinished">添加对象</translation>
+    </message>
+    <message>
+        <source>Expand all</source>
+        <translation type="unfinished">全部展开</translation>
+    </message>
+    <message>
+        <source>Collaspse all</source>
+        <translation type="unfinished">全部折叠</translation>
+    </message>
 </context>
 <context>
     <name>NLTextEditDialog</name>

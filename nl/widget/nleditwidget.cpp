@@ -10,7 +10,7 @@
 #include <QVBoxLayout>
 #include <QAction>
 
-#include "engine/nldbg.h"
+#include "common/nldbg.h"
 #include "nltexteditdialog.h"
 #include "nllineeditwidget.h"
 

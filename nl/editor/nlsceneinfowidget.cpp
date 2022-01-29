@@ -21,7 +21,8 @@
 #include "utils/nlfuncs.h"
 #include "engine/nlscene.h"
 #include "engine/nlscenecamera.h"
-#include "engine/nldbg.h"
+#include "common/nldef.h"
+#include "common/nldbg.h"
 
 #define TEXT_FORMAT 1 // 1 2
 #if(TEXT_FORMAT == 2)
@@ -84,6 +85,13 @@ void NLScenePropFormGroupWidget::CoverObjectProperty(QObject *obj, const QString
 NLPropertyInfoList NLScenePropFormGroupWidget::GetPropertyInfoList(QObject *obj)
 {
     return NL::scene_propertics(static_cast<NLScene *>(obj));
+}
+
+void NLScenePropFormGroupWidget::OnPropertyChanged(const QString &name, const QVariant &value, int action)
+{
+    if(Object() != sender())
+        return;
+    NotifyPropertyChanged(name, value);
 }
 
 
@@ -271,11 +279,4 @@ void NLSceneInfoWidget::Reset()
     m_settingGroupBox->SetObject(0);
     m_matrixList->setEnabled(false);
     UpdateSceneInfo();
-}
-
-void NLSceneInfoWidget::OnPropertyChanged(const QString &name, const QVariant &value, int action)
-{
-    if(!m_scene || m_scene != sender())
-        return;
-    m_settingGroupBox->NotifyPropertyChanged(name, value);
 }

@@ -3,7 +3,6 @@
 
 #include <QObject>
 
-#include "nldef.h"
 #include "nlproperties.h"
 #include "trait/nlpropertytrait.h"
 

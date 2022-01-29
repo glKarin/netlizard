@@ -2,7 +2,7 @@
 
 #include <QTextBlock>
 #include <QDebug>
-#include "engine/nldbg.h"
+#include "common/nldbg.h"
 #include "utils/nlguiutility.h"
 
 #define NLTEXTEDITWIDGET_DECL(X, P, currentFont_func, ctor2_P_func, ctor2_setText_func) \

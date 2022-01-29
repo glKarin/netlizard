@@ -26,9 +26,22 @@ DEFINES += _NL_LIBRARY
 DEPENDPATH += .
 INCLUDEPATH += .
 
+# common
+HEADERS += \
+    common/nldef.h \
+    common/nlglobals.h \
+    common/nldbg.h \
+    common/nlinc.h \
+    common/nlconstants.h \
+    common/nlvec.h \
+    common/nlmatrix.h
+
+SOURCES += \
+    common/nlconstants.cpp \
+    common/nlglobals.cpp
+
 # engine
 HEADERS += \
-    engine/nldef.h \
     engine/nlscene.h \
     engine/nlobject.h \
     engine/nlactor.h \
@@ -46,17 +59,13 @@ HEADERS += \
     engine/nlforce.h \
     engine/nlforcecontainer.h \
     engine/nlproperties.h \
-    engine/nlglobals.h \
     engine/nlscenecamerabase.h \
     engine/nlrendermodel.h \
     engine/nlscript.h \
     engine/nlscriptcontainer.h \
-    engine/nlmodelrenderer.h \
-    engine/nldbg.h \
-    template/nlvariantpointer.h
+    engine/nlmodelrenderer.h
 
 SOURCES += \
-    engine/nldef.cpp \
     engine/nlscene.cpp \
     engine/nlobject.cpp \
     engine/nlactor.cpp \
@@ -74,7 +83,6 @@ SOURCES += \
     engine/nlforce.cpp \
     engine/nlforcecontainer.cpp \
     engine/nlproperties.cpp \
-    engine/nlglobals.cpp \
     engine/nlscenecamerabase.cpp \
     engine/nlrendermodel.cpp \
     engine/nlscript.cpp \
@@ -153,6 +161,7 @@ SOURCES += \
 # misc
 HEADERS += \
     template/nlsequencemap.h \
+    template/nlvariantpointer.h \
     trait/nlpropertytrait.h \
     utils/nlfuncs.h \
     utils/nlmath.h \

@@ -6,7 +6,7 @@
 #include <QCheckBox>
 #include <QButtonGroup>
 
-#include "engine/nldbg.h"
+#include "common/nldbg.h"
 #include "template/nlsequencemap.h"
 #include "utils/nlguiutility.h"
 

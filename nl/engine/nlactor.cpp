@@ -4,7 +4,8 @@
 
 #include <math.h>
 
-#include "nldbg.h"
+#include "common/nlconstants.h"
+#include "common/nldbg.h"
 #include "nlrenderable.h"
 #include "nlactorcontainer.h"
 #include "nlcomponentcontainer.h"

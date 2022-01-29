@@ -2,6 +2,7 @@
 #define _KARIN_SIMPLEIMAGECONTROLCOMPONENT_H
 
 #include "engine/nlcomponent.h"
+#include "common/nlconstants.h"
 
 NLCOMPONENT(SimpleImageControlComponent)
 class SimpleImageControlComponent : public NLComponent

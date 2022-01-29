@@ -3,7 +3,7 @@
 #include <QDebug>
 
 #include "nlactor.h"
-#include "nldbg.h"
+#include "common/nldbg.h"
 
 NLRenderable::NLRenderable(NLActor *parent) :
     NLObject(NLPROPERTIY_NAME(NLRenderable), parent)

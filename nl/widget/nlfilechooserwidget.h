@@ -2,7 +2,6 @@
 #define _KARIN_NLFILECHOOSERWIDGET_H
 
 #include <QWidget>
-#include <QLineEdit>
 
 class QPushButton;
 class NLLineEditWidget;

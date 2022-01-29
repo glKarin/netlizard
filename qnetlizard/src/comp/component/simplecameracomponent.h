@@ -2,6 +2,7 @@
 #define _KARIN_SIMPLECAMERACOMPONENT_H
 
 #include "engine/nlcomponent.h"
+#include "common/nlvec.h"
 
 class NLSceneCamera;
 class CameraNotifyFunc;

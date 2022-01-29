@@ -3,7 +3,7 @@
 
 #include <QTreeWidget>
 
-#include "engine/nldef.h"
+#include "common/nlinc.h"
 
 class QTreeWidgetItem;
 class QMenu;

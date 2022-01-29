@@ -8,8 +8,8 @@
 
 #include <GL/gl.h>
 
-#include "nldef.h"
-#include "nldbg.h"
+#include "common/nlinc.h"
+#include "common/nldbg.h"
 
 typedef QVector<char> ByteArray;
 

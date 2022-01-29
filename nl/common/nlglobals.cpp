@@ -3,11 +3,12 @@
 #include <QVariant>
 #include <QLocale>
 #include <QTranslator>
-#include <QApplication>
+#include <QCoreApplication>
 #include <QDebug>
 
-#include "nldef.h"
-#include "nlphysics.h"
+#include "common/nlvec.h"
+#include "common/nlmatrix.h"
+#include "engine/nlphysics.h"
 #include "template/nlvariantpointer.h"
 
 class NLRenderable;
@@ -27,14 +28,17 @@ namespace NL
 {
 static bool load_translator()
 {
+    QCoreApplication *qapp = QCoreApplication::instance();
+    if(!qapp)
+        return false;
     const QString locale = QLocale::system().name();
     const QString qmFile("nl." + locale);
-    QTranslator *translator = new QTranslator(qApp);
+    QTranslator *translator = new QTranslator(qapp);
 
     if(translator->load(qmFile, "i18n"))
     {
         qDebug() << "Load nl i18n -> " + qmFile + ".qm ......done!";
-        qApp->installTranslator(translator);
+        qapp->installTranslator(translator);
         return true;
     }
     else
@@ -50,6 +54,7 @@ bool init_engine(NLEngineRegisterObject *obj)
         return true;
 
     qRegisterMetaType<NLVector3>("NLVector3");
+    qRegisterMetaType<NLMatrix4>("NLMatrix4");
     qRegisterMetaType<NL::Physics::m>("NLPhysics_m");
     qRegisterMetaType<NL::Physics::a>("NLPhysics_a");
     qRegisterMetaType<NL::Physics::g>("NLPhysics_g");

@@ -1,11 +1,9 @@
 #ifndef _KARIN_NLPROPFORMGROUPWIDGET_H
 #define _KARIN_NLPROPFORMGROUPWIDGET_H
 
-#include <QScrollArea>
 #include <QGroupBox>
 
-#include "engine/nldef.h"
-#include "template/nlsequencemap.h"
+#include "common/nlvec.h"
 #include "engine/nlproperties.h"
 
 class QFormLayout;

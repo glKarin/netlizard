@@ -18,8 +18,8 @@
 #include <QMenu>
 #include <QWidgetAction>
 
-#include "engine/nldbg.h"
-#include "engine/nldef.h"
+#include "common/nldbg.h"
+#include "common/nldef.h"
 #include "utils/nlioutility.h"
 #include "syntaxhighlighter/nlluasyntaxhighlighter.h"
 

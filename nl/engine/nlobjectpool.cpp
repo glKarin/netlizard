@@ -3,7 +3,8 @@
 #include <QDebug>
 #include <limits>
 
-#include "nldbg.h"
+#include "nlobject.h"
+#include "common/nldbg.h"
 
 NLObjectPool::NLObjectPool(QObject *parent)
     : QObject(parent)

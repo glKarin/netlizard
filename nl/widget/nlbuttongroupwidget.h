@@ -4,7 +4,7 @@
 #include <QGroupBox>
 
 #include "engine/nlproperties.h"
-#include "engine/nldef.h"
+#include "common/nlinc.h"
 
 class QVBoxLayout;
 class QButtonGroup;

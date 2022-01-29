@@ -2,6 +2,7 @@
 #define _KARIN_NLFORCE_H
 
 #include "nlobject.h"
+#include "common/nlvec.h"
 #include "nlphysics.h"
 
 class NLRigidbody;

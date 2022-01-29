@@ -1,8 +1,13 @@
 #ifndef _KARIN_NLSCENECAMERABASE_H
 #define _KARIN_NLSCENECAMERABASE_H
 
-#include "nldef.h"
+#include <QtGlobal>
 
+#include "common/nlinc.h"
+#include "common/nlvec.h"
+#include "common/nlmatrix.h"
+
+class QVariant;
 class NLScene;
 class NLActor;
 class NLActorContainer;

@@ -1,9 +1,10 @@
 #ifndef _KARIN_LUA_VARIANT_H
 #define _KARIN_LUA_VARIANT_H
 
-#include "engine/nlproperties.h"
-
 struct lua_State;
+class NLProperties;
+class QVariant;
+class QString;
 
 namespace NL
 {

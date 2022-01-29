@@ -1,4 +1,4 @@
-#include "nldef.h"
+#include "nlconstants.h"
 
 namespace NL
 {

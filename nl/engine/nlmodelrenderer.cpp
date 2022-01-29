@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-#include "nldbg.h"
+#include "common/nldbg.h"
 
 #define VE4(arr, start, x, y, z, w) \
     arr[start] = x; \

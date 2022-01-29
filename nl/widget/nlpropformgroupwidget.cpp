@@ -20,7 +20,8 @@
 #include <QButtonGroup>
 #include <QApplication>
 
-#include "engine/nldbg.h"
+#include "common/nldbg.h"
+#include "common/nldef.h"
 #include "utils/nlfuncs.h"
 #include "engine/nlrenderable.h"
 #include "engine/nlscenecamera.h"

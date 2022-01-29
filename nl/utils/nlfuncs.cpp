@@ -4,9 +4,8 @@
 #include <QMetaObject>
 #include <QMetaProperty>
 
-#include "engine/nlobject.h"
+#include "common/nldef.h"
 #include "engine/nlscene.h"
-#include "engine/nlactor.h"
 #include "engine/nlcomponent.h"
 #include "engine/nlforce.h"
 #include "engine/nlscript.h"

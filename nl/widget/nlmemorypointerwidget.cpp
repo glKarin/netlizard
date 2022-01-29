@@ -11,7 +11,7 @@
 
 #include "nllineeditwidget.h"
 #include "nllabelwidget.h"
-#include "engine/nldbg.h"
+#include "common/nldbg.h"
 
 NLMemoryPointerWidget::NLMemoryPointerWidget(QWidget *widget)
     : QWidget(widget),

@@ -1,7 +1,9 @@
 #ifndef _KARIN_NLVARIANTPOINTER_H
 #define _KARIN_NLVARIANTPOINTER_H
 
-#include "engine/nldef.h"
+#include <QMetaType>
+
+#include "common/nlinc.h"
 
 template <class T>
 struct NLLIB_EXPORT NLVariantPointer

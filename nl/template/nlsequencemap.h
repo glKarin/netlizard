@@ -5,7 +5,7 @@
 #include <QMap>
 #include <QList>
 
-#include "engine/nldef.h"
+#include "common/nlinc.h"
 
 #define SEQUENCEMAP(X, P) \
     template <class K, class V > \

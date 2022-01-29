@@ -49,6 +49,7 @@ public:
     bool MousePressed(int button);
     void SetCurrentCamera(NLSceneCamera *camera);
     NLProperties PropertyConfig() const { return m_propertyConfig; }
+    QString ClassName() const;
 
     NLSceneCamera * CurrentCamera() { return m_currentCamera; }
     NLActor * GetActor(int index) { return m_actors.Get(index); }

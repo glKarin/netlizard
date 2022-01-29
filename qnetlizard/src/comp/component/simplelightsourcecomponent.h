@@ -2,6 +2,7 @@
 #define _KARIN_SIMPLELIGHTSOURCECOMPONENT_H
 
 #include "engine/nlcomponent.h"
+#include "common/nlvec.h"
 
 NLCOMPONENT(SimpleLightSourceComponent)
 class SimpleLightSourceComponent : public NLComponent

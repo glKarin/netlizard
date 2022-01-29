@@ -2,6 +2,7 @@
 #define _KARIN_SIMPLECONTROLCOMPONENT_H
 
 #include "engine/nlcomponent.h"
+#include "common/nlconstants.h"
 
 NLCOMPONENT(SimpleControlComponent)
 class SimpleControlComponent : public NLComponent

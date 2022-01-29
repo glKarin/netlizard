@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-#include "nldbg.h"
+#include "common/nldbg.h"
 #include "nlrigidbody.h"
 #include "nlforce.h"
 

@@ -5,7 +5,7 @@
 #include <QColorDialog>
 #include <QPushButton>
 
-#include "engine/nldbg.h"
+#include "common/nldbg.h"
 
 #define DEFAULT_COLOR QColor::fromRgbF(0, 0, 0, 1)
 

@@ -1,7 +1,9 @@
 #ifndef _KARIN_NLGLOBALS_H
 #define _KARIN_NLGLOBALS_H
 
-#include "nldef.h"
+#include <QtGlobal>
+
+#include "common/nlinc.h"
 
 struct NLLIB_EXPORT NLEngineRegisterObject
 {

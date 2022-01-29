@@ -5,7 +5,7 @@
 #include <QPlainTextEdit>
 #include <QTextBrowser>
 
-#include "engine/nldef.h"
+#include "common/nlinc.h"
 
 #define NLTEXTEDITWIDGET_DEF(X) \
 public: \

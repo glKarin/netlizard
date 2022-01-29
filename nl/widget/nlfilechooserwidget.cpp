@@ -8,7 +8,7 @@
 #include <QDragEnterEvent>
 #include <QUrl>
 
-#include "engine/nldbg.h"
+#include "common/nldbg.h"
 #include "nllineeditwidget.h"
 
 NLFileChooserWidget::NLFileChooserWidget(QWidget *widget)

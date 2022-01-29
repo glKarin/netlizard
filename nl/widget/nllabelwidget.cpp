@@ -3,7 +3,7 @@
 #include <QFontMetrics>
 #include <QDebug>
 
-#include "engine/nldbg.h"
+#include "common/nldbg.h"
 #include "utils/nlguiutility.h"
 
 NLLabelWidget::NLLabelWidget(QWidget *parent)

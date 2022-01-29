@@ -4,7 +4,9 @@
 #include <QObject>
 #include <QHash>
 
-#include "nlobject.h"
+#include "common/nlinc.h"
+
+class NLObject;
 
 class NLLIB_EXPORT NLObjectPool : public QObject
 {
@@ -45,4 +47,4 @@ private:
     Q_DISABLE_COPY(NLObjectPool)
 };
 
-#endif // _KARIN_NLObjectPool_H
+#endif // _KARIN_NLOBJECTPOOL_H

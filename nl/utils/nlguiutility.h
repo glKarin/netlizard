@@ -3,7 +3,7 @@
 
 #include <QVariant>
 
-#include "engine/nldef.h"
+#include "common/nlinc.h"
 
 class QLayout;
 class QFormLayout;

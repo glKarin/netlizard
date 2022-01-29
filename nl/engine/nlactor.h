@@ -3,6 +3,8 @@
 
 #include "nlobject.h"
 
+#include "common/nlvec.h"
+#include "common/nlmatrix.h"
 #include "nlactorcontainer.h"
 #include "nlcomponentcontainer.h"
 #include "nlscriptcontainer.h"

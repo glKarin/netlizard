@@ -1,7 +1,9 @@
 #ifndef _KARIN_NLPHYSICS_H
 #define _KARIN_NLPHYSICS_H
 
-#include "nldef.h"
+#include <QtGlobal>
+
+#include "common/nlinc.h"
 
 namespace NL
 {

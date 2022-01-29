@@ -4,6 +4,7 @@
 #include <QHash>
 
 #include "engine/nlscene.h"
+#include "common/nlvec.h"
 
 struct _GL_NETLizard_3D_Model;
 class NETLizardMapModelRenderer;

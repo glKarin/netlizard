@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-#include "engine/nldbg.h"
+#include "common/nldbg.h"
 
 NLGeneralSyntaxHighlighter::SyntaxColorScheme::SyntaxColorScheme(NLGeneralSyntaxHighlighter::SyntaxColorScheme::ColorScheme_e e)
     : m_schemeType(NLGeneralSyntaxHighlighter::SyntaxColorScheme::ColorScheme_User)

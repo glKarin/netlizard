@@ -4,7 +4,7 @@
 #include <QtGlobal>
 #include <QString>
 
-#include "engine/nldef.h"
+#include "common/nlinc.h"
 
 class NLLIB_EXPORT NLIOUtility
 {

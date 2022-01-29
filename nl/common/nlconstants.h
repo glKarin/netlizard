@@ -1,16 +1,7 @@
-#ifndef _KARIN_NLDEF_H
-#define _KARIN_NLDEF_H
+#ifndef _KARIN_NLCONSTANTS_H
+#define _KARIN_NLCONSTANTS_H
 
-#include <QVariant>
-
-#include "math/vector3.h"
-#include "math/mesa_gl_math.h"
-
-#if defined(_NL_LIBRARY)
-#  define NLLIB_EXPORT Q_DECL_EXPORT
-#else
-#  define NLLIB_EXPORT Q_DECL_IMPORT
-#endif
+#include "common/nlvec.h"
 
 enum NLAction_e
 {
@@ -70,10 +61,6 @@ enum NLAction_e
 };
 typedef NLAction_e NLActionType;
 
-typedef struct vector3_s NLVector3;
-typedef GLmatrix NLMatrix4;
-typedef QPair<QString, QVariant> QVariantPair;
-
 namespace NL
 {
 extern const NLVector3 Init_Up_z;
@@ -86,66 +73,4 @@ extern const NLVector3 Init_Rotation;
 extern const NLVector3 Init_Scale;
 }
 
-#define NLINTERFACE
-#define NLGETTER(x)
-#define NLSETTER(x)
-#define NLPROPERTYD(x)
-#define NLPROPERTY(T, x)
-#define NLACTOR(x)
-#define NLSCENE(x)
-#define NLCOMPONENT(x)
-#define NLRENDERER(x)
-
-#define NLClamp(t, min, max) qMax(min, qMin(t, max))
-
-#ifndef nlinstanceof
-#define nlinstanceof(obj, T) ((dynamic_cast<T *>(&obj)) != 0)
-#define nlinstanceofv(obj, T) ((dynamic_cast<T *>(obj)) != 0)
-#endif
-
-#ifndef nlcountof
-#define nlcountof(arr) (sizeof(arr) / sizeof(arr[0]))
-#define nllengthof nlcountof
-#endif
-
-#define NLSINGLE_INSTANCE_DEF(C) static C * Instance();
-#define NLSINGLE_INSTANCE_DECL(C) C * C::Instance() \
-{\
-    static C _instance; \
-    return &_instance; \
-}
-#define NLSINGLE_INSTANCE_OBJ(C) C::Instance()
-
-#define NLBITS(x) (1 << (x))
-#define NLBITS_ALL (~0U)
-
-#define NLSWAP(a, b, T) \
-{ \
-    T __x = (a); \
-    a = (b) ; \
-    b = __x; \
-}
-
-#define NLSWAPV(a, b, T) \
-{ \
-    T __x = *(a); \
-    *(a) = *(b) ; \
-    *(b) = __x; \
-}
-
-#define NLPTR_MOVE(dst, src) \
-{ \
-    (dst) = (src); \
-    (src) = NULL; \
-}
-
-#define NLPTR_DELETE(T, x) \
-if(x) { \
-    T *_Tx = x; \
-    x = 0; \
-    delete _Tx; \
-}
-
-Q_DECLARE_METATYPE(NLVector3)
-
-#endif // _KARIN_NLDEF_H
+#endif // _KARIN_NLCONSTANTS_H

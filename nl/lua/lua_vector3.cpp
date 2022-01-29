@@ -8,6 +8,7 @@ extern "C" {
 #include "extern/lua/include/lauxlib.h"
 }
 
+#include "common/nlvec.h"
 #include "lua_def.h"
 #include "lua_variant.h"
 

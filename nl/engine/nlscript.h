@@ -4,7 +4,6 @@
 #include "nlobject.h"
 #include "template/nlsequencemap.h"
 
-template <class K, class V> class NLSequenceHash;
 class NLScriptContainer;
 class NLActor;
 

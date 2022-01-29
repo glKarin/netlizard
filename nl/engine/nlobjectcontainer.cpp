@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-#include "nldbg.h"
+#include "common/nldbg.h"
 #include "nlobjectpool.h"
 
 NLObjectContainer::NLObjectContainer(QObject *parent) :

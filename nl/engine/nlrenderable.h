@@ -2,7 +2,6 @@
 #define _KARIN_RENDERABLE_H
 
 #include "nlobject.h"
-#include "nldef.h"
 
 class NLActor;
 

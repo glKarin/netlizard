@@ -11,7 +11,7 @@ extern "C" {
 #include "extern/lua/include/lauxlib.h"
 }
 
-#include "nldbg.h"
+#include "common/nldbg.h"
 #include "nlactor.h"
 #include "template/nlsequencemap.h"
 #include "nlscriptcontainer.h"

@@ -6,7 +6,7 @@
 #include <QMenu>
 #include <QToolButton>
 
-#include "engine/nldbg.h"
+#include "common/nldbg.h"
 #include "utils/nlguiutility.h"
 
 NLPropSectionHeader::NLPropSectionHeader(QWidget *widget)

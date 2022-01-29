@@ -1,7 +1,7 @@
 #ifndef _KARIN_ENGINEREGISTEROBJECT_H
 #define _KARIN_ENGINEREGISTEROBJECT_H
 
-#include "engine/nlglobals.h"
+#include "common/nlglobals.h"
 
 struct EngineRegisterObject : public NLEngineRegisterObject
 {

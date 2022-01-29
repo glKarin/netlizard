@@ -8,7 +8,7 @@
 #include <QDoubleSpinBox>
 #include <limits>
 
-#include "engine/nldbg.h"
+#include "common/nldbg.h"
 
 #define DOUBLE_SPINBOX_SINGLE_STEP 1 //0.1
 #define DOUBLE_SPINBOX_DECIMAL 6

@@ -7,7 +7,7 @@
 #include <QMouseEvent>
 #include <QApplication>
 
-#include "engine/nldbg.h"
+#include "common/nldbg.h"
 #include "utils/nlfuncs.h"
 #include "engine/nlcomponent.h"
 #include "engine/nlactor.h"
@@ -272,7 +272,7 @@ void NLActorPropWidget::UpdateActorData()
     if(!m_actor)
         return;
 
-    m_actorGroupBox->setTitle(m_actor->ClassName() + "(" + m_actor->Name() + ")");
+    m_actorGroupBox->setTitle(m_actor->ClassName() + "(" + m_actor->Name() + " " + QString().sprintf("%p", m_actor) + ")");
     SetupActorProperty();
     SetupComponentProperties();
     SetupScriptProperties();
@@ -295,7 +295,7 @@ void NLActorPropWidget::SetupComponentProperty(NLComponent *comp)
 {
     NLObjectPropFormGroupWidget *groupBox = new NLObjectPropFormGroupWidget;
     groupBox->setObjectName(m_actorGroupBox->objectName() + "_component");
-    groupBox->setTitle(comp->ClassName() + "(" + comp->Name() + ")");
+    groupBox->setTitle(comp->ClassName() + "(" + comp->Name() + " " + QString().sprintf("%p", comp) + ")");
     groupBox->SetObject(comp);
     m_propWidgetMap.insert(comp, groupBox);
     QAction *action = new QAction(tr("Remove"), groupBox);
@@ -324,7 +324,7 @@ void NLActorPropWidget::SetupScriptProperty(NLScript *script)
 {
     NLObjectPropFormGroupWidget *groupBox = new NLObjectPropFormGroupWidget;
     groupBox->setObjectName(m_actorGroupBox->objectName() + "_script");
-    groupBox->setTitle(script->ClassName() + "(" + script->Name() + ")");
+    groupBox->setTitle(script->ClassName() + "(" + script->Name() + " " + QString().sprintf("%p", script) + ")");
     groupBox->SetObject(script);
     m_propWidgetMap.insert(script, groupBox);
     QAction *action = new QAction(tr("Remove"), groupBox);

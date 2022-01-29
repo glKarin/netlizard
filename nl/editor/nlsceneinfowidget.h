@@ -2,6 +2,7 @@
 #define _KARIN_NLNLSceneInfoWidget_H
 
 #include <QTabWidget>
+
 #include "widget/nlpropformgroupwidget.h"
 
 class NLScene;
@@ -26,6 +27,9 @@ protected:
     virtual void CoverObjectProperty(QObject *obj, const QString &name, const QVariant &value);
     virtual NLPropertyInfoList GetPropertyInfoList(QObject *obj);
     virtual QVariant GetObjectProperty(QObject *obj, const QString &name);
+
+private Q_SLOTS:
+    void OnPropertyChanged(const QString &name, const QVariant &value, int action);
 };
 
 class NLLIB_EXPORT NLSceneInfoWidget : public QTabWidget
@@ -45,9 +49,6 @@ public slots:
 
 private:
     void Init();
-
-private Q_SLOTS:
-    void OnPropertyChanged(const QString &name, const QVariant &value, int action = 0);
 
 private:
     NLScene *m_scene;

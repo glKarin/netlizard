@@ -3,8 +3,7 @@
 
 #include <QWidget>
 
-#include "engine/nldef.h"
-#include "engine/nlproperties.h"
+#include "common/nlvec.h"
 
 class QDoubleSpinBox;
 

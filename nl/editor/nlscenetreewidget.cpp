@@ -6,7 +6,8 @@
 #include <QContextMenuEvent>
 #include <QApplication>
 
-#include "engine/nldbg.h"
+#include "common/nldef.h"
+#include "common/nldbg.h"
 #include "engine/nlscene.h"
 #include "engine/nlactor.h"
 #include "engine/nlcomponent.h"
@@ -75,7 +76,7 @@ void NLSceneTreeWidget::UpdateTreeData()
         NLActor *a = m_scene->GetActor(i);
         AddActorNode(a);
     }
-    setHeaderLabel(m_scene->objectName());
+    setHeaderLabel(m_scene->ClassName() + "::" + m_scene->objectName() + "(" + NLPOINTER_STR(m_scene) + ")");
     expandAll();
 }
 
@@ -89,6 +90,7 @@ void NLSceneTreeWidget::AddActorNode(NLActor *actor, QTreeWidgetItem *parent)
 {
     QTreeWidgetItem *subItem = new QTreeWidgetItem;
     subItem->setText(0, actor->objectName() + "(" + actor->ClassName() + ")");
+    subItem->setToolTip(0, actor->ClassName() + "::" + actor->objectName() + "(" + actor->Name() + " " + QString().sprintf("%p", actor) + ")");
     subItem->setData(0, Qt::UserRole, QVariant::fromValue<NLActor *>(actor));
     if(parent)
         parent->addChild(subItem);

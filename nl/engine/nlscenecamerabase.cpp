@@ -9,7 +9,9 @@
 #include "nlactor.h"
 #include "nlactorcontainer.h"
 #include "utils/nlmath.h"
-#include "nldbg.h"
+#include "common/nlconstants.h"
+#include "common/nldef.h"
+#include "common/nldbg.h"
 
 NLSceneCameraBase::NLSceneCameraChangedNotify::NLSceneCameraChangedNotify(int type)
     : m_type(type)

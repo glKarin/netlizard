@@ -13,7 +13,7 @@
 #include "nlscenecamera.h"
 #include "nlactor.h"
 #include "utils/nlfuncs.h"
-#include "nldbg.h"
+#include "common/nldbg.h"
 
 #define LOOP_INTERVAL 10 // 0
 
@@ -530,6 +530,12 @@ NLActor * NLScene::CreateActor(const NLProperties &props)
 void NLScene::SetPropertyConfig(const NLProperties &props)
 {
     m_propertyConfig = props;
+}
+
+QString NLScene::ClassName() const
+{
+    //return NLScene::staticMetaObject().className();
+    return metaObject()->className();
 }
 
 NLPROPERTY_DECL_TRAIT(NLScene, NL::property_equals, propertyChanged)

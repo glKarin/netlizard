@@ -2,6 +2,7 @@
 
 #include <QDebug>
 
+#include "common/nlconstants.h"
 #include "nlforce.h"
 #include "nlforcecontainer.h"
 #include "utils/nlmath.h"

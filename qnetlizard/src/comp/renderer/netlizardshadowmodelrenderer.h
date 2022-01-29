@@ -2,6 +2,7 @@
 #define _KARIN_NETLIZARDSHADOWMODELRENDERER_H
 
 #include "engine/nlrenderable.h"
+#include "common/nlvec.h"
 
 struct _GL_NETLizard_3D_Model;
 
