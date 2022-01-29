@@ -330,7 +330,7 @@ NLVariantSequenceHash NLScript::Script_Lua::GetGlobalVariant()
 
 
 NLScript::NLScript(NLActor *parent) :
-    NLObject(NLPROPERTIY_NAME(NLScript), parent),
+    NLObject(NLObject::Type_Script, 0, NLProperties(), parent),
     m_mounted(false),
     m_globalDataDirty(false),
     m_globalDataUpdateLock(false)
@@ -341,7 +341,7 @@ NLScript::NLScript(NLActor *parent) :
 }
 
 NLScript::NLScript(const NLProperties &prop, NLActor *parent) :
-    NLObject(NLPROPERTIES_NAME(prop, NLScript), parent),
+    NLObject(NLObject::Type_Script, 0, prop, parent),
     m_mounted(false),
     m_globalDataDirty(false),
     m_globalDataUpdateLock(false)
@@ -350,7 +350,7 @@ NLScript::NLScript(const NLProperties &prop, NLActor *parent) :
 }
 
 NLScript::NLScript(NLScene *scene, NLActor *parent) :
-    NLObject(scene, NLPROPERTIY_NAME(NLScript), parent),
+    NLObject(NLObject::Type_Script, scene, NLProperties(), parent),
     m_mounted(false),
     m_globalDataDirty(false),
     m_globalDataUpdateLock(false)
@@ -359,7 +359,7 @@ NLScript::NLScript(NLScene *scene, NLActor *parent) :
 }
 
 NLScript::NLScript(NLScene *scene, const NLProperties &prop, NLActor *parent) :
-    NLObject(scene, NLPROPERTIES_NAME(prop, NLScript), parent),
+    NLObject(NLObject::Type_Script, scene, prop, parent),
     m_mounted(false),
     m_globalDataDirty(false),
     m_globalDataUpdateLock(false)
@@ -378,7 +378,8 @@ void NLScript::Construct()
     if(parent)
         SetScene(parent->Scene());
     CLASS_NAME(NLScript);
-    setObjectName("NLScript");
+    if(objectName().isEmpty() || !GetInitProperty("name").isValid())
+        setObjectName("NLScript");
     SetType(NLObject::Type_Script);
 
     NLProperties props = PropertyConfig();

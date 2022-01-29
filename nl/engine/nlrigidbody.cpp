@@ -7,7 +7,7 @@
 #include "utils/nlmath.h"
 
 NLRigidbody::NLRigidbody(NLActor *parent) :
-    NLActor(NLPROPERTIY_NAME(NLRigidbody), parent),
+    NLActor(parent),
     m_zIsUp(false),
     m_fixedUp(true),
     m_free(false),
@@ -18,7 +18,7 @@ NLRigidbody::NLRigidbody(NLActor *parent) :
 }
 
 NLRigidbody::NLRigidbody(const NLProperties &prop, NLActor *parent) :
-    NLActor(NLPROPERTIES_NAME(prop, NLRigidbody), parent),
+    NLActor(prop, parent),
     m_zIsUp(false),
     m_fixedUp(true),
     m_free(false),
@@ -29,7 +29,7 @@ NLRigidbody::NLRigidbody(const NLProperties &prop, NLActor *parent) :
 }
 
 NLRigidbody::NLRigidbody(NLScene *scene, NLActor *parent) :
-    NLActor(scene, NLPROPERTIY_NAME(NLRigidbody), parent),
+    NLActor(scene, parent),
     m_zIsUp(false),
     m_fixedUp(true),
     m_free(false),
@@ -40,7 +40,7 @@ NLRigidbody::NLRigidbody(NLScene *scene, NLActor *parent) :
 }
 
 NLRigidbody::NLRigidbody(NLScene *scene, const NLProperties &prop, NLActor *parent) :
-    NLActor(scene, NLPROPERTIES_NAME(prop, NLRigidbody), parent),
+    NLActor(scene, prop, parent),
     m_zIsUp(false),
     m_fixedUp(true),
     m_free(false),
@@ -58,7 +58,8 @@ NLRigidbody::~NLRigidbody()
 void NLRigidbody::Construct()
 {
     CLASS_NAME(NLRigidbody);
-    setObjectName("NLRigidbody");
+    if(objectName().isEmpty() || !GetInitProperty("name").isValid())
+        setObjectName("NLRigidbody");
     Mesa_AllocGLMatrix(&m_moveMatrix);
     SetFixedUp(true);
     vector3_identityv(&m_moveRotation);

@@ -17,8 +17,7 @@
 
 NLSceneTreeWidget::NLSceneTreeWidget(QWidget *widget)
     : QTreeWidget(widget),
-      m_scene(0),
-      m_menu(0)
+      m_scene(0)
 {
     setObjectName("NLSceneTreeWidget");
     Init();
@@ -68,9 +67,7 @@ void NLSceneTreeWidget::OnSceneActorChanged(NLActor *actor)
 void NLSceneTreeWidget::UpdateTreeData()
 {
     if(!m_scene)
-    {
         return;
-    }
 
     const int Count = m_scene->ActorCount();
     for(int i = 0; i < Count; i++)
@@ -121,20 +118,30 @@ void NLSceneTreeWidget::OnItemClicked(QTreeWidgetItem *item, int col)
 
 #define ACTION_INVALID -1
 #define ACTION_ADD 1
-#define ACTION_REMOVE 2
-#define ACTION_ADD_COMPONENT 3
-#define ACTION_ADD_SCRIPT 4
-int NLSceneTreeWidget::ShowMenu(const QPoint &pos)
+#define ACTION_ADD_CHILD 2
+#define ACTION_REMOVE 3
+#define ACTION_ADD_COMPONENT 4
+#define ACTION_ADD_SCRIPT 5
+#define ACTION_EXPAND_ALL 6
+#define ACTION_COLLASPSE_ALL 7
+int NLSceneTreeWidget::ShowMenu(const QPoint &pos, QTreeWidgetItem *item)
 {
-    if(!m_menu)
+    QScopedPointer<QMenu> m_menu(new QMenu(this));
+    if(item)
     {
-        m_menu = new QMenu(this);
-        m_menu->addAction(tr("Add child"))->setData(ACTION_ADD);
+        m_menu->addAction(tr("Add child"))->setData(ACTION_ADD_CHILD);
         m_menu->addAction(tr("Remove actor"))->setData(ACTION_REMOVE);
         m_menu->addSeparator();
         m_menu->addAction(tr("Add component"))->setData(ACTION_ADD_COMPONENT);
         m_menu->addAction(tr("Add script"))->setData(ACTION_ADD_SCRIPT);
     }
+    else
+    {
+        m_menu->addAction(tr("Add actor"))->setData(ACTION_ADD);
+    }
+    m_menu->addSeparator();
+    m_menu->addAction(tr("Expand all"))->setData(ACTION_EXPAND_ALL);
+    m_menu->addAction(tr("Collaspse all"))->setData(ACTION_COLLASPSE_ALL);
     QAction *action = m_menu->exec(pos);
     if(action)
         return action->data().toInt();
@@ -143,44 +150,71 @@ int NLSceneTreeWidget::ShowMenu(const QPoint &pos)
 
 void NLSceneTreeWidget::contextMenuEvent(QContextMenuEvent *event)
 {
-    QTreeWidgetItem *item = itemAt(event->pos());
-    if(!item)
+    if(!m_scene)
     {
         QTreeWidget::contextMenuEvent(event);
         return;
     }
-    int action = ShowMenu(event->globalPos());
+    QTreeWidgetItem *item = itemAt(event->pos());
+    int action = ShowMenu(event->globalPos(), item);
     if(action < 0)
     {
         QTreeWidget::contextMenuEvent(event);
         return;
     }
-    NLActor *actor = item->data(0, Qt::UserRole).value<NLActor *>();
-    if(action == ACTION_ADD)
+    if(action == ACTION_COLLASPSE_ALL)
     {
-        actor->CreateChild()->setObjectName("new_NLActor");
+        collapseAll();
     }
-    else if(action == ACTION_REMOVE)
+    else if(action == ACTION_EXPAND_ALL)
     {
-        delete actor;
-    }
-    else if(action == ACTION_ADD_COMPONENT)
-    {
-        actor->CreateComponent()->setObjectName("new_NLComponent");
-    }
-    else if(action == ACTION_ADD_SCRIPT)
-    {
-        actor->CreateScript()->setObjectName("new_NLScript");
+        expandAll();
     }
     else
     {
-        QTreeWidget::contextMenuEvent(event);
+        if(item)
+        {
+            NLActor *actor = item->data(0, Qt::UserRole).value<NLActor *>();
+            if(action == ACTION_ADD_CHILD)
+            {
+                actor->CreateChild(NLProperties("name", "new_NLActor"));
+            }
+            else if(action == ACTION_REMOVE)
+            {
+                delete actor;
+            }
+            else if(action == ACTION_ADD_COMPONENT)
+            {
+                actor->CreateComponent(NLProperties("name", "new_NLComponent"));
+            }
+            else if(action == ACTION_ADD_SCRIPT)
+            {
+                actor->CreateScript(NLProperties("name", "new_NLScript"));
+            }
+            else
+            {
+                QTreeWidget::contextMenuEvent(event);
+            }
+        }
+        else
+        {
+            if(action == ACTION_ADD)
+            {
+                m_scene->CreateActor(NLProperties("name", "new_NLActor"));
+            }
+            else
+            {
+                QTreeWidget::contextMenuEvent(event);
+            }
+        }
     }
 }
 
 void NLSceneTreeWidget::mousePressEvent(QMouseEvent *event)
 {
     QTreeWidget::mousePressEvent(event);
+    if(!m_scene)
+        return;
     if (event->button() == Qt::LeftButton)
     {
         QTreeWidgetItem *item = itemAt(event->pos());
@@ -193,6 +227,8 @@ void NLSceneTreeWidget::mousePressEvent(QMouseEvent *event)
 void NLSceneTreeWidget::mouseMoveEvent(QMouseEvent *event)
 {
     QTreeWidget::mouseMoveEvent(event);
+    if(!m_scene)
+        return;
 
     if (!(event->buttons() & Qt::LeftButton))
         return;

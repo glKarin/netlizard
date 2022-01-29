@@ -6,7 +6,7 @@
 #include "nlforcecontainer.h"
 
 NLForce::NLForce(NLRigidbody *parent) :
-    NLObject(NLPROPERTIY_NAME(NLForce), parent),
+    NLObject(NLObject::Type_Force, 0, NLProperties(), parent),
   m_force(0),
   m_time(0),
   m_state(NLForce::State_Ready),
@@ -18,7 +18,7 @@ NLForce::NLForce(NLRigidbody *parent) :
 }
 
 NLForce::NLForce(const NLProperties &prop, NLRigidbody *parent) :
-    NLObject(NLPROPERTIES_NAME(prop, NLForce), parent),
+    NLObject(NLObject::Type_Force, 0, prop, parent),
           m_force(0),
           m_time(0),
           m_state(NLForce::State_Ready),
@@ -28,7 +28,7 @@ NLForce::NLForce(const NLProperties &prop, NLRigidbody *parent) :
 }
 
 NLForce::NLForce(NLScene *scene, NLRigidbody *parent) :
-    NLObject(scene, NLPROPERTIY_NAME(NLForce), parent),
+    NLObject(NLObject::Type_Force, scene, NLProperties(), parent),
           m_force(0),
           m_time(0),
           m_state(NLForce::State_Ready),
@@ -38,7 +38,7 @@ NLForce::NLForce(NLScene *scene, NLRigidbody *parent) :
 }
 
 NLForce::NLForce(NLScene *scene, const NLProperties &prop, NLRigidbody *parent) :
-    NLObject(scene, NLPROPERTIES_NAME(prop, NLForce), parent),
+    NLObject(NLObject::Type_Force, scene, prop, parent),
           m_force(0),
           m_time(0),
           m_state(NLForce::State_Ready),
@@ -58,7 +58,8 @@ void NLForce::Construct()
     if(parent)
         SetScene(parent->Scene());
     CLASS_NAME(NLForce);
-    setObjectName("NLForce");
+    if(objectName().isEmpty() || !GetInitProperty("name").isValid())
+        setObjectName("NLForce");
     SetType(NLObject::Type_Force);
     VECTOR3_X(m_direction) = VECTOR3_Y(m_direction) = VECTOR3_Z(m_direction) = 0;
 }
@@ -169,7 +170,7 @@ NL::Physics::a NLForce::Acceleration(NL::Physics::F f0) const
 
 // gravity
 NLForce_gravity::NLForce_gravity(NLRigidbody *parent) :
-    NLForce(NLPROPERTIY_NAME(NLForce_gravity), parent),
+    NLForce(parent),
     m_g(NL::Physics::EARTH_G),
     m_initialSpeed(0),
     m_distance(0),
@@ -180,7 +181,7 @@ NLForce_gravity::NLForce_gravity(NLRigidbody *parent) :
 }
 
 NLForce_gravity::NLForce_gravity(const NLProperties &prop, NLRigidbody *parent) :
-    NLForce(NLPROPERTIES_NAME(prop, NLForce_gravity), parent),
+    NLForce(prop, parent),
     m_g(NL::Physics::EARTH_G),
     m_initialSpeed(0),
     m_distance(0),
@@ -191,7 +192,7 @@ NLForce_gravity::NLForce_gravity(const NLProperties &prop, NLRigidbody *parent) 
 }
 
 NLForce_gravity::NLForce_gravity(NLScene *scene, NLRigidbody *parent) :
-    NLForce(scene, NLPROPERTIY_NAME(NLForce_gravity), parent),
+    NLForce(scene, parent),
     m_g(NL::Physics::EARTH_G),
     m_initialSpeed(0),
     m_distance(0),
@@ -202,7 +203,7 @@ NLForce_gravity::NLForce_gravity(NLScene *scene, NLRigidbody *parent) :
 }
 
 NLForce_gravity::NLForce_gravity(NLScene *scene, const NLProperties &prop, NLRigidbody *parent) :
-    NLForce(scene, NLPROPERTIES_NAME(prop, NLForce_gravity), parent),
+    NLForce(scene, prop, parent),
     m_g(NL::Physics::EARTH_G),
     m_initialSpeed(0),
     m_distance(0),
@@ -266,7 +267,7 @@ void NLForce_gravity::Update(float delta)
 
 // push
 NLForce_push::NLForce_push(NLRigidbody *parent) :
-    NLForce(NLPROPERTIY_NAME(NLForce_push), parent),
+    NLForce(parent),
     m_dragForce(0),
     m_initialSpeed(0),
     m_distance(0),
@@ -278,7 +279,7 @@ NLForce_push::NLForce_push(NLRigidbody *parent) :
 }
 
 NLForce_push::NLForce_push(const NLProperties &prop, NLRigidbody *parent) :
-    NLForce(NLPROPERTIES_NAME(prop, NLForce_push), parent),
+    NLForce(prop, parent),
     m_dragForce(NL::Physics::EARTH_G),
     m_initialSpeed(0),
     m_distance(0),
@@ -290,7 +291,7 @@ NLForce_push::NLForce_push(const NLProperties &prop, NLRigidbody *parent) :
 }
 
 NLForce_push::NLForce_push(NLScene *scene, NLRigidbody *parent) :
-    NLForce(scene, NLPROPERTIY_NAME(NLForce_push), parent),
+    NLForce(scene, parent),
     m_dragForce(0),
     m_initialSpeed(0),
     m_distance(0),
@@ -302,7 +303,7 @@ NLForce_push::NLForce_push(NLScene *scene, NLRigidbody *parent) :
 }
 
 NLForce_push::NLForce_push(NLScene *scene, const NLProperties &prop, NLRigidbody *parent) :
-    NLForce(scene, NLPROPERTIES_NAME(prop, NLForce_push), parent),
+    NLForce(scene, prop, parent),
     m_dragForce(0),
     m_initialSpeed(0),
     m_distance(0),

@@ -53,6 +53,17 @@ NLObject::NLObject(NLScene *scene, const NLProperties &prop, QObject *parent) :
     Construct(prop);
 }
 
+NLObject::NLObject(NLObject_Type type, NLScene *scene, const NLProperties &prop, QObject *parent)
+    : QObject(parent),
+      m_type(type),
+      m_inited(false),
+      m_container(0),
+      m_scene(scene),
+      m_enabled(true)
+{
+    Construct(prop);
+}
+
 NLObject::~NLObject()
 {
     NLObjectPool::Instance()->Detach(this);
@@ -211,6 +222,19 @@ void NLObject::SetEnabled(bool enabled)
 void NLObject::SetPropertyConfig(const NLProperties &props)
 {
     m_propertyConfig = props;
+}
+
+const char * NLObject::TypeToName(NLObject_Type type)
+{
+    static const char *Names[] = {
+        "General",
+        "Actor",
+        "Component",
+        "Script",
+        "Force",
+        "Renderer",
+    };
+    return Names[type];
 }
 
 NLPROPERTY_DECL_TRAIT(NLObject, NL::property_equals, propertyChanged)

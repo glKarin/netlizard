@@ -39,6 +39,7 @@ public:
     NLObject_Type Type() const { return m_type; }
     QString Name() const { return m_name; }
     QString ClassName() const { return m_className; }
+    QString TypeName() const { return TypeToName(m_type); }
     NLObject * ParentObject();
     bool IsInited() const { return m_inited; }
     NLObjectContainer * Container() { return m_container; }
@@ -49,9 +50,11 @@ public:
     QVariant GetInitProperty(const QString &name, const QVariant &def = QVariant()) const { return m_property.Get(name, def); }
     template<class T> T GetInitProperty_T(const QString &name, const T &def = T());
     NLProperties PropertyConfig() const { return m_propertyConfig; }
+    static const char * TypeToName(NLObject_Type type);
     NLPROPERTY_DEF_TRAIT
 
 protected:
+        explicit NLObject(NLObject_Type type, NLScene *scene = 0, const NLProperties &prop = NLProperties(), QObject *parent = 0);
     void SetName(const QString &name);
     void SetClassName(const QString &name);
     void SetType(NLObject_Type type);

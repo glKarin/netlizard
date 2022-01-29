@@ -37,12 +37,11 @@ private Q_SLOTS:
 private:
     void Init();
     void AddActorNode(NLActor *actor, QTreeWidgetItem *parent = 0);
-    int ShowMenu(const QPoint &pos);
+    int ShowMenu(const QPoint &pos, QTreeWidgetItem *item = 0);
     void UpdateTreeData();
 
 private:
     NLScene *m_scene;
-    QMenu *m_menu;
     QPoint m_dragStartPosition;
 
     Q_DISABLE_COPY(NLSceneTreeWidget)

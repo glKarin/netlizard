@@ -48,7 +48,7 @@ typedef quint64 index_t;
     }
     do
     {
-        name = item->objectName()
+        name = item->TypeName()
                 + "_"
                 + QString::number(_I)
                 + _C

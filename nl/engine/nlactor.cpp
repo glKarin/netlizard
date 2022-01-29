@@ -13,7 +13,7 @@
 #include "nlscript.h"
 
 NLActor::NLActor(NLActor *parent) :
-    NLObject(NLPROPERTIY_NAME(NLActor), parent),
+    NLObject(NLObject::Type_Actor, 0, NLProperties(), parent),
     m_renderable(0),
     m_components(0),
     m_children(0),
@@ -23,7 +23,7 @@ NLActor::NLActor(NLActor *parent) :
 }
 
 NLActor::NLActor(const NLProperties &prop, NLActor *parent) :
-    NLObject(NLPROPERTIES_NAME(prop, NLActor), parent),
+    NLObject(NLObject::Type_Actor, 0, prop, parent),
     m_renderable(0),
     m_components(0),
     m_children(0),
@@ -33,7 +33,7 @@ NLActor::NLActor(const NLProperties &prop, NLActor *parent) :
 }
 
 NLActor::NLActor(NLScene *scene, NLActor *parent) :
-    NLObject(scene, NLPROPERTIY_NAME(NLActor), parent),
+    NLObject(NLObject::Type_Actor, scene, NLProperties(), parent),
     m_renderable(0),
     m_components(0),
     m_children(0),
@@ -43,7 +43,7 @@ NLActor::NLActor(NLScene *scene, NLActor *parent) :
 }
 
 NLActor::NLActor(NLScene *scene, const NLProperties &prop, NLActor *parent) :
-    NLObject(scene, NLPROPERTIES_NAME(prop, NLActor), parent),
+    NLObject(NLObject::Type_Actor, scene, prop, parent),
     m_renderable(0),
     m_components(0),
     m_children(0),
@@ -70,7 +70,8 @@ void NLActor::Construct()
         SetParentActor(a);
 
     CLASS_NAME(NLActor);
-    setObjectName("NLActor");
+    if(objectName().isEmpty() || !GetInitProperty("name").isValid())
+        setObjectName("NLActor");
     SetType(NLObject::Type_Actor);
     Mesa_AllocGLMatrix(&m_matrix);
     Mesa_AllocGLMatrix(&m_globalMatrix);
