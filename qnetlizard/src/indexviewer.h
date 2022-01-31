@@ -10,6 +10,7 @@
 class QAction;
 class FlowLayout;
 class QColor;
+class QTimeLine;
 
 struct MenuItem
 {
@@ -82,13 +83,13 @@ private:
     QAction *m_action;
 };
 
-class GroupBox : public QGroupBox
+class IndexGroupBox : public QGroupBox
 {
     Q_OBJECT
 public:
-    explicit GroupBox(QWidget *parent = 0);
-    GroupBox(const QString &title, QWidget *parent = 0);
-    virtual ~GroupBox();
+    explicit IndexGroupBox(QWidget *parent = 0);
+    IndexGroupBox(const QString &title, QWidget *parent = 0);
+    virtual ~IndexGroupBox();
 
 public Q_SLOTS:
     void ResetPaintSize(int value);
@@ -97,18 +98,20 @@ public Q_SLOTS:
 protected:
     virtual void paintEvent(QPaintEvent *event);
 
+private Q_SLOTS:
+    void OnFinished();
+    void Update(qreal value);
+
 private:
     void Init();
     void CalePainterPath();
     int GetRadius() const { return qMax(qMin(m_rect.width(), m_rect.height()) / 2 - 18, 18); }
 
 private:
-    QTimer *m_timer;
+    QTimeLine *m_timer;
     float m_angle;
-    quint64 m_lastTime;
     float m_speed;
     float m_alphaFactory;
-    float m_alphaAnim;
     QPainterPath m_diskPath;
     QPainterPath m_diskCenterPath;
     QRect m_rect;

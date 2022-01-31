@@ -18,6 +18,7 @@
 #include <QPainter>
 #include <QTimer>
 #include <QLinearGradient>
+#include <QTimeLine>
 
 #include <cmath>
 #include <cstdlib>
@@ -31,6 +32,9 @@
 
 #define CELL_SIZE 128
 #define CELL_SPACING 10
+
+#define MIN_ALPHA 0.2
+#define ROT_SPEED 1
 
 static MenuItem LoadMenuItem(const QDomElement &category)
 {
@@ -87,49 +91,74 @@ void HomeCell::TriggerAction()
 }
 
 
-GroupBox::GroupBox(QWidget *parent)
+IndexGroupBox::IndexGroupBox(QWidget *parent)
     : QGroupBox(parent),
       m_timer(0),
       m_angle(0),
-      m_lastTime(0),
-      m_speed(20),
-      m_alphaFactory(0),
-      m_alphaAnim(1)
+      m_speed(ROT_SPEED),
+      m_alphaFactory(0)
 {
-    setObjectName("GroupBox");
+    setObjectName("IndexGroupBox");
     Init();
 }
 
-GroupBox::GroupBox(const QString &title, QWidget *parent)
+IndexGroupBox::IndexGroupBox(const QString &title, QWidget *parent)
     : QGroupBox(title, parent),
       m_timer(0),
       m_angle(0),
-      m_lastTime(0),
-      m_speed(20),
-      m_alphaFactory(0),
-      m_alphaAnim(1)
+      m_speed(ROT_SPEED),
+      m_alphaFactory(0)
 {
-    setObjectName("GroupBox");
+    setObjectName("IndexGroupBox");
     Init();
 }
 
-GroupBox::~GroupBox()
+IndexGroupBox::~IndexGroupBox()
 {
     DEBUG_DESTROY_Q
 }
 
-void GroupBox::Init()
+void IndexGroupBox::Init()
 {
-    m_lastTime = QDateTime::currentMSecsSinceEpoch();
-    m_timer = new QTimer(this);
-    m_timer->setSingleShot(false);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(update()));
-    m_timer->start(100);
+    m_timer = new QTimeLine(10000, this);
+    m_timer->setUpdateInterval(100);
+    m_timer->setLoopCount(1);
+    m_timer->setCurveShape(QTimeLine::LinearCurve);
+    connect(m_timer, SIGNAL(valueChanged(qreal)), this, SLOT(Update(qreal)));
+    connect(m_timer, SIGNAL(finished()), this, SLOT(OnFinished()));
+    m_timer->start();
     m_rect.setSize(size());
     CalePainterPath();
 }
 
-void GroupBox::ResetPaintSize(int value)
+void IndexGroupBox::OnFinished()
+{
+    if(m_timer->direction() == QTimeLine::Backward)
+    {
+        m_timer->setDirection(QTimeLine::Forward);
+    }
+    else
+    {
+        m_timer->setDirection(QTimeLine::Backward);
+    }
+    m_timer->start();
+}
+
+void IndexGroupBox::Update(qreal value)
+{
+    QTimeLine::Direction d = m_timer->direction();
+    m_alphaFactory = (1.0 - MIN_ALPHA) * value;
+    m_angle = NL::clamp_angle(360 * value* m_speed);
+    if(d == QTimeLine::Backward)
+    {
+        //m_alphaFactory *= 0.9;
+        m_angle = 360 - m_angle;
+    }
+    m_alphaFactory += MIN_ALPHA;
+    repaint();
+}
+
+void IndexGroupBox::ResetPaintSize(int value)
 {
 //    QScrollBar *bar = static_cast<QScrollArea *>(parentWidget()->parentWidget())->verticalScrollBar();
 //    int document_length = bar->maximum() - bar->minimum() + bar->pageStep();
@@ -138,7 +167,7 @@ void GroupBox::ResetPaintSize(int value)
     repaint();
 }
 
-void GroupBox::CalePainterPath()
+void IndexGroupBox::CalePainterPath()
 {
     const int R = GetRadius();
     const QRectF Rect(-R, -R, R * 2, R * 2);
@@ -157,7 +186,7 @@ void GroupBox::CalePainterPath()
     m_diskCenterPath -= emptyPath;
 }
 
-void GroupBox::ResetPaintSize(const QSize &size)
+void IndexGroupBox::ResetPaintSize(const QSize &size)
 {
     if(m_rect.size() != size)
     {
@@ -169,25 +198,10 @@ void GroupBox::ResetPaintSize(const QSize &size)
     }
 }
 
-void GroupBox::paintEvent(QPaintEvent *event)
+void IndexGroupBox::paintEvent(QPaintEvent *event)
 {
     QGroupBox::paintEvent(event);
     QPainter p(this);
-    quint64 ts = QDateTime::currentMSecsSinceEpoch();
-    float delta = (ts - m_lastTime) / 1000.0f;
-    m_alphaFactory = m_alphaFactory + delta * 0.1 * m_alphaAnim;
-    if(m_alphaFactory >= 1.0)
-    {
-        m_alphaFactory = 1.0;
-        m_alphaAnim = -0.5;
-    }
-    else if(m_alphaFactory <= 0.1)
-    {
-        m_alphaFactory = 0.1;
-        m_alphaAnim = 1;
-    }
-    m_lastTime = ts;
-    m_angle = NL::clamp_angle(m_angle - delta * m_speed);
     const int W = m_rect.width();
     const int H = m_rect.height();
     const int R = GetRadius();
@@ -195,7 +209,7 @@ void GroupBox::paintEvent(QPaintEvent *event)
 //    const int Y = H / 2 - R;
     const QPoint Center(W / 2, m_rect.top() + H / 2);
     p.translate(Center);
-    p.rotate(m_angle);
+    p.rotate(-m_angle);
     p.save();
     {
         QLinearGradient gradient(QPoint(-R, 0), QPoint(R, 0));
@@ -254,7 +268,7 @@ const MenuItemList & IndexViewer::ActionMap()
 void IndexViewer::Init()
 {
     QScrollArea *root = new QScrollArea;
-    GroupBox *container = new GroupBox(root);
+    IndexGroupBox *container = new IndexGroupBox(root);
     m_layout = new FlowLayout(container, CELL_SPACING, CELL_SPACING);
     SetTitleLabelVisible(false);
 
@@ -284,7 +298,7 @@ void IndexViewer::resizeEvent(QResizeEvent *event)
     m_tools->setFixedHeight(container->height());
     QSize size = container->size();
     size.setWidth(size.width() - container->verticalScrollBar()->width());
-    static_cast<GroupBox *>(container->widget())->ResetPaintSize(size);
+    static_cast<IndexGroupBox *>(container->widget())->ResetPaintSize(size);
 }
 
 void IndexViewer::Layout()
