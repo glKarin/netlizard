@@ -142,7 +142,7 @@ QSize NLLineEditWidget::minimumSizeHint() const
 {
     if(m_autoSize)
     {
-        QSize size = CaleTextSize("C");
+        QSize size = CaleTextSize(SINGLE_CHAR);
         FixSize(size);
         return size;
     }

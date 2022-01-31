@@ -63,6 +63,8 @@ void NLScenePropFormGroupWidget::SetObject(QObject *obj)
     NLPropFormGroupWidget::SetObject(obj);
     if(obj)
     {
+        NLScene *nlo = static_cast<NLScene *>(obj);
+        connect(nlo, SIGNAL(propertyChanged(const QString &, const QVariant &, int)), this, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
         connect(obj, SIGNAL(destroyed()), this, SLOT(Reset()));
     }
 }
@@ -265,7 +267,6 @@ void NLSceneInfoWidget::SetScene(NLScene *scene)
             connect(m_scene, SIGNAL(updated(float)), this, SLOT(UpdateSceneInfo()));
             connect(m_scene, SIGNAL(destroyed()), this, SLOT(Reset()));
             m_settingGroupBox->SetObject(m_scene);
-            connect(m_scene, SIGNAL(propertyChanged(const QString &, const QVariant &)), this, SLOT(OnPropertyChanged(const QString &, const QVariant &)));
         }
         UpdateSceneInfo();
     }

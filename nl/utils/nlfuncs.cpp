@@ -11,6 +11,7 @@
 #include "engine/nlscript.h"
 #include "engine/nlrenderable.h"
 #include "engine/nlrigidbody.h"
+#include "common/nlglobals.h"
 
 namespace NL
 {
@@ -174,23 +175,21 @@ NLPropertyInfoList scene_propertics(const NLScene *obj)
 
 bool property_equals(const QVariant &a, const QVariant &b)
 {
-    QVariant::Type at = a.type();
-    QVariant::Type bt = b.type();
-    if(at == bt && at == QVariant::UserType)
+    int at = a.type();
+    int bt = b.type();
+    if(at == QVariant::UserType && bt == QVariant::UserType)
     {
-        QString atype(a.typeName());
-        QString btype(b.typeName());
-        if(atype == btype)
+        at = a.userType();
+        bt = b.userType();
+        if(at == bt)
         {
-            if(atype == "NLVector3" || atype == "vector3_t" || atype == "vector3_s")
-            {
-                NLVector3 av = a.value<NLVector3>();
-                NLVector3 bv = b.value<NLVector3>();
-                return vector3_equals(&av, &bv) ? true : false;
-            }
+            QString typeName(QMetaType::typeName(at));
+            NLVariantCompare_f func = NLEngineGlobals::Instance()->variant_compare_func(typeName);
+            if(func)
+                return func(a, b);
         }
     }
-    return a == b; // TODO
+    return a == b; // internal type and user pointer
 }
 
 QVariant object_to_qvaraint(NLObject *nlo)

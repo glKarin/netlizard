@@ -8,6 +8,8 @@ struct EngineRegisterObject : public NLEngineRegisterObject
     virtual const char * Name() const { return "NETLizard"; }
     virtual void RegisterMetaType();
     virtual void UnregisterMetaType() {}
+    virtual VariantCompareFuncMap RegisterVariantCompareFunc() { return VariantCompareFuncMap(); }
+    virtual VariantCompareFuncMap UnregisterVariantCompareFunc() { return VariantCompareFuncMap(); }
 };
 
 #endif // _KARIN_ENGINEREGISTEROBJECT_H

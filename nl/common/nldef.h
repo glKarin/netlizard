@@ -4,6 +4,7 @@
 #include <QVariant>
 
 typedef QPair<QString, QVariant> QVariantPair;
+typedef bool (*NLVariantCompare_f)(const QVariant &a, const QVariant &b);
 
 #define NLClamp(t, min, max) qMax(min, qMin(t, max))
 

@@ -27,8 +27,9 @@ int main(int argc, char *argv[])
     load_i18n();
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
-    NL::init_engine();
-    NL::register_engine(new EngineRegisterObject);
+    NLEngineGlobals *engine = NLEngineGlobals::Instance();
+    engine->init_engine();
+    engine->register_engine(new EngineRegisterObject);
 
 #ifdef _DEV_TEST
     int test = Test(argc, argv);
@@ -45,7 +46,7 @@ int main(int argc, char *argv[])
     win->show();
 
     int res = app->exec();
-    NL::deinit_engine();
+    engine->deinit_engine();
 
     return res;
 }
