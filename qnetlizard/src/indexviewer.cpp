@@ -126,9 +126,9 @@ void IndexGroupBox::Init()
     m_timer->setCurveShape(QTimeLine::LinearCurve);
     connect(m_timer, SIGNAL(valueChanged(qreal)), this, SLOT(Update(qreal)));
     connect(m_timer, SIGNAL(finished()), this, SLOT(OnFinished()));
-    m_timer->start();
     m_rect.setSize(size());
     CalePainterPath();
+    m_timer->start();
 }
 
 void IndexGroupBox::OnFinished()
