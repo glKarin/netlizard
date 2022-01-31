@@ -31,6 +31,7 @@ private Q_SLOTS:
     void OpenFileDialog();
     void OpenFile();
     void EditOrChooseFile();
+    void OnEditFinished();
 
 private:
     void Init();

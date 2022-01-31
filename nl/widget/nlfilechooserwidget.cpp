@@ -7,6 +7,7 @@
 #include <QFileInfo>
 #include <QDragEnterEvent>
 #include <QUrl>
+#include <QTimer>
 
 #include "common/nldbg.h"
 #include "nllineeditwidget.h"
@@ -46,7 +47,7 @@ void NLFileChooserWidget::Init()
 
     //connect(m_fileLabel, SIGNAL(textEdited(const QString &)), this, SLOT(SetFile(const QString &)));
     connect(m_openButton, SIGNAL(clicked()), this, SLOT(OpenFileDialog()));
-    connect(m_fileLabel, SIGNAL(editingFinished()), this, SLOT(OpenFile()));
+    connect(m_fileLabel, SIGNAL(editingFinished()), this, SLOT(OnEditFinished()));
     connect(m_fileLabel, SIGNAL(dblClicked()), this, SLOT(EditOrChooseFile()));
 
     UpdateWidget();
@@ -92,6 +93,11 @@ void NLFileChooserWidget::OpenFileDialog()
     if(chooseFileName.isEmpty())
         return;
     SetFile(chooseFileName);
+}
+
+void NLFileChooserWidget::OnEditFinished()
+{
+    QTimer::singleShot(0, this, SLOT(OpenFile())); // !! can not call OpenFile directly
 }
 
 void NLFileChooserWidget::OpenFile()
