@@ -126,6 +126,8 @@ bool NLEngineGlobals::unregister_engine(const char *name)
 
 void NLEngineGlobals::register_engine(NLEngineRegisterObject *obj)
 {
+    if(!_engine_inited)
+        return;
     const char *name = obj->Name();
     if(engine_is_register(name))
         return;
@@ -174,6 +176,8 @@ void NLEngineGlobals::unload_translator()
 
 bool NLEngineGlobals::variant_compare(const QString &type, const QVariant &a, const QVariant &b) const
 {
+    if(!_engine_inited)
+        return false;
     NLVariantCompare_f func = variant_compare_func(type);
     if(func)
         return func(a, b);
@@ -183,4 +187,42 @@ bool NLEngineGlobals::variant_compare(const QString &type, const QVariant &a, co
 NLVariantCompare_f NLEngineGlobals::variant_compare_func(const QString &type) const
 {
     return _engine_variant_compare_funcs.value(type);
+}
+
+void NLEngineGlobals::register_lua_func(struct lua_State *L)
+{
+    if(!_engine_inited)
+        return;
+    Q_FOREACH(const QString &name, _engine_register_names.keys())
+    {
+        _engine_register_names[name]->RegisterLuaFunc(L);
+    }
+}
+
+QVariant NLEngineGlobals::convert_lua_variant(void **ptr, const QString &metatableName)
+{
+    QVariant v;
+    if(!_engine_inited)
+        return v;
+    Q_FOREACH(const QString &name, _engine_register_names.keys())
+    {
+        v = _engine_register_names[name]->LuaVariantToQVariant(ptr, metatableName);
+        if(v.isValid())
+            break;
+    }
+    return v;
+}
+
+int NLEngineGlobals::push_variant_to_lua(const QVariant &v, struct lua_State *L, const QString &specialType)
+{
+    int res = 0;
+    if(!_engine_inited)
+        return res;
+    Q_FOREACH(const QString &name, _engine_register_names.keys())
+    {
+        res = _engine_register_names[name]->PushQVariantToLua(v, L, specialType);
+        if(res > 0)
+            break;
+    }
+    return res;
 }

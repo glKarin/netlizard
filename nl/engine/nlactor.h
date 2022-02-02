@@ -30,9 +30,7 @@ public:
     virtual void Reset();
     void SetRenderable(NLRenderable *renderable);
     NLRenderable * Renderable() { return m_renderable; }
-    void * RenderablePtr() { return (void *)m_renderable; }
     NLActor * ParentActor();
-    const NLActor * ParentActor() const;
     void SetParentActor(NLActor *actor);
     NLActorContainer * Container();
     NLSETTER(position) virtual void SetPosition(const NLVector3 &v);

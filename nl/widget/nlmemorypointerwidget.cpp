@@ -111,6 +111,8 @@ void NLMemoryPointerWidget::SetMemoryPointer(const QVariant &value)
 {
     QString typeName;
     void *ptr;
+    qDebug() << FromVariant(value, typeName, ptr);
+    qDebug() << ptr << typeName << value << m_ptr;
     if(FromVariant(value, typeName, ptr))
         SetMemoryPointer(typeName, ptr);
 }

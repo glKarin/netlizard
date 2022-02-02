@@ -7,6 +7,7 @@
 #include "common/nldef.h"
 
 class QTranslator;
+struct lua_State;
 
 struct NLLIB_EXPORT NLEngineRegisterObject
 {
@@ -16,6 +17,9 @@ struct NLLIB_EXPORT NLEngineRegisterObject
     virtual void UnregisterMetaType() = 0;
     virtual VariantCompareFuncMap RegisterVariantCompareFunc() = 0;
     virtual VariantCompareFuncMap UnregisterVariantCompareFunc() = 0;
+    virtual void RegisterLuaFunc(struct lua_State *L) = 0;
+    virtual QVariant LuaVariantToQVariant(void **ptr, const QString &metatableName) = 0;
+    virtual int PushQVariantToLua(const QVariant &v, struct lua_State *L, const QString &specialType = QString()) = 0;
 };
 
 class NLLIB_EXPORT NLEngineGlobals
@@ -31,6 +35,9 @@ public:
     static NLEngineGlobals * Instance();
     bool variant_compare(const QString &type, const QVariant &a, const QVariant &b) const;
     NLVariantCompare_f variant_compare_func(const QString &type) const;
+    void register_lua_func(struct lua_State *L);
+    QVariant convert_lua_variant(void **ptr, const QString &metatableName);
+    int push_variant_to_lua(const QVariant &v, struct lua_State *L, const QString &specialType = QString());
 
 private:
     bool load_translator();

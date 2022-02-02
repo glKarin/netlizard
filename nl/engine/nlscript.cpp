@@ -257,9 +257,9 @@ void NLScript::Script_Lua::RestoreGlobalVariant()
         const char *keyName = ba.constData();
         int type = lua_getglobal(L, keyName);
         lua_pop(L, -1);
-        bool pushed = NL::push_from_qvarianti(L, va, type);
+        int pushed = NL::push_from_qvarianti(L, va, type);
 
-        if(pushed)
+        if(pushed > 0) // TODO: only single return value
             lua_setglobal(L, keyName);
     }
 }
@@ -568,6 +568,7 @@ void NLScript::OnPropertyChanged(const QString &name, const QVariant &value, int
             || name == "scriptSource"
             )
         return;
+    qDebug() << name << value << type;
     if(type == -1)
         m_globalVaraint.remove(name);
     else

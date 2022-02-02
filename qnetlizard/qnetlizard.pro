@@ -12,8 +12,6 @@ QT += opengl xml
 DEPENDPATH += . .. ../libnetlizard ./src ./src/widget ./src/misc
 INCLUDEPATH += . .. ../libnetlizard ./src ./src/widget ./src/misc
 
-#LIBS += ../libnetlizard/debug/libnetlizard.a
-
 OBJECTS_DIR = $$BUILD_DIR/$$TARGET/$$OBJ_DIR_NAME
 MOC_DIR = $$BUILD_DIR/$$TARGET/moc
 RCC_DIR = $$BUILD_DIR/$$TARGET/
@@ -212,6 +210,8 @@ script_api_exam.files = \
 script_api_exam.path = $$DESTDIR
 
 INSTALLS += script_api_exam
+
+LIBS += -L$$PWD/../nl/extern/lua -llua53
 
 } else {
 

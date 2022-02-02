@@ -120,7 +120,7 @@ void NLActor::Render()
 {
     if(!IsActived())
         return;
-    if(m_renderable)
+    if(m_renderable && m_renderable->IsEnabled())
     {
         glPushMatrix();
         {
@@ -221,14 +221,6 @@ NLActor * NLActor::ParentActor()
     QObject *p = parent();
     if(p)
         return dynamic_cast<NLActor *>(p);
-    return 0;
-}
-
-const NLActor * NLActor::ParentActor() const
-{
-    const QObject *p = parent();
-    if(p)
-        return dynamic_cast<const NLActor *>(p);
     return 0;
 }
 

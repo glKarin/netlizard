@@ -8,6 +8,7 @@ extern "C" {
 #include "extern/lua/include/lauxlib.h"
 }
 
+#include "common/nlglobals.h"
 #include "lua_def.h"
 #include "lua/lua_actor.h"
 #include "lua/lua_component.h"
@@ -16,6 +17,7 @@ extern "C" {
 #include "lua/lua_scenecamera.h"
 #include "lua/lua_variant.h"
 #include "lua/lua_vector3.h"
+#include "lua/lua_renderable.h"
 #include "lua_variant.h"
 
 static int Globals_NullUserData(lua_State *L)
@@ -102,8 +104,10 @@ bool register_lua_metatable(lua_State *L)
     NL::scene_register_metatable(L);
     NL::rigidbody_register_metatable(L);
     NL::scenecamera_register_metatable(L);
+    NL::renderable_register_metatable(L);
     NL::script_register_metatable(L);
     NL::vector3_register_metatable(L);
+    NLEngineGlobals::Instance()->register_lua_func(L);
     return true;
 }
 

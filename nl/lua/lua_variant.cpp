@@ -11,6 +11,7 @@ extern "C" {
 }
 
 #include "lua_def.h"
+#include "common/nlglobals.h"
 #include "engine/nlscenecamera.h"
 #include "engine/nlscene.h"
 #include "engine/nlactor.h"
@@ -69,9 +70,16 @@ QVariant load_to_qvariant(struct lua_State* L, int varindex)
             else LOAD_VAR(NLActor)
             else LOAD_VAR(NLRenderable)
             else LOAD_VAR(NLRigidbody)
+            else LOAD_VAR(NLRenderable)
             else LOAD_VAR(NLForce)
             else
-                var.setValue<void *>(*p);
+            {
+                QVariant uv = NLEngineGlobals::Instance()->convert_lua_variant(p, tableType);
+                if(uv.isValid())
+                    var = uv;
+                else
+                    var.setValue<void *>(*p);
+            }
 #undef LOAD_VAR
         }
     }
@@ -139,6 +147,7 @@ QVariant load_to_qvariants(struct lua_State* L, int varindex, const QString &var
             else LOAD_VAR(NLActor)
             else LOAD_VAR(NLRenderable)
             else LOAD_VAR(NLRigidbody)
+            else LOAD_VAR(NLRenderable)
             else LOAD_VAR(NLForce)
             else LOAD_VAR(QObject)
             else LOAD_VAR(QWidget)
@@ -153,9 +162,16 @@ QVariant load_to_qvariants(struct lua_State* L, int varindex, const QString &var
                 else LOAD_VAR(NLActor)
                 else LOAD_VAR(NLRenderable)
                 else LOAD_VAR(NLRigidbody)
+                else LOAD_VAR(NLRenderable)
                 else LOAD_VAR(NLForce)
                 else
-                    var.setValue<void *>(*p);
+                {
+                    QVariant uv = NLEngineGlobals::Instance()->convert_lua_variant(p, tableType);
+                    if(uv.isValid())
+                        var = uv;
+                    else
+                        var.setValue<void *>(*p);
+                }
             }
 #undef LOAD_VAR
         }
@@ -163,7 +179,7 @@ QVariant load_to_qvariants(struct lua_State* L, int varindex, const QString &var
     return var;
 }
 
-bool push_from_qvariant(struct lua_State* L, const QVariant &v)
+int push_from_qvariant(struct lua_State* L, const QVariant &v)
 {
     int type = v.type();
     if(type == QVariant::Int
@@ -211,29 +227,31 @@ bool push_from_qvariant(struct lua_State* L, const QVariant &v)
                 *((void **)lua_newuserdata(L, sizeof(void *))) = v.value<void *>();
             else
             {
-//                if(varType.indexOf("*") < 0 && utype.indexOf("*") < 0)
-//                    lua_pushstring(L, v.toByteArray());
-                return false;
+                int rn = NLEngineGlobals::Instance()->push_variant_to_lua(v, L);
+                if(rn > 0)
+                    return rn;
+                else
+                    return 0;
             }
         }
 #undef PUSH_VAR
     }
-    return true;
+    return 1;
 }
 
-bool push_from_qvarianti(struct lua_State* L, const QVariant &v, int type)
+int push_from_qvarianti(struct lua_State* L, const QVariant &v, int type)
 {
     const char *tname = lua_typename(L, type);
     return push_from_qvariants(L, v, tname);
 }
 
-bool push_from_qvariants(struct lua_State* L, const QVariant &v, int typeindex)
+int push_from_qvariants(struct lua_State* L, const QVariant &v, int typeindex)
 {
     const char *vartype = lua_tostring(L, typeindex);
     return push_from_qvariants(L, v, vartype);
 }
 
-bool push_from_qvariants(struct lua_State* L, const QVariant &v, const QString &vartype)
+int push_from_qvariants(struct lua_State* L, const QVariant &v, const QString &vartype)
 {
     QByteArray ba = vartype.toLocal8Bit();
     QByteArray utype(QMetaObject::normalizedType(ba.constData()));
@@ -287,14 +305,16 @@ bool push_from_qvariants(struct lua_State* L, const QVariant &v, const QString &
                 *((void **)lua_newuserdata(L, sizeof(void *))) = v.value<void *>();
             else
             {
-//                if(varType.indexOf("*") < 0 && utype.indexOf("*") < 0)
-//                    lua_pushstring(L, v.toByteArray());
-                return false;
+                int rn = NLEngineGlobals::Instance()->push_variant_to_lua(v, L, QString(utype));
+                if(rn > 0)
+                    return rn;
+                else
+                    return 0;
             }
         }
 #undef PUSH_VAR
     }
-    return true;
+    return 1;
 }
 
 NLProperties lua_table_to_properties(struct lua_State *L, int index)

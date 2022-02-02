@@ -463,6 +463,30 @@ static int Actor_CreateScript(lua_State *L)
     return 1;
 }
 
+static int Actor_Renderable(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    NLRenderable *r = actor->Renderable();
+    if(r)
+    {
+        PUSH_NLOBJECT_TO_STACK(L, NLRenderable, r)
+    }
+    else
+    {
+        lua_pushnil(L);
+    }
+    return 1;
+}
+
+static int Actor_SetRenderable(lua_State *L)
+{
+    CALLER_ACTOR(L, actor);
+    GET_LUA_OBJECT(L, NLRenderable, r, 2);
+    actor->SetRenderable(r);
+    lua_pushboolean(L, 1);
+    return 1;
+}
+
 
 
 static int Rigidbody_new(lua_State *L)
@@ -528,7 +552,9 @@ namespace NL
     ACTOR_FUNC(ScriptCount), \
     ACTOR_FUNC(CreateChild), \
     ACTOR_FUNC(CreateComponent), \
-    ACTOR_FUNC(CreateScript)
+    ACTOR_FUNC(CreateScript), \
+    ACTOR_FUNC(Renderable), \
+    ACTOR_FUNC(SetRenderable)
 
 bool actor_register_metatable(struct lua_State *L)
 {

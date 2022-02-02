@@ -76,10 +76,13 @@ static int Object_GetProperty(lua_State *L)
     CALLER_OBJECT(L, obj);
     const char *name = lua_tostring(L, 2);
     QVariant v = obj->GetProperty(name);
-    bool res = NL::push_from_qvariants(L, v, 3);
-    if(!res)
+    int res = NL::push_from_qvariants(L, v, 3);
+    if(res == 0)
+    {
+        res = 1;
         lua_pushnil(L);
-    return 1;
+    }
+    return res;
 }
 
 static int Object_SetProperty(lua_State *L)
