@@ -241,7 +241,7 @@ void NLSceneTreeWidget::mouseMoveEvent(QMouseEvent *event)
     if(!item)
         return;
     NLActor *actor = item->data(0, Qt::UserRole).value<NLActor *>();
-    QVariant value = nlinstanceofv(actor, NLRigidbody) ? QVariant::fromValue<NLRigidbody *>(static_cast<NLRigidbody *>(actor)) : QVariant::fromValue<NLActor *>(actor);
+    QVariant value = NLinstanceofv(actor, NLRigidbody) ? QVariant::fromValue<NLRigidbody *>(static_cast<NLRigidbody *>(actor)) : QVariant::fromValue<NLActor *>(actor);
 
     QDrag *drag = new QDrag(this);
     QMimeData *mimeData = new QMimeData;

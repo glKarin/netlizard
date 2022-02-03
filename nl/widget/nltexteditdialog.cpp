@@ -81,7 +81,7 @@ void NLTextEditDialog::Init()
         qMakePair<QString, QString>(tr("None"), QString()),
         qMakePair<QString, QString>("Lua", NLLuaSyntaxHighlighter::SyntaxName),
     };
-    for(uint i = 0; i < nlcountof(HLs); i++)
+    for(uint i = 0; i < NLcountof(HLs); i++)
     {
         const QPair<QString, QString> &p = HLs[i];
         QAction *action = new QAction(p.first, this);
@@ -103,7 +103,7 @@ void NLTextEditDialog::Init()
         qMakePair<QString, int>("QtCreator", NLGeneralSyntaxHighlighter::SyntaxColorScheme::ColorScheme_QtCreator),
         qMakePair<QString, int>("Vim(dark)", NLGeneralSyntaxHighlighter::SyntaxColorScheme::ColorScheme_Vim),
     };
-    for(uint i = 0; i < nlcountof(CSs); i++)
+    for(uint i = 0; i < NLcountof(CSs); i++)
     {
         const QPair<QString, int> &p = CSs[i];
         QAction *action = new QAction(p.first, this);

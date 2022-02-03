@@ -14,14 +14,14 @@ extern "C" {
 #include "lua_object.h"
 #include "lua_variant.h"
 
-#define CALLER_ACTOR(L, name) GET_LUA_CALLER(L, NLActor, name)
-#define CALLER_ACTOR_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLActor, name)
-#define CALLER_RIGIDBODY(L, name) GET_LUA_CALLER(L, NLRigidbody, name)
-#define CALLER_RIGIDBODY_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLRigidbody, name)
+#define CALLER_ACTOR(L, name) NLNLGET_LUA_CALLER(L, NLActor, name)
+#define CALLER_ACTOR_USERDATA(L, name) NLNLGET_LUA_CALLER_USERDATA(L, NLActor, name)
+#define CALLER_RIGIDBODY(L, name) NLNLGET_LUA_CALLER(L, NLRigidbody, name)
+#define CALLER_RIGIDBODY_USERDATA(L, name) NLNLGET_LUA_CALLER_USERDATA(L, NLRigidbody, name)
 
 static int Actor_new(lua_State *L)
 {
-    PUSH_NLOBJECT_TO_STACK(L, NLActor, new NLActor(NL::lua_table_to_properties(L, 1)))
+    NLPUSH_NLOBJECT_TO_STACK(L, NLActor, new NLActor(NL::lua_table_to_properties(L, 1)))
     return 1;
 }
 
@@ -189,7 +189,7 @@ static int Actor_GetChild(lua_State *L)
     }
     if(a)
     {
-        PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
+        NLPUSH_NLOBJECT_TO_STACK(L, NLActor, a)
     }
     else
     {
@@ -204,7 +204,7 @@ static int Actor_ParentActor(lua_State *L)
     NLActor *a = actor->ParentActor();
     if(a)
     {
-        PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
+        NLPUSH_NLOBJECT_TO_STACK(L, NLActor, a)
     }
     else
     {
@@ -237,7 +237,7 @@ static int Actor_GetComponent(lua_State *L)
     }
     if(c)
     {
-        PUSH_NLOBJECT_TO_STACK(L, NLComponent, c)
+        NLPUSH_NLOBJECT_TO_STACK(L, NLComponent, c)
     }
     else
     {
@@ -252,7 +252,7 @@ static int Actor_Scene(lua_State *L)
     NLScene *s = actor->Scene();
     if(s)
     {
-        PUSH_NLOBJECT_TO_STACK(L, NLScene, s)
+        NLPUSH_NLOBJECT_TO_STACK(L, NLScene, s)
     }
     else
     {
@@ -283,7 +283,7 @@ static int Actor_ToRigidbody(lua_State *L)
     NLRigidbody *r = dynamic_cast<NLRigidbody *>(actor);
     if(r)
     {
-        PUSH_NLOBJECT_TO_STACK(L, NLRigidbody, r)
+        NLPUSH_NLOBJECT_TO_STACK(L, NLRigidbody, r)
     }
     else
     {
@@ -295,7 +295,7 @@ static int Actor_ToRigidbody(lua_State *L)
 static int Actor_AddChild(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
-    GET_LUA_OBJECT(L, NLActor, c, 2);
+    NLGET_LUA_OBJECT(L, NLActor, c, 2);
     int b = 0;
     if(c)
         b = actor->AddChild(c) ? 1 : 0;
@@ -317,7 +317,7 @@ static int Actor_RemoveChild(lua_State *L)
         int type = lua_type(L, 2);
         if(type == LUA_TUSERDATA)
         {
-            GET_LUA_OBJECT(L, NLActor, c, 2);
+            NLGET_LUA_OBJECT(L, NLActor, c, 2);
             b = c && actor->RemoveChild(c) ? 1 : 0;
         }
         else
@@ -333,7 +333,7 @@ static int Actor_RemoveChild(lua_State *L)
 static int Actor_AddComponent(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
-    GET_LUA_OBJECT(L, NLComponent, c, 2);
+    NLGET_LUA_OBJECT(L, NLComponent, c, 2);
     int b = 0;
     if(c)
         b = actor->AddComponent(c) ? 1 : 0;
@@ -355,7 +355,7 @@ static int Actor_RemoveComponent(lua_State *L)
         int type = lua_type(L, 2);
         if(type == LUA_TUSERDATA)
         {
-            GET_LUA_OBJECT(L, NLComponent, c, 2);
+            NLGET_LUA_OBJECT(L, NLComponent, c, 2);
             b = c && actor->RemoveComponent(c) ? 1 : 0;
         }
         else
@@ -392,7 +392,7 @@ static int Actor_GetScript(lua_State *L)
     }
     if(c)
     {
-        PUSH_NLOBJECT_TO_STACK(L, NLScript, c)
+        NLPUSH_NLOBJECT_TO_STACK(L, NLScript, c)
     }
     else
     {
@@ -404,7 +404,7 @@ static int Actor_GetScript(lua_State *L)
 static int Actor_AddScript(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
-    GET_LUA_OBJECT(L, NLScript, c, 2);
+    NLGET_LUA_OBJECT(L, NLScript, c, 2);
     int b = 0;
     if(c)
         b = actor->AddScript(c) ? 1 : 0;
@@ -426,7 +426,7 @@ static int Actor_RemoveScript(lua_State *L)
         int type = lua_type(L, 2);
         if(type == LUA_TUSERDATA)
         {
-            GET_LUA_OBJECT(L, NLScript, c, 2);
+            NLGET_LUA_OBJECT(L, NLScript, c, 2);
             b = c && actor->RemoveScript(c) ? 1 : 0;
         }
         else
@@ -443,7 +443,7 @@ static int Actor_CreateChild(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     NLActor *a = actor->CreateChild(NL::lua_table_to_properties(L, 2));
-    PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
+    NLPUSH_NLOBJECT_TO_STACK(L, NLActor, a)
     return 1;
 }
 
@@ -451,7 +451,7 @@ static int Actor_CreateComponent(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     NLComponent *c = actor->CreateComponent(NL::lua_table_to_properties(L, 2));
-    PUSH_NLOBJECT_TO_STACK(L, NLComponent, c)
+    NLPUSH_NLOBJECT_TO_STACK(L, NLComponent, c)
     return 1;
 }
 
@@ -459,7 +459,7 @@ static int Actor_CreateScript(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
     NLScript *s = actor->CreateScript(NL::lua_table_to_properties(L, 2));
-    PUSH_NLOBJECT_TO_STACK(L, NLScript, s)
+    NLPUSH_NLOBJECT_TO_STACK(L, NLScript, s)
     return 1;
 }
 
@@ -469,7 +469,7 @@ static int Actor_Renderable(lua_State *L)
     NLRenderable *r = actor->Renderable();
     if(r)
     {
-        PUSH_NLOBJECT_TO_STACK(L, NLRenderable, r)
+        NLPUSH_NLOBJECT_TO_STACK(L, NLRenderable, r)
     }
     else
     {
@@ -481,7 +481,7 @@ static int Actor_Renderable(lua_State *L)
 static int Actor_SetRenderable(lua_State *L)
 {
     CALLER_ACTOR(L, actor);
-    GET_LUA_OBJECT(L, NLRenderable, r, 2);
+    NLGET_LUA_OBJECT(L, NLRenderable, r, 2);
     actor->SetRenderable(r);
     lua_pushboolean(L, 1);
     return 1;
@@ -491,7 +491,7 @@ static int Actor_SetRenderable(lua_State *L)
 
 static int Rigidbody_new(lua_State *L)
 {
-    PUSH_NLOBJECT_TO_STACK(L, NLActor, new NLRigidbody(NL::lua_table_to_properties(L, 1)))
+    NLPUSH_NLOBJECT_TO_STACK(L, NLActor, new NLRigidbody(NL::lua_table_to_properties(L, 1)))
     return 1;
 }
 
@@ -561,14 +561,14 @@ bool actor_register_metatable(struct lua_State *L)
     if(metatable_is_register(L, "NLActor"))
         return true;
 
-    SET_GLOBAL_CFUNC(L, "new_NLActor", Actor_new)
-    SET_GLOBAL_CFUNC(L, "delete_NLActor", Actor_delete)
+    lua_register(L, "new_NLActor", Actor_new);
+    lua_register(L, "delete_NLActor", Actor_delete);
 
     if(luaL_newmetatable(L, "NLActor"))
     {
         const struct luaL_Reg Funcs[] = {
             ACTOR_FUNCS,
-            NULL_luaL_Reg
+            NLNULL_luaL_Reg
         };
         luaL_setfuncs(L, Funcs, 0);
         register_object_metatable_function(L);
@@ -586,15 +586,15 @@ bool rigidbody_register_metatable(struct lua_State *L)
 {
     if(metatable_is_register(L, "NLRigidbody"))
         return true;
-    SET_GLOBAL_CFUNC(L, "new_NLRigidbody", Rigidbody_new)
-    SET_GLOBAL_CFUNC(L, "delete_NLRigidbody", Rigidbody_delete)
+    lua_register(L, "new_NLRigidbody", Rigidbody_new);
+    lua_register(L, "delete_NLRigidbody", Rigidbody_delete);
 
     if(luaL_newmetatable(L, "NLRigidbody"))
     {
         const struct luaL_Reg Funcs[] = {
             ACTOR_FUNCS,
             RIGIDBODY_FUNC(MoveDirection),
-            NULL_luaL_Reg
+            NLNULL_luaL_Reg
         };
         luaL_setfuncs(L, Funcs, 0);
         register_object_metatable_function(L);

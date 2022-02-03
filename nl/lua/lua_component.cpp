@@ -13,12 +13,12 @@ extern "C" {
 #include "lua_object.h"
 #include "lua_variant.h"
 
-#define CALLER_COMPONENT(L, name) GET_LUA_CALLER(L, NLComponent, name)
-#define CALLER_COMPONENT_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLComponent, name)
+#define CALLER_COMPONENT(L, name) NLNLGET_LUA_CALLER(L, NLComponent, name)
+#define CALLER_COMPONENT_USERDATA(L, name) NLNLGET_LUA_CALLER_USERDATA(L, NLComponent, name)
 
 static int Component_new(lua_State *L)
 {
-    PUSH_NLOBJECT_TO_STACK(L, NLComponent, new NLComponent(NL::lua_table_to_properties(L, 1)))
+    NLPUSH_NLOBJECT_TO_STACK(L, NLComponent, new NLComponent(NL::lua_table_to_properties(L, 1)))
     return 1;
 }
 
@@ -36,7 +36,7 @@ static int Component_Actor(lua_State *L)
     NLActor *a = comp->Actor();
     if(a)
     {
-        PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
+        NLPUSH_NLOBJECT_TO_STACK(L, NLActor, a)
     }
     else
     {
@@ -57,14 +57,14 @@ bool component_register_metatable(struct lua_State *L)
     if(metatable_is_register(L, "NLComponent"))
         return true;
 
-    SET_GLOBAL_CFUNC(L, "new_NLComponent", Component_new)
-    SET_GLOBAL_CFUNC(L, "delete_NLComponent", Component_delete)
+    lua_register(L, "new_NLComponent", Component_new);
+    lua_register(L, "delete_NLComponent", Component_delete);
 
     if(luaL_newmetatable(L, "NLComponent"))
     {
         const struct luaL_Reg Funcs[] = {
             COMPONENT_FUNC(Actor),
-            NULL_luaL_Reg
+            NLNULL_luaL_Reg
         };
         luaL_setfuncs(L, Funcs, 0);
         register_object_metatable_function(L);

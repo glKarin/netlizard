@@ -77,6 +77,9 @@ metatable NLActor : NLObject{
 
     boolean IsRigidbody();
     userdata<NLRigidbody> ToRigidbody();
+
+    userdata<NLRenderable> Renderable();
+    integer SetRenderable(userdata<NLRenderable>);
 };
 
 metatable NLRigidbody : NLActor {
@@ -108,6 +111,10 @@ metatable NLScene {
 };
 
 metatable NLComponent : NLObject {
+    userdata<NLActor> Actor();
+};
+
+metatable NLRenderable : NLObject {
     userdata<NLActor> Actor();
 };
 

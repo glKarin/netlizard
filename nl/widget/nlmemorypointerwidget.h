@@ -18,6 +18,7 @@ public:
     QString TypeName() const { return m_typeName; }
     void SetMemoryPointer(const QString &type, void *ptr);
     void SetMemoryPointer(const QVariant &value);
+    virtual QVariant ToVariant() const;
 
 public Q_SLOTS:
     void SetPointer(void *ptr);
@@ -25,8 +26,8 @@ public Q_SLOTS:
     void SetReadOnly(bool b);
 
 Q_SIGNALS:
-    void memoryPointerChanged(const QString &type, void *ptr);
-    void memoryPointerDeleted(const QString &type, void *ptr);
+    void memoryPointerChanged(void *ptr, const QString &type = QString());
+    void memoryPointerDeleted(void *ptr, const QString &type = QString());
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent *event);

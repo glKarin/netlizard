@@ -207,7 +207,7 @@ int push_from_qvariant(struct lua_State* L, const QVariant &v)
 #define PUSH_VAR(name) \
         if(varType == #name"*") \
         { \
-             PUSH_NLOBJECT_TO_STACK(L, name, v.value<name *>()); \
+             NLPUSH_NLOBJECT_TO_STACK(L, name, v.value<name *>()); \
         }
         PUSH_VAR(NLSceneCamera)
         else PUSH_VAR(NLScene)
@@ -285,7 +285,7 @@ int push_from_qvariants(struct lua_State* L, const QVariant &v, const QString &v
 #define PUSH_VAR(name) \
         if(utype == #name"*" || utype == #name || varType == #name"*") \
         { \
-             PUSH_NLOBJECT_TO_STACK(L, name, v.value<name *>()); \
+             NLPUSH_NLOBJECT_TO_STACK(L, name, v.value<name *>()); \
         }
         PUSH_VAR(NLSceneCamera)
         else PUSH_VAR(NLScene)
@@ -305,7 +305,7 @@ int push_from_qvariants(struct lua_State* L, const QVariant &v, const QString &v
                 *((void **)lua_newuserdata(L, sizeof(void *))) = v.value<void *>();
             else
             {
-                int rn = NLEngineGlobals::Instance()->push_variant_to_lua(v, L, QString(utype));
+                int rn = NLEngineGlobals::Instance()->push_variant_to_lua(v, L, utype != "userdata" ? QString(utype) : QString());
                 if(rn > 0)
                     return rn;
                 else

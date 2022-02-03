@@ -240,7 +240,7 @@ void NLSceneInfoWidget::UpdateSceneInfo()
             camera->NormalMatrix(),
             camera->InitialFixedViewMatrix(),
         };
-        for(uint i = 0; i < nlcountof(mats); i++)
+        for(uint i = 0; i < NLcountof(mats); i++)
         {
             const NLMatrix4 *m = mats[i];
             const QString mstr(_DBG_MAT4(m));

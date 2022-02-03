@@ -76,7 +76,7 @@ static NLPropertyInfo make_property_info(const QObject *object, const QString &n
         }
         else if(type == "NLRenderable*" || type == "NLObject*" || type == "NLActor*" || type == "NLComponent*" || type == "NLScript*" || type == "NLScene*" || type == "NLSceneCamera*" || type == "NLForce*")
         {
-            if(type == "NLRenderable*" && name == "renderable" && nlinstanceofv(object, const NLActor))
+            if(type == "NLRenderable*" && name == "renderable" && NLinstanceofv(object, const NLActor))
             {
                 widget = "formgroup";
                 editDirectly = false;
@@ -196,8 +196,8 @@ QVariant object_to_qvaraint(NLObject *nlo)
 {
     if(!nlo)
         return QVariant();
-    QByteArray className = nlo->ClassName().toLocal8Bit();
-    int type = QMetaType::type(className + "*");
+    QByteArray className = nlo->ClassName().toLocal8Bit() + "*";
+    int type = QMetaType::type(className.constData());
     if(type != 0)
         return QVariant(type, (void *)&nlo);
 
@@ -208,7 +208,7 @@ QVariant object_to_qvaraint(NLObject *nlo)
         return QVariant::fromValue<T *>(static_cast<T *>(nlo));
 
     case NLObject::Type_Actor:
-        if(nlinstanceofv(nlo, NLRigidbody))
+        if(NLinstanceofv(nlo, NLRigidbody))
             return QVariant::fromValue<NLRigidbody *>(static_cast<NLRigidbody *>(nlo));
         else
             return QVariant::fromValue<NLActor *>(static_cast<NLActor *>(nlo));
@@ -220,6 +220,25 @@ QVariant object_to_qvaraint(NLObject *nlo)
 #undef CASE_EQUALS
     default:
         return QVariant();
+    }
+}
+
+QVariant pointer_to_qvaraint(void *ptr, const QString &typeName)
+{
+    if(typeName == "void")
+        return QVariant::fromValue<void *>(ptr);
+    else if(typeName == "QObject")
+        return QVariant::fromValue<QObject *>((QObject *)ptr);
+    else if(typeName == "QWidget")
+        return QVariant::fromValue<QWidget *>((QWidget *)ptr);
+    else
+    {
+        QByteArray className = typeName.toLocal8Bit() + "*";
+        int type = QMetaType::type(className.constData());
+        if(type != 0)
+            return QVariant(type, (void *)&ptr);
+        else
+            return QVariant::fromValue<void *>(ptr);
     }
 }
 

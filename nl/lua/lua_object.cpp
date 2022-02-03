@@ -24,8 +24,8 @@ extern "C" {
 #include "engine/nlforce.h"
 #include "engine/nlscript.h"
 
-#define CALLER_OBJECT(L, name) GET_LUA_CALLER(L, NLObject, name)
-#define CALLER_OBJECT_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLObject, name)
+#define CALLER_OBJECT(L, name) NLNLGET_LUA_CALLER(L, NLObject, name)
+#define CALLER_OBJECT_USERDATA(L, name) NLNLGET_LUA_CALLER_USERDATA(L, NLObject, name)
 
 typedef struct GeneralData_s {
     union {
@@ -282,7 +282,7 @@ bool register_object_metatable_function(struct lua_State *L)
         OBJECT_FUNC(SetProperty),
         OBJECT_FUNC(RemoveProperty),
         OBJECT_FUNC(Invoke),
-        NULL_luaL_Reg
+        NLNULL_luaL_Reg
     };
     luaL_setfuncs(L, Funcs, 0);
     return true;

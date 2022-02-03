@@ -13,12 +13,12 @@ extern "C" {
 #include "lua_object.h"
 #include "lua_variant.h"
 
-#define CALLER_SCRIPT(L, name) GET_LUA_CALLER(L, NLScript, name)
-#define CALLER_SCRIPT_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLScript, name)
+#define CALLER_SCRIPT(L, name) NLNLGET_LUA_CALLER(L, NLScript, name)
+#define CALLER_SCRIPT_USERDATA(L, name) NLNLGET_LUA_CALLER_USERDATA(L, NLScript, name)
 
 static int Script_new(lua_State *L)
 {
-    PUSH_NLOBJECT_TO_STACK(L, NLScript, new NLScript(NL::lua_table_to_properties(L, 1)))
+    NLPUSH_NLOBJECT_TO_STACK(L, NLScript, new NLScript(NL::lua_table_to_properties(L, 1)))
     return 1;
 }
 
@@ -36,7 +36,7 @@ static int Script_Actor(lua_State *L)
     NLActor *a = script->Actor();
     if(a)
     {
-        PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
+        NLPUSH_NLOBJECT_TO_STACK(L, NLActor, a)
     }
     else
     {
@@ -75,8 +75,8 @@ bool script_register_metatable(struct lua_State *L)
     if(metatable_is_register(L, "NLScript"))
         return true;
 
-    SET_GLOBAL_CFUNC(L, "new_NLScript", Script_new)
-    SET_GLOBAL_CFUNC(L, "delete_NLScript", Script_delete)
+    lua_register(L, "new_NLScript", Script_new);
+    lua_register(L, "delete_NLScript", Script_delete);
 
     if(luaL_newmetatable(L, "NLScript"))
     {
@@ -84,7 +84,7 @@ bool script_register_metatable(struct lua_State *L)
             COMPONENT_FUNC(Actor),
             COMPONENT_FUNC(SetScriptFile),
             COMPONENT_FUNC(SetScriptSource),
-            NULL_luaL_Reg
+            NLNULL_luaL_Reg
         };
         luaL_setfuncs(L, Funcs, 0);
         register_object_metatable_function(L);

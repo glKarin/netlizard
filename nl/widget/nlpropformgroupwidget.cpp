@@ -90,6 +90,7 @@ class NLEditorMemoryPointerWidget : public NLMemoryPointerWidget
 protected:
     virtual QString GetPtrName(const QString &typeName, void *ptr);
     virtual bool FromVariant(const QVariant &item_value, QString &rtypeName, void *&rptr);
+    virtual QVariant ToVariant() const;
 };
 
 QString NLEditorMemoryPointerWidget::GetPtrName(const QString &typeName, void *ptr)
@@ -103,14 +104,14 @@ QString NLEditorMemoryPointerWidget::GetPtrName(const QString &typeName, void *p
         QObject *qo = reinterpret_cast<QObject *>(ptr);
         if(qo)
         {
-            if(nlinstanceofv(qo, NLObject))
+            if(NLinstanceofv(qo, NLObject))
             {
                 NLObject *nlo = static_cast<NLObject *>(qo);
                 QString nltype;
                 switch(nlo->Type())
                 {
                 case NLObject::Type_Actor:
-                    if(nlinstanceofv(qo, NLRigidbody))
+                    if(NLinstanceofv(qo, NLRigidbody))
                         nltype = "NLRigidbody";
                     else
                         nltype = "NLActor";
@@ -143,7 +144,7 @@ QString NLEditorMemoryPointerWidget::GetPtrName(const QString &typeName, void *p
         QWidget *qo = reinterpret_cast<QWidget *>(ptr);
         if(qo)
         {
-            if(nlinstanceofv(qo, NLScene))
+            if(NLinstanceofv(qo, NLScene))
             {
                 NLScene *nlo = static_cast<NLScene *>(qo);
                 name = nlo ? nlo->objectName() : "";
@@ -212,12 +213,12 @@ bool NLEditorMemoryPointerWidget::FromVariant(const QVariant &item_value, QStrin
         if(item_type == QMetaType::QObjectStar)
         {
             QObject *qo = reinterpret_cast<QObject *>(rptr);
-            if(nlinstanceofv(qo, NLObject))
+            if(NLinstanceofv(qo, NLObject))
             {
                 switch(static_cast<NLObject *>(qo)->Type())
                 {
                 case NLObject::Type_Actor:
-                    if(nlinstanceofv(qo, NLRigidbody))
+                    if(NLinstanceofv(qo, NLRigidbody))
                         rtypeName = "NLRigidbody*";
                     else
                         rtypeName = "NLActor*";
@@ -244,7 +245,7 @@ bool NLEditorMemoryPointerWidget::FromVariant(const QVariant &item_value, QStrin
         else if(item_type == QMetaType::QWidgetStar)
         {
             QWidget *qo = reinterpret_cast<QWidget *>(rptr);
-            if(nlinstanceofv(qo, NLScene))
+            if(NLinstanceofv(qo, NLScene))
             {
                 rtypeName = "NLScene*";
             }
@@ -256,6 +257,11 @@ bool NLEditorMemoryPointerWidget::FromVariant(const QVariant &item_value, QStrin
         rtypeName.remove(rtypeName.length() - 1, 1);
     }
     return true;
+}
+
+QVariant NLEditorMemoryPointerWidget::ToVariant() const
+{
+    return NL::pointer_to_qvaraint(Pointer(), TypeName());
 }
 
 
@@ -804,6 +810,7 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
         NLEditorMemoryPointerWidget *w = new NLEditorMemoryPointerWidget;
         WIDGET_SET_TYPE(w, NLEditorMemoryPointerWidget);
         w->SetMemoryPointer(item.value);
+        connect(w, SIGNAL(memoryPointerChanged(void *, const QString &)), this, SLOT(OnMemoryChanged(void *, const QString &)));
         widget = w;
     }
     else
@@ -972,6 +979,13 @@ void NLPropFormGroupWidget::OnLinkActivated(const QString &link)
     ACTION_SET_WIDGET(&action, sender());
     action.setData(link);
     HandleAction(&action);
+}
+
+void NLPropFormGroupWidget::OnMemoryChanged(void *ptr, const QString &typeName)
+{
+    QObject *s = sender();
+    QVariant v = NL::pointer_to_qvaraint(ptr, typeName);
+    SetObjectProperty(m_object, s->objectName(), v);
 }
 
 void NLPropFormGroupWidget::OnItemDestroy(QObject *obj)

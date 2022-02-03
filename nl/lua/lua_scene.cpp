@@ -12,7 +12,7 @@ extern "C" {
 #include "lua_def.h"
 #include "lua_variant.h"
 
-#define CALLER_SCENE(L, name) GET_LUA_CALLER(L, NLScene, name)
+#define CALLER_SCENE(L, name) NLNLGET_LUA_CALLER(L, NLScene, name)
 
 static int Scene_SetClearColor(lua_State *L)
 {
@@ -42,7 +42,7 @@ static int Scene_GetActor(lua_State *L)
     }
     if(a)
     {
-        PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
+        NLPUSH_NLOBJECT_TO_STACK(L, NLActor, a)
     }
     else
     {
@@ -208,7 +208,7 @@ static int Scene_CurrentCamera(lua_State *L)
     NLSceneCamera *c = scene->CurrentCamera();
     if(c)
     {
-        PUSH_NLOBJECT_TO_STACK(L, NLSceneCamera, c)
+        NLPUSH_NLOBJECT_TO_STACK(L, NLSceneCamera, c)
     }
     else
     {
@@ -220,7 +220,7 @@ static int Scene_CurrentCamera(lua_State *L)
 static int Scene_SetCurrentCamera(lua_State *L)
 {
     CALLER_SCENE(L, scene);
-    GET_LUA_OBJECT(L, NLSceneCamera, c, 2);
+    NLGET_LUA_OBJECT(L, NLSceneCamera, c, 2);
     int b = 1;
     scene->SetCurrentCamera(c);
     lua_pushboolean(L, b);
@@ -230,7 +230,7 @@ static int Scene_SetCurrentCamera(lua_State *L)
 static int Scene_AddActor(lua_State *L)
 {
     CALLER_SCENE(L, scene);
-    GET_LUA_OBJECT(L, NLActor, c, 2);
+    NLGET_LUA_OBJECT(L, NLActor, c, 2);
     int b = 1;
     scene->AddActor(c);
     lua_pushboolean(L, b);
@@ -251,7 +251,7 @@ static int Scene_RemoveActor(lua_State *L)
         int type = lua_type(L, 2);
         if(type == LUA_TUSERDATA)
         {
-            GET_LUA_OBJECT(L, NLActor, c, 2);
+            NLGET_LUA_OBJECT(L, NLActor, c, 2);
             if(c)
                 scene->RemoveActor(c);
             else
@@ -271,7 +271,7 @@ static int Scene_CreateActor(lua_State *L)
 {
     CALLER_SCENE(L, scene);
     NLActor *a = scene->CreateActor(NL::lua_table_to_properties(L, 2));
-    PUSH_NLOBJECT_TO_STACK(L, NLActor, a)
+    NLPUSH_NLOBJECT_TO_STACK(L, NLActor, a)
     return 1;
 }
 
@@ -309,7 +309,7 @@ bool scene_register_metatable(struct lua_State *L)
             SCENE_FUNC(RemoveActor),
             SCENE_FUNC(SetCurrentCamera),
             SCENE_FUNC(CreateActor),
-            NULL_luaL_Reg
+            NLNULL_luaL_Reg
         };
         luaL_setfuncs(L, Funcs, 0);
         lua_pushvalue(L, -1);

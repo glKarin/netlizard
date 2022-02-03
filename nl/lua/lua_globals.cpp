@@ -86,10 +86,10 @@ namespace NL
 
 static bool globals_register_metatable(struct lua_State *L)
 {
-    SET_GLOBAL_CFUNC(L, "NullUserData", Globals_NullUserData)
-    SET_GLOBAL_CFUNC(L, "UserDataIsNull", Globals_UserDataIsNull)
-    SET_GLOBAL_CFUNC(L, "UserDataNull", Globals_UserDataNull)
-    SET_GLOBAL_CFUNC(L, "UserDataPointer", Globals_UserDataPointer)
+    lua_register(L, "NullUserData", Globals_NullUserData);
+    lua_register(L, "UserDataIsNull", Globals_UserDataIsNull);
+    lua_register(L, "UserDataNull", Globals_UserDataNull);
+    lua_register(L, "UserDataPointer", Globals_UserDataPointer);
 
     return true;
 }

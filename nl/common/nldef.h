@@ -8,15 +8,10 @@ typedef bool (*NLVariantCompare_f)(const QVariant &a, const QVariant &b);
 
 #define NLClamp(t, min, max) qMax(min, qMin(t, max))
 
-#ifndef nlinstanceof
-#define nlinstanceof(obj, T) ((dynamic_cast<T *>(&obj)) != 0)
-#define nlinstanceofv(obj, T) ((dynamic_cast<T *>(obj)) != 0)
-#endif
+#define NLinstanceof(obj, T) ((dynamic_cast<T *>(&obj)) != 0)
+#define NLinstanceofv(obj, T) ((dynamic_cast<T *>(obj)) != 0)
 
-#ifndef nlcountof
-#define nlcountof(arr) (sizeof(arr) / sizeof(arr[0]))
-#define nllengthof nlcountof
-#endif
+#define NLcountof(arr) (sizeof(arr) / sizeof(arr[0]))
 
 #define NLSINGLE_INSTANCE_DEF(C) static C * Instance();
 #define NLSINGLE_INSTANCE_DECL(C) C * C::Instance() \

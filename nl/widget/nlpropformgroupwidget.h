@@ -115,6 +115,7 @@ private Q_SLOTS:
     void OnStringReload(const QString &str = QString());
     void OnColorChanged(const QColor &color);
     void OnLinkActivated(const QString &link);
+    void OnMemoryChanged(void *ptr, const QString &typeName);
 
 private:
     QObject *m_object;

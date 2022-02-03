@@ -134,12 +134,15 @@ QVariant EngineRegisterObject::LuaVariantToQVariant(void **ptr, const QString &m
 
 int EngineRegisterObject::PushQVariantToLua(const QVariant &v, struct lua_State *L, const QString &specialType)
 {
-    if(specialType == REG_METATABLE_NAME"*" || specialType == REG_METATABLE_NAME)
+    QString typeName = v.typeName();
+    if(specialType == REG_METATABLE_NAME"*" || specialType == REG_METATABLE_NAME || typeName == REG_METATABLE_NAME"*")
     {
         EngineRegisterObject* obj = v.value<EngineRegisterObject *>();
         qDebug() << "lua testing PushQVariantToLua -> " << obj->Name();
         void **ptr = (void **)lua_newuserdata(L, sizeof(EngineRegisterObject **));
         *ptr = obj;
+        luaL_getmetatable(L, REG_METATABLE_NAME);
+        lua_setmetatable(L, -2);
         return 1;
     }
     return 0;

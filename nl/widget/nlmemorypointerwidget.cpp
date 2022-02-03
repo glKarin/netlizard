@@ -103,16 +103,28 @@ void NLMemoryPointerWidget::UpdateWidget()
 
 void NLMemoryPointerWidget::SetMemoryPointer(const QString &type, void *ptr)
 {
-    SetTypeName(type);
-    SetPointer(ptr);
+    bool changed = false;
+    if(m_ptr != ptr)
+    {
+        m_ptr = ptr;
+        changed = true;
+    }
+    if(m_typeName != type)
+    {
+        m_typeName = type;
+        changed = true;
+    }
+    if(changed)
+    {
+        UpdateWidget();
+        emit memoryPointerChanged(m_ptr, m_typeName);
+    }
 }
 
 void NLMemoryPointerWidget::SetMemoryPointer(const QVariant &value)
 {
     QString typeName;
     void *ptr;
-    qDebug() << FromVariant(value, typeName, ptr);
-    qDebug() << ptr << typeName << value << m_ptr;
     if(FromVariant(value, typeName, ptr))
         SetMemoryPointer(typeName, ptr);
 }
@@ -145,13 +157,23 @@ bool NLMemoryPointerWidget::FromVariant(const QVariant &item_value, QString &typ
     return true;
 }
 
+QVariant NLMemoryPointerWidget::ToVariant() const
+{
+    if(m_typeName == "QObject")
+        return QVariant::fromValue<QObject *>((QObject *)m_ptr);
+    else if(m_typeName == "QWidget")
+        return QVariant::fromValue<QWidget *>((QWidget *)m_ptr);
+    else
+        return QVariant::fromValue<void *>(m_ptr);
+}
+
 void NLMemoryPointerWidget::SetPointer(void *ptr)
 {
     if(m_ptr != ptr)
     {
         m_ptr = ptr;
         UpdateWidget();
-        emit memoryPointerChanged(m_typeName, m_ptr);
+        emit memoryPointerChanged(m_ptr, m_typeName);
     }
 }
 
@@ -161,7 +183,7 @@ void NLMemoryPointerWidget::SetTypeName(const QString &type)
     {
         m_typeName = type;
         UpdateWidget();
-        emit memoryPointerChanged(m_typeName, m_ptr);
+        emit memoryPointerChanged(m_ptr, m_typeName);
     }
 }
 
@@ -205,7 +227,7 @@ void NLMemoryPointerWidget::contextMenuEvent(QContextMenuEvent *event)
         void *ptr = m_ptr;
         m_ptr = 0;
         UpdateWidget();
-        emit memoryPointerChanged(m_typeName, ptr);
+        emit memoryPointerChanged(ptr, m_typeName);
         event->accept();
     }
     else if(action == ACTION_FREE)
@@ -213,7 +235,7 @@ void NLMemoryPointerWidget::contextMenuEvent(QContextMenuEvent *event)
         void *ptr = m_ptr;
         m_ptr = 0;
         UpdateWidget();
-        emit memoryPointerDeleted(m_typeName, ptr);
+        emit memoryPointerDeleted(ptr, m_typeName);
         event->accept();
     }
     else

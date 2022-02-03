@@ -147,13 +147,13 @@ bool NLScript::Script_Lua::Exec(float delta)
     else
     {
         func = 0;
-        PUSH_NLOBJECT_TO_STACK(L, NLScene, script->Scene())
+        NLPUSH_NLOBJECT_TO_STACK(L, NLScene, script->Scene())
         lua_setglobal(L, "nl_Scene");
 
-        PUSH_NLOBJECT_TO_STACK(L, NLActor, script->Actor())
+        NLPUSH_NLOBJECT_TO_STACK(L, NLActor, script->Actor())
         lua_setglobal(L, "nl_Actor");
 
-        PUSH_NLOBJECT_TO_STACK(L, NLScript, script)
+        NLPUSH_NLOBJECT_TO_STACK(L, NLScript, script)
         lua_setglobal(L, "nl_Script");
 
         lua_pushnumber(L, delta);
@@ -568,7 +568,6 @@ void NLScript::OnPropertyChanged(const QString &name, const QVariant &value, int
             || name == "scriptSource"
             )
         return;
-    qDebug() << name << value << type;
     if(type == -1)
         m_globalVaraint.remove(name);
     else

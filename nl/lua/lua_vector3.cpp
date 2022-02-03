@@ -12,8 +12,8 @@ extern "C" {
 #include "lua_def.h"
 #include "lua_variant.h"
 
-#define CALLER_VECTOR3(L, name) GET_LUA_CALLER(L, NLVector3, name)
-#define CALLER_VECTOR3_USERDATA(L, name) GET_LUA_CALLER_USERDATA(L, NLVector3, name)
+#define CALLER_VECTOR3(L, name) NLNLGET_LUA_CALLER(L, NLVector3, name)
+#define CALLER_VECTOR3_USERDATA(L, name) NLNLGET_LUA_CALLER_USERDATA(L, NLVector3, name)
 
 static int Vector3_new(lua_State *L)
 {
@@ -35,7 +35,7 @@ static int Vector3_new(lua_State *L)
         VECTOR3V_Y(v) = lua_tonumber(L, 2);
         VECTOR3V_Z(v) = lua_tonumber(L, 3);
     }
-    PUSH_NLOBJECT_TO_STACK(L, NLVector3, v)
+    NLPUSH_NLOBJECT_TO_STACK(L, NLVector3, v)
     return 1;
 }
 
@@ -111,8 +111,8 @@ bool vector3_register_metatable(struct lua_State *L)
     if(metatable_is_register(L, "NLVector3"))
         return true;
 
-    SET_GLOBAL_CFUNC(L, "new_NLVector3", Vector3_new)
-    //SET_GLOBAL_CFUNC(L, "delete_NLVector3", Vector3_delete)
+    lua_register(L, "new_NLVector3", Vector3_new);
+    //lua_register(L, "delete_NLVector3", Vector3_delete);
 
     if(luaL_newmetatable(L, "NLVector3"))
     {
@@ -121,7 +121,7 @@ bool vector3_register_metatable(struct lua_State *L)
             VECTOR3_FUNC(Y),
             VECTOR3_FUNC(Z),
             VECTOR3_FUNC(XYZ),
-            NULL_luaL_Reg
+            NLNULL_luaL_Reg
         };
         luaL_setfuncs(L, Funcs, 0);
         lua_pushcfunction(L, Vector3_delete); \

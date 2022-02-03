@@ -14,6 +14,7 @@ NLLIB_EXPORT NLPropertyInfoList object_propertics(const NLObject *obj);
 NLLIB_EXPORT NLPropertyInfoList scene_propertics(const NLScene *obj);
 NLLIB_EXPORT bool property_equals(const QVariant &a, const QVariant &b);
 NLLIB_EXPORT QVariant object_to_qvaraint(NLObject *nlo);
+NLLIB_EXPORT QVariant pointer_to_qvaraint(void *ptr, const QString &typeName = "void");
 NLLIB_EXPORT int qvaraint_to_pointer(const QVariant &value, void *&ptr, QString &typeName);
 NLLIB_EXPORT void * qvaraint_to_void_pointer(const QVariant &value, QString *typeName = 0);
 template <class T>
