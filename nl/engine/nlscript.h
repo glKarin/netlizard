@@ -6,14 +6,14 @@
 
 class NLScriptContainer;
 class NLActor;
-
-struct lua_State;
+class NLScriptObject;
 
 class NLLIB_EXPORT NLScript : public NLObject
 {
     Q_OBJECT
     Q_PROPERTY(QString scriptSource READ ScriptSource WRITE SetScriptSource)
     Q_PROPERTY(QString scriptFile READ ScriptFile WRITE SetScriptFile)
+    Q_PROPERTY(NLScriptObject* scriptObject READ ScriptObject FINAL)
 public:
     explicit NLScript(NLActor *parent = 0);
     explicit NLScript(const NLProperties &prop, NLActor *parent = 0);
@@ -22,12 +22,12 @@ public:
     virtual ~NLScript();
     bool IsMounted() const { return m_mounted; }
     NLActor * Actor();
-    const NLActor * Actor() const;
     void SetActor(NLActor *actor);
     NLScriptContainer * Container();
     virtual bool IsActived() const { return NLObject::IsActived() && m_mounted && !m_data.isEmpty(); }
     QString ScriptSource() const { return m_data; }
     QString ScriptFile() const { return m_sourceFile; }
+    NLScriptObject * ScriptObject() const { return m_scriptObject; }
     virtual void Reset();
     bool HasScriptSource() const { return !m_data.trimmed().isEmpty(); }
 
@@ -38,9 +38,7 @@ protected:
     virtual void Unmount();
     void SetContainer(NLScriptContainer *container);
     virtual void InitProperty();
-    lua_State * L() { return m_lua.L; }
-    virtual void AfterLuaInit(lua_State *L) { Q_UNUSED(L); }
-    virtual void BeforeLuaDeinit(lua_State *L) { Q_UNUSED(L); }
+    //lua_State * L() { return m_scriptObject.L; }
     
 signals:
     void mounted();
@@ -52,65 +50,18 @@ public slots:
 
 private:
     void Construct();
-    bool InitLua();
-    bool DeinitLua();
-    bool ExecScript(float delta) { return m_lua.Exec(delta); }
-    void SetGlobalVariant(const NLSequenceHash<QString, QVariant> &list);
-    void ClearGlobalVariant();
-    void LockGlobalDataUpdate() { m_globalDataUpdateLock = true; }
-    void UnlockGlobalDataUpdate() { m_globalDataUpdateLock = false; }
-    bool IsLockGlobalDataUpdate() const { return m_globalDataUpdateLock; }
-    void SetGlobalDataDirty(bool b) { if(!m_globalDataUpdateLock) m_globalDataDirty = b; }
-    bool IsGlobalDataDirty() const { return m_globalDataDirty; }
-
-private slots:
-    void OnPropertyChanged(const QString &name, const QVariant &value, int type);
+    bool InitScriptObject();
+    bool DeinitScriptObject();
 
 private:
-    struct Script_Lua
-    {
-        enum {
-            Script_Lua_Func_Init = 1,
-            Script_Lua_Func_Destroy = 1 << 1,
-            Script_Lua_Func_Update = 1 << 2,
-            Script_Lua_Func_Reset = 1 << 3
-        };
-        struct lua_State *L;
-        NLScript *script;
-        int func;
-
-        Script_Lua()
-            : L(0),
-              script(0),
-              func(-1)
-        { }
-        ~Script_Lua() {
-            Deinit();
-        }
-
-        bool Init();
-        bool Deinit();
-        bool Exec(float delta);
-        bool Reset();
-        NLSequenceHash<QString, QVariant> GetGlobalVariant();
-        void RegisterGlobalVariant();
-        void UnregisterGlobalVariant();
-        void DumpGlobalVariant();
-        void RestoreGlobalVariant();
-        operator bool() const { return L != 0; }
-    };
-
     bool m_mounted;
     QByteArray m_data;
     QString m_sourceFile;
-    Script_Lua m_lua;
-    NLSequenceHash<QString, QVariant> m_globalVaraint;
-    bool m_globalDataDirty;
-    bool m_globalDataUpdateLock;
+    NLScriptObject *m_scriptObject;
 
     friend class NLScriptContainer;
     friend class NLActor;
-    friend struct Script_Lua;
+    friend class NLScriptObject;
     
     Q_DISABLE_COPY(NLScript)
 };

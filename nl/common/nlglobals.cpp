@@ -20,6 +20,7 @@ class NLSceneCamera;
 class NLForce;
 class NLObject;
 class NLRigidbody;
+class NLScriptObject;
 
 static bool vector3_variant_compare_func(const QVariant &a, const QVariant &b)
 {
@@ -77,6 +78,7 @@ bool NLEngineGlobals::init_engine(NLEngineRegisterObject *obj)
     qRegisterMetaType<NLForce *>("NLForce *");
     qRegisterMetaType<NLObject *>("NLObject *");
     qRegisterMetaType<NLRigidbody *>("NLRigidbody *");
+    qRegisterMetaType<NLScriptObject *>("NLScriptObject *");
     qRegisterMetaType<NLVariantGeneralPointer>("NLVariantGeneralPointer");
 
     load_translator();

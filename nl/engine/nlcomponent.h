@@ -17,7 +17,6 @@ public:
     virtual ~NLComponent();
     bool IsMounted() const { return m_mounted; }
     NLActor * Actor();
-    const NLActor * Actor() const;
     void SetActor(NLActor *actor);
     NLComponentContainer * Container();
     virtual bool IsActived() const { return NLObject::IsActived() && m_mounted; }

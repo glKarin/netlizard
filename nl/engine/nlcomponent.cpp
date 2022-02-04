@@ -125,14 +125,6 @@ NLActor * NLComponent::Actor()
     return 0;
 }
 
-const NLActor * NLComponent::Actor() const
-{
-    const QObject *p = parent();
-    if(p)
-        return dynamic_cast<const NLActor *>(p);
-    return 0;
-}
-
 void NLComponent::SetActor(NLActor *actor)
 {
     setParent(actor);

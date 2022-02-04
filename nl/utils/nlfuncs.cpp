@@ -74,9 +74,14 @@ static NLPropertyInfo make_property_info(const QObject *object, const QString &n
             widget = "memory";
             editDirectly = false;
         }
-        else if(type == "NLRenderable*" || type == "NLObject*" || type == "NLActor*" || type == "NLComponent*" || type == "NLScript*" || type == "NLScene*" || type == "NLSceneCamera*" || type == "NLForce*")
+        else if(type == "NLRenderable*" || type == "NLObject*" || type == "NLActor*" || type == "NLComponent*" || type == "NLScript*" || type == "NLScene*" || type == "NLSceneCamera*" || type == "NLForce*" || type == "NLScriptObject*")
         {
             if(type == "NLRenderable*" && name == "renderable" && NLinstanceofv(object, const NLActor))
+            {
+                widget = "formgroup";
+                editDirectly = false;
+            }
+            else if(type == "NLScriptObject*" && name == "scriptObject" && NLinstanceofv(object, const NLScript))
             {
                 widget = "formgroup";
                 editDirectly = false;

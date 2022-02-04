@@ -35,12 +35,16 @@ HEADERS += \
     common/nlconstants.h \
     common/nlvec.h \
     common/nlmatrix.h \
-    lua/lua_renderable.h
+    lua/lua_renderable.h \
+    engine/nlscriptobject.h \
+    engine/nlluascriptobject.h
 
 SOURCES += \
     common/nlconstants.cpp \
     common/nlglobals.cpp \
-    lua/lua_renderable.cpp
+    lua/lua_renderable.cpp \
+    engine/nlscriptobject.cpp \
+    engine/nlluascriptobject.cpp
 
 # engine
 HEADERS += \

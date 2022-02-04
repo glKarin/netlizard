@@ -36,6 +36,7 @@
 #include "engine/nlactor.h"
 #include "engine/nlscript.h"
 #include "engine/nlforce.h"
+#include "engine/nlscriptobject.h"
 #include "engine/nlrigidbody.h"
 #include "utils/nlguiutility.h"
 #include "nleditwidget.h"
@@ -796,12 +797,15 @@ QWidget * NLPropFormGroupWidget::GenWidget(QObject *obj, const NLPropertyInfo &i
     }
     else if(item.widget == "formgroup")
     {
-        NLRenderable *nlo = item.value.value<NLRenderable *>();
-        NLPropFormGroupWidget *w = GenFormGroup(nlo);
+        NLPropFormGroupWidget *w = 0;
+        QString typeName/*(item.value.typeName())*/;
+        NLObject * nlo = NL::qvaraint_pointer_cast<NLObject *>(item.value, &typeName);
+        w = GenFormGroup(nlo);
         WIDGET_SET_TYPE(w, NLPropFormGroupWidget);
-        QString name = nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : "(NLRenderable*)0x0";
+        QString name = nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : "(" + typeName + ")0x0";
+        if(!item.prop.value("expand").toBool())
+            w->Collapse();
         w->setTitle(name);
-        w->Collapse();
         w->SetCanExpand(nlo != 0);
         widget = w;
     }
@@ -902,7 +906,12 @@ void NLPropFormGroupWidget::NotifyPropertyChanged(const QString &name, const QVa
     }
     else if(WIDGETNAME_IS_TYPE(type, NLPropFormGroupWidget))
     {
-        static_cast<NLPropFormGroupWidget *>(widget)->SetObject(value.value<NLRenderable *>());
+        QString typeName;
+        NLObject *nlo = NL::qvaraint_pointer_cast<NLObject *>(value, &typeName);
+        NLPropFormGroupWidget *form = static_cast<NLPropFormGroupWidget *>(widget);
+        form->SetObject(nlo);
+        QString name = nlo ? nlo->ClassName() + "::" + nlo->objectName() + "(" + nlo->Name() +")" : "(" + typeName + ")0x0";
+        form->setTitle(name);
     }
     else
         qWarning() << "Unsupported widget type -> " << type;
