@@ -65,6 +65,7 @@ void NLScriptObject::Destroy()
     if(!IsInited())
         return;
     m_func = -1;
+    disconnect(this, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
     UnregisterGlobalVariant();
     NLObject::Destroy();
 }
@@ -82,7 +83,10 @@ void NLScriptObject::Init()
     if(IsInited())
         return;
     if(InitScript())
+    {
+        connect(this, SIGNAL(propertyChanged(const QString &, const QVariant &, int)), this, SLOT(OnPropertyChanged(const QString &, const QVariant &, int)));
         NLObject::Init();
+    }
 }
 
 NLScript * NLScriptObject::Script()
@@ -92,23 +96,6 @@ NLScript * NLScriptObject::Script()
         return dynamic_cast<NLScript *>(p);
     return 0;
 }
-
-//void NLScript::SetScriptSource(const QString &src)
-//{
-//    QByteArray ba;
-//    ba.append(src);
-//    if(m_data != ba)
-//    {
-//        m_data.clear();
-//        DeinitLua();
-//        if(!src.isEmpty())
-//        {
-//            m_data = ba;
-//            InitLua();
-//        }
-//        emit propertyChanged("scriptSource", QString(m_data));
-//    }
-//}
 
 void NLScriptObject::OnPropertyChanged(const QString &name, const QVariant &value, int type)
 {
