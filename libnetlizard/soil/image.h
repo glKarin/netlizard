@@ -13,7 +13,9 @@
 #  define NLSOIL_HIDDEN     __attribute__((visibility("hidden")))
 #endif
 
-#if defined(_NL_DLL)
+#if defined(_NL_STATIC)
+#define NLSOILAPI
+#elif defined(_NL_DLL)
 #  define NLSOILAPI NLSOIL_EXPORT
 #else
 #  define NLSOILAPI NLSOIL_IMPORT

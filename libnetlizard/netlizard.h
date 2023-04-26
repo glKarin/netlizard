@@ -14,7 +14,9 @@
 #  define NL_HIDDEN     __attribute__((visibility("hidden")))
 #endif
 
-#if defined(_NL_DLL)
+#if defined(_NL_STATIC)
+#define NLAPI
+#elif defined(_NL_DLL)
 #  define NLAPI NL_EXPORT
 #else
 #  define NLAPI NL_IMPORT
@@ -418,6 +420,7 @@ typedef struct NETLizard_3D_Model_Config_s
     char sky_file[10];
     char tex_path_format[12];
     char obj_path_format[14];
+    NLuint level_count;
 } NETLizard_3D_Model_Config;
 
 /* NETLizard 3D map teleport config, Egypt 3D */
